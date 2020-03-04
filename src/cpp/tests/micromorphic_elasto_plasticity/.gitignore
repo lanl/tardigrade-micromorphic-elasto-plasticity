@@ -1,0 +1,3 @@
+*.o
+test_micromorphic_elasto_plasticity
+results.tex
