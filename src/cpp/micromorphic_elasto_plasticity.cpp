@@ -104,7 +104,6 @@ namespace micromorphicElastoPlasticity{
 
         return NULL;
     }
-
     errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
                                                            const variableVector &elasticRightCauchyGreen,
                                                            const parameterType &frictionAngle, const parameterType &beta,
@@ -124,9 +123,9 @@ namespace micromorphicElastoPlasticity{
          *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }
          *
          *  Also compute the Jacobians
-         *  \frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ stressMeasure_{IJ} }{ || dev ( stressMeasure ) || + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} }
+         *  \frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure_{IJ} ) }{ || dev ( stressMeasure ) || + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} }
          *  \frac{ \partial F }{ \partial RCG_{IJ} } = B^{\phi} \frac{ \partial \bar{p} }{ \partial RCG_{IJ} }
-         *  \frac{ \partial F }{ \partial stressMeasure_{IJ} } = -A^{\phi}
+         *  \frac{ \partial F }{ cohesion } = -A^{\phi}
          *
          * :param const variableVector &referenceStressMeasure: The stress measure in the reference configuration
          * :param const variableType &cohesion: The cohesion measure.
@@ -140,6 +139,62 @@ namespace micromorphicElastoPlasticity{
          *     right Cauchy-Green deformation tensor.
          */
 
+        variableVector dNormDevdDevReferenceStress;
+        variableMatrix dDevStressdStress, dDevStressdElasticRCG;
+        variableType normDevStress, Bphi;
+
+        return computeSecondOrderDruckerPragerYieldEquation( referenceStressMeasure, cohesion, elasticRightCauchyGreen,
+                                                             frictionAngle, beta, yieldValue, dFdStress, dFdc,
+                                                             dFdElasticRCG, dNormDevdDevReferenceStress, 
+                                                             dDevStressdStress, dDevStressdElasticRCG, normDevStress, Bphi );
+
+    }
+
+    errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
+                                                           const variableVector &elasticRightCauchyGreen,
+                                                           const parameterType &frictionAngle, const parameterType &beta,
+                                                           variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
+                                                           variableVector &dFdElasticRCG, variableVector &dNormDevdDevReferenceStress, 
+                                                           variableMatrix &dDevStressdReferenceStress,
+                                                           variableMatrix &dDevStressdElasticRCG,
+                                                           variableType &normDevStress, parameterType &BAngle ){
+        /*!
+         * Compute the second-order Drucker Prager Yield equation
+         *
+         * F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+         * 
+         * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+         *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ}
+         *  dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p} elasticRightCauchyGreen_{IJ}^{-1}
+         *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
+         *  A^{angle} = \beta^{angle} \cos( frictionAngle )
+         *  B^{angle} = \beta^{angle} \sin( frictionAngle )
+         *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }
+         *
+         *  Also compute the Jacobians
+         *  \frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure_{IJ} ) }{ || dev ( stressMeasure ) || + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} }
+         *  \frac{ \partial F }{ \partial RCG_{IJ} } = B^{\phi} \frac{ \partial \bar{p} }{ \partial RCG_{IJ} }
+         *  \frac{ \partial F }{ cohesion } = -A^{\phi}
+         *
+         * :param const variableVector &referenceStressMeasure: The stress measure in the reference configuration
+         * :param const variableType &cohesion: The cohesion measure.
+         * :param const variableVector &rightCauchyGreen: The Right Cauchy-Green deformation tensor.
+         * :param const parameterType &frictionAngle: The friction angle
+         * :param const parameterType &beta: The beta parameter
+         * :param variableType &yieldValue: The yield value.
+         * :param variableVector &dFdStress: The Jacobian of the yield surface w.r.t. the stress measure.
+         * :param variableType &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
+         * :param variableVector &dFdElasticRCG: The Jacobian of the yield surface w.r.t. the elastic 
+         *     right Cauchy-Green deformation tensor.
+         * :param variableVector &dNormDevdDevReferenceStress: The Jacobian of the norm of the deviatoric stress w.r.t.
+         *     the reference stress.
+         * :param variableMatrix &dDevStressdReferenceStress: The Jacobian of the deviatoric stress w.r.t. the reference stress.
+         * :param variableMatrix &dDevStressdElasticRCG: The Jacobian of the deviatoric stress w.r.t. the elastic part of the right 
+         *     cauchy green deformation tensor.
+         * :param variableType &normDevStress: The norm of the deviatoric part of the stress.
+         * :param parameterType &BAngle: The BAngle parameter. 
+         */
+
         //Assume 3D
         unsigned int dim = 3;
 
@@ -148,7 +203,7 @@ namespace micromorphicElastoPlasticity{
 
         parameterType AAngle = betaAngle * std::cos( frictionAngle );
 
-        parameterType BAngle = betaAngle * std::sin( frictionAngle );
+        BAngle = betaAngle * std::sin( frictionAngle );
 
         //Compute the pressure
         variableType pressure;
@@ -188,24 +243,97 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the Jacobian of the deviatoric stress
         constantMatrix EYE = vectorTools::eye< variableType >( dim * dim );
-        variableMatrix dDevStressdReferenceStress = EYE - vectorTools::dyadic( elasticRightCauchyGreenInverse, dpdStress );
-        variableMatrix dDevStressdElasticRCG = - ( vectorTools::dyadic( elasticRightCauchyGreenInverse, dpdElasticRCG )
-                                               + pressure * dElasticRCGInversedElasticRCG );
+        dDevStressdReferenceStress = EYE - vectorTools::dyadic( elasticRightCauchyGreenInverse, dpdStress );
+        dDevStressdElasticRCG = - ( vectorTools::dyadic( elasticRightCauchyGreenInverse, dpdElasticRCG )
+                                  + pressure * dElasticRCGInversedElasticRCG );
 
         //Compute the l2norm of the deviatoric stress
-        variableType normDev = vectorTools::l2norm( deviatoricReferenceStress );
+        normDevStress = vectorTools::l2norm( deviatoricReferenceStress );
 
         //Compute the Jacobian of the l2norm of the deviatoric stress
-        variableVector dNormDevdDevReferenceStress = deviatoricReferenceStress / normDev;
+        dNormDevdDevReferenceStress = deviatoricReferenceStress / normDevStress;
         variableVector dNormDevdReferenceStress = vectorTools::Tdot( dDevStressdReferenceStress, dNormDevdDevReferenceStress );
 
         //Evaluate the yield equation
-        yieldValue = normDev - ( AAngle * cohesion - BAngle * pressure );
+        yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
         //Compute the jacobian
         dFdStress = dNormDevdReferenceStress + BAngle * dpdStress;
         dFdc = -AAngle;
         dFdElasticRCG = vectorTools::Tdot( dDevStressdElasticRCG, dNormDevdDevReferenceStress ) + BAngle * dpdElasticRCG;
+
+        return NULL;
+    }
+
+    errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
+                                                           const variableVector &elasticRightCauchyGreen,
+                                                           const parameterType &frictionAngle, const parameterType &beta,
+                                                           variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
+                                                           variableVector &dFdElasticRCG, variableMatrix &d2FdStress2,
+                                                           variableMatrix d2FdStressdElasticRCG ){
+        /*!
+         * Compute the second-order Drucker Prager Yield equation
+         *
+         * F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+         * 
+         * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+         *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ}
+         *  dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p} elasticRightCauchyGreen_{IJ}^{-1}
+         *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
+         *  A^{angle} = \beta^{angle} \cos( frictionAngle )
+         *  B^{angle} = \beta^{angle} \sin( frictionAngle )
+         *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }
+         *
+         *  Also compute the Jacobians
+         *  \frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure_{IJ} ) }{ || dev ( stressMeasure ) || + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} }
+         *  \frac{ \partial F }{ \partial RCG_{IJ} } = B^{\phi} \frac{ \partial \bar{p} }{ \partial RCG_{IJ} }
+         *  \frac{ \partial F }{ cohesion } = -A^{\phi}
+         *
+         *  The second deriatives of \frac{ \partial F }{ \partial \stressMeasure_{IJ} } are
+         *  \frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial stressMeasure_{KL} } = \frac{1}{ || dev ( stressMeasure ) || } \left ( \delta_{IM} \delta{JN} - \frac{ dev( stressMeasure_{IJ} ) }{ || dev ( stressMeasure ) || } \frac{ stressMeasure_{MN} }{ || dev ( stressMeasure ) || } \right ) \frac{ \partial dev ( stressMeasure )_{MN} }{ \partial stressMeasure_{KL} }
+         *  \frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial RCG_{KL} } = \frac{1}{ || dev ( stressMeasure ) || } \left ( \delta_{IM} \delta{JN} - \frac{ dev( stressMeasure_{IJ} ) }{ || dev ( stressMeasure ) || } \frac{ stressMeasure_{MN} }{ || dev ( stressMeasure ) || } \right ) \frac{ \partial dev ( stressMeasure )_{MN} }{ \partial RCG_{KL} } + B^{\phi} \delta_{IK} \delta_{JL}
+
+         *  
+         * :param const variableVector &referenceStressMeasure: The stress measure in the reference configuration
+         * :param const variableType &cohesion: The cohesion measure.
+         * :param const variableVector &rightCauchyGreen: The Right Cauchy-Green deformation tensor.
+         * :param const parameterType &frictionAngle: The friction angle
+         * :param const parameterType &beta: The beta parameter
+         * :param variableType &yieldValue: The yield value.
+         * :param variableVector &dFdStress: The Jacobian of the yield surface w.r.t. the stress measure.
+         * :param variableType &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
+         * :param variableVector &dFdElasticRCG: The Jacobian of the yield surface w.r.t. the elastic 
+         *     right Cauchy-Green deformation tensor.
+         * :param variableMatrix &d2FdStress2: The second derivative of the flow direction w.r.t. the stress. This 
+         *     is useful if one is using this expression as the flow potential and wants the jacobian of the flow direction \frac{ \partial G }{\partial Stress_{IJ} }
+         * :param variableMatrix &d2FdStressdElasticRCG: The second derivative of the flow direction w.r.t. the stress.
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        variableVector dNormDevdDevReferenceStress;
+        variableMatrix dDevStressdStress, dDevStressdElasticRCG;
+        variableType normDevStress;
+        parameterType BAngle;
+        errorOut error = computeSecondOrderDruckerPragerYieldEquation( referenceStressMeasure, cohesion,
+                                                                       elasticRightCauchyGreen, frictionAngle, beta,
+                                                                       yieldValue, dFdStress, dFdc, dFdElasticRCG,
+                                                                       dNormDevdDevReferenceStress, dDevStressdStress,
+                                                                       dDevStressdElasticRCG, normDevStress, BAngle );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeSecondOrderDruckerPragerYieldEquation (flow direction jacobian)",
+                                             "Error in computation of the jacobians of the yield surface" );
+            result->addNext( error );
+            return result;
+        }
+
+        constantMatrix EYE = vectorTools::eye< constantType >( dim * dim );
+        variableMatrix d2FdDeviatoricStress2 = ( EYE - vectorTools::dyadic( dNormDevdDevReferenceStress, dNormDevdDevReferenceStress ) ) / normDevStress;
+
+        d2FdStress2 = vectorTools::dot( d2FdDeviatoricStress2, dDevStressdStress );
+        d2FdStressdElasticRCG = vectorTools::dot( d2FdDeviatoricStress2, dDevStressdElasticRCG ) + BAngle * EYE / 3;
 
         return NULL;
     }
