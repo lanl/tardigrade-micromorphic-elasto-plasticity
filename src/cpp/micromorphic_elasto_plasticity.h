@@ -55,7 +55,10 @@ namespace micromorphicElastoPlasticity{
                                                            variableVector &dFdElasticRCG, variableVector &dNormDevdDevReferenceStress,
                                                            variableMatrix &dDevStressdReferenceStress,
                                                            variableMatrix &dDevStressdElasticRCG,
-                                                           variableType &normDevStress, parameterType &BAngle );
+                                                           variableType &normDevStress, parameterType &BAngle,
+                                                           variableMatrix &dInverseElasticRCGdElasticRCG,
+                                                           variableVector &dpdReferenceStress,
+                                                           variableVector &elasticRightCauchyGreenInverse );
 
     errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
                                                            const variableVector &elasticRightCauchyGreen,

@@ -85,10 +85,13 @@ int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
     //Test the Jacobian
     variableType resultJ, dFdcohesion;
     variableVector dFdS, dFdC;
+    variableMatrix d2FdStress2;
+    variableMatrix d2FdStressdElasticRCG;
+    variableMatrix d2FdS2, d2FdSdC;
 
     error = micromorphicElastoPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, C, 
                                                                                         frictionAngle, beta, resultJ,
-                                                                                        dFdS, dFdcohesion, dFdC );
+                                                                                        dFdS, dFdcohesion, dFdC, d2FdS2, d2FdSdC );
 
     if ( error ){
         error->print();
@@ -161,6 +164,82 @@ int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
     if ( !vectorTools::fuzzyEquals( ( resultJ - result ) / deltas, dFdcohesion ) ){
         results << "test_computeSecondOrderDruckerPragerYieldEquation (test 5) & False\n";
         return 1;
+    }
+
+    //Test d2FdStress2
+    for ( unsigned int i = 0; i < S.size(); i++ ){
+        constantVector delta( S.size(), 0 );
+        delta[i] = eps * fabs( S[i] ) + eps;
+
+        variableVector dFdSp, dFdSm, dFdCp, dFdCm;
+        variableType dFdcohesionp, dFdcohesionm;
+
+        error = micromorphicElastoPlasticity::computeSecondOrderDruckerPragerYieldEquation( S + delta, cohesion, C,
+                                                                                            frictionAngle, beta, resultJ,
+                                                                                            dFdSp, dFdcohesionp, dFdCp );
+
+        if ( error ){
+            error->print();
+            results << "test_computeSecondOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+                
+        error = micromorphicElastoPlasticity::computeSecondOrderDruckerPragerYieldEquation( S - delta, cohesion, C,
+                                                                                            frictionAngle, beta, resultJ,
+                                                                                            dFdSm, dFdcohesionm, dFdCm );
+
+        if ( error ){
+            error->print();
+            results << "test_computeSecondOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+        constantVector gradCol = ( dFdSp - dFdSm ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], d2FdS2[j][i] ) ){
+                results << "test_computeSecondOrderDruckerPragerYieldEquation (test 6) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test d2FdStressdElasticRCG
+    for ( unsigned int i = 0; i < C.size(); i++ ){
+        constantVector delta( C.size(), 0 );
+        delta[i] = eps * fabs( C[i] ) + eps;
+
+        variableVector dFdSp, dFdSm, dFdCp, dFdCm;
+        variableType dFdcohesionp, dFdcohesionm;
+
+        error = micromorphicElastoPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, C + delta,
+                                                                                            frictionAngle, beta, resultJ,
+                                                                                            dFdSp, dFdcohesionp, dFdCp );
+
+        if ( error ){
+            error->print();
+            results << "test_computeSecondOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+                
+        error = micromorphicElastoPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, C - delta,
+                                                                                            frictionAngle, beta, resultJ,
+                                                                                            dFdSm, dFdcohesionm, dFdCm );
+
+        if ( error ){
+            error->print();
+            results << "test_computeSecondOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+        constantVector gradCol = ( dFdSp - dFdSm ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], d2FdSdC[j][i] ) ){
+                results << "test_computeSecondOrderDruckerPragerYieldEquation (test 7) & False\n";
+                return 1;
+            }
+        }
     }
 
     results << "test_computeSecondOrderDruckerPragerYieldEquation & True\n";

@@ -139,14 +139,16 @@ namespace micromorphicElastoPlasticity{
          *     right Cauchy-Green deformation tensor.
          */
 
-        variableVector dNormDevdDevReferenceStress;
-        variableMatrix dDevStressdStress, dDevStressdElasticRCG;
-        variableType normDevStress, Bphi;
+        variableVector dNormDevdDevReferenceStress, dpdReferenceStress, elasticRightCauchyGreenInverse;
+        variableMatrix dDevStressdStress, dDevStressdElasticRCG, dInvElasticRCGdElasticRCG;
+        variableType normDevStress, BAngle;
 
         return computeSecondOrderDruckerPragerYieldEquation( referenceStressMeasure, cohesion, elasticRightCauchyGreen,
                                                              frictionAngle, beta, yieldValue, dFdStress, dFdc,
                                                              dFdElasticRCG, dNormDevdDevReferenceStress, 
-                                                             dDevStressdStress, dDevStressdElasticRCG, normDevStress, Bphi );
+                                                             dDevStressdStress, dDevStressdElasticRCG, normDevStress, BAngle,
+                                                             dInvElasticRCGdElasticRCG, dpdReferenceStress,
+                                                             elasticRightCauchyGreenInverse );
 
     }
 
@@ -157,7 +159,10 @@ namespace micromorphicElastoPlasticity{
                                                            variableVector &dFdElasticRCG, variableVector &dNormDevdDevReferenceStress, 
                                                            variableMatrix &dDevStressdReferenceStress,
                                                            variableMatrix &dDevStressdElasticRCG,
-                                                           variableType &normDevStress, parameterType &BAngle ){
+                                                           variableType &normDevStress, parameterType &BAngle,
+                                                           variableMatrix &dInverseElasticRCGdElasticRCG,
+                                                           variableVector &dpdReferenceStress,
+                                                           variableVector &elasticRightCauchyGreenInverse ){
         /*!
          * Compute the second-order Drucker Prager Yield equation
          *
@@ -192,7 +197,11 @@ namespace micromorphicElastoPlasticity{
          * :param variableMatrix &dDevStressdElasticRCG: The Jacobian of the deviatoric stress w.r.t. the elastic part of the right 
          *     cauchy green deformation tensor.
          * :param variableType &normDevStress: The norm of the deviatoric part of the stress.
-         * :param parameterType &BAngle: The BAngle parameter. 
+         * :param parameterType &BAngle: The BAngle parameter.
+         * :param variableMatrix &dInverseElasticRCGdElasticRCG: The Jacobian of the inverse of the elastic 
+         * right Cauchy-Green deformation tensor w.r.t. itself.
+         * :param variableVector &dpdReferenceStress: The Jacobian of the pressure w.r.t. the reference stress.
+         * :param variableVector &elasticRightCauchyGreenInverse: The inverse of the elastic right Cauchy-Green deformation tensor.
          */
 
         //Assume 3D
@@ -207,9 +216,9 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the pressure
         variableType pressure;
-        variableVector dpdStress, dpdElasticRCG;
+        variableVector dpdElasticRCG;
         errorOut error = micromorphicTools::computeReferenceSecondOrderStressPressure( referenceStressMeasure,
-                             elasticRightCauchyGreen, pressure, dpdStress, dpdElasticRCG );
+                             elasticRightCauchyGreen, pressure, dpdReferenceStress, dpdElasticRCG );
 
         if ( error ){
             errorOut result = new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
@@ -219,10 +228,10 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Invert the elastic Right Cauchy-Green deformation tensor
-        variableVector elasticRightCauchyGreenInverse = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
+        elasticRightCauchyGreenInverse = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
 
-        variableMatrix dElasticRCGInversedElasticRCG( elasticRightCauchyGreenInverse.size(),
-                           variableVector( elasticRightCauchyGreen.size(), 0 ) );
+        dInverseElasticRCGdElasticRCG = variableMatrix( elasticRightCauchyGreenInverse.size(),
+                                                        variableVector( elasticRightCauchyGreen.size(), 0 ) );
 
         //Compute the Jacobian of the inverse of the Right Cauchy-Green deformation tensor with 
         //respect to itself
@@ -230,7 +239,7 @@ namespace micromorphicElastoPlasticity{
             for ( unsigned int J = 0; J < dim; J++ ){
                 for ( unsigned int K = 0; K < dim; K++ ){
                     for ( unsigned int L = 0; L < dim; L++ ){
-                        dElasticRCGInversedElasticRCG[ dim * I + J ][ dim * K + L ] -= elasticRightCauchyGreenInverse[ dim * I + K ]
+                        dInverseElasticRCGdElasticRCG[ dim * I + J ][ dim * K + L ] -= elasticRightCauchyGreenInverse[ dim * I + K ]
                                                                                      * elasticRightCauchyGreenInverse[ dim * L + J ];
                     }
                 }
@@ -243,9 +252,9 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the Jacobian of the deviatoric stress
         constantMatrix EYE = vectorTools::eye< variableType >( dim * dim );
-        dDevStressdReferenceStress = EYE - vectorTools::dyadic( elasticRightCauchyGreenInverse, dpdStress );
+        dDevStressdReferenceStress = EYE - vectorTools::dyadic( elasticRightCauchyGreenInverse, dpdReferenceStress );
         dDevStressdElasticRCG = - ( vectorTools::dyadic( elasticRightCauchyGreenInverse, dpdElasticRCG )
-                                  + pressure * dElasticRCGInversedElasticRCG );
+                                  + pressure * dInverseElasticRCGdElasticRCG );
 
         //Compute the l2norm of the deviatoric stress
         normDevStress = vectorTools::l2norm( deviatoricReferenceStress );
@@ -258,7 +267,7 @@ namespace micromorphicElastoPlasticity{
         yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
         //Compute the jacobian
-        dFdStress = dNormDevdReferenceStress + BAngle * dpdStress;
+        dFdStress = dNormDevdReferenceStress + BAngle * dpdReferenceStress;
         dFdc = -AAngle;
         dFdElasticRCG = vectorTools::Tdot( dDevStressdElasticRCG, dNormDevdDevReferenceStress ) + BAngle * dpdElasticRCG;
 
@@ -270,7 +279,7 @@ namespace micromorphicElastoPlasticity{
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
                                                            variableVector &dFdElasticRCG, variableMatrix &d2FdStress2,
-                                                           variableMatrix d2FdStressdElasticRCG ){
+                                                           variableMatrix &d2FdStressdElasticRCG ){
         /*!
          * Compute the second-order Drucker Prager Yield equation
          *
@@ -312,15 +321,17 @@ namespace micromorphicElastoPlasticity{
         //Assume 3D
         unsigned int dim = 3;
 
-        variableVector dNormDevdDevReferenceStress;
-        variableMatrix dDevStressdStress, dDevStressdElasticRCG;
+        variableVector dNormDevdDevReferenceStress, dpdReferenceStress, invElasticRCG;
+        variableMatrix dDevStressdStress, dDevStressdElasticRCG, dInvElasticRCGdElasticRCG;
         variableType normDevStress;
         parameterType BAngle;
         errorOut error = computeSecondOrderDruckerPragerYieldEquation( referenceStressMeasure, cohesion,
                                                                        elasticRightCauchyGreen, frictionAngle, beta,
                                                                        yieldValue, dFdStress, dFdc, dFdElasticRCG,
                                                                        dNormDevdDevReferenceStress, dDevStressdStress,
-                                                                       dDevStressdElasticRCG, normDevStress, BAngle );
+                                                                       dDevStressdElasticRCG, normDevStress, BAngle,
+                                                                       dInvElasticRCGdElasticRCG, dpdReferenceStress,
+                                                                       invElasticRCG );
 
         if ( error ){
             errorOut result = new errorNode( "computeSecondOrderDruckerPragerYieldEquation (flow direction jacobian)",
@@ -332,8 +343,28 @@ namespace micromorphicElastoPlasticity{
         constantMatrix EYE = vectorTools::eye< constantType >( dim * dim );
         variableMatrix d2FdDeviatoricStress2 = ( EYE - vectorTools::dyadic( dNormDevdDevReferenceStress, dNormDevdDevReferenceStress ) ) / normDevStress;
 
-        d2FdStress2 = vectorTools::dot( d2FdDeviatoricStress2, dDevStressdStress );
-        d2FdStressdElasticRCG = vectorTools::dot( d2FdDeviatoricStress2, dDevStressdElasticRCG ) + BAngle * EYE / 3;
+        d2FdStress2 = vectorTools::Tdot( dDevStressdStress, vectorTools::dot( d2FdDeviatoricStress2, dDevStressdStress ) );
+
+        //Assemble the Jacobian of the flow direction w.r.t. the Elastic Right-Cauchy Green deformation tensor
+        d2FdStressdElasticRCG = vectorTools::Tdot( dDevStressdStress, vectorTools::dot( d2FdDeviatoricStress2, dDevStressdElasticRCG ) ) + BAngle * EYE / 3;
+
+        for ( unsigned int I = 0; I < dim; I++ ){
+            for ( unsigned int J = 0; J < dim; J++ ){
+                for ( unsigned int K = 0; K < dim; K++ ){
+                    for ( unsigned int L = 0; L < dim; L++ ){
+                        for ( unsigned int A = 0; A < dim; A++ ){
+                            for ( unsigned int B = 0; B < dim; B++ ){
+                                d2FdStressdElasticRCG[ dim * I + J ][ dim * K + L ] -= dNormDevdDevReferenceStress[ dim * A + B ]
+                                                                                     * ( EYE[ dim * I + J ][ dim * K + L ]
+                                                                                     *   invElasticRCG[ dim * A + B ] / 3 
+                                                                                     +   dpdReferenceStress[ dim * I + J ]
+                                                                                     *   dInvElasticRCGdElasticRCG[ dim * A + B ][ dim * K + L ] );
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         return NULL;
     }
