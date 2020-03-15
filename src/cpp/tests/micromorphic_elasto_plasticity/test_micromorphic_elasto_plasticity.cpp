@@ -335,6 +335,26 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
         results << "test_computeHigherOrderDruckerPragerYieldEquation (test 2) & False\n";
         return 1;
     }
+
+    variableVector resultJ2;
+    variableMatrix dFdStressJ2, dFdcJ2, dFdRCGJ2;
+    variableMatrix d2FdStress2J2, d2FdStressdRCGJ2;
+
+    error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, C,
+                                                                                        frictionAngle, beta, resultJ2,
+                                                                                        dFdStressJ2, dFdcJ2, dFdRCGJ2,
+                                                                                        d2FdStress2J2, d2FdStressdRCGJ2 );
+
+    if ( error ){
+        error->print();
+        results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultJ2, answer ) ){
+        results << "test_computeHigherOrderDruckerPragerYieldEquation (test 3) & False\n";
+        return 1;
+    }
     
     //Test derivatives w.r.t stress
     constantType eps = 1e-6;
@@ -367,6 +387,13 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[j], dFdStress[j][i] ) ){
                 results << "test_computeHigherOrderDruckerPragerYieldEquation (test 4) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dFdStressJ2[j][i] ) ){
+                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 5) & False\n";
                 return 1;
             }
         }
@@ -405,6 +432,13 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
                 return 1;
             }
         }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dFdcJ2[j][i] ) ){
+                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 7) & False\n";
+                return 1;
+            }
+        }
     }
 
     //Test derivatives w.r.t. the right Cauchy-Green deformation tensor
@@ -437,6 +471,13 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[j], dFdRCG[j][i] ) ){
                 results << "test_computeHigherOrderDruckerPragerYieldEquation (test 8) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dFdRCG[j][i] ) ){
+                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 9) & False\n";
                 return 1;
             }
         }
