@@ -316,6 +316,134 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
         return 1;
     }
 
+    //Test the Jacobians
+
+    variableVector resultJ;
+    variableMatrix dFdStress, dFdc, dFdRCG;
+
+    error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, C,
+                                                                                        frictionAngle, beta, resultJ,
+                                                                                        dFdStress, dFdc, dFdRCG );
+
+    if ( error ){
+        error->print();
+        results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultJ, answer ) ){
+        results << "test_computeHigherOrderDruckerPragerYieldEquation (test 2) & False\n";
+        return 1;
+    }
+    
+    //Test derivatives w.r.t stress
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < M.size(); i++ ){
+        constantVector delta( M.size(), 0 );
+        delta[i] = eps * fabs( M[i] ) + eps;
+
+        variableVector resultP, resultM;
+
+        error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M + delta, cohesion, C,
+                                                                                            frictionAngle, beta, resultP );
+
+        if ( error ){
+            error->print();
+            results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M - delta, cohesion, C,
+                                                                                            frictionAngle, beta, resultM );
+
+        if ( error ){
+            error->print();
+            results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+        constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dFdStress[j][i] ) ){
+                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 4) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test derivatives w.r.t. the cohesion
+    for ( unsigned int i = 0; i < cohesion.size(); i++ ){
+        constantVector delta( cohesion.size(), 0 );
+        delta[i] = eps * fabs( cohesion[i] ) + eps;
+
+        variableVector resultP, resultM;
+
+        error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion + delta, C,
+                                                                                            frictionAngle, beta, resultP );
+
+        if ( error ){
+            error->print();
+            results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion - delta, C,
+                                                                                            frictionAngle, beta, resultM );
+
+        if ( error ){
+            error->print();
+            results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+        constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dFdc[j][i] ) ){
+                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 6) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test derivatives w.r.t. the right Cauchy-Green deformation tensor
+    for ( unsigned int i = 0; i < C.size(); i++ ){
+        constantVector delta( C.size(), 0 );
+        delta[i] = eps * fabs( C[i] ) + eps;
+
+        variableVector resultP, resultM;
+
+        error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, C + delta,
+                                                                                            frictionAngle, beta, resultP );
+
+        if ( error ){
+            error->print();
+            results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, C - delta,
+                                                                                            frictionAngle, beta, resultM );
+
+        if ( error ){
+            error->print();
+            results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+        constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dFdRCG[j][i] ) ){
+                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 8) & False\n";
+                return 1;
+            }
+        }
+    }
+
+
+
     results << "test_computeHigherOrderDruckerPragerYieldEquation & True\n";
     return 0;
 }

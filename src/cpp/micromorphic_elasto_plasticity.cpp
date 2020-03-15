@@ -57,10 +57,10 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the l2norm of the deviatoric stress
-        variableType normDev = vectorTools::l2norm( deviatoricReferenceStress );
+        variableType normDevStress = vectorTools::l2norm( deviatoricReferenceStress );
 
         //Evaluate the yield equation
-        yieldValue = normDev - ( AAngle * cohesion - BAngle * pressure );
+        yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
         return NULL;
     }
@@ -126,20 +126,20 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the l2norm of the deviatoric stress
-        variableType normDev = vectorTools::l2norm( deviatoricReferenceStress );
+        variableType normDevStress = vectorTools::l2norm( deviatoricReferenceStress );
 
         //Evaluate the yield equation
-        yieldValue = normDev - ( AAngle * cohesion - BAngle * pressure );
+        yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
         //Evaluate the jacobians
-        variableVector normDevStress = deviatoricReferenceStress / normDev;
+        variableVector devStressDirection = deviatoricReferenceStress / normDevStress;
 
-        dFdStress = vectorTools::Tdot( dDevStressdStress, normDevStress )
+        dFdStress = vectorTools::Tdot( dDevStressdStress, devStressDirection )
                   + BAngle * dPressuredStress;
 
         dFdc = - AAngle;
 
-        dFdElasticRCG = vectorTools::Tdot( dDevStressdRCG, normDevStress )
+        dFdElasticRCG = vectorTools::Tdot( dDevStressdRCG, devStressDirection )
                       + BAngle * dPressuredRCG;
 
         return NULL;
@@ -218,29 +218,29 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the l2norm of the deviatoric stress
-        variableType normDev = vectorTools::l2norm( deviatoricReferenceStress );
+        variableType normDevStress = vectorTools::l2norm( deviatoricReferenceStress );
 
         //Evaluate the yield equation
-        yieldValue = normDev - ( AAngle * cohesion - BAngle * pressure );
+        yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
         //Evaluate the jacobians
-        variableVector normDevStress = deviatoricReferenceStress / normDev;
+        variableVector devStressDirection = deviatoricReferenceStress / normDevStress;
 
-        dFdStress = vectorTools::Tdot( dDevStressdStress, normDevStress )
+        dFdStress = vectorTools::Tdot( dDevStressdStress, devStressDirection )
                   + BAngle * dPressuredStress;
 
         dFdc = - AAngle;
 
-        dFdElasticRCG = vectorTools::Tdot( dDevStressdRCG, normDevStress )
+        dFdElasticRCG = vectorTools::Tdot( dDevStressdRCG, devStressDirection )
                       + BAngle * dPressuredRCG;
 
         //Evaluate the second-order jacobians
         constantMatrix EYE = vectorTools::eye< constantType >( dim * dim );
-        variableMatrix dNormDevStressdDevStress = ( EYE - vectorTools::dyadic( deviatoricReferenceStress / normDev, deviatoricReferenceStress / normDev ) ) / normDev;
+        variableMatrix dDevStressDirectiondDevStress = ( EYE - vectorTools::dyadic( devStressDirection, devStressDirection ) ) / normDevStress;
 
-        d2FdStress2 = vectorTools::Tdot( dDevStressdStress, vectorTools::dot( dNormDevStressdDevStress, dDevStressdStress ) );
+        d2FdStress2 = vectorTools::Tdot( dDevStressdStress, vectorTools::dot( dDevStressDirectiondDevStress, dDevStressdStress ) );
 
-        d2FdStressdElasticRCG = vectorTools::Tdot( vectorTools::dot( dNormDevStressdDevStress, dDevStressdStress ), dDevStressdRCG )
+        d2FdStressdElasticRCG = vectorTools::Tdot( vectorTools::dot( dDevStressDirectiondDevStress, dDevStressdStress ), dDevStressdRCG )
                               + BAngle * d2PressuredStressdRCG;
 
         for ( unsigned int I = 0; I < dim; I++ ){
@@ -249,7 +249,7 @@ namespace micromorphicElastoPlasticity{
                     for ( unsigned int L = 0; L < dim; L++ ){
                         for ( unsigned int A = 0; A < dim; A++ ){
                             for ( unsigned int B = 0; B < dim; B++ ){
-                                d2FdStressdElasticRCG[ dim * I + J ][ dim * K + L ] += normDevStress[ dim * A + B ] * d2DevStressdStressdRCG[ dim * A + B ][ dim * dim * dim * I + dim * dim * J + dim * K + L ];
+                                d2FdStressdElasticRCG[ dim * I + J ][ dim * K + L ] += devStressDirection[ dim * A + B ] * d2DevStressdStressdRCG[ dim * A + B ][ dim * dim * dim * I + dim * dim * J + dim * K + L ];
                             }
                         }
                     }
@@ -311,19 +311,121 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the l2norm of the deviatoric stress
-        variableVector normDev( dim, 0 );
+        variableVector normDevStress( dim, 0 );
         for ( unsigned int K = 0; K < 3; K++ ){
             for ( unsigned int I = 0; I < 3; I++ ){
                 for ( unsigned int J = 0; J < 3; J++ ){
-                     normDev[ K ] += deviatoricReferenceStress[ dim * dim * I + dim * J + K ]
-                                   * deviatoricReferenceStress[ dim * dim * I + dim * J + K ];
+                     normDevStress[ K ] += deviatoricReferenceStress[ dim * dim * I + dim * J + K ]
+                                         * deviatoricReferenceStress[ dim * dim * I + dim * J + K ];
                 }
             }
-            normDev[ K ] = std::sqrt( normDev[ K ] );
+            normDevStress[ K ] = std::sqrt( normDevStress[ K ] );
         }
 
         //Evaluate the yield equation
-        yieldValue = normDev - ( AAngle * cohesion - BAngle * pressure );
+        yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
+
+        return NULL;
+    }
+
+    errorOut computeHigherOrderDruckerPragerYieldEquation( const variableVector &referenceHigherOrderStress, 
+                                                           const variableVector &cohesion,
+                                                           const variableVector &elasticRightCauchyGreen,
+                                                           const parameterType &frictionAngle, const parameterType &beta,
+                                                           variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
+                                                           variableMatrix &dFdElasticRCG ){
+        /*!
+         * Compute the higher-order Drucker Prager Yield equation
+         *
+         * F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
+         * 
+         * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }
+         * where the K's aren't summed.
+         *  dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
+         *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} M_{IJK}
+         *  A^{angle} = \beta^{angle} \cos( frictionAngle )
+         *  B^{angle} = \beta^{angle} \sin( frictionAngle )
+         *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }
+         *
+         *  Also computes the Jacobians
+         *
+         * :param const variableVector &referenceHigherOrderStress: The higher-order stress in the reference configuration
+         * :param const variableVector &cohesion: The cohesion measure.
+         * :param const variableVector &rightCauchyGreen: The Right Cauchy-Green deformation tensor.
+         * :param const parameterType &frictionAngle: The friction angle
+         * :param const parameterType &beta: The beta parameter
+         * :param variableVector &yieldValue: The yield value.
+         * :param variableMatrix &dFdStress: The Jacobian of the yield function w.r.t. the reference higher order stress.
+         * :param variableVector &dFdc: The Jacobian of the yield function w.r.t. the cohesion.
+         * :param variableVector &dFdElasticRCG: The Jacobian of the yield function w.r.t. the elastic right Cauchy-Green
+         *     deformation tensor.
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        //Compute the parameters
+        parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
+
+        parameterType AAngle = betaAngle * std::cos( frictionAngle );
+
+        parameterType BAngle = betaAngle * std::sin( frictionAngle );
+
+        //Compute the decomposition of the stress
+        variableVector pressure;
+        variableVector deviatoricReferenceStress;
+
+        variableMatrix dDevStressdStress, dDevStressdRCG;
+        variableMatrix dPressuredStress, dPressuredRCG;
+        
+        errorOut error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
+                             elasticRightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
+                             dDevStressdRCG, dPressuredStress, dPressuredRCG );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeHigherOrderDruckerPragerYieldEquation (jacobian)",
+                                             "Error in computation of higher-order stress decomposition" );
+            result->addNext( error );
+            return result;
+        }
+
+        //Compute the l2norm of the deviatoric stress
+        variableVector normDevStress( dim, 0 );
+        for ( unsigned int K = 0; K < 3; K++ ){
+            for ( unsigned int I = 0; I < 3; I++ ){
+                for ( unsigned int J = 0; J < 3; J++ ){
+                     normDevStress[ K ] += deviatoricReferenceStress[ dim * dim * I + dim * J + K ]
+                                         * deviatoricReferenceStress[ dim * dim * I + dim * J + K ];
+                }
+            }
+            normDevStress[ K ] = std::sqrt( normDevStress[ K ] );
+        }
+
+        //Evaluate the yield equation
+        yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
+
+        //Construct the Jacobians
+        constantVector eye( dim * dim );
+        vectorTools::eye( eye );
+
+        variableMatrix dNormDevStressdDevStress( dim, variableVector( dim * dim * dim, 0 ) );
+        for ( unsigned int K = 0; K < 3; K++ ){
+            for ( unsigned int L = 0; L < 3; L++ ){
+                for ( unsigned int M = 0; M < 3; M++ ){
+                    for ( unsigned int N = 0; N < 3; N++ ){
+                        dNormDevStressdDevStress[ K ][ dim * dim * L + dim * M + N ] = deviatoricReferenceStress[ dim * dim * L + dim * M + K ]  * eye[ dim * K + N ] / normDevStress[ K ];
+                    }
+                }
+            }
+        }
+
+        dFdStress = vectorTools::dot( dNormDevStressdDevStress, dDevStressdStress )
+                  + BAngle * dPressuredStress;
+
+        dFdc = -AAngle * vectorTools::eye< constantType >( cohesion.size() );
+
+        dFdElasticRCG = vectorTools::dot( dNormDevStressdDevStress, dDevStressdRCG )
+                      + BAngle * dPressuredRCG;
 
         return NULL;
     }
