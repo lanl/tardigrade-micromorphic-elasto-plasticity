@@ -259,4 +259,72 @@ namespace micromorphicElastoPlasticity{
 
         return NULL;
     }
+
+    errorOut computeHigherOrderDruckerPragerYieldEquation( const variableVector &referenceHigherOrderStress, 
+                                                           const variableVector &cohesion,
+                                                           const variableVector &elasticRightCauchyGreen,
+                                                           const parameterType &frictionAngle, const parameterType &beta,
+                                                           variableVector &yieldValue ){
+        /*!
+         * Compute the higher-order Drucker Prager Yield equation
+         *
+         * F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
+         * 
+         * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }
+         * where the K's aren't summed.
+         *  dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
+         *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} M_{IJK}
+         *  A^{angle} = \beta^{angle} \cos( frictionAngle )
+         *  B^{angle} = \beta^{angle} \sin( frictionAngle )
+         *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }
+         *
+         * :param const variableVector &referenceHigherOrderStress: The higher-order stress in the reference configuration
+         * :param const variableVector &cohesion: The cohesion measure.
+         * :param const variableVector &rightCauchyGreen: The Right Cauchy-Green deformation tensor.
+         * :param const parameterType &frictionAngle: The friction angle
+         * :param const parameterType &beta: The beta parameter
+         * :param variableVector &yieldValue: The yield value.
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        //Compute the parameters
+        parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
+
+        parameterType AAngle = betaAngle * std::cos( frictionAngle );
+
+        parameterType BAngle = betaAngle * std::sin( frictionAngle );
+
+        //Compute the decomposition of the stress
+        variableVector pressure;
+        variableVector deviatoricReferenceStress;
+        
+        errorOut error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
+                             elasticRightCauchyGreen, deviatoricReferenceStress, pressure );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeHigherOrderDruckerPragerYieldEquation",
+                                             "Error in computation of higher-order stress decomposition" );
+            result->addNext( error );
+            return result;
+        }
+
+        //Compute the l2norm of the deviatoric stress
+        variableVector normDev( dim, 0 );
+        for ( unsigned int K = 0; K < 3; K++ ){
+            for ( unsigned int I = 0; I < 3; I++ ){
+                for ( unsigned int J = 0; J < 3; J++ ){
+                     normDev[ K ] += deviatoricReferenceStress[ dim * dim * I + dim * J + K ]
+                                   * deviatoricReferenceStress[ dim * dim * I + dim * J + K ];
+                }
+            }
+            normDev[ K ] = std::sqrt( normDev[ K ] );
+        }
+
+        //Evaluate the yield equation
+        yieldValue = normDev - ( AAngle * cohesion - BAngle * pressure );
+
+        return NULL;
+    }
 }

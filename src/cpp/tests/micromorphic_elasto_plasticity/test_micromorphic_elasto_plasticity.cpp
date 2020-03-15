@@ -277,6 +277,49 @@ int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
     return 0;
 }
 
+int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
+    /*!
+     * Test the computation of the higher order stress Drucker-Prager yield equation.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    variableVector M = { 0.80732114,  0.79202055,  0.17990022,  0.97454675,  0.703207  ,
+                        -0.58236697,  0.53324571, -0.93438873, -0.40650796,  0.14071918,
+                         0.66933708, -0.67854069, -0.30317772, -0.93821882,  0.97270622,
+                         0.00295302, -0.12441126,  0.30539971, -0.0580227 ,  0.89696105,
+                         0.17567709, -0.9592962 ,  0.63535407,  0.95437804, -0.64531877,
+                         0.69978907,  0.81327586 };
+
+    variableVector C = { 0.03468919, -0.31275742, -0.57541261,
+                        -0.27865312, -0.45844965,  0.52325004,
+                        -0.0439162 , -0.80201065, -0.44921044 };
+
+    variableVector cohesion = { 0.51, 0.71, .14 };
+    parameterType frictionAngle = 0.46;
+    parameterType beta = 0.34;
+
+    constantVector answer = { 3.90579607, 0.86300970, 4.63923709 };
+    variableVector result;
+
+    errorOut error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, C,
+                                                                                                 frictionAngle, beta, result );
+
+    if ( error ){
+        error->print();
+        results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( result, answer ) ){
+        results << "test_computeHigherOrderDruckerPragerYieldEquation (test 1) & False\n";
+        return 1;
+    }
+
+    results << "test_computeHigherOrderDruckerPragerYieldEquation & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -291,6 +334,7 @@ int main(){
 
     //Run the tests
     test_computeSecondOrderDruckerPragerYieldEquation( results );
+    test_computeHigherOrderDruckerPragerYieldEquation( results );
 
     //Close the results file
     results.close();

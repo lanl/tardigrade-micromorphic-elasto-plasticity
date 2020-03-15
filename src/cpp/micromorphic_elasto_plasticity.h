@@ -50,7 +50,11 @@ namespace micromorphicElastoPlasticity{
                                                            variableVector &dFdElasticRCG, variableMatrix &d2FdStress2,
                                                            variableMatrix &d2FdStressdElasticRCG );
 
-
+    errorOut computeHigherOrderDruckerPragerYieldEquation( const variableVector &referenceHigherOrderStress,
+                                                           const variableVector &cohesion,
+                                                           const variableVector &elasticRightCauchyGreen,
+                                                           const parameterType &frictionAngle, const parameterType &beta,
+                                                           variableVector &yieldValue );
 
 }
 
