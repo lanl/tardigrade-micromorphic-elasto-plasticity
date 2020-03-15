@@ -83,15 +83,12 @@ int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
     }
 
     //Test the Jacobian
-    variableType resultJ, dFdcohesion;
+    variableType resultJ, dFdCohesion;
     variableVector dFdS, dFdC;
-    variableMatrix d2FdStress2;
-    variableMatrix d2FdStressdElasticRCG;
-    variableMatrix d2FdS2, d2FdSdC;
 
-    error = micromorphicElastoPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, C, 
+    error = micromorphicElastoPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, C,
                                                                                         frictionAngle, beta, resultJ,
-                                                                                        dFdS, dFdcohesion, dFdC, d2FdS2, d2FdSdC );
+                                                                                        dFdS, dFdCohesion, dFdC );
 
     if ( error ){
         error->print();
@@ -101,6 +98,30 @@ int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
 
     if ( !vectorTools::fuzzyEquals( resultJ, answer ) ){
         results << "test_computeSecondOrderDruckerPragerYieldEquation (test 2) & False\n";
+        return 1;
+    }
+
+
+    //Test the Jacobian
+    variableType resultJ2, dFdcohesionJ2;
+    variableVector dFdSJ2, dFdCJ2;
+    variableMatrix d2FdStress2J2;
+    variableMatrix d2FdStressdElasticRCGJ2;
+    variableMatrix d2FdS2J2, d2FdSdCJ2;
+
+    error = micromorphicElastoPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, C, 
+                                                                                        frictionAngle, beta, resultJ2,
+                                                                                        dFdSJ2, dFdcohesionJ2, dFdCJ2, d2FdS2J2, 
+                                                                                        d2FdSdCJ2);
+
+    if ( error ){
+        error->print();
+        results << "test_computeSecondOrderDruckerPragerYieldEquation & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultJ2, answer ) ){
+        results << "test_computeSecondOrderDruckerPragerYieldEquation (test 3) & False\n";
         return 1;
     }
 
@@ -122,7 +143,12 @@ int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
         constantType gradCol = ( resultJ - result ) / delta[i];
 
         if ( !vectorTools::fuzzyEquals( gradCol, dFdS[i] ) ){
-            results << "test_computeSecondOrderDruckerPragerYieldEquation (test 3) & False\n";
+            results << "test_computeSecondOrderDruckerPragerYieldEquation (test 4) & False\n";
+            return 1;
+        }
+
+        if ( !vectorTools::fuzzyEquals( gradCol, dFdSJ2[i] ) ){
+            results << "test_computeSecondOrderDruckerPragerYieldEquation (test 5) & False\n";
             return 1;
         }
     }
@@ -144,7 +170,12 @@ int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
         constantType gradCol = ( resultJ - result ) / delta[i];
 
         if ( !vectorTools::fuzzyEquals( gradCol, dFdC[i], 1e-4 ) ){
-            results << "test_computeSecondOrderDruckerPragerYieldEquation (test 4) & False\n";
+            results << "test_computeSecondOrderDruckerPragerYieldEquation (test 6) & False\n";
+            return 1;
+        }
+
+        if ( !vectorTools::fuzzyEquals( gradCol, dFdCJ2[i], 1e-4 ) ){
+            results << "test_computeSecondOrderDruckerPragerYieldEquation (test 7) & False\n";
             return 1;
         }
     }
@@ -161,8 +192,8 @@ int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( ( resultJ - result ) / deltas, dFdcohesion ) ){
-        results << "test_computeSecondOrderDruckerPragerYieldEquation (test 5) & False\n";
+    if ( !vectorTools::fuzzyEquals( ( resultJ - result ) / deltas, dFdcohesionJ2 ) ){
+        results << "test_computeSecondOrderDruckerPragerYieldEquation (test 8) & False\n";
         return 1;
     }
 
@@ -197,8 +228,8 @@ int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
         constantVector gradCol = ( dFdSp - dFdSm ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[j], d2FdS2[j][i] ) ){
-                results << "test_computeSecondOrderDruckerPragerYieldEquation (test 6) & False\n";
+            if ( !vectorTools::fuzzyEquals( gradCol[j], d2FdS2J2[j][i] ) ){
+                results << "test_computeSecondOrderDruckerPragerYieldEquation (test 9) & False\n";
                 return 1;
             }
         }
@@ -235,8 +266,8 @@ int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
         constantVector gradCol = ( dFdSp - dFdSm ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[j], d2FdSdC[j][i] ) ){
-                results << "test_computeSecondOrderDruckerPragerYieldEquation (test 7) & False\n";
+            if ( !vectorTools::fuzzyEquals( gradCol[j], d2FdSdCJ2[j][i] ) ){
+                results << "test_computeSecondOrderDruckerPragerYieldEquation (test 10) & False\n";
                 return 1;
             }
         }

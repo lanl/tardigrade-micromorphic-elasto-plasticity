@@ -40,11 +40,6 @@ namespace micromorphicElastoPlasticity{
     errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
                                                            const variableVector &elasticRightCauchyGreen,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableType &yieldValue, variableVector &elasticRightCauchyGreenInverse );
-
-    errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
-                                                           const variableVector &elasticRightCauchyGreen,
-                                                           const parameterType &frictionAngle, const parameterType &beta,
                                                            variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
                                                            variableVector &dFdElasticRCG );
 
@@ -52,19 +47,8 @@ namespace micromorphicElastoPlasticity{
                                                            const variableVector &elasticRightCauchyGreen,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
-                                                           variableVector &dFdElasticRCG, variableVector &dNormDevdDevReferenceStress,
-                                                           variableMatrix &dDevStressdReferenceStress,
-                                                           variableMatrix &dDevStressdElasticRCG,
-                                                           variableType &normDevStress, parameterType &BAngle,
-                                                           variableMatrix &dInverseElasticRCGdElasticRCG,
-                                                           variableVector &dpdReferenceStress,
-                                                           variableVector &elasticRightCauchyGreenInverse );
-
-    errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
-                                                           const variableVector &elasticRightCauchyGreen,
-                                                           const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
-                                                           variableVector &dFdElasticRCG, variableMatrix &d2FdStress2, variableMatrix &d2FdStressdElasticRCG );
+                                                           variableVector &dFdElasticRCG, variableMatrix &d2FdStress2,
+                                                           variableMatrix &d2FdStressdElasticRCG );
 
 
 
