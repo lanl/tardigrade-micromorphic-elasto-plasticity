@@ -397,6 +397,53 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
                 return 1;
             }
         }
+
+        variableMatrix dFdStressP, dFdcP, dFdRCGP;
+        variableMatrix dFdStressM, dFdcM, dFdRCGM;
+
+        error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M + delta, cohesion, C,
+                                                                                            frictionAngle, beta, resultP,
+                                                                                            dFdStressP, dFdcP, dFdRCGP );
+
+        if ( error ){
+            error->print();
+            results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M - delta, cohesion, C,
+                                                                                            frictionAngle, beta, resultM,
+                                                                                            dFdStressM, dFdcM, dFdRCGM );
+
+        if ( error ){
+            error->print();
+            results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+
+        constantMatrix gradMat = ( dFdStressP - dFdStressM ) / ( 2 * delta[i] );
+
+        unsigned int n, o, p;
+
+        for ( unsigned int j = 0; j < 3; j++ ){
+            for ( unsigned int k = 0; k < 3; k++ ){
+                for ( unsigned int l = 0; l < 3; l++ ){
+                    for ( unsigned int m = 0; m < 3; m++ ){
+                        n = ( int )( i / 9 );
+                        o = ( int )( (i - 9 * n ) / 3 );
+                        p = ( i - 9 * n - 3 * o ) % 3;
+                        if ( !vectorTools::fuzzyEquals( gradMat[ j ][ 9 * k + 3 * l + m ],
+                                                        d2FdStress2J2[ j ][ 243 * k + 81 * l + 27 * m + 9 * n + 3 * o + p ] ) ){
+                            std::cout << gradMat[ j ][ 9 * k + 3 * l + m ] << "\n";
+                            std::cout << d2FdStress2J2[ j ][ 243 * k + 81 * l + 27 * m + 9 * n + 3 * o + p ] << "\n";
+                            results << "test_computeHigherOrderDruckerPragerYieldEquation (test 6) & False\n";
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     //Test derivatives w.r.t. the cohesion
@@ -428,14 +475,14 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[j], dFdc[j][i] ) ){
-                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 6) & False\n";
+                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 7) & False\n";
                 return 1;
             }
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[j], dFdcJ2[j][i] ) ){
-                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 7) & False\n";
+                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 8) & False\n";
                 return 1;
             }
         }
@@ -470,14 +517,14 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[j], dFdRCG[j][i] ) ){
-                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 8) & False\n";
+                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 9) & False\n";
                 return 1;
             }
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[j], dFdRCG[j][i] ) ){
-                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 9) & False\n";
+                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 10) & False\n";
                 return 1;
             }
         }

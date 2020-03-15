@@ -286,9 +286,6 @@ namespace micromorphicElastoPlasticity{
          * :param variableVector &yieldValue: The yield value.
          */
 
-        //Assume 3D
-        unsigned int dim = 3;
-
         //Compute the parameters
         parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
 
@@ -311,15 +308,14 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the l2norm of the deviatoric stress
-        variableVector normDevStress( dim, 0 );
-        for ( unsigned int K = 0; K < 3; K++ ){
-            for ( unsigned int I = 0; I < 3; I++ ){
-                for ( unsigned int J = 0; J < 3; J++ ){
-                     normDevStress[ K ] += deviatoricReferenceStress[ dim * dim * I + dim * J + K ]
-                                         * deviatoricReferenceStress[ dim * dim * I + dim * J + K ];
-                }
-            }
-            normDevStress[ K ] = std::sqrt( normDevStress[ K ] );
+        variableVector normDevStress;
+        error = micromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeHigherOrderDruckerPragerYieldEquation",
+                                             "Error in computation of the deviatoric higher-order stress norm" );
+            result->addNext( error );
+            return result;
         }
 
         //Evaluate the yield equation
@@ -361,9 +357,6 @@ namespace micromorphicElastoPlasticity{
          *     deformation tensor.
          */
 
-        //Assume 3D
-        unsigned int dim = 3;
-
         //Compute the parameters
         parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
 
@@ -390,35 +383,21 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the l2norm of the deviatoric stress
-        variableVector normDevStress( dim, 0 );
-        for ( unsigned int K = 0; K < 3; K++ ){
-            for ( unsigned int I = 0; I < 3; I++ ){
-                for ( unsigned int J = 0; J < 3; J++ ){
-                     normDevStress[ K ] += deviatoricReferenceStress[ dim * dim * I + dim * J + K ]
-                                         * deviatoricReferenceStress[ dim * dim * I + dim * J + K ];
-                }
-            }
-            normDevStress[ K ] = std::sqrt( normDevStress[ K ] );
+        variableVector normDevStress;
+        variableMatrix dNormDevStressdDevStress;
+        error = micromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeHigherOrderDruckerPragerYieldEquation (jacobian)",
+                                             "Error in computation of the deviatoric higher-order stress norm" );
+            result->addNext( error );
+            return result;
         }
 
         //Evaluate the yield equation
         yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
         //Construct the Jacobians
-        constantVector eye( dim * dim );
-        vectorTools::eye( eye );
-
-        variableMatrix dNormDevStressdDevStress( dim, variableVector( dim * dim * dim, 0 ) );
-        for ( unsigned int K = 0; K < 3; K++ ){
-            for ( unsigned int L = 0; L < 3; L++ ){
-                for ( unsigned int M = 0; M < 3; M++ ){
-                    for ( unsigned int N = 0; N < 3; N++ ){
-                        dNormDevStressdDevStress[ K ][ dim * dim * L + dim * M + N ] = deviatoricReferenceStress[ dim * dim * L + dim * M + K ]  * eye[ dim * K + N ] / normDevStress[ K ];
-                    }
-                }
-            }
-        }
-
         dFdStress = vectorTools::dot( dNormDevStressdDevStress, dDevStressdStress )
                   + BAngle * dPressuredStress;
 
@@ -499,35 +478,24 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the l2norm of the deviatoric stress
-        variableVector normDevStress( dim, 0 );
-        for ( unsigned int K = 0; K < 3; K++ ){
-            for ( unsigned int I = 0; I < 3; I++ ){
-                for ( unsigned int J = 0; J < 3; J++ ){
-                     normDevStress[ K ] += deviatoricReferenceStress[ dim * dim * I + dim * J + K ]
-                                         * deviatoricReferenceStress[ dim * dim * I + dim * J + K ];
-                }
-            }
-            normDevStress[ K ] = std::sqrt( normDevStress[ K ] );
+        variableVector normDevStress;
+        variableMatrix dNormDevStressdDevStress;
+        variableMatrix d2NormDevStressdDevStress2;
+        error = micromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress,
+                                                                 dNormDevStressdDevStress,
+                                                                 d2NormDevStressdDevStress2 );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeHigherOrderDruckerPragerYieldEquation (second order jacobian)",
+                                             "Error in computation of the deviatoric higher-order stress norm" );
+            result->addNext( error );
+            return result;
         }
 
         //Evaluate the yield equation
         yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
         //Construct the Jacobians
-        constantVector eye( dim * dim );
-        vectorTools::eye( eye );
-
-        variableMatrix dNormDevStressdDevStress( dim, variableVector( dim * dim * dim, 0 ) );
-        for ( unsigned int K = 0; K < 3; K++ ){
-            for ( unsigned int L = 0; L < 3; L++ ){
-                for ( unsigned int M = 0; M < 3; M++ ){
-                    for ( unsigned int N = 0; N < 3; N++ ){
-                        dNormDevStressdDevStress[ K ][ dim * dim * L + dim * M + N ] = deviatoricReferenceStress[ dim * dim * L + dim * M + K ]  * eye[ dim * K + N ] / normDevStress[ K ];
-                    }
-                }
-            }
-        }
-
         dFdStress = vectorTools::dot( dNormDevStressdDevStress, dDevStressdStress )
                   + BAngle * dPressuredStress;
 
@@ -537,27 +505,6 @@ namespace micromorphicElastoPlasticity{
                       + BAngle * dPressuredRCG;
 
         //Construct the second-order jacobians
-        
-        variableMatrix d2NormDevStressdDevStress2( dim, variableVector( dim * dim * dim * dim * dim * dim, 0 ) );
-        for ( unsigned int K = 0; K < 3; K++ ){
-            for ( unsigned int L = 0; L < 3; L++ ){
-                for ( unsigned int M = 0; M < 3; M++ ){
-                    for ( unsigned int N = 0; N < 3; N++ ){
-                        for ( unsigned int O = 0; O < 3; O++ ){
-                            for ( unsigned int P = 0; P < 3; P++ ){
-                                for ( unsigned int Q = 0; Q < 3; Q++ ){
-                                    d2NormDevStressdDevStress2[ K ][ dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ] = ( eye[ dim * L + O ] * eye[ dim * M + P ] * eye[ dim * K + Q ] * eye[ dim * K + N ]
-                                        - deviatoricReferenceStress[ dim * dim * L + dim * M + K ] * eye[ dim * K + N ]
-                                        * deviatoricReferenceStress[ dim * dim * O + dim * P + K ] * eye[ dim * K + Q ] / ( normDevStress[ K ] * normDevStress[ K ] ) )
-                                        / normDevStress[ K ];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         d2FdStress2 = variableMatrix( dim, variableVector( dim * dim * dim * dim * dim * dim, 0 ) );
 
         for ( unsigned int K = 0; K < 3; K++ ){
@@ -569,18 +516,18 @@ namespace micromorphicElastoPlasticity{
                                 for ( unsigned int Q = 0; Q < 3; Q++ ){
                                     for ( unsigned int A = 0; A < 3; A++ ){
                                         for ( unsigned int B = 0; B < 3; B++ ){
-                                           for ( unsigned int C = 0; C < 3; C++ ){
-                                              for ( unsigned int D = 0; D < 3; D++ ){
-                                                 for ( unsigned int E = 0; E < 3; E++ ){
-                                                    for ( unsigned int F = 0; F < 3; F++ ){
-                                                        d2FdStress2[ K ][ dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ]
-                                                            += d2NormDevStressdDevStress2[ K ][ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * D + dim * E + F ]
-                                                             * dDevStressdStress[ dim * dim * A + dim * B + C ][ dim * dim * L * dim * M + N ]
-                                                             * dDevStressdStress[ dim * dim * D + dim * E + F ][ dim * dim * O + dim * P + Q ];
+                                            for ( unsigned int C = 0; C < 3; C++ ){
+                                                for ( unsigned int D = 0; D < 3; D++ ){
+                                                    for ( unsigned int E = 0; E < 3; E++ ){
+                                                        for ( unsigned int F = 0; F < 3; F++ ){
+                                                            d2FdStress2[ K ][ dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ]
+                                                                += d2NormDevStressdDevStress2[ K ][ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * D + dim * E + F ]
+                                                                 * dDevStressdStress[ dim * dim * A + dim * B + C ][ dim * dim * L + dim * M + N ]
+                                                                 * dDevStressdStress[ dim * dim * D + dim * E + F ][ dim * dim * O + dim * P + Q ];
+                                                        }
                                                     }
-                                                 }
-                                              }
-                                           }
+                                                }
+                                            }
                                         }
                                     }
                                 }
