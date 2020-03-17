@@ -506,6 +506,8 @@ namespace micromorphicElastoPlasticity{
 
         //Construct the second-order jacobians
         d2FdStress2 = variableMatrix( dim, variableVector( dim * dim * dim * dim * dim * dim, 0 ) );
+        d2FdStressdElasticRCG = vectorTools::dot( dNormDevStressdDevStress, d2DevStressdStressdRCG )
+                              + BAngle * d2PressuredStressdRCG;
 
         for ( unsigned int K = 0; K < 3; K++ ){
             for ( unsigned int L = 0; L < 3; L++ ){
@@ -519,6 +521,10 @@ namespace micromorphicElastoPlasticity{
                                             for ( unsigned int C = 0; C < 3; C++ ){
                                                 for ( unsigned int D = 0; D < 3; D++ ){
                                                     for ( unsigned int E = 0; E < 3; E++ ){
+                                                        d2FdStressdElasticRCG[ K ][ dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * O + P ]
+                                                            += d2NormDevStressdDevStress2[ K ][ dim * dim * dim * dim * dim * Q + dim * dim * dim * dim * A + dim * dim * dim * B + dim * dim * C + dim * D + E ]
+                                                             * dDevStressdStress[ dim * dim * Q + dim * A + B ][ dim * dim * L + dim * M + N ]
+                                                             * dDevStressdRCG[ dim * dim * C + dim * D + E ][ dim * O + P ];
                                                         for ( unsigned int F = 0; F < 3; F++ ){
                                                             d2FdStress2[ K ][ dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ]
                                                                 += d2NormDevStressdDevStress2[ K ][ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * D + dim * E + F ]

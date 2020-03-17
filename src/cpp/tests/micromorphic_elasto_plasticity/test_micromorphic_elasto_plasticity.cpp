@@ -528,6 +528,52 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
                 return 1;
             }
         }
+
+        variableMatrix dFdStressP, dFdcP, dFdRCGP;
+        variableMatrix dFdStressM, dFdcM, dFdRCGM;
+
+        error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, C + delta,
+                                                                                            frictionAngle, beta, resultP,
+                                                                                            dFdStressP, dFdcP, dFdRCGP );
+
+        if ( error ){
+            error->print();
+            results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, C - delta,
+                                                                                            frictionAngle, beta, resultM,
+                                                                                            dFdStressM, dFdcM, dFdRCGM );
+
+        if ( error ){
+            error->print();
+            results << "test_computeHigherOrderDruckerPragerYieldEquation & False\n";
+            return 1;
+        }
+
+
+        constantMatrix gradMat = ( dFdStressP - dFdStressM ) / ( 2 * delta[i] );
+
+        unsigned int n, o;
+
+        for ( unsigned int j = 0; j < 3; j++ ){
+            for ( unsigned int k = 0; k < 3; k++ ){
+                for ( unsigned int l = 0; l < 3; l++ ){
+                    for ( unsigned int m = 0; m < 3; m++ ){
+                        n = ( int )( i / 3 );
+                        o = ( i % 3 );
+                        if ( !vectorTools::fuzzyEquals( gradMat[ j ][ 9 * k + 3 * l + m ],
+                                                        d2FdStressdRCGJ2[ j ][ 81 * k + 27 * l + 9 * m + 3 * n + o ] ) ){
+                            std::cout << gradMat[ j ][ 9 * k + 3 * l + m ] << "\n";
+                            std::cout << d2FdStress2J2[ j ][ 81 * k + 27 * l + 9 * m + 3 * n + o ] << "\n";
+                            results << "test_computeHigherOrderDruckerPragerYieldEquation (test 11) & False\n";
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
     }
 
 

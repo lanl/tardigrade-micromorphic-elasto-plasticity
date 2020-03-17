@@ -70,8 +70,6 @@ namespace micromorphicElastoPlasticity{
                                                            variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
                                                            variableMatrix &dFdElasticRCG, variableMatrix &d2FdStress2,
                                                            variableMatrix &d2FdStressdElasticRCG );
-
-
 }
 
 #endif
