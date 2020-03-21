@@ -70,6 +70,12 @@ namespace micromorphicElastoPlasticity{
                                                            variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
                                                            variableMatrix &dFdElasticRCG, variableMatrix &d2FdStress2,
                                                            variableMatrix &d2FdStressdElasticRCG );
+
+    errorOut computeElasticPartOfDeformation( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                              const variableVector &gradientMicroDeformation,
+                                              const variableVector &plasticDeformationGradient,
+                                              const variableVector &plasticMicroDeformation,
+                                              const variableVector &plasticGradientMicroDeformation );
 }
 
 #endif
