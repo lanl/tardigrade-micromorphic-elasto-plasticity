@@ -705,6 +705,8 @@ namespace micromorphicElastoPlasticity{
          *
          * \frac{ \partial F_{i\bar{I}}^e }{ \partial F_{nN} } = \delta_{in} F_{N \bar{I} }^{p, -1}
          * \frac{ \partial F_{i\bar{I}}^e }{ \partial F_{\bar{N} N}^p } = -F_{iI} F_{I \bar{N}}^{p, -1} F_{N \bar{I} }^{p, -1}
+         * \frac{ \partial \chi_{i\bar{I}}^e }{ \partial \chi_{nN} } = \delta_{in} \chi_{N \bar{I} }^{p, -1}
+         * \frac{ \partial \chi_{i\bar{I}}^e }{ \partial \chi_{\bar{N} N}^p } = -\chi_{iI} \chi_{I \bar{N}}^{p, -1} \chi_{N \bar{I} }^{p, -1}
          *
          * :param const variableVector &deformationGradient: The macroscale deformation gradient
          * :param const variableVector &microDeformation: The micro-deformation tensor $\chi$
@@ -724,6 +726,10 @@ namespace micromorphicElastoPlasticity{
          *     gradient.
          * :param variableMatrix &dElasticFdPlasticF: The Jacobian of the elastic part of the deformation gradient w.r.t. the 
          *     plastic part of the deformation gradient.
+         * :param variableMatrix &dElasticChidChi: The Jacobian of the elastic part of the micro-deformation w.r.t. the
+         *     micro deformation.
+         * :param variableMatrix &dElasticChidPlasticChi: The Jacobian of the elastic part of the micro-deformation w.r.t.
+         *     the plastic part of the micro deformation.
          */
 
         //Assume 3D
@@ -756,11 +762,15 @@ namespace micromorphicElastoPlasticity{
                 for ( unsigned int n = 0; n < dim; n++ ){
                     for ( unsigned int N = 0; N < dim; N++ ){
                         dElasticFdF[ dim * i + Ib ][ dim * n + N ] = eye[ dim * i + n ] * inversePlasticDeformationGradient[ dim * N + Ib ];
+                        dElasticChidChi[ dim * i + Ib ][ dim * n + N ] = eye[ dim * i + n ] * inversePlasticMicroDeformation[ dim * N + Ib ];
 
                         for ( unsigned int I = 0; I < dim; I++ ){
                             dElasticFdPlasticF[ dim * i + Ib ][ dim * n + N ] -= deformationGradient[ dim * i + I ]
                                                                                * inversePlasticDeformationGradient[ dim * I + n ]
                                                                                * inversePlasticDeformationGradient[ dim * N + Ib ];
+                            dElasticChidPlasticChi[ dim * i + Ib ][ dim * n + N ] -= microDeformation[ dim * i + I ]
+                                                                                   * inversePlasticMicroDeformation[ dim * I + n ]
+                                                                                   * inversePlasticMicroDeformation[ dim * N + Ib ];
                         }
                     }
                 }
