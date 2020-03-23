@@ -662,6 +662,45 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
         return 1;
     }
 
+    variableVector resultFe2, resultChie2, resultGradChie2, resultInvFp, resultInvChip;
+
+    error = micromorphicElastoPlasticity::computeElasticPartOfDeformation(  F,  chi,  gradChi, 
+                                                                            Fp, chip, gradChip,
+                                                                            resultInvFp, resultInvChip,
+                                                                            resultFe2, resultChie2,
+                                                                            resultGradChie2 );
+
+    if ( error ){
+        error->print();
+        results << "test_computeElasticPartOfDeformation & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultFe2, answerFe ) ){
+        results << "test_computeElasticPartOfDeformation (test 4) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultChie2, answerChie ) ){
+        results << "test_computeElasticPartOfDeformation (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultGradChie2, answerGradChie ) ){
+        results << "test_computeElasticPartOfDeformation (test 6) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultInvFp, vectorTools::inverse( Fp, 3, 3 ) ) ){
+        results << "test_computeElasticPartOfDeformation (test 7) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultInvChip, vectorTools::inverse( chip, 3, 3 ) ) ){
+        results << "test_computeElasticPartOfDeformation (test 8) & False\n";
+        return 1;
+    }
+
     results << "test_computeElasticPartOfDeformation & True\n";
     return 0;
 }

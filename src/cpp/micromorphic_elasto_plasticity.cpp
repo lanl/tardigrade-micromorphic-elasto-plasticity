@@ -552,6 +552,8 @@ namespace micromorphicElastoPlasticity{
                                               const variableVector &plasticDeformationGradient,
                                               const variableVector &plasticMicroDeformation,
                                               const variableVector &plasticGradientMicroDeformation,
+                                              variableVector &inversePlasticDeformationGradient,
+                                              variableVector &inversePlasticMicroDeformation,
                                               variableVector &elasticDeformationGradient, variableVector &elasticMicroDeformation, 
                                               variableVector &elasticGradientMicroDeformation ){
         /*!
@@ -643,4 +645,5 @@ namespace micromorphicElastoPlasticity{
                                                 plasticDeformationGradient, plasticMicroDeformation, plasticGradientMicroDeformation,
                                                 inversePlasticDeformationGradient, inversePlasticMicroDeformation,
                                                 elasticDeformationGradient, elasticMicroDeformation, elasticGradientMicroDeformation );
+    }
 }
