@@ -786,8 +786,8 @@ namespace micromorphicElastoPlasticity{
             }
         }
 
-        dElasticGradMicroDeformationdChi = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
-        dElasticGradMicroDeformationdPlasticChi = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
+        dGradElasticChidChi = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
+        dGradElasticChidPlasticChi = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
 
         for ( unsigned int k = 0; k < dim; k++ ){
             for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
@@ -795,17 +795,26 @@ namespace micromorphicElastoPlasticity{
                     for ( unsigned int n = 0; n < dim; n++ ){
                         for ( unsigned int N = 0; N < dim; N++ ){
 
-                            for ( unsigned int Ab = 0; Ab < dim; Ab++ ){
-                                for ( unsigned int K = 0; K < dim; K++ ){
-                                    dElasticGradMicroDeformationdChi[ dim * dim * k + dim * Kb + dim * Lb ][ dim * n + N ]
+                            for ( unsigned int K = 0; K < dim; K++ ){
+                                dGradElasticChidPlasticChi[ dim * dim * k + dim * Kb + Lb ][ dim * n + N ]
+                                    -= gradientMicroDeformation[ dim * dim * k + dim * K + Lb ]
+                                     * inversePlasticMicroDeformation[ dim * K + n ]
+                                     * inversePlasticMicroDeformation[ dim * N + Kb ];
+
+                                for ( unsigned int Ab = 0; Ab < dim; Ab++ ){
+                                    dGradElasticChidChi[ dim * dim * k + dim * Kb + Lb ][ dim * n + N ]
                                         -= dElasticChidChi[ dim * k + Ab ][ dim * n + N ]
-                                        *  plasticGradMicroDeformation[ dim * dim * Ab + dim * K + Lb ]
-                                        *  inversePlasticDeformationGradient[ dim * K + Kb ];
-                                    dElasticGradMicroDeformationdPlasticChi[ dim * dim * k + dim * Kb + dim * Lb ][ dim * n + N ]
-                                        += elasticMicroDeformation[ dim * k + Ab ]
-                                        *  plasticGradMicroDeformation[ dim * dim * Ab + dim * K + Lb ]
-                                        *  inversePlasticDeformationGradient[ dim * K + n ]
-                                        *  inversePlasticDeformationGradient[ dim * N + Kb ];
+                                        *  plasticGradientMicroDeformation[ dim * dim * Ab + dim * K + Lb ]
+                                        *  inversePlasticMicroDeformation[ dim * K + Kb ];
+
+                                    dGradElasticChidPlasticChi[ dim * dim * k + dim * Kb + Lb ][ dim * n + N ]
+                                        -= dElasticChidPlasticChi[ dim * k + Ab ][ dim * n + N ]
+                                        *  plasticGradientMicroDeformation[ dim * dim * Ab + dim * K + Lb ]
+                                        *  inversePlasticMicroDeformation[ dim * K + Kb]
+                                        -  elasticMicroDeformation[ dim * k + Ab ]
+                                        *  plasticGradientMicroDeformation[ dim * dim * Ab + dim * K + Lb ]
+                                        *  inversePlasticMicroDeformation[ dim * K + n ]
+                                        *  inversePlasticMicroDeformation[ dim * N + Kb ] ;
                                 }
                             }
                         }

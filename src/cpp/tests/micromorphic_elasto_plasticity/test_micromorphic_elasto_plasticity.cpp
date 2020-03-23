@@ -889,9 +889,6 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], dChiedChi[ j ][ i ] ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                vectorTools::print( gradCol );
-                vectorTools::print( dChiedChi );
                 results << "test_computeElasticPartOfDeformation (test 18) & False\n";
                 return 1;
             }
@@ -906,12 +903,14 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
         }
 
         //Test dGradChiedChi
-//        gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
-//
-//        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-//            results << "test_computeElasticPartOfDeformation (test 20) & False\n";
-//            return 1;
-//        }
+        gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dGradChiedChi[j][i] ) ){
+                results << "test_computeElasticPartOfDeformation (test 20) & False\n";
+                return 1;
+            }
+        }
     }
 
     //Test the Jacobians w.r.t. the plastic micro-deformation
@@ -966,12 +965,14 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
         }
 
         //Test dGradChiedChip
-//        gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
-//
-//        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-//            results << "test_computeElasticPartOfDeformation (test 17) & False\n";
-//            return 1;
-//        }
+        gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dGradChiedChip[j][i] ) ){
+                results << "test_computeElasticPartOfDeformation (test 23) & False\n";
+                return 1;
+            }
+        }
     }
 
 
