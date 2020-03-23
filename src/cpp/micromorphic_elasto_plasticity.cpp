@@ -579,13 +579,13 @@ namespace micromorphicElastoPlasticity{
         //Compute the inverses of the plastic deformation gradient and micro-deformation
         variableVector inversePlasticDeformationGradient = vectorTools::inverse( plasticDeformationGradient, dim, dim );
 
-        variableVector inversePlasticDeformationGradient = vectorTools::inverse( plasticMicroDeformation, dim, dim );
+        variableVector inversePlasticMicroDeformation = vectorTools::inverse( plasticMicroDeformation, dim, dim );
 
         //Assemble the elastic parts of the deformation measures
         elasticDeformationGradient = vectorTools::matrixMultiply( deformationGradient, inversePlasticDeformationGradient,
                                                                   dim, dim, dim, dim );
 
-        elasticMicroDeformation = vectorTools::matrixMultiply( deformationGradient, inversePlasticDeformationGradient,
+        elasticMicroDeformation = vectorTools::matrixMultiply( microDeformation, inversePlasticMicroDeformation,
                                                                dim, dim, dim, dim );
 
         elasticGradientMicroDeformation = variableVector( dim * dim * dim, 0 );
