@@ -595,11 +595,11 @@ namespace micromorphicElastoPlasticity{
 
                     for ( unsigned int K = 0; K < dim; K++ ){
                         elasticGradientMicroDeformation[ dim * dim * k + dim * Kb + Lb ]
-                            +=gradientMicroDeformation[ dim * dim * k + dim * K + Lb ] * inversePlasticDeformationGradient[ dim * K + Kb ];
+                            +=gradientMicroDeformation[ dim * dim * k + dim * K + Lb ] * inversePlasticMicroDeformation[ dim * K + Kb ];
 
                         for ( unsigned int Ab = 0; Ab < dim; Ab++ ){
                             elasticGradientMicroDeformation[ dim * dim * k + dim * Kb + Lb ]
-                                -= elasticMicroDeformation[ dim * k + Ab ] * plasticGradientMicroDeformation[ dim * dim * Ab + dim * K + Lb ] * inversePlasticDeformationGradient[ dim * K + Kb ];
+                                -= elasticMicroDeformation[ dim * k + Ab ] * plasticGradientMicroDeformation[ dim * dim * Ab + dim * K + Lb ] * inversePlasticMicroDeformation[ dim * K + Kb ];
                         }
                     }
                 }

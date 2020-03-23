@@ -576,9 +576,93 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
         }
     }
 
-
-
     results << "test_computeHigherOrderDruckerPragerYieldEquation & True\n";
+    return 0;
+}
+
+int test_computeElasticPartOfDeformation( std::ofstream &results ){
+    /*!
+     * Test of the computation of the elastic part of the various deformation measures.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    //Define the full deformation
+
+    variableVector F = { -1.08831037, -0.66333427, -0.48239487,
+                         -0.904554  ,  1.28942848, -0.02156112,
+                         -0.08464824, -0.07730218,  0.86415668 };
+
+    variableVector chi = { 0.27548762,  0.71704571, -1.33727026,
+                          -0.42283117, -1.65591182, -0.22625105,
+                           1.13780238, -0.51375234, -0.62058393 };
+
+    variableVector gradChi = { 0.99727481, 0.19819654, 0.20010236, 0.17532525, 0.06633508,
+                               0.72458529, 0.75509811, 0.25826068, 0.49724274, 0.92781534,
+                               0.11869579, 0.8604985 , 0.17654448, 0.33682062, 0.17328738,
+                               0.89505449, 0.93584041, 0.07746146, 0.96392792, 0.41350595,
+                               0.50880671, 0.3957155 , 0.29743433, 0.65458412, 0.85345184,
+                               0.09451065, 0.60621985 };
+
+    variableVector Fp = { 0.28777732,  0.09144675,  0.22352836,
+                         -0.27852895,  0.88746541, -0.77925405,
+                          0.08833233,  0.02544955, -0.29848719 };
+
+    variableVector chip = { -0.49993961, -0.36238477, -0.24525394,
+                            -0.00566907,  0.66797545,  0.43135092,
+                            -0.20196189,  0.04922572, -0.32425703 };
+
+    variableVector gradChip = { 0.66070743, 0.53000315, 0.5279699 , 0.6826509 , 0.6746987 ,
+                                0.38417229, 0.6754847 , 0.57437005, 0.50388402, 0.29566708,
+                                0.41339237, 0.48189968, 0.29916895, 0.28835666, 0.76680497,
+                                0.68779831, 0.44623234, 0.8414494 , 0.72621575, 0.50702875,
+                                0.23052973, 0.35436878, 0.89915565, 0.87194386, 0.22637193,
+                                0.97189461, 0.15759071 };
+
+    variableVector answerFe = { -3.94817649, -0.32662858, -0.48781965,
+                                -0.26623179,  1.60410514, -4.31494123,
+                                 0.39966071, -0.05820434, -2.44387444 };
+
+    variableVector answerChie = { -2.61886025, -0.72602181,  5.13908937,
+                                   1.8405542 , -1.3016982 , -2.42597922,
+                                  -2.61135485, -2.25166639,  0.89364486 };
+
+    variableVector answerGradChie = { 3.43994318,  0.07533594,  1.9900309 ,  2.74890173, -4.07603536,
+                                     -1.57164754, -4.68155599,  3.48965518, -8.58540185, -2.61980577,
+                                      0.13221771, -3.39243253, -0.96976908,  2.90708208,  1.79870388,
+                                     -2.68941213, -4.92137838,  3.02297046, -2.84013306, -4.04337426,
+                                     -3.34281866,  2.72965036,  0.752594  ,  2.49143428, -6.444848  ,
+                                     -1.27783452, -5.49363904 };
+
+    variableVector resultFe, resultChie, resultGradChie;
+
+    errorOut error = micromorphicElastoPlasticity::computeElasticPartOfDeformation(  F,  chi,  gradChi, 
+                                                                                    Fp, chip, gradChip,
+                                                                                    resultFe, resultChie,
+                                                                                    resultGradChie );
+
+    if ( error ){
+        error->print();
+        results << "test_computeElasticPartOfDeformation & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultFe, answerFe ) ){
+        results << "test_computeElasticPartOfDeformation (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultChie, answerChie ) ){
+        results << "test_computeElasticPartOfDeformation (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultGradChie, answerGradChie ) ){
+        results << "test_computeElasticPartOfDeformation (test 3) & False\n";
+        return 1;
+    }
+
+    results << "test_computeElasticPartOfDeformation & True\n";
     return 0;
 }
 
@@ -597,6 +681,7 @@ int main(){
     //Run the tests
     test_computeSecondOrderDruckerPragerYieldEquation( results );
     test_computeHigherOrderDruckerPragerYieldEquation( results );
+    test_computeElasticPartOfDeformation( results );
 
     //Close the results file
     results.close();
