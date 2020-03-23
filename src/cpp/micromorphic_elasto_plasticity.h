@@ -76,6 +76,16 @@ namespace micromorphicElastoPlasticity{
                                               const variableVector &plasticDeformationGradient,
                                               const variableVector &plasticMicroDeformation,
                                               const variableVector &plasticGradientMicroDeformation,
+                                              variableVector &inversePlasticDeformationGradient,
+                                              variableVector &inversePlasticMicroDeformation,
+                                              variableVector &elasticDeformationGradient, variableVector &elasticMicroDeformation,
+                                              variableVector &elasticGradientMicroDeformation );
+
+    errorOut computeElasticPartOfDeformation( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                              const variableVector &gradientMicroDeformation,
+                                              const variableVector &plasticDeformationGradient,
+                                              const variableVector &plasticMicroDeformation,
+                                              const variableVector &plasticGradientMicroDeformation,
                                               variableVector &elasticDeformationGradient, variableVector &elasticMicroDeformation,
                                               variableVector &elasticGradientMicroDeformation );
 
