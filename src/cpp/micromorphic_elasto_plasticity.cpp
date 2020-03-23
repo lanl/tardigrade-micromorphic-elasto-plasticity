@@ -567,6 +567,8 @@ namespace micromorphicElastoPlasticity{
          *     $\chi$.
          * :param const variableVector &plasticGradientMicroDeformation: The plastic part of the gradient of the 
          *     micro-deformation tensor $\chi$ with respect to the reference configuration.
+         * :param variableVector &inversePlasticDeformationGradient: The inverse of the plastic part of the macro deformation gradient.
+         * :param variableVector &inversePlasticMicroDeformation: The inverse of the plastic part of the micro deformation.
          * :param variableVector &elasticDeformationGradient: The elastic part of the macroscale deformation gradient.
          * :param variableVector &elasticMicroDeformation: The elastic part of the micro-deformation tensor $\chi$
          * :param variableVector &elasticGradientMicroDeformation: The elastic part of the gradient of the micro-deformation
@@ -577,9 +579,9 @@ namespace micromorphicElastoPlasticity{
         unsigned int dim = 3;
 
         //Compute the inverses of the plastic deformation gradient and micro-deformation
-        variableVector inversePlasticDeformationGradient = vectorTools::inverse( plasticDeformationGradient, dim, dim );
+        inversePlasticDeformationGradient = vectorTools::inverse( plasticDeformationGradient, dim, dim );
 
-        variableVector inversePlasticMicroDeformation = vectorTools::inverse( plasticMicroDeformation, dim, dim );
+        inversePlasticMicroDeformation = vectorTools::inverse( plasticMicroDeformation, dim, dim );
 
         //Assemble the elastic parts of the deformation measures
         elasticDeformationGradient = vectorTools::matrixMultiply( deformationGradient, inversePlasticDeformationGradient,
@@ -608,4 +610,37 @@ namespace micromorphicElastoPlasticity{
 
         return NULL;
     }
+
+    errorOut computeElasticPartOfDeformation( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                              const variableVector &gradientMicroDeformation,
+                                              const variableVector &plasticDeformationGradient,
+                                              const variableVector &plasticMicroDeformation,
+                                              const variableVector &plasticGradientMicroDeformation,
+                                              variableVector &elasticDeformationGradient, variableVector &elasticMicroDeformation, 
+                                              variableVector &elasticGradientMicroDeformation ){
+        /*!
+         * Compute the elastic parts of the various deformation measures.
+         *
+         * :param const variableVector &deformationGradient: The macroscale deformation gradient
+         * :param const variableVector &microDeformation: The micro-deformation tensor $\chi$
+         * :param const variableVector &gradientMicroDeformation: The gradient of the micro-deformation tensor
+         *     $\chi$ with respect to the reference configuration.
+         * :param const variableVector &plasticDeformationGradient: The plastic part of the macroscale 
+         *     deformation gradient.
+         * :param const variableVector &plasticMicroDeformation: The plastic part of the micro-deformation tensor
+         *     $\chi$.
+         * :param const variableVector &plasticGradientMicroDeformation: The plastic part of the gradient of the 
+         *     micro-deformation tensor $\chi$ with respect to the reference configuration.
+         * :param variableVector &elasticDeformationGradient: The elastic part of the macroscale deformation gradient.
+         * :param variableVector &elasticMicroDeformation: The elastic part of the micro-deformation tensor $\chi$
+         * :param variableVector &elasticGradientMicroDeformation: The elastic part of the gradient of the micro-deformation
+         *     tensor $\chi$ w.r.t. the reference configuration.
+         */
+
+        variableVector inversePlasticDeformationGradient, inversePlasticMicroDeformation;
+
+        return computeElasticPartOfDeformation( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                plasticDeformationGradient, plasticMicroDeformation, plasticGradientMicroDeformation,
+                                                inversePlasticDeformationGradient, inversePlasticMicroDeformation,
+                                                elasticDeformationGradient, elasticMicroDeformation, elasticGradientMicroDeformation );
 }
