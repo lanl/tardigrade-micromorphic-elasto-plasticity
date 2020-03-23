@@ -559,6 +559,10 @@ namespace micromorphicElastoPlasticity{
         /*!
          * Compute the elastic parts of the various deformation measures.
          *
+         * F_{i\bar{I}}^e = F_{iI} F_{I \bar{I}}^{p, -1}
+         * \chi_{i\bar{I}}^e = \chi_{iI} \chi_{I \bar{I}}^{p, -1}
+         * \chi_{ k\bar{ K },\bar{ L } } = \left( \chi_{ kK, L } - \chi_{ k \bar{ A } }^e \chi_{ \bar{ A } K,\bar{ L } }^{ p } \right) \chi_{ K \bar{ K } }^{p,-1}
+         *
          * :param const variableVector &deformationGradient: The macroscale deformation gradient
          * :param const variableVector &microDeformation: The micro-deformation tensor $\chi$
          * :param const variableVector &gradientMicroDeformation: The gradient of the micro-deformation tensor
@@ -579,6 +583,36 @@ namespace micromorphicElastoPlasticity{
 
         //Assume 3D
         unsigned int dim = 3;
+
+        if ( deformationGradient.size() != dim * dim ){
+            return new errorNode( "computeElasticPartOfDeformation",
+                                  "The deformation gradient is not the correct size (3D)" );
+        }
+
+        if ( microDeformation.size() != dim * dim ){
+            return new errorNode( "computeElasticPartOfDeformation",
+                                  "The micro-deformation is not the correct size (3D)" );
+        }
+
+        if ( gradientMicroDeformation.size() != dim * dim * dim ){
+            return new errorNode( "computeElasticPartOfDeformation",
+                                  "The gradient of the micro-deformation is not the correct size (3D)" );
+        }
+
+        if ( plasticDeformationGradient.size() != dim * dim ){
+            return new errorNode( "computeElasticPartOfDeformation",
+                                  "The plastic deformation gradient is not the correct size (3D)" );
+        }
+
+        if ( plasticMicroDeformation.size() != dim * dim ){
+            return new errorNode( "computeElasticPartOfDeformation",
+                                  "The plastic micro-deformation is not the correct size (3D)" );
+        }
+
+        if ( plasticGradientMicroDeformation.size() != dim * dim * dim ){
+            return new errorNode( "computeElasticPartOfDeformation",
+                                  "The plastic gradient of the micro-deformation is not the correct size (3D)" );
+        }
 
         //Compute the inverses of the plastic deformation gradient and micro-deformation
         inversePlasticDeformationGradient = vectorTools::inverse( plasticDeformationGradient, dim, dim );
@@ -622,6 +656,9 @@ namespace micromorphicElastoPlasticity{
                                               variableVector &elasticGradientMicroDeformation ){
         /*!
          * Compute the elastic parts of the various deformation measures.
+         * F_{i\bar{I}}^e = F_{iI} F_{I \bar{I}}^{p, -1}
+         * \chi_{i\bar{I}}^e = \chi_{iI} \chi_{I \bar{I}}^{p, -1}
+         * \chi_{ k\bar{ K },\bar{ L } } = \left( \chi_{ kK, L } - \chi_{ k \bar{ A } }^e \chi_{ \bar{ A } K,\bar{ L } }^{ p } \right) \chi_{ K \bar{ K } }^{p,-1}
          *
          * :param const variableVector &deformationGradient: The macroscale deformation gradient
          * :param const variableVector &microDeformation: The micro-deformation tensor $\chi$
@@ -645,5 +682,89 @@ namespace micromorphicElastoPlasticity{
                                                 plasticDeformationGradient, plasticMicroDeformation, plasticGradientMicroDeformation,
                                                 inversePlasticDeformationGradient, inversePlasticMicroDeformation,
                                                 elasticDeformationGradient, elasticMicroDeformation, elasticGradientMicroDeformation );
+    }
+
+    errorOut errorOut computeElasticPartOfDeformation( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                              const variableVector &gradientMicroDeformation,
+                                              const variableVector &plasticDeformationGradient,
+                                              const variableVector &plasticMicroDeformation,
+                                              const variableVector &plasticGradientMicroDeformation,
+                                              variableVector &elasticDeformationGradient, variableVector &elasticMicroDeformation,
+                                              variableVector &elasticGradientMicroDeformation,
+                                              variableMatrix &dFedF, variableMatrix &dFedFp,
+                                              variableMatrix &dChiedChi, variableMatrix &dChiedChip,
+                                              variableMatrix &dGradChiedGradChi, variableMatrix &dGradChiedGradChip,
+                                              variableMatrix &dGradChiedChi, variableMatrix &dGradChiedChip ){
+        /*!
+         * Compute the elastic parts of the various deformation measures.
+         * F_{i\bar{I}}^e = F_{iI} F_{I \bar{I}}^{p, -1}
+         * \chi_{i\bar{I}}^e = \chi_{iI} \chi_{I \bar{I}}^{p, -1}
+         * \chi_{ k\bar{ K },\bar{ L } } = \left( \chi_{ kK, L } - \chi_{ k \bar{ A } }^e \chi_{ \bar{ A } K,\bar{ L } }^{ p } \right) \chi_{ K \bar{ K } }^{p,-1}
+         *
+         * Also compute the Jacobians
+         *
+         * \frac{ \partial F_{i\bar{I}}^e }{ \partial F_{nN} } = \delta_{in} F_{N \bar{I} }^{p, -1}
+         * \frac{ \partial F_{i\bar{I}}^e }{ \partial F_{\bar{N} N}^p } = -F_{iI} F_{I \bar{N}}^{p, -1} F_{N \bar{I} }^{p, -1}
+         *
+         * :param const variableVector &deformationGradient: The macroscale deformation gradient
+         * :param const variableVector &microDeformation: The micro-deformation tensor $\chi$
+         * :param const variableVector &gradientMicroDeformation: The gradient of the micro-deformation tensor
+         *     $\chi$ with respect to the reference configuration.
+         * :param const variableVector &plasticDeformationGradient: The plastic part of the macroscale 
+         *     deformation gradient.
+         * :param const variableVector &plasticMicroDeformation: The plastic part of the micro-deformation tensor
+         *     $\chi$.
+         * :param const variableVector &plasticGradientMicroDeformation: The plastic part of the gradient of the 
+         *     micro-deformation tensor $\chi$ with respect to the reference configuration.
+         * :param variableVector &elasticDeformationGradient: The elastic part of the macroscale deformation gradient.
+         * :param variableVector &elasticMicroDeformation: The elastic part of the micro-deformation tensor $\chi$
+         * :param variableVector &elasticGradientMicroDeformation: The elastic part of the gradient of the micro-deformation
+         *     tensor $\chi$ w.r.t. the reference configuration.
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        //Compute the required deformation measures
+        variableVector inversePlasticDeformationGradient, inversePlasticMicroDeformation;
+
+        errorOut error = computeElasticPartOfDeformation( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                          plasticDeformationGradient, plasticMicroDeformation, 
+                                                          plasticGradientMicroDeformation, inversePlasticDeformationGradient,
+                                                          inversePlasticMicroDeformation, elasticDeformationGradient,
+                                                          elasticMicroDeformation, elasticGradientMicroDeformation );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeElasticPartOfDeformation (jacobian)",
+                                             "Error in computation of the elastic part of the deformation measures" );
+            result->addNext( error );
+            return result;
+        }
+
+        //Assemble the Jacobians
+        constantVector eye( dim * dim );
+        vectorTools::eye( eye );
+
+        dFedF = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
+        dFedFp = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
+        for ( unsigned int i = 0; i < dim; i++ ){
+            for ( unsigned int Ib = 0; Ib < dim; Ib++ ){
+                for ( unsigned int n = 0; n < dim; n++ ){
+                    for ( unsigned int N = 0; N < dim; N++ ){
+                        dFedF[ dim * i + Ib ][ dim * n + N ] = eye[ dim * i + n ] * plasticDeformationGradient[ dim * N + Ib ];
+
+                        for ( unsigned int I = 0; I < dim; I++ ){
+                            dFedFp[ dim * i + Ib ][ dim * n + N ] -= deformationGradient[ dim * i + I ]
+                                                                   * inversePlasticDeformationGradient[ dim * I + n ]
+                                                                   * inversePlasticDeformationGradient[ dim * N + Ib ];
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
     }
 }
