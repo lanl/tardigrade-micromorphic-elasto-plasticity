@@ -684,17 +684,17 @@ namespace micromorphicElastoPlasticity{
                                                 elasticDeformationGradient, elasticMicroDeformation, elasticGradientMicroDeformation );
     }
 
-    errorOut errorOut computeElasticPartOfDeformation( const variableVector &deformationGradient, const variableVector &microDeformation,
+    errorOut computeElasticPartOfDeformation( const variableVector &deformationGradient, const variableVector &microDeformation,
                                               const variableVector &gradientMicroDeformation,
                                               const variableVector &plasticDeformationGradient,
                                               const variableVector &plasticMicroDeformation,
                                               const variableVector &plasticGradientMicroDeformation,
                                               variableVector &elasticDeformationGradient, variableVector &elasticMicroDeformation,
                                               variableVector &elasticGradientMicroDeformation,
-                                              variableMatrix &dFedF, variableMatrix &dFedFp,
-                                              variableMatrix &dChiedChi, variableMatrix &dChiedChip,
-                                              variableMatrix &dGradChiedGradChi, variableMatrix &dGradChiedGradChip,
-                                              variableMatrix &dGradChiedChi, variableMatrix &dGradChiedChip ){
+                                              variableMatrix &dElasticFdF, variableMatrix &dElasticFdPlasticF,
+                                              variableMatrix &dElasticChidChi, variableMatrix &dElasticChidPlasticChi,
+                                              variableMatrix &dGradElasticChidGradChi, variableMatrix &dGradElasticChidGradPlasticChi,
+                                              variableMatrix &dGradElasticChidChi, variableMatrix &dGradElasticChidPlasticChi ){
         /*!
          * Compute the elastic parts of the various deformation measures.
          * F_{i\bar{I}}^e = F_{iI} F_{I \bar{I}}^{p, -1}
@@ -720,6 +720,10 @@ namespace micromorphicElastoPlasticity{
          * :param variableVector &elasticMicroDeformation: The elastic part of the micro-deformation tensor $\chi$
          * :param variableVector &elasticGradientMicroDeformation: The elastic part of the gradient of the micro-deformation
          *     tensor $\chi$ w.r.t. the reference configuration.
+         * :param variableMatrix &dElasticFdF: The Jacobian of the elastic part of the deformation gradient w.r.t. the deformation 
+         *     gradient.
+         * :param variableMatrix &dElasticFdPlasticF: The Jacobian of the elastic part of the deformation gradient w.r.t. the 
+         *     plastic part of the deformation gradient.
          */
 
         //Assume 3D
@@ -745,18 +749,18 @@ namespace micromorphicElastoPlasticity{
         constantVector eye( dim * dim );
         vectorTools::eye( eye );
 
-        dFedF = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
-        dFedFp = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
+        dElasticFdF = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
+        dElasticFdPlasticF = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
         for ( unsigned int i = 0; i < dim; i++ ){
             for ( unsigned int Ib = 0; Ib < dim; Ib++ ){
                 for ( unsigned int n = 0; n < dim; n++ ){
                     for ( unsigned int N = 0; N < dim; N++ ){
-                        dFedF[ dim * i + Ib ][ dim * n + N ] = eye[ dim * i + n ] * plasticDeformationGradient[ dim * N + Ib ];
+                        dElasticFdF[ dim * i + Ib ][ dim * n + N ] = eye[ dim * i + n ] * inversePlasticDeformationGradient[ dim * N + Ib ];
 
                         for ( unsigned int I = 0; I < dim; I++ ){
-                            dFedFp[ dim * i + Ib ][ dim * n + N ] -= deformationGradient[ dim * i + I ]
-                                                                   * inversePlasticDeformationGradient[ dim * I + n ]
-                                                                   * inversePlasticDeformationGradient[ dim * N + Ib ];
+                            dElasticFdPlasticF[ dim * i + Ib ][ dim * n + N ] -= deformationGradient[ dim * i + I ]
+                                                                               * inversePlasticDeformationGradient[ dim * I + n ]
+                                                                               * inversePlasticDeformationGradient[ dim * N + Ib ];
                         }
                     }
                 }
@@ -765,6 +769,6 @@ namespace micromorphicElastoPlasticity{
 
 
 
-
+        return NULL;
     }
 }
