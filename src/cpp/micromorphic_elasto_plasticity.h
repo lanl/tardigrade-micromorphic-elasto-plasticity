@@ -118,6 +118,14 @@ namespace micromorphicElastoPlasticity{
                                                 variableMatrix &dElasticRCGdElasticF, variableMatrix &dElasticMicroRCGdElasticChi,
                                                 variableMatrix &dElasticPsidElasticF, variableMatrix &dElasticPsidElasticChi,
                                                 variableMatrix &dElasticGammadElasticF, variableMatrix &dElasticGammadElasticGradChi );
+
+    errorOut computePlasticVelocityGradients( const variableType &macroGamma, const variableType &microGamma, 
+                                              const variableVector &microGradientGamma, const variableVector &elasticRightCauchyGreen,
+                                              const variableVector &elasticMicroRightCauchyGreen, const variableVector &elasticPsi,
+                                              const variableVector &elasticGamma, const variableVector &macroFlowDirection,
+                                              const variableVector &microFlowDirection, const variableMatrix &microGradientFlowDirection,
+                                              variableVector &macroPlasticVelocityGradient, variableVector &microPlasticVelocityGradient,
+                                              variableVector &microGradientPlasticVelocityGradient );
 }
 
 #endif
