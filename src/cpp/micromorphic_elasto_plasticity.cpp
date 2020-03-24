@@ -856,7 +856,7 @@ namespace micromorphicElastoPlasticity{
                                                 variableVector &elasticMicroRightCauchyGreen,
                                                 variableVector &elasticPsi, variableVector &elasticGamma ){
         /*!
-         * Compute the elastic deformation measures
+         * Compute the elastic deformation measures required for the evolution of plasticity.
          *
          * :param const variableVector &elasticDeformationGradient: The elastic part of the deformation gradient.
          * :param const variableVector &elasticMicroDeformation: The elastic part of the micro-deformation.
@@ -878,7 +878,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = constitutiveTools::computeRightCauchyGreen( elasticDeformationGradient, elasticMicroRightCauchyGreen );
+        error = constitutiveTools::computeRightCauchyGreen( elasticMicroDeformation, elasticMicroRightCauchyGreen );
 
         if ( error ){
             errorOut result = new errorNode( "computeElasticDeformationMeasures",

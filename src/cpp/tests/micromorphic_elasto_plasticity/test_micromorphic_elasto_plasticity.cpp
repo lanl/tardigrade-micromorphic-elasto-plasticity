@@ -1100,6 +1100,84 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
     return 0;
 }
 
+int test_computeElasticDeformationMeasures( std::ofstream &results ){
+    /*!
+     * Test the computation of the elastic deformation measures 
+     * required for the computation of the plasticity.
+     *
+     * :param std::ofstream &results: The output file
+     */
+
+    variableVector Fe = { -3.94817649, -0.32662858, -0.48781965,
+                          -0.26623179,  1.60410514, -4.31494123,
+                           0.39966071, -0.05820434, -2.44387444 };
+
+    variableVector chie = { -2.61886025, -0.72602181,  5.13908937,
+                             1.8405542 , -1.3016982 , -2.42597922,
+                            -2.61135485, -2.25166639,  0.89364486 };
+
+    variableVector gradChie = { -1.27940191, -0.15466701, -0.38184898, -0.30173923,  0.05962743,
+                                 0.88277412, -1.76241432, -0.60016475, -0.07033724, -0.98094822,
+                                 0.57398185, -1.77481299, -0.10849973,  0.9656491 , -0.7146935 ,
+                                -2.16271183, -2.03566316,  0.15276376, -1.26613437, -0.94886439,
+                                -0.82649425,  0.02632722, -0.09189365,  0.56763039, -1.63935109,
+                                 0.3039677 , -0.48933706 };
+
+    variableVector answerCe = { 15.81870565,  0.8392615 ,  2.09805203,
+                                 0.8392615 ,  2.68322729, -6.62003948,
+                                 2.09805203, -6.62003948, 24.82920808 };
+
+    variableVector answerCChie = { 17.06524293,   5.38540351, -20.25732698,
+                                    5.38540351,   7.29152741,  -2.58538828,
+                                  -20.25732698,  -2.58538828,  33.09421588 };
+
+    variableVector answerPsie = { 8.80605252,   2.3131131 , -19.28700431,
+                                  3.95982925,  -1.71986455,  -5.62211322,
+                                 -0.28252834,  11.47370888,   5.77705312 };
+
+    variableVector answerGammae = { 4.80644001,  0.07861661,  1.64980155,  1.23072776, -0.5292324 ,
+                                   -3.06821432,  6.87892124,  3.03299854,  0.04146446, -1.08196034,
+                                    1.02647393, -2.6741583 , -0.07702067,  1.53487528, -1.46782133,
+                                   -2.79814493, -3.08707902,  0.29650483,  7.95112472, -0.0823429 ,
+                                    9.86433536,  0.55102384, -3.97123001,  1.26600849, 14.19808301,
+                                    8.33368016,  0.57102355 };
+
+    variableVector resultCe, resultCChie, resultPsie, resultGammae;
+
+    errorOut error = micromorphicElastoPlasticity::computeElasticDeformationMeasures( Fe, chie, gradChie, resultCe,
+                                                                                      resultCChie, resultPsie,
+                                                                                      resultGammae );
+
+    if ( error ){
+        error->print();
+        results << "test_computeElasticDeformationMeasures & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultCe, answerCe ) ){
+        results << "test_computeElasticDeformationMeasures (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultCChie, answerCChie ) ){
+        results << "test_computeElasticDeformationMeasures (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultPsie, answerPsie ) ){
+        results << "test_computeElasticDeformationMeasures (test 3) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultGammae, answerGammae ) ){
+        results << "test_computeElasticDeformationMeasures (test 4) & False\n";
+        return 1;
+    }
+
+    results << "test_computeElasticDeformationMeasures & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -1116,6 +1194,7 @@ int main(){
     test_computeSecondOrderDruckerPragerYieldEquation( results );
     test_computeHigherOrderDruckerPragerYieldEquation( results );
     test_computeElasticPartOfDeformation( results );
+    test_computeElasticDeformationMeasures( results );
 
     //Close the results file
     results.close();
