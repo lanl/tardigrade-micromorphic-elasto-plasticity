@@ -627,12 +627,13 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
                                    1.8405542 , -1.3016982 , -2.42597922,
                                   -2.61135485, -2.25166639,  0.89364486 };
 
-    variableVector answerGradChie = { 3.43994318,  0.07533594,  1.9900309 ,  2.74890173, -4.07603536,
-                                     -1.57164754, -4.68155599,  3.48965518, -8.58540185, -2.61980577,
-                                      0.13221771, -3.39243253, -0.96976908,  2.90708208,  1.79870388,
-                                     -2.68941213, -4.92137838,  3.02297046, -2.84013306, -4.04337426,
-                                     -3.34281866,  2.72965036,  0.752594  ,  2.49143428, -6.444848  ,
-                                     -1.27783452, -5.49363904 };
+    variableVector answerGradChie = { 1.14852526e+00,  4.82577470e-01,  3.17687002e-01,  3.15279224e+00,
+                                     -3.98511181e+00, -5.72845791e+00, -8.03005606e+00,  4.03942034e+00,
+                                     -1.19752568e+01, -4.58373637e+00,  4.69392821e-01, -2.55663946e-01,
+                                     -2.90717158e-01,  2.96657140e+00,  2.65874647e+00, -8.50814019e+00,
+                                     -4.27501281e+00,  8.35453206e-03, -6.64635005e+00, -3.65333789e+00,
+                                     -2.08699660e+00,  3.09942546e+00,  7.38196309e-01,  5.96234908e-01,
+                                     -8.64387705e+00, -7.45765574e-01, -8.42198541e+00 };
 
     variableVector resultFe, resultChie, resultGradChie;
 
@@ -658,6 +659,8 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
     }
 
     if ( !vectorTools::fuzzyEquals( resultGradChie, answerGradChie ) ){
+        std::cout << "answerGradChie:\n"; vectorTools::print( answerGradChie );
+        std::cout << "resultGradChie:\n"; vectorTools::print( resultGradChie );
         results << "test_computeElasticPartOfDeformation (test 3) & False\n";
         return 1;
     }
@@ -704,8 +707,8 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
     //Test the computation of the jacobians
 
     variableVector resultFeJ, resultChieJ, resultGradChieJ;
-    variableMatrix dFedF, dFedFp, dChiedChi, dChiedChip, dGradChiedGradChi, dGradChiedGradChip,
-                   dGradChiedChi, dGradChiedChip;
+    variableMatrix dFedF, dFedFp, dChiedChi, dChiedChip, dGradChiedFp, 
+                   dGradChiedGradChi, dGradChiedGradChip, dGradChiedChi, dGradChiedChip;
 
     error = micromorphicElastoPlasticity::computeElasticPartOfDeformation(  F,  chi,  gradChi, 
                                                                             Fp, chip, gradChip,
@@ -713,7 +716,7 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
                                                                             resultGradChieJ,
                                                                             dFedF, dFedFp, dChiedChi,
                                                                             dChiedChip, dGradChiedGradChi,
-                                                                            dGradChiedGradChip, 
+                                                                            dGradChiedGradChip, dGradChiedFp,
                                                                             dGradChiedChi, dGradChiedChip );
 
     if ( error ){
@@ -847,9 +850,11 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
         //Test dGradChiedFp
         gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
 
-        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticPartOfDeformation (test 17) & False\n";
-            return 1;
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dGradChiedFp[j][i] ) ){
+                results << "test_computeElasticPartOfDeformation (test 17) & False\n";
+                return 1;
+            }
         }
     }
 

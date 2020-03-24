@@ -96,10 +96,11 @@ namespace micromorphicElastoPlasticity{
                                               const variableVector &plasticGradientMicroDeformation,
                                               variableVector &elasticDeformationGradient, variableVector &elasticMicroDeformation,
                                               variableVector &elasticGradientMicroDeformation,
-                                              variableMatrix &dFedF, variableMatrix &dFedFp,
-                                              variableMatrix &dChiedChi, variableMatrix &dChiedChip,
-                                              variableMatrix &dGradChiedGradChi, variableMatrix &dGradChiedGradChip,
-                                              variableMatrix &dGradChiedChi, variableMatrix &dGradChiedChip );
+                                              variableMatrix &dElasticFdF, variableMatrix &dElasticFdPlasticF,
+                                              variableMatrix &dElasticChidChi, variableMatrix &dElasticChidPlasticChi,
+                                              variableMatrix &dGradElasticChidGradChi, variableMatrix &dGradElasticChidGradPlasticChi,
+                                              variableMatrix &dGradElasticChidPlasticF, variableMatrix &dGradElasticChidChi,
+                                              variableMatrix &dGradElasticChidPlasticChi );
 }
 
 #endif
