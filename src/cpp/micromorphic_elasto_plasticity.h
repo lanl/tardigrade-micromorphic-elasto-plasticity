@@ -106,8 +106,8 @@ namespace micromorphicElastoPlasticity{
                                                 const variableVector &elasticMicroDeformation,
                                                 const variableVector &elasticGradientMicroDeformation,
                                                 variableVector &elasticRightCauchyGreen,
+                                                variableVector &elasticMicroRightCauchyGreen,
                                                 variableVector &elasticPsi, variableVector &elasticGamma );
-
 }
 
 #endif

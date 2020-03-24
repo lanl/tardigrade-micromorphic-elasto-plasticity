@@ -848,4 +848,63 @@ namespace micromorphicElastoPlasticity{
 
         return NULL;
     }
+
+    errorOut computeElasticDeformationMeasures( const variableVector &elasticDeformationGradient,
+                                                const variableVector &elasticMicroDeformation,
+                                                const variableVector &elasticGradientMicroDeformation,
+                                                variableVector &elasticRightCauchyGreen,
+                                                variableVector &elasticMicroRightCauchyGreen,
+                                                variableVector &elasticPsi, variableVector &elasticGamma ){
+        /*!
+         * Compute the elastic deformation measures
+         *
+         * :param const variableVector &elasticDeformationGradient: The elastic part of the deformation gradient.
+         * :param const variableVector &elasticMicroDeformation: The elastic part of the micro-deformation.
+         * :param const variableVector &elasticGradientMicroDeformation: The elastic part of the gradient of the
+         *     micro-deformation.
+         * :param variableVector &elasticRightCauchyGreen: The elastic right Cauchy-Green deformation measure.
+         * :param variableVector &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation 
+         *     measure.
+         * :param variableVector &elasticPsi: The elastic part of the micro-deformation measure psi.
+         * :param variableVector &elasticGamma: The elastic part of the higher order deformation measure.
+         */
+
+        errorOut error = constitutiveTools::computeRightCauchyGreen( elasticDeformationGradient, elasticRightCauchyGreen );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeElasticDeformationMeasures",
+                                             "Error in computation of the elastic right Cauchy-Green deformation tensor" );
+            result->addNext( error );
+            return result;
+        }
+
+        error = constitutiveTools::computeRightCauchyGreen( elasticDeformationGradient, elasticMicroRightCauchyGreen );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeElasticDeformationMeasures",
+                                             "Error in computation of the elastic micro right Cauchy-Green deformation tensor" );
+            result->addNext( error );
+            return result;
+        }
+
+        error = micromorphicTools::computePsi( elasticDeformationGradient, elasticMicroDeformation, elasticPsi );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeElasticDeformationMeasures",
+                                             "Error in computation of the elastic micro-deformation metric Psi" );
+            result->addNext( error );
+            return result;
+        }
+
+        error = micromorphicTools::computeGamma( elasticDeformationGradient, elasticGradientMicroDeformation, elasticGamma );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeElasticDeformationMeasures",
+                                             "Error in computation of the elastic higher order deformation metric Gamma" );
+            result->addNext( error );
+            return result;
+        }
+
+        return NULL;
+    }
 }
