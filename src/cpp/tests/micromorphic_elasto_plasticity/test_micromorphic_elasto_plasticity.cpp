@@ -1174,6 +1174,43 @@ int test_computeElasticDeformationMeasures( std::ofstream &results ){
         return 1;
     }
 
+    //Tests of Jacobians
+    variableVector resultCeJ, resultCChieJ, resultPsieJ, resultGammaeJ;
+    variableMatrix dRCGedFe, dMicroRCGedChie, dPsiedFe, dPsiedChie, dGammaedFe, dGammaedGradChie;
+
+    error = micromorphicElastoPlasticity::computeElasticDeformationMeasures( Fe, chie, gradChie, resultCeJ,
+                                                                             resultCChieJ, resultPsieJ,
+                                                                             resultGammaeJ, dRCGedFe,
+                                                                             dMicroRCGedChie, dPsiedFe, dPsiedChie,
+                                                                             dGammaedFe, dGammaedGradChie );
+
+    if ( error ){
+        error->print();
+        results << "test_computeElasticDeformationMeasures & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultCeJ, answerCe ) ){
+        results << "test_computeElasticDeformationMeasures (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultCChieJ, answerCChie ) ){
+        results << "test_computeElasticDeformationMeasures (test 6) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultPsieJ, answerPsie ) ){
+        results << "test_computeElasticDeformationMeasures (test 7) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultGammaeJ, answerGammae ) ){
+        results << "test_computeElasticDeformationMeasures (test 8) & False\n";
+        return 1;
+    }
+
+
     results << "test_computeElasticDeformationMeasures & True\n";
     return 0;
 }

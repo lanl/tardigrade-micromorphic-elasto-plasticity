@@ -865,7 +865,7 @@ namespace micromorphicElastoPlasticity{
          * :param variableVector &elasticRightCauchyGreen: The elastic right Cauchy-Green deformation measure.
          * :param variableVector &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation 
          *     measure.
-         * :param variableVector &elasticPsi: The elastic part of the micro-deformation measure psi.
+         * :param variableVector &elasticPsi: The elastic part of the micro-deformation measure Psi.
          * :param variableVector &elasticGamma: The elastic part of the higher order deformation measure.
          */
 
@@ -915,7 +915,7 @@ namespace micromorphicElastoPlasticity{
                                                 variableVector &elasticMicroRightCauchyGreen,
                                                 variableVector &elasticPsi, variableVector &elasticGamma,
                                                 variableMatrix &dElasticRCGdElasticF, variableMatrix &dElasticMicroRCGdElasticChi,
-                                                variableMatrix &dElasticPsidElasticF, variableMatrix &dElasticPsidChi,
+                                                variableMatrix &dElasticPsidElasticF, variableMatrix &dElasticPsidElasticChi,
                                                 variableMatrix &dElasticGammadElasticF, variableMatrix &dElasticGammadElasticGradChi ){
         /*!
          * Compute the elastic deformation measures required for the evolution of plasticity.
@@ -927,8 +927,20 @@ namespace micromorphicElastoPlasticity{
          * :param variableVector &elasticRightCauchyGreen: The elastic right Cauchy-Green deformation measure.
          * :param variableVector &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation 
          *     measure.
-         * :param variableVector &elasticPsi: The elastic part of the micro-deformation measure psi.
+         * :param variableVector &elasticPsi: The elastic part of the micro-deformation measure Psi.
          * :param variableVector &elasticGamma: The elastic part of the higher order deformation measure.
+         * :param variableMatrix &dElasticRCGdElasticF: The Jacobian of the right Cauchy-Green deformation measure
+         *     w.r.t. the elastic deformation gradient.
+         * :param variableMatrix &dElasticMicroRCGdElasticChi: The Jacobian of the micro right Cauchy-Green deformation 
+         *     measure w.r.t. the elastic micro deformation
+         * :param variableMatrix &dElasticPsidElasticF: The Jacobian of the elastic micro-deformation measure Psi
+         *     w.r.t. the elastic deformation gradient.
+         * :param variableMatrix &dElasticPsidElasticF: The Jacobian of the elastic micro-deformation measure Psi
+         *     w.r.t. the elastic micro-deformation.
+         * :param variableMatrix &dElasticGammadElasticF: The Jacobian of the higher order deformation measure Gamma w.r.t.
+         *     the elastic deformation gradient.
+         * :param variableMatrix &dElasticGammadElasticGradChi: The Jacobian of the higher order deformation measure Gamma
+         *     w.r.t. the elastic part of the gradient of the micro-deformation.
          */
 
         errorOut error = constitutiveTools::computeRightCauchyGreen( elasticDeformationGradient, elasticRightCauchyGreen,
@@ -952,7 +964,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         error = micromorphicTools::computePsi( elasticDeformationGradient, elasticMicroDeformation, elasticPsi,
-                                               dElasticPsidElasticF, dElasticPsidChi );
+                                               dElasticPsidElasticF, dElasticPsidElasticChi );
 
         if ( error ){
             errorOut result = new errorNode( "computeElasticDeformationMeasures (jacobian)",

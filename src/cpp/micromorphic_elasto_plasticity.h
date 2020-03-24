@@ -116,7 +116,7 @@ namespace micromorphicElastoPlasticity{
                                                 variableVector &elasticMicroRightCauchyGreen,
                                                 variableVector &elasticPsi, variableVector &elasticGamma,
                                                 variableMatrix &dElasticRCGdElasticF, variableMatrix &dElasticMicroRCGdElasticChi,
-                                                variableMatrix &dElasticPsidElasticF, variableMatrix &dElasticPsidChi,
+                                                variableMatrix &dElasticPsidElasticF, variableMatrix &dElasticPsidElasticChi,
                                                 variableMatrix &dElasticGammadElasticF, variableMatrix &dElasticGammadElasticGradChi );
 }
 
