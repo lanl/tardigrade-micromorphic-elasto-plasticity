@@ -734,6 +734,10 @@ namespace micromorphicElastoPlasticity{
          *     micro deformation.
          * :param variableMatrix &dElasticChidPlasticChi: The Jacobian of the elastic part of the micro-deformation w.r.t.
          *     the plastic part of the micro deformation.
+         * :param variableMatrix &dGradElasticChidGradChi: The Jacobian of the elastic part of the gradient of the micro-deformation
+         *     w.r.t. the gradient of the micro-deformation.
+         * :param variableMatrix &dGradElasticChidGradPlasticChi: The Jacobian of the elastic part of the gradient of the 
+         *     micro-deformation w.r.t. the plastic part of the gradient of the micro-deformation.
          * :param variableMatrix &dGradElasticChidPlasticF: The Jacobian of the elastic part of the gradient of the micro-deformation
          *     w.r.t. the plastic deformation gradient.
          * :param variableMatrix &dGradElasticChidChi: The Jacobian of the elastic part of the gradient of the micro-deformation 
