@@ -980,6 +980,121 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
         }
     }
 
+    //Test the Jacobians w.r.t. the gradient of chi
+    for ( unsigned int i = 0; i < gradChi.size(); i++ ){
+        constantVector delta( gradChi.size(), 0 );
+        delta[i] = eps * fabs( gradChi[ i ] ) + eps;
+
+        variableVector resultFeP,       resultFeM;
+        variableVector resultChieP,     resultChieM;
+        variableVector resultGradChieP, resultGradChieM;
+
+        error = micromorphicElastoPlasticity::computeElasticPartOfDeformation(  F,  chi,  gradChi + delta,
+                                                                                Fp, chip, gradChip,
+                                                                                resultFeP, resultChieP,
+                                                                                resultGradChieP );
+
+        if ( error ){
+            error->print();
+            results << "test_computeElasticPartOfDeformation & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeElasticPartOfDeformation(  F,  chi,  gradChi - delta,
+                                                                                Fp, chip, gradChip,
+                                                                                resultFeM, resultChieM,
+                                                                                resultGradChieM );
+
+        if ( error ){
+            error->print();
+            results << "test_computeElasticPartOfDeformation & False\n";
+            return 1;
+        }
+
+        //Test dFedGradChi
+        variableVector gradCol = ( resultFeP - resultFeM ) / ( 2 * delta[ i ] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            results << "test_computeElasticPartOfDeformation (test 24) & False\n";
+            return 1;
+        }
+
+        //Test dChiedGradChi
+        gradCol = ( resultChieP - resultChieM ) / ( 2 * delta[i] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            results << "test_computeElasticPartOfDeformation (test 25) & False\n";
+            return 1;
+        }
+
+        //Test dGradChiedGradChi
+        gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dGradChiedGradChi[j][i] ) ){
+                results << "test_computeElasticPartOfDeformation (test 26) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test the Jacobians w.r.t. the plastic part of the gradient of chi
+    for ( unsigned int i = 0; i < gradChi.size(); i++ ){
+        constantVector delta( gradChi.size(), 0 );
+        delta[i] = eps * fabs( gradChi[ i ] ) + eps;
+
+        variableVector resultFeP,       resultFeM;
+        variableVector resultChieP,     resultChieM;
+        variableVector resultGradChieP, resultGradChieM;
+
+        error = micromorphicElastoPlasticity::computeElasticPartOfDeformation(  F,  chi,  gradChi,
+                                                                                Fp, chip, gradChip + delta,
+                                                                                resultFeP, resultChieP,
+                                                                                resultGradChieP );
+
+        if ( error ){
+            error->print();
+            results << "test_computeElasticPartOfDeformation & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeElasticPartOfDeformation(  F,  chi,  gradChi,
+                                                                                Fp, chip, gradChip - delta,
+                                                                                resultFeM, resultChieM,
+                                                                                resultGradChieM );
+
+        if ( error ){
+            error->print();
+            results << "test_computeElasticPartOfDeformation & False\n";
+            return 1;
+        }
+
+        //Test dFedGradChi
+        variableVector gradCol = ( resultFeP - resultFeM ) / ( 2 * delta[ i ] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            results << "test_computeElasticPartOfDeformation (test 27) & False\n";
+            return 1;
+        }
+
+        //Test dChiedGradChi
+        gradCol = ( resultChieP - resultChieM ) / ( 2 * delta[i] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            results << "test_computeElasticPartOfDeformation (test 28) & False\n";
+            return 1;
+        }
+
+        //Test dGradChiedGradChi
+        gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dGradChiedGradChip[j][i] ) ){
+                results << "test_computeElasticPartOfDeformation (test 29) & False\n";
+                return 1;
+            }
+        }
+    }
 
     results << "test_computeElasticPartOfDeformation & True\n";
     return 0;
