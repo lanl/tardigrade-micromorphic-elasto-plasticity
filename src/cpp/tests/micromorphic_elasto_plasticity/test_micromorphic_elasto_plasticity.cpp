@@ -1210,6 +1210,182 @@ int test_computeElasticDeformationMeasures( std::ofstream &results ){
         return 1;
     }
 
+    //Test jacobians w.r.t. the elastic deformation meaure
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < Fe.size(); i++ ){
+        constantVector delta( Fe.size(), 0 );
+        delta[i] = eps * fabs( Fe[ i ] ) + eps;
+
+        variableVector resultCeP, resultCChieP, resultPsieP, resultGammaeP;
+        variableVector resultCeM, resultCChieM, resultPsieM, resultGammaeM;
+
+        error = micromorphicElastoPlasticity::computeElasticDeformationMeasures( Fe + delta, chie, gradChie,
+                                                                                 resultCeP, resultCChieP, resultPsieP,
+                                                                                 resultGammaeP );
+        if ( error ){
+            error->print();
+            results << "test_computeElasticDeformationMeasures & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeElasticDeformationMeasures( Fe - delta, chie, gradChie,
+                                                                                 resultCeM, resultCChieM, resultPsieM,
+                                                                                 resultGammaeM );
+        if ( error ){
+            error->print();
+            results << "test_computeElasticDeformationMeasures & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( resultCeP - resultCeM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dRCGedFe[j][i] ) ){
+                results << "test_computeElasticDeformationMeasures (test 9) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( resultCChieP - resultCChieM ) / ( 2 * delta[i] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            results << "test_computeElasticDeformationMeasures (test 10) & False\n";
+            return 1;
+        }
+
+        gradCol = ( resultPsieP - resultPsieM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dPsiedFe[j][i] ) ){
+                results << "test_computeElasticDeformationMeasures (test 11) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( resultGammaeP - resultGammaeM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dGammaedFe[j][i] ) ){
+                results << "test_computeElasticDeformationMeasures (test 12) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test jacobians w.r.t. the elastic micro-deformation
+    for ( unsigned int i = 0; i < chie.size(); i++ ){
+        constantVector delta( chie.size(), 0 );
+        delta[i] = eps * fabs( chie[ i ] ) + eps;
+
+        variableVector resultCeP, resultCChieP, resultPsieP, resultGammaeP;
+        variableVector resultCeM, resultCChieM, resultPsieM, resultGammaeM;
+
+        error = micromorphicElastoPlasticity::computeElasticDeformationMeasures( Fe, chie + delta, gradChie,
+                                                                                 resultCeP, resultCChieP, resultPsieP,
+                                                                                 resultGammaeP );
+        if ( error ){
+            error->print();
+            results << "test_computeElasticDeformationMeasures & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeElasticDeformationMeasures( Fe, chie - delta, gradChie,
+                                                                                 resultCeM, resultCChieM, resultPsieM,
+                                                                                 resultGammaeM );
+        if ( error ){
+            error->print();
+            results << "test_computeElasticDeformationMeasures & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( resultCeP - resultCeM ) / ( 2 * delta[i] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            results << "test_computeElasticDeformationMeasures (test 13) & False\n";
+            return 1;
+        }
+
+        gradCol = ( resultCChieP - resultCChieM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dMicroRCGedChie[j][i] ) ){
+                results << "test_computeElasticDeformationMeasures (test 14) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( resultPsieP - resultPsieM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dPsiedChie[j][i] ) ){
+                results << "test_computeElasticDeformationMeasures (test 15) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( resultGammaeP - resultGammaeM ) / ( 2 * delta[i] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            results << "test_computeElasticDeformationMeasures (test 16) & False\n";
+            return 1;
+        }
+    }
+
+    for ( unsigned int i = 0; i < gradChie.size(); i++ ){
+        constantVector delta( gradChie.size(), 0 );
+        delta[i] = eps * fabs( gradChie[ i ] ) + eps;
+
+        variableVector resultCeP, resultCChieP, resultPsieP, resultGammaeP;
+        variableVector resultCeM, resultCChieM, resultPsieM, resultGammaeM;
+
+        error = micromorphicElastoPlasticity::computeElasticDeformationMeasures( Fe, chie, gradChie + delta,
+                                                                                 resultCeP, resultCChieP, resultPsieP,
+                                                                                 resultGammaeP );
+        if ( error ){
+            error->print();
+            results << "test_computeElasticDeformationMeasures & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeElasticDeformationMeasures( Fe, chie, gradChie - delta,
+                                                                                 resultCeM, resultCChieM, resultPsieM,
+                                                                                 resultGammaeM );
+        if ( error ){
+            error->print();
+            results << "test_computeElasticDeformationMeasures & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( resultCeP - resultCeM ) / ( 2 * delta[i] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            results << "test_computeElasticDeformationMeasures (test 17) & False\n";
+            return 1;
+        }
+
+        gradCol = ( resultCChieP - resultCChieM ) / ( 2 * delta[i] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            results << "test_computeElasticDeformationMeasures (test 18) & False\n";
+            return 1;
+        }
+
+        gradCol = ( resultPsieP - resultPsieM ) / ( 2 * delta[i] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            results << "test_computeElasticDeformationMeasures (test 19) & False\n";
+            return 1;
+        }
+
+        gradCol = ( resultGammaeP - resultGammaeM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[j], dGammaedGradChie[j][i] ) ){
+                results << "test_computeElasticDeformationMeasures (test 20) & False\n";
+                return 1;
+            }
+        }
+    }
 
     results << "test_computeElasticDeformationMeasures & True\n";
     return 0;
