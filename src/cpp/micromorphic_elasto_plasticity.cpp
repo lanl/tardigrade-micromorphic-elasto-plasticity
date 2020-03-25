@@ -1128,6 +1128,44 @@ namespace micromorphicElastoPlasticity{
         //Assume 3D
         unsigned int dim = 3;
 
+        if ( microGradientGamma.size() != dim ){
+            return new errorNode( "computePlasticMicroGradientVelocityGradient",
+                                  "The micro gradient plastic multiplier must have a length of 3" );
+        }
+
+        if ( elasticPsi.size() != dim  * dim ){
+            return new errorNode( "computePlasticMicroGradientVelocityGradient",
+                                  "The elastic micro deformation measure Psi must be 3D" );
+        }
+
+        if ( inverseElasticPsi.size() != dim  * dim ){
+            return new errorNode( "computePlasticMicroGradientVelocityGradient",
+                                  "The inverse elastic micro deformation measure Psi must be 3D" );
+        }
+
+        if ( elasticGamma.size() != dim * dim * dim ){
+            return new errorNode( "computePlasticMicroGradientVelocityGradient",
+                                  "The elastic higher order deformation measure Gamma must be 3D" );
+        }
+
+        if ( microGradientFlowDirection.size() != dim ){
+            return new errorNode( "computePlasticVelocityGradients",
+                                  "The micro gradient flow direction must be 3D" );
+        }
+
+        for ( unsigned int i = 0; i < dim; i++ ){
+            if ( microGradientFlowDirection[ i ].size() != dim * dim * dim ){
+                return new errorNode( "computePlasticVelocityGradients",
+                                      "The rows of the micro gradient flow direction must be of length 27" );
+            }
+        }
+
+        if ( plasticMicroVelocityGradient.size() != dim * dim ){
+            return new errorNode( "computePlasticMicroGradientVelocityGradient",
+                                  "The plastic micro velocity gradient must be 3D" );
+        }
+
+
         //Assemble the 'skew' term
         variableVector skewTerm = variableVector( dim * dim * dim, 0 );
 
@@ -1203,51 +1241,14 @@ namespace micromorphicElastoPlasticity{
         //Assume 3D
         unsigned int dim = 3;
 
-        if ( microGradientGamma.size() != dim ){
-            return new errorNode( "computePlasticVelocityGradients",
-                                  "The micro gradient gamma must be of dimension 3" );
-        }
-
         if ( elasticRightCauchyGreen.size() != dim * dim ){
             return new errorNode( "computePlasticVelocityGradients",
                                   "The elastic right Cauchy-Green deformation tensor must be 3D" );
         }
 
-        if ( elasticMicroRightCauchyGreen.size() != dim * dim ){
-            return new errorNode( "computePlasticVelocityGradients",
-                                  "The elastic micro right Cauchy-Green deformation tensor must be 3D" );
-        }
-
         if ( elasticPsi.size() != dim * dim ){
             return new errorNode( "computePlasticVelocityGradients",
                                   "The elastic micro deformation metric Psi must be 3D" );
-        }
-
-        if ( elasticGamma.size() != dim * dim * dim ){
-            return new errorNode( "computePlasticVelocityGradients",
-                                  "The elastic higher order deformation metric Gamma must be 3D" );
-        }
-
-        if ( macroFlowDirection.size() != dim * dim ){
-            return new errorNode( "computePlasticVelocityGradients",
-                                  "The macro flow direction must be 3D" );
-        }
-
-        if ( microFlowDirection.size() != dim * dim ){
-            return new errorNode( "computePlasticVelocityGradients",
-                                  "The micro flow direction must be 3D" );
-        }
-
-        if ( microGradientFlowDirection.size() != dim ){
-            return new errorNode( "computePlasticVelocityGradients",
-                                  "The micro gradient flow direction must be 3D" );
-        }
-
-        for ( unsigned int i = 0; i < dim; i++ ){
-            if ( microGradientFlowDirection[ i ].size() != dim * dim * dim ){
-                return new errorNode( "computePlasticVelocityGradients",
-                                      "The rows of the micro gradient flow direction must be of length 27" );
-            }
         }
 
         //Compute the required inverses of the deformation metrics
@@ -1276,42 +1277,15 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        //Assemble the 'skew' term
-        variableVector skewTerm = variableVector( dim * dim * dim, 0 );
+        error = computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
+                                                             elasticGamma, microGradientFlowDirection, 
+                                                             plasticMicroVelocityGradient, plasticMicroGradientVelocityGradient );
 
-        for ( unsigned int Db = 0; Db < dim; Db++ ){
-            for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
-                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-                    for ( unsigned int Cb = 0; Cb < dim; Cb++ ){
-                        for ( unsigned int Fb = 0; Fb < dim; Fb++ ){
-                            skewTerm[ dim * dim * Db + dim * Mb + Kb ]
-                                += plasticMicroVelocityGradient[ dim * Db + Cb ]
-                                 * inverseElasticPsi[ dim * Cb + Fb ]
-                                 * elasticGamma[ dim * dim * Fb + dim * Mb + Kb ]
-                                 - plasticMicroVelocityGradient[ dim * Cb + Mb ]
-                                 * inverseElasticPsi[ dim * Db + Fb ]
-                                 * elasticGamma[ dim * dim * Fb + dim * Cb + Kb ];
-                        }
-                    }
-                }
-            }
-        }
-
-        plasticMicroGradientVelocityGradient = variableVector( dim * dim * dim, 0 );
-
-        for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
-            for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
-                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-                        for ( unsigned int Ib = 0; Ib < dim; Ib++ ){
-                            plasticMicroGradientVelocityGradient[ dim * dim * Nb + dim * Mb + Kb ]
-                                += inverseElasticPsi[ dim * Nb + Lb ]
-                                 * ( microGradientGamma[ Ib ] * microGradientFlowDirection[ Ib ][ dim * dim * Kb + dim * Lb + Mb ]
-                                 +   elasticPsi[ dim * Lb + Ib ] * skewTerm[ dim * dim * Ib + dim * Mb + Kb ] );
-                        }
-                    }
-                }
-            }
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticVelocityGradients",
+                                             "Error in computation of plastic micro gradient velocity gradient" );
+            result->addNext( error );
+            return result;
         }
 
         return NULL;
