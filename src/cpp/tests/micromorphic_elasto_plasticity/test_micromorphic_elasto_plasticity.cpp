@@ -1543,6 +1543,53 @@ int test_computePlasticMacroVelocityGradient( std::ofstream &results ){
     return 0;
 }
 
+int test_computePlasticMicroVelocityGradient( std::ofstream &results ){
+    /*!
+     * Test the computation of the plastic micro velocity gradient.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    variableType microGamma = 0.8652174130049269;
+
+    variableVector Ce = { 17.06524293,   5.38540351, -20.25732698,
+                           5.38540351,   7.29152741,  -2.58538828,
+                         -20.25732698,  -2.58538828,  33.09421588 };
+
+    variableVector Psie = { 8.80605252,   2.3131131 , -19.28700431,
+                            3.95982925,  -1.71986455,  -5.62211322,
+                           -0.28252834,  11.47370888,   5.77705312 };
+
+    variableVector invPsie = vectorTools::inverse( Psie, 3, 3 );
+
+    variableVector microFlowDirection = { 0.86300151, 0.95736394, 0.61329255,
+                                          0.27780339, 0.26054793, 0.33313753,
+                                          0.34289169, 0.57971261, 0.51536929 };
+
+    variableVector answerMicroLp = { -85.67983387, -16.91839826, 127.3318347 ,
+                                       0.65035144,   0.1459189 ,  -0.71988301,
+                                     -36.05794838,  -7.86041652,  52.33737079 };
+
+    variableVector resultMicroLp;
+
+    errorOut error = micromorphicElastoPlasticity::computePlasticMicroVelocityGradient( microGamma, Ce, Psie, invPsie,
+                                                                                        microFlowDirection, resultMicroLp );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMicroVelocityGradient & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMicroLp, resultMicroLp ) ){
+        results << "test_computePlasticMicroVelocityGradient (test 1) & False\n";
+        return 1;
+    }
+
+    results << "test_computePlasticMicroVelocityGradient & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -1561,6 +1608,7 @@ int main(){
     test_computeElasticPartOfDeformation( results );
     test_computeElasticDeformationMeasures( results );
     test_computePlasticMacroVelocityGradient( results );
+    test_computePlasticMicroVelocityGradient( results );
     test_computePlasticVelocityGradients( results );
 
     //Close the results file
