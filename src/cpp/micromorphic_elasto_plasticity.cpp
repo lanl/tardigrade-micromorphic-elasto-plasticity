@@ -1104,6 +1104,70 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
+    errorOut computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableMatrix &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient ){
+        /*!
+         * Compute the plastic micro gradient velocity gradient.
+         *
+         * \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]
+         *
+         * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
+         * 
+         * :param const variableVector &microGradientGamma: The micro gradient plastic multiplier.
+         * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
+         * :param const variableVector &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
+         * :param const variableVector &elasticGamma: The elastic higher order deformation measure Gamma.
+         * :param const variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+         * :param const variableVector &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
+         * :param variableVector &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        //Assemble the 'skew' term
+        variableVector skewTerm = variableVector( dim * dim * dim, 0 );
+
+        for ( unsigned int Db = 0; Db < dim; Db++ ){
+            for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                    for ( unsigned int Cb = 0; Cb < dim; Cb++ ){
+                        for ( unsigned int Fb = 0; Fb < dim; Fb++ ){
+                            skewTerm[ dim * dim * Db + dim * Mb + Kb ]
+                                += plasticMicroVelocityGradient[ dim * Db + Cb ]
+                                 * inverseElasticPsi[ dim * Cb + Fb ]
+                                 * elasticGamma[ dim * dim * Fb + dim * Mb + Kb ]
+                                 - plasticMicroVelocityGradient[ dim * Cb + Mb ]
+                                 * inverseElasticPsi[ dim * Db + Fb ]
+                                 * elasticGamma[ dim * dim * Fb + dim * Cb + Kb ];
+                        }
+                    }
+                }
+            }
+        }
+
+        plasticMicroGradientVelocityGradient = variableVector( dim * dim * dim, 0 );
+
+        for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
+            for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+                        for ( unsigned int Ib = 0; Ib < dim; Ib++ ){
+                            plasticMicroGradientVelocityGradient[ dim * dim * Nb + dim * Mb + Kb ]
+                                += inverseElasticPsi[ dim * Nb + Lb ]
+                                 * ( microGradientGamma[ Ib ] * microGradientFlowDirection[ Ib ][ dim * dim * Kb + dim * Lb + Mb ]
+                                 +   elasticPsi[ dim * Lb + Ib ] * skewTerm[ dim * dim * Ib + dim * Mb + Kb ] );
+                        }
+                    }
+                }
+            }
+        }
+
+        return NULL;
+    }
 
     errorOut computePlasticVelocityGradients( const variableType &macroGamma, const variableType &microGamma,
                                               const variableVector &microGradientGamma, const variableVector &elasticRightCauchyGreen,
@@ -1188,7 +1252,6 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the required inverses of the deformation metrics
         variableVector inverseElasticRightCauchyGreen = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
-//        variableVector inverseElasticMicroRightCauchyGreen = vectorTools::inverse( elasticMicroRightCauchyGreen, dim, dim );
         variableVector inverseElasticPsi = vectorTools::inverse( elasticPsi, dim, dim );
 
         //Compute the macro-scale velocity gradient
