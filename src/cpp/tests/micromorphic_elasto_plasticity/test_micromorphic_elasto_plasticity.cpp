@@ -1391,6 +1391,111 @@ int test_computeElasticDeformationMeasures( std::ofstream &results ){
     return 0;
 }
 
+int test_computePlasticVelocityGradients( std::ofstream &results ){
+    /*!
+     * Test the computation of the plastic velocity gradients.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    variableType macroGamma = 0.08166694603978908;
+    variableType microGamma = 0.8652174130049269;
+    variableVector microGradientGamma = { 0.17245016, 0.92420274, 0.28114459 };
+
+    variableVector Ce = { 15.81870565,  0.8392615 ,  2.09805203,
+                           0.8392615 ,  2.68322729, -6.62003948,
+                           2.09805203, -6.62003948, 24.82920808 };
+
+    variableVector microCe = { 17.06524293,   5.38540351, -20.25732698,
+                                5.38540351,   7.29152741,  -2.58538828,
+                              -20.25732698,  -2.58538828,  33.09421588 };
+
+    variableVector Psie = {  8.80605252,   2.3131131 , -19.28700431,
+                             3.95982925,  -1.71986455,  -5.62211322,
+                            -0.28252834,  11.47370888,   5.77705312 };
+
+    variableVector Gammae = { 4.80644001,  0.07861661,  1.64980155,  1.23072776, -0.5292324 ,
+                             -3.06821432,  6.87892124,  3.03299854,  0.04146446, -1.08196034,
+                              1.02647393, -2.6741583 , -0.07702067,  1.53487528, -1.46782133,
+                             -2.79814493, -3.08707902,  0.29650483,  7.95112472, -0.0823429 ,
+                              9.86433536,  0.55102384, -3.97123001,  1.26600849, 14.19808301,
+                              8.33368016,  0.57102355 };
+
+    variableVector macroFlowDirection = { 0.78884638, 0.19639211, 0.15523073,
+                                          0.47307595, 0.28241451, 0.66404732,
+                                          0.1634089 , 0.92452471, 0.77390742 };
+
+    variableVector microFlowDirection = { 0.86300151, 0.95736394, 0.61329255,
+                                          0.27780339, 0.26054793, 0.33313753,
+                                          0.34289169, 0.57971261, 0.51536929 };
+
+    variableMatrix microGradientFlowDirection = { { 0.38320117, 0.00147635, 0.22526135, 0.24857347, 0.44904944,
+                                                    0.39175461, 0.94088825, 0.04088633, 0.95042374, 0.44676197,
+                                                    0.33100061, 0.79806506, 0.05883935, 0.20924962, 0.83681153,
+                                                    0.12116776, 0.39737069, 0.07417313, 0.5859491 , 0.28899583,
+                                                    0.91967175, 0.413024  , 0.97723212, 0.81694258, 0.92037483,
+                                                    0.84857389, 0.74623422 },
+                                                  { 0.65442987, 0.15706966, 0.03580793, 0.98977654, 0.6414159 ,
+                                                    0.03345668, 0.73436727, 0.25417675, 0.594925  , 0.4871345 ,
+                                                    0.27395216, 0.23644903, 0.42902409, 0.24760169, 0.16207352,
+                                                    0.68475097, 0.86214768, 0.9734798 , 0.86141159, 0.98250926,
+                                                    0.25056881, 0.8315578 , 0.95970017, 0.62180382, 0.52207192,
+                                                    0.66811873, 0.06083854 },
+                                                  { 0.59855098, 0.41784728, 0.41193658, 0.3161969 , 0.75697096,
+                                                    0.2172361 , 0.5170385 , 0.52482239, 0.55849978, 0.60039656,
+                                                    0.38358062, 0.66214191, 0.22829067, 0.10781315, 0.40531347,
+                                                    0.25340843, 0.89016033, 0.85477638, 0.43630125, 0.35699992,
+                                                    0.3784267 , 0.12262464, 0.38383612, 0.12695384, 0.74207569,
+                                                    0.58531619, 0.08294492 } };
+
+    variableVector answerLp = { -0.05489573, -0.01980382, -0.06060589,
+                                 1.1610081 ,  0.4002548 ,  0.86866858,
+                                 0.33607202,  0.12218348,  0.25723268 };
+
+    variableVector answerMicroLp = { -85.67983387, -16.91839826, 127.3318347 ,
+                                       0.65035144,   0.1459189 ,  -0.71988301,
+                                     -36.05794838,  -7.86041652,  52.33737079 };
+
+    variableVector answerGradientMicroLp = { -83.50670143,  -11.14831106,  -39.09529065,  -16.58901227,
+                                              -8.71869628,   19.76266969,   64.74989223,    3.55092183,
+                                              59.30524632,  126.06867513,   26.68572242,   83.03661657,
+                                              25.93560443,    6.13134257,   16.20263835, -185.220318  ,
+                                             -38.17442863, -123.4797927 ,  -56.62958098,   -7.64862742,
+                                             -16.00279814,  -11.26027965,   -4.19458173,    8.34519958,
+                                              58.1455205 ,    5.42232797,   23.44933638 };
+
+    variableVector resultLp, resultMicroLp, resultGradientMicroLp;
+
+    errorOut error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
+                                                                                    Ce, microCe, Psie, Gammae, macroFlowDirection, 
+                                                                                    microFlowDirection, microGradientFlowDirection,
+                                                                                    resultLp, resultMicroLp, resultGradientMicroLp );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticVelocityGradients & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultLp, answerLp ) ){
+        results << "test_computePlasticVelocityGradients (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicroLp, answerMicroLp ) ){
+        results << "test_computePlasticVelocityGradients (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultGradientMicroLp, answerGradientMicroLp ) ){
+        results << "test_computePlasticVelocityGradients (test 3) & False\n";
+        return 1;
+    }
+
+    results << "test_computePlasticVelocityGradients & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -1408,6 +1513,7 @@ int main(){
     test_computeHigherOrderDruckerPragerYieldEquation( results );
     test_computeElasticPartOfDeformation( results );
     test_computeElasticDeformationMeasures( results );
+    test_computePlasticVelocityGradients( results );
 
     //Close the results file
     results.close();
