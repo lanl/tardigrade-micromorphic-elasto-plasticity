@@ -1396,10 +1396,10 @@ namespace micromorphicElastoPlasticity{
         //Assume 3D
         unsigned int dim = 3;
 
-        variableVector skewTerm;
         errorOut error = computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
                                                                       elasticGamma, microGradientFlowDirection,
-                                                                      plasticMicroVelocityGradient, skewTerm );
+                                                                      plasticMicroVelocityGradient, 
+                                                                      plasticMicroGradientVelocityGradient );
 
         if ( error ){
             errorOut result = new errorNode( "computePlasticMicroGradientVelocityGradient (jacobian)",
