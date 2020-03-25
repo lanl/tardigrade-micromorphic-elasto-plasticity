@@ -1126,17 +1126,22 @@ namespace micromorphicElastoPlasticity{
         variableVector inverseElasticPsi = vectorTools::inverse( elasticPsi, dim, dim );
 
         //Compute the macro-scale velocity gradient
-        macroPlasticVelocityGradient = variableVector( dim * dim, 0 );
+
+        errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
+                                                              macroFlowDirection, microFlowDirection, macroPlasticVelocityGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticVelocityGradients",
+                                             "Error in computation of plastic macro velocity gradient" );
+            result->addNext( error );
+            return result;
+        }
+
         microPlasticVelocityGradient = variableVector( dim * dim, 0 );
 
         for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
             for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
                 for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-                    macroPlasticVelocityGradient[ dim * Bb + Kb ]
-                        += inverseElasticRightCauchyGreen[ dim * Bb + Lb ]
-                         * ( macroGamma * macroFlowDirection[ dim * Kb + Lb ]
-                         +   microGamma * microFlowDirection[ dim * Kb + Lb ] );
-
                     for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
                         for ( unsigned int Eb = 0; Eb < dim; Eb++ ){
                             microPlasticVelocityGradient[ dim * Bb + Kb ]
