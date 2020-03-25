@@ -1039,6 +1039,131 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
+    errorOut computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
+                                                  const variableVector &inverseElasticRightCauchyGreen,
+                                                  const variableVector &macroFlowDirection,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &plasticMacroVelocityGradient,
+                                                  variableVector &dMacroPlasticLdMacroGamma,
+                                                  variableVector &dMacroPlasticLdMicroGamma ){
+        /*!
+         * Compute the plastic macro velocity gradient in the intermediate configuration.
+         *
+         * \bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]
+         *
+         * :param const variableType &macroGamma: The macro plastic multiplier.
+         * :param const variableType &microGamma: The micro plastic multiplier.
+         * :param const variableVector &inverseElasticRightCauchyGreen: The inverse of the elastic right Cauchy-Green deformation tensor.
+         * :param const variableVector &macroFlowDirection: The flow direction of the macro plasticity.
+         * :param const variableVector &microFlowDirection: The flow direction of the micro plasticity.
+         * :param variableVector &plasticMacroVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
+         * :param variableVector &dMacroPlasticLdMacroGamma: The Jacobian of the plastic velocity gradient w.r.t. the 
+         *     macro plastic multiplier.
+         * :param variableVector &dMacroPlasticLdMicroGamma: The Jacobian of the plastic velocity gradient w.r.t. the 
+         *     micro plastic multiplier.
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
+                                                              macroFlowDirectoin, microFlowDirection, plasticMacroVelocityGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticMacroVelocityGradient (plastic multiplier jacobian)",
+                                             "Error in computation of the plastic macro velocity gradient" );
+            result->addNext( error );
+            return result;
+        }
+
+        dMacroPlasticLdMacroGamma = variableVector( dim * dim, 0 );
+        dMacroPlasticLdMicroGamma = variableVector( dim * dim, 0 );
+
+        for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+            for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+                    dMacroPlasticLdMacroGamma += inverseElasticRightCauchyGreen[ dim * Bb + dim * Lb ]
+                                               * macroFlowDirection[ dim * Kb + Lb ];
+
+                    dMacroPlasticLdMicroGamma += inverseElasticRightCauchyGreen[ dim * Bb + dim * Lb ]
+                                               * microFlowDirection[ dim * Kb + Lb ];
+                }
+            }
+        }
+
+        return NULL;
+    }
+
+    errorOut computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
+                                                  const variableVector &inverseElasticRightCauchyGreen,
+                                                  const variableVector &macroFlowDirection,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &macroPlasticVelocityGradient,
+                                                  variableVector &dMacroPlasticLdMacroGamma,
+                                                  variableVector &dMacroPlasticLdMicroGamma, 
+                                                  variableMatrix &dMacroPlasticLdElasticRCG, 
+                                                  variableMatrix &dMacroPlasticLdMacroFlowDirection, 
+                                                  variableMatrix &dMacroPlasticLdMicroFlowDirection ){
+        /*!
+         * Compute the plastic macro velocity gradient in the intermediate configuration.
+         *
+         * \bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]
+         *
+         * :param const variableType &macroGamma: The macro plastic multiplier.
+         * :param const variableType &microGamma: The micro plastic multiplier.
+         * :param const variableVector &inverseElasticRightCauchyGreen: The inverse of the elastic right Cauchy-Green deformation tensor.
+         * :param const variableVector &macroFlowDirection: The flow direction of the macro plasticity.
+         * :param const variableVector &microFlowDirection: The flow direction of the micro plasticity.
+         * :param variableVector &plasticMacroVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
+         * :param variableVector &dMacroPlasticLdMacroGamma: The Jacobian of the plastic velocity gradient w.r.t. the 
+         *     macro plastic multiplier.
+         * :param variableVector &dMacroPlasticLdMicroGamma: The Jacobian of the plastic velocity gradient w.r.t. the 
+         *     micro plastic multiplier.
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
+                                                              macroFlowDirectoin, microFlowDirection, plasticMacroVelocityGradient,
+                                                              dMacroPlasticLdMacroGamma, dMacroPlasticLdMicroGamma );
+
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticMacroVelocityGradient (full jacobian)",
+                                             "Error in computation of the plastic macro velocity gradient" );
+            result->addNext( error );
+            return result;
+        }
+
+        constantVector eye( dim * dim );
+        vectorTools::eye( eye );
+
+        dMacroPlasticLdElasticRCG = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
+        dMacroPlasticLdMacroFlowDirection = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
+        dMacroPlasticLdMicroFlowDirection = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
+
+        for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+            for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
+                    for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
+                        dMacroPlasticLdElasticRCG[ dim * Bb + Kb ][ dim * Ob + Pb ]
+                            -= inverseElasticRightCauchyGreen[ dim * Bb + Ob ]
+                             * macroPlasticVelocityGradient[ dim * Pb + Kb ];
+                        
+                        dMacroPlasticLdMacroFlowDirection[ dim * Bb + Kb ][ dim * Ob + Pb ]
+                            += macroGamma * inverseElasticRightCauchyGreen[ dim * Bb + Pb ] * eye[ dim * Kb + Ob ];
+
+                        dMacroPlasticLdMicroFlowDirection[ dim * Bb + Kb ][ dim * Ob + Pb ]
+                            += microGamma * inverseElasticRightCauchyGreen[ dim * Bb + Pb ] * eye[ dim * Kb + Ob ];
+                    }
+                }
+            }
+        }
+
+        return NULL:
+    }
+
+
     errorOut computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
                                                   const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
                                                   const variableVector &microFlowDirection,

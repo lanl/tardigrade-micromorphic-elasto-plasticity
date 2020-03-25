@@ -125,6 +125,25 @@ namespace micromorphicElastoPlasticity{
                                                   const variableVector &microFlowDirection,
                                                   variableVector &macroPlasticVelocityGradient );
 
+    errorOut computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
+                                                  const variableVector &inverseElasticRightCauchyGreen,
+                                                  const variableVector &macroFlowDirection,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &macroPlasticVelocityGradient,
+                                                  variableVector &dMacroPlasticLdMacroGamma,
+                                                  variableVector &dMacroPlasticLdMicroGamma );
+
+    errorOut computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
+                                                  const variableVector &inverseElasticRightCauchyGreen,
+                                                  const variableVector &macroFlowDirection,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &macroPlasticVelocityGradient,
+                                                  variableVector &dMacroPlasticLdMacroGamma,
+                                                  variableVector &dMacroPlasticLdMicroGamma,
+                                                  variableMatrix &dMacroPlasticLdElasticRCG,
+                                                  variableMatrix &dMacroPlasticLdMacroFlowDirection,
+                                                  variableMatrix &dMacroPlasticLdMicroFlowDirection );
+
     errorOut computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
                                                   const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
                                                   const variableVector &microFlowDirection,
