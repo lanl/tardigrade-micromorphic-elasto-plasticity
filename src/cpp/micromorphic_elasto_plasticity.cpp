@@ -986,6 +986,59 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
+    errorOut computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
+                                                  const variableVector &inverseElasticRightCauchyGreen,
+                                                  const variableVector &macroFlowDirection,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &macroPlasticVelocityGradient ){
+        /*!
+         * Compute the plastic macro velocity gradient in the intermediate configuration.
+         *
+         * \bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]
+         *
+         * :param const variableType &macroGamma: The macro plastic multiplier.
+         * :param const variableType &microGamma: The micro plastic multiplier.
+         * :param const variableVector &inverseElasticRightCauchyGreen: The inverse of the elastic right Cauchy-Green deformation tensor.
+         * :param const variableVector &macroFlowDirection: The flow direction of the macro plasticity.
+         * :param const variableVector &microFlowDirection: The flow direction of the micro plasticity.
+         * :param variableVector &macroPlasticVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        if ( inverseElasticRightCauchyGreen.size() != dim * dim ){
+            return new errorNode( "computePlasticMacroVelocityGradient",
+                                  "The inverse elastic right Cauchy-Green deformation tensor must be 3D" );
+        }
+
+        if ( macroFlowDirection.size() != dim * dim ){
+            return new errorNode( "computePlasticMacroVelocityGradient",
+                                  "The macro flow direction tensor must be 3D" );
+        }
+
+        if ( microFlowDirection.size() != dim * dim ){
+            return new errorNode( "computePlasticMacroVelocityGradient",
+                                  "The micro flow direction tensor must be 3D" );
+        }
+
+        //Compute the macro-scale velocity gradient
+        macroPlasticVelocityGradient = variableVector( dim * dim, 0 );
+
+        for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+            for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+                    macroPlasticVelocityGradient[ dim * Bb + Kb ]
+                        += inverseElasticRightCauchyGreen[ dim * Bb + Lb ]
+                         * ( macroGamma * macroFlowDirection[ dim * Kb + Lb ]
+                         +   microGamma * microFlowDirection[ dim * Kb + Lb ] );
+                }
+            }
+        }
+
+        return NULL;
+    }
+
     errorOut computePlasticVelocityGradients( const variableType &macroGamma, const variableType &microGamma,
                                               const variableVector &microGradientGamma, const variableVector &elasticRightCauchyGreen,
                                               const variableVector &elasticMicroRightCauchyGreen, const variableVector &elasticPsi,
@@ -1067,7 +1120,6 @@ namespace micromorphicElastoPlasticity{
             }
         }
 
-
         //Compute the required inverses of the deformation metrics
         variableVector inverseElasticRightCauchyGreen = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
         variableVector inverseElasticMicroRightCauchyGreen = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
@@ -1087,7 +1139,7 @@ namespace micromorphicElastoPlasticity{
 
                     for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
                         for ( unsigned int Eb = 0; Eb < dim; Eb++ ){
-                            microPlasticVelocityGradient[ dim * Bb + Kb]
+                            microPlasticVelocityGradient[ dim * Bb + Kb ]
                                 += microGamma
                                  * inverseElasticPsi[ dim * Bb + Lb ]
                                  * microFlowDirection[ dim * Eb + Lb ]
@@ -1138,5 +1190,17 @@ namespace micromorphicElastoPlasticity{
         }
 
         return NULL;
+    }
+
+    errorOut computePlasticVelocityGradients( const variableType &macroGamma, const variableType &microGamma,
+                                              const variableVector &microGradientGamma, const variableVector &elasticRightCauchyGreen,
+                                              const variableVector &elasticMicroRightCauchyGreen, const variableVector &elasticPsi,
+                                              const variableVector &elasticGamma, const variableVector &macroFlowDirection,
+                                              const variableVector &microFlowDirection, const variableMatrix &microGradientFlowDirection,
+                                              variableVector &macroPlasticVelocityGradient, variableVector &microPlasticVelocityGradient,
+                                              variableVector &microGradientPlasticVelocityGradient, variableVector &dMacroLpdMacroGamma,                                               variableVector &dMacroLpdMicroGamma, variableVector &dMicroLpdMicroGamma,
+                                              variableVector &dMicroGradientLpdMacroGamma, variableVector &dMicroGradientLpdMicroGamma,
+                                              variableMatrix &dMicroGradientLpdMicroGradientGamma ){
+
     }
 }

@@ -119,6 +119,12 @@ namespace micromorphicElastoPlasticity{
                                                 variableMatrix &dElasticPsidElasticF, variableMatrix &dElasticPsidElasticChi,
                                                 variableMatrix &dElasticGammadElasticF, variableMatrix &dElasticGammadElasticGradChi );
 
+    errorOut computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
+                                                  const variableVector &inverseElasticRightCauchyGreen,
+                                                  const variableVector &macroFlowDirection,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &macroPlasticVelocityGradient );
+
     errorOut computePlasticVelocityGradients( const variableType &macroGamma, const variableType &microGamma, 
                                               const variableVector &microGradientGamma, const variableVector &elasticRightCauchyGreen,
                                               const variableVector &elasticMicroRightCauchyGreen, const variableVector &elasticPsi,
@@ -126,6 +132,17 @@ namespace micromorphicElastoPlasticity{
                                               const variableVector &microFlowDirection, const variableMatrix &microGradientFlowDirection,
                                               variableVector &macroPlasticVelocityGradient, variableVector &microPlasticVelocityGradient,
                                               variableVector &microGradientPlasticVelocityGradient );
+
+    errorOut computePlasticVelocityGradients( const variableType &macroGamma, const variableType &microGamma, 
+                                              const variableVector &microGradientGamma, const variableVector &elasticRightCauchyGreen,
+                                              const variableVector &elasticMicroRightCauchyGreen, const variableVector &elasticPsi,
+                                              const variableVector &elasticGamma, const variableVector &macroFlowDirection,
+                                              const variableVector &microFlowDirection, const variableMatrix &microGradientFlowDirection,
+                                              variableVector &macroPlasticVelocityGradient, variableVector &microPlasticVelocityGradient,
+                                              variableVector &microGradientPlasticVelocityGradient, variableVector &dMacroLpdMacroGamma,
+                                              variableVector &dMacroLpdMicroGamma, variableVector &dMicroLpdMicroGamma,
+                                              variableVector &dMicroGradientLpdMacroGamma, variableVector &dMicroGradientLpdMicroGamma,
+                                              variableMatrix &dMicroGradientLpdMicroGradientGamma );
 }
 
 #endif

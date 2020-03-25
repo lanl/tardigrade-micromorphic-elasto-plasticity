@@ -1496,6 +1496,53 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
     return 0;
 }
 
+int test_computePlasticMacroVelocityGradient( std::ofstream &results ){
+    /*!
+     * Test the computation of the plastic macro velocity gradient.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    variableType macroGamma = 0.08166694603978908;
+    variableType microGamma = 0.8652174130049269;
+
+    variableVector inverseCe = { 0.07401454, -0.11274627, -0.03631494,
+                                -0.11274627,  1.26086672,  0.34570313,
+                                -0.03631494,  0.34570313,  0.13551616 };
+
+    variableVector macroFlowDirection = { 0.78884638, 0.19639211, 0.15523073,
+                                          0.47307595, 0.28241451, 0.66404732,
+                                          0.1634089 , 0.92452471, 0.77390742 };
+
+    variableVector microFlowDirection = { 0.86300151, 0.95736394, 0.61329255,
+                                          0.27780339, 0.26054793, 0.33313753,
+                                          0.34289169, 0.57971261, 0.51536929 };
+
+    variableVector answerMacroLp = { -0.05489573, -0.01980382, -0.06060589,
+                                      1.1610081 ,  0.4002548 ,  0.86866858,
+                                      0.33607202,  0.12218348,  0.25723268 };
+
+    variableVector resultMacroLp;
+
+    errorOut error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseCe,
+                                                                                        macroFlowDirection, microFlowDirection,
+                                                                                        resultMacroLp );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMacroVelocityGradient & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMacroLp, resultMacroLp ) ){
+        results << "test_computePlasticMacroVelocityGradient (test 1) & False\n";
+        return 1;
+    }
+
+    results << "test_computePlasticMacroVelocityGradient & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -1513,6 +1560,7 @@ int main(){
     test_computeHigherOrderDruckerPragerYieldEquation( results );
     test_computeElasticPartOfDeformation( results );
     test_computeElasticDeformationMeasures( results );
+    test_computePlasticMacroVelocityGradient( results );
     test_computePlasticVelocityGradients( results );
 
     //Close the results file
