@@ -1067,7 +1067,7 @@ namespace micromorphicElastoPlasticity{
         unsigned int dim = 3;
 
         errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
-                                                              macroFlowDirectoin, microFlowDirection, plasticMacroVelocityGradient );
+                                                              macroFlowDirection, microFlowDirection, plasticMacroVelocityGradient );
 
         if ( error ){
             errorOut result = new errorNode( "computePlasticMacroVelocityGradient (plastic multiplier jacobian)",
@@ -1082,11 +1082,11 @@ namespace micromorphicElastoPlasticity{
         for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
             for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
                 for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-                    dMacroPlasticLdMacroGamma += inverseElasticRightCauchyGreen[ dim * Bb + dim * Lb ]
-                                               * macroFlowDirection[ dim * Kb + Lb ];
+                    dMacroPlasticLdMacroGamma[ dim * Bb + Kb ] += inverseElasticRightCauchyGreen[ dim * Bb + Lb ]
+                                                                * macroFlowDirection[ dim * Kb + Lb ];
 
-                    dMacroPlasticLdMicroGamma += inverseElasticRightCauchyGreen[ dim * Bb + dim * Lb ]
-                                               * microFlowDirection[ dim * Kb + Lb ];
+                    dMacroPlasticLdMicroGamma[ dim * Bb + Kb ] += inverseElasticRightCauchyGreen[ dim * Bb + Lb ]
+                                                                * microFlowDirection[ dim * Kb + Lb ];
                 }
             }
         }
@@ -1098,7 +1098,7 @@ namespace micromorphicElastoPlasticity{
                                                   const variableVector &inverseElasticRightCauchyGreen,
                                                   const variableVector &macroFlowDirection,
                                                   const variableVector &microFlowDirection,
-                                                  variableVector &macroPlasticVelocityGradient,
+                                                  variableVector &plasticMacroVelocityGradient,
                                                   variableVector &dMacroPlasticLdMacroGamma,
                                                   variableVector &dMacroPlasticLdMicroGamma, 
                                                   variableMatrix &dMacroPlasticLdElasticRCG, 
@@ -1125,7 +1125,7 @@ namespace micromorphicElastoPlasticity{
         unsigned int dim = 3;
 
         errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
-                                                              macroFlowDirectoin, microFlowDirection, plasticMacroVelocityGradient,
+                                                              macroFlowDirection, microFlowDirection, plasticMacroVelocityGradient,
                                                               dMacroPlasticLdMacroGamma, dMacroPlasticLdMicroGamma );
 
         if ( error ){
@@ -1148,7 +1148,7 @@ namespace micromorphicElastoPlasticity{
                     for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
                         dMacroPlasticLdElasticRCG[ dim * Bb + Kb ][ dim * Ob + Pb ]
                             -= inverseElasticRightCauchyGreen[ dim * Bb + Ob ]
-                             * macroPlasticVelocityGradient[ dim * Pb + Kb ];
+                             * plasticMacroVelocityGradient[ dim * Pb + Kb ];
                         
                         dMacroPlasticLdMacroFlowDirection[ dim * Bb + Kb ][ dim * Ob + Pb ]
                             += macroGamma * inverseElasticRightCauchyGreen[ dim * Bb + Pb ] * eye[ dim * Kb + Ob ];
@@ -1160,9 +1160,8 @@ namespace micromorphicElastoPlasticity{
             }
         }
 
-        return NULL:
+        return NULL;
     }
-
 
     errorOut computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
                                                   const variableVector &elasticPsi, const variableVector &inverseElasticPsi,

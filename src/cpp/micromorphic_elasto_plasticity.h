@@ -137,7 +137,7 @@ namespace micromorphicElastoPlasticity{
                                                   const variableVector &inverseElasticRightCauchyGreen,
                                                   const variableVector &macroFlowDirection,
                                                   const variableVector &microFlowDirection,
-                                                  variableVector &macroPlasticVelocityGradient,
+                                                  variableVector &plasticMacroVelocityGradient,
                                                   variableVector &dMacroPlasticLdMacroGamma,
                                                   variableVector &dMacroPlasticLdMicroGamma,
                                                   variableMatrix &dMacroPlasticLdElasticRCG,

@@ -1506,9 +1506,11 @@ int test_computePlasticMacroVelocityGradient( std::ofstream &results ){
     variableType macroGamma = 0.08166694603978908;
     variableType microGamma = 0.8652174130049269;
 
-    variableVector inverseCe = { 0.07401454, -0.11274627, -0.03631494,
-                                -0.11274627,  1.26086672,  0.34570313,
-                                -0.03631494,  0.34570313,  0.13551616 };
+    variableVector Ce = { 15.81870565,  0.8392615 ,  2.09805203,
+                           0.8392615 ,  2.68322729, -6.62003948,
+                           2.09805203, -6.62003948, 24.82920808 };
+
+    variableVector inverseCe = vectorTools::inverse( Ce, 3, 3 );
 
     variableVector macroFlowDirection = { 0.78884638, 0.19639211, 0.15523073,
                                           0.47307595, 0.28241451, 0.66404732,
@@ -1537,6 +1539,230 @@ int test_computePlasticMacroVelocityGradient( std::ofstream &results ){
     if ( !vectorTools::fuzzyEquals( answerMacroLp, resultMacroLp ) ){
         results << "test_computePlasticMacroVelocityGradient (test 1) & False\n";
         return 1;
+    }
+
+    //Tests of the Jacobians
+    variableVector resultMacroLpJ;
+    variableVector dMacroLdMacroGammaJ, dMacroLdMicroGammaJ;
+
+    error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseCe,
+                                                                               macroFlowDirection, microFlowDirection,
+                                                                               resultMacroLpJ, dMacroLdMacroGammaJ,
+                                                                               dMacroLdMicroGammaJ );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMacroVelocityGradient & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMacroLp, resultMacroLpJ ) ){
+        results << "test_computePlasticMacroVelocityGradient (test 2) & False\n";
+        return 1;
+    }
+
+    variableVector resultMacroLpJ2;
+    variableVector dMacroLdMacroGammaJ2, dMacroLdMicroGammaJ2;
+    variableMatrix dMacroLdElasticRCG, dMacroLdMacroFlowDirection, dMacroLdMicroFlowDirection;
+
+    error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseCe,
+                                                                               macroFlowDirection, microFlowDirection,
+                                                                               resultMacroLpJ2, dMacroLdMacroGammaJ2,
+                                                                               dMacroLdMicroGammaJ2, dMacroLdElasticRCG,
+                                                                               dMacroLdMacroFlowDirection,
+                                                                               dMacroLdMicroFlowDirection );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMacroVelocityGradient & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMacroLp, resultMacroLpJ2 ) ){
+        results << "test_computePlasticMacroVelocityGradient (test 3) & False\n";
+        return 1;
+    }
+
+    //Tests Jacobians w.r.t. macroGamma
+    constantType eps = 1e-6;
+    constantType scalarDelta = eps * fabs( macroGamma) + eps;
+
+    variableVector resultMacroLpP, resultMacroLpM;
+
+    error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma + scalarDelta, microGamma,
+                                                                               inverseCe, macroFlowDirection, microFlowDirection,
+                                                                               resultMacroLpP );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMacroVelocityGradient & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma - scalarDelta, microGamma,
+                                                                               inverseCe, macroFlowDirection, microFlowDirection,
+                                                                               resultMacroLpM );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMacroVelocityGradient & False\n";
+        return 1;
+    }
+
+    variableVector gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradCol, dMacroLdMacroGammaJ ) ){
+        results << "test_computePlasticMacroVelocityGradient (test 4) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( gradCol, dMacroLdMacroGammaJ2 ) ){
+        results << "test_computePlasticMacroVelocityGradient (test 5) & False\n";
+        return 1;
+    }
+
+    //Test Jacobians w.r.t. microGamma
+    scalarDelta = eps * fabs( microGamma) + eps;
+
+    error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma + scalarDelta,
+                                                                               inverseCe, macroFlowDirection, microFlowDirection,
+                                                                               resultMacroLpP );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMacroVelocityGradient & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma - scalarDelta,
+                                                                               inverseCe, macroFlowDirection, microFlowDirection,
+                                                                               resultMacroLpM );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMacroVelocityGradient & False\n";
+        return 1;
+    }
+
+    gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradCol, dMacroLdMicroGammaJ ) ){
+        results << "test_computePlasticMacroVelocityGradient (test 6) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( gradCol, dMacroLdMicroGammaJ2 ) ){
+        results << "test_computePlasticMacroVelocityGradient (test 7) & False\n";
+        return 1;
+    }
+
+    //Test Jacobians w.r.t. the right Cauchy-Green deformation tensor
+    for ( unsigned int i = 0; i < Ce.size(); i++ ){
+        constantVector delta( Ce.size(), 0 );
+        delta[i] = eps * fabs( Ce[i] ) + eps;
+
+        variableVector inverseCeTemp = vectorTools::inverse( Ce + delta, 3, 3 );
+
+        error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                                   inverseCeTemp, macroFlowDirection,
+                                                                                   microFlowDirection, resultMacroLpP );
+    
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMacroVelocityGradient & False\n";
+            return 1;
+        }
+
+        inverseCeTemp = vectorTools::inverse( Ce - delta, 3, 3 );
+    
+        error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                                   inverseCeTemp, macroFlowDirection,
+                                                                                   microFlowDirection, resultMacroLpM );
+    
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMacroVelocityGradient & False\n";
+            return 1;
+        }
+    
+        gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dMacroLdElasticRCG[ j ][ i ] ) ){
+                results << "test_computePlasticMacroVelocityGradient (test 8) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test Jacobians w.r.t. the macro flow direction
+    for ( unsigned int i = 0; i < macroFlowDirection.size(); i++ ){
+        constantVector delta( macroFlowDirection.size(), 0 );
+        delta[i] = eps * fabs( macroFlowDirection[i] ) + eps;
+
+        error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                                   inverseCe, macroFlowDirection + delta,
+                                                                                   microFlowDirection, resultMacroLpP );
+    
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMacroVelocityGradient & False\n";
+            return 1;
+        }
+    
+        error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                                   inverseCe, macroFlowDirection - delta,
+                                                                                   microFlowDirection, resultMacroLpM );
+    
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMacroVelocityGradient & False\n";
+            return 1;
+        }
+    
+        gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dMacroLdMacroFlowDirection[ j ][ i ] ) ){
+                results << "test_computePlasticMacroVelocityGradient (test 9) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test Jacobians w.r.t. the micro flow direction
+    for ( unsigned int i = 0; i < microFlowDirection.size(); i++ ){
+        constantVector delta( microFlowDirection.size(), 0 );
+        delta[i] = eps * fabs( microFlowDirection[i] ) + eps;
+
+        error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                                   inverseCe, macroFlowDirection,
+                                                                                   microFlowDirection + delta, resultMacroLpP );
+    
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMacroVelocityGradient & False\n";
+            return 1;
+        }
+    
+        error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                                   inverseCe, macroFlowDirection,
+                                                                                   microFlowDirection - delta, resultMacroLpM );
+    
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMacroVelocityGradient & False\n";
+            return 1;
+        }
+    
+        gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dMacroLdMicroFlowDirection[ j ][ i ] ) ){
+                results << "test_computePlasticMacroVelocityGradient (test 10) & False\n";
+                return 1;
+            }
+        }
     }
 
     results << "test_computePlasticMacroVelocityGradient & True\n";
