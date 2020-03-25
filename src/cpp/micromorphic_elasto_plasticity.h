@@ -149,6 +149,12 @@ namespace micromorphicElastoPlasticity{
                                                   const variableVector &microFlowDirection,
                                                   variableVector &plasticMicroVelocityGradient );
 
+    errorOut computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
+                                                  const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &plasticMicroVelocityGradient,
+                                                  variableVector &dPlasticMicroLdMicroGamma );
+
     errorOut computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
                                                           const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
                                                           const variableMatrix &microGradientFlowDirection,
@@ -186,7 +192,7 @@ namespace micromorphicElastoPlasticity{
                                               variableVector &macroPlasticVelocityGradient, variableVector &microPlasticVelocityGradient,
                                               variableVector &microGradientPlasticVelocityGradient, variableVector &dMacroLpdMacroGamma,
                                               variableVector &dMacroLpdMicroGamma, variableVector &dMicroLpdMicroGamma,
-                                              variableVector &dMicroGradientLpdMacroGamma, variableVector &dMicroGradientLpdMicroGamma,
+                                              variableVector &dMicroGradientLpdMicroGamma,
                                               variableMatrix &dMicroGradientLpdMicroGradientGamma );
 }
 
