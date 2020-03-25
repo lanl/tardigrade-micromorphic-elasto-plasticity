@@ -1456,7 +1456,7 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
                                        0.65035144,   0.1459189 ,  -0.71988301,
                                      -36.05794838,  -7.86041652,  52.33737079 };
 
-    variableVector answerGradientMicroLp = { -83.50670143,  -11.14831106,  -39.09529065,  -16.58901227,
+    variableVector answerMicroGradientLp = { -83.50670143,  -11.14831106,  -39.09529065,  -16.58901227,
                                               -8.71869628,   19.76266969,   64.74989223,    3.55092183,
                                               59.30524632,  126.06867513,   26.68572242,   83.03661657,
                                               25.93560443,    6.13134257,   16.20263835, -185.220318  ,
@@ -1464,12 +1464,12 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
                                              -16.00279814,  -11.26027965,   -4.19458173,    8.34519958,
                                               58.1455205 ,    5.42232797,   23.44933638 };
 
-    variableVector resultLp, resultMicroLp, resultGradientMicroLp;
+    variableVector resultLp, resultMicroLp, resultMicroGradientLp;
 
     errorOut error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
                                                                                     Ce, microCe, Psie, Gammae, macroFlowDirection, 
                                                                                     microFlowDirection, microGradientFlowDirection,
-                                                                                    resultLp, resultMicroLp, resultGradientMicroLp );
+                                                                                    resultLp, resultMicroLp, resultMicroGradientLp );
 
     if ( error ){
         error->print();
@@ -1487,8 +1487,96 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( resultGradientMicroLp, answerGradientMicroLp ) ){
+    if ( !vectorTools::fuzzyEquals( resultMicroGradientLp, answerMicroGradientLp ) ){
         results << "test_computePlasticVelocityGradients (test 3) & False\n";
+        return 1;
+    }
+
+    //Tests of the Jacobians
+    variableVector resultLpJ, resultMicroLpJ, resultMicroGradientLpJ;
+
+    variableVector dMacroLpdMacroGammaJ, dMacroLpdMicroGammaJ;
+    variableVector dMicroLpdMicroGammaJ;
+    variableVector dMicroGradientLpdMacroGammaJ, dMicroGradientLpdMicroGammaJ;
+    variableMatrix dMicroGradientLpdMicroGradientGammaJ;
+
+    error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
+                                                                           Ce, microCe, Psie, Gammae, macroFlowDirection, 
+                                                                           microFlowDirection, microGradientFlowDirection,
+                                                                           resultLpJ, resultMicroLpJ, resultMicroGradientLpJ,
+                                                                           dMacroLpdMacroGammaJ, dMacroLpdMicroGammaJ,
+                                                                           dMicroLpdMicroGammaJ, dMicroGradientLpdMacroGammaJ,
+                                                                           dMicroGradientLpdMicroGammaJ,
+                                                                           dMicroGradientLpdMicroGradientGammaJ );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticVelocityGradients & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultLpJ, answerLp ) ){
+        results << "test_computePlasticVelocityGradients (test 4) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicroLpJ, answerMicroLp ) ){
+        results << "test_computePlasticVelocityGradients (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicroGradientLpJ, answerMicroGradientLp ) ){
+        results << "test_computePlasticVelocityGradients (test 6) & False\n";
+        return 1;
+    }
+
+    //Tests of Jacobians w.r.t. microGamma
+    constantType eps = 1e-6;
+    constantType scalarDelta = eps * fabs( macroGamma ) + eps;
+
+    variableVector resultLpP, resultMicroLpP, resultMicroGradientLpP;
+    variableVector resultLpM, resultMicroLpM, resultMicroGradientLpM;
+
+    error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma + scalarDelta, microGamma, microGradientGamma,
+                                                                           Ce, microCe, Psie, Gammae, macroFlowDirection, 
+                                                                           microFlowDirection, microGradientFlowDirection,
+                                                                           resultLpP, resultMicroLpP, resultMicroGradientLpP );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticVelocityGradients & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma - scalarDelta, microGamma, microGradientGamma,
+                                                                           Ce, microCe, Psie, Gammae, macroFlowDirection, 
+                                                                           microFlowDirection, microGradientFlowDirection,
+                                                                           resultLpM, resultMicroLpM, resultMicroGradientLpM );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticVelocityGradients & False\n";
+        return 1;
+    }
+
+    variableVector gradCol = ( resultLpP - resultLpM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradCol, dMacroLpdMacroGammaJ ) ){
+        results << "test_computePlasticVelocityGradients (test 7) & False\n";
+        return 1;
+    }
+
+    gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+        results << "test_computePlasticVelocityGradients (test 8) & False\n";
+        return 1;
+    }
+
+    gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradCol, dMicroGradientLpdMacroGammaJ ) ){
+        results << "test_computePlasticVelocityGradients (test 9) & False\n";
         return 1;
     }
 
@@ -1870,6 +1958,14 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
                                          -16.00279814,  -11.26027965,   -4.19458173,    8.34519958,
                                           58.1455205 ,    5.42232797,   23.44933638 };
 
+    variableVector answerSkewTerm = { -84.06988022,  -11.39160049,  -39.5285613 ,  -17.07306624,
+                                       -8.94361366,   19.17011533,   64.59515902,    3.2768447 ,
+                                       58.94068694,  126.07596462,   26.65609256,   83.02552879,
+                                       25.99081849,    6.07289457,   16.21498441, -185.26655691,
+                                      -38.22947657, -123.43856309,  -56.84233212,   -7.7271727 ,
+                                      -16.14907393,  -11.46103628,   -4.28260582,    8.13100026,
+                                       58.07906172,    5.31870592,   23.31357689 };
+
     variableVector resultMicroGradLp;
 
     errorOut error = micromorphicElastoPlasticity::computePlasticMicroGradientVelocityGradient( microGradientGamma, Psie, invPsie, 
@@ -1886,6 +1982,31 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
         results << "test_computePlasticMicroGradientVelocityGradient (test 1) & False\n";
         return 1;
     }
+
+    variableVector resultMicroGradLp1;
+    variableVector resultSkewTerm;
+
+    error = micromorphicElastoPlasticity::computePlasticMicroGradientVelocityGradient( microGradientGamma, Psie, invPsie, 
+                                                                                       Gammae, microGradientFlowDirection,
+                                                                                       microLp, resultMicroGradLp1,
+                                                                                       resultSkewTerm );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMicroGradientVelocityGradient & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLp1 ) ){
+        results << "test_computePlasticMicroGradientVelocityGradient (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerSkewTerm, resultSkewTerm ) ){
+        results << "test_computePlasticMicroGradientVelocityGradient (test 3) & False\n";
+        return 1;
+    }
+
 
     results << "test_computePlasticMicroGradientVelocityGradient & True\n";
     return 0;
