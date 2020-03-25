@@ -1217,10 +1217,6 @@ namespace micromorphicElastoPlasticity{
         /*!
          * Compute the plastic velocity gradients in the intermediate configuration.
          *
-         * \bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]
-         * \bar{ L }_{ \bar{B} \bar{K} }^{ \chi, p } = \dot{ \bar{ \gamma } }^{\chi} \Psi_{ \bar{E} \bar{L} }^{e, -1} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \bar{ \Psi }_{ \bar{N} \bar{K} }^{e} \bar{C}_{ \bar{N} \bar{F} }^{\chi, p, -1 }
-         * \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]
-         *
          * :param const variableType &macroGamma: The macro plastic multiplier.
          * :param const variableType &microGamma: The micro plastic multiplier.
          * :param const variableVector &microGradientGamma: The micro gradient plastic multiplier.
