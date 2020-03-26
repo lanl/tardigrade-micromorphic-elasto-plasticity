@@ -1932,10 +1932,10 @@ namespace micromorphicElastoPlasticity{
                                               variableMatrix &dPlasticMacroLdElasticRCG,
                                               variableMatrix &dPlasticMacroLdMacroFlowDirection,
                                               variableMatrix &dPlasticMacroLdMicroFlowDirection,
-                                              variableMatrix &dPlasticMicroLdMicroElasticRCG,
+                                              variableMatrix &dPlasticMicroLdElasticMicroRCG,
                                               variableMatrix &dPlasticMicroLdElasticPsi,
                                               variableMatrix &dPlasticMicroLdMicroFlowDirection,
-                                              variableMatrix &dPlasticMicroGradientLdMicroElasticRCG,
+                                              variableMatrix &dPlasticMicroGradientLdElasticMicroRCG,
                                               variableMatrix &dPlasticMicroGradientLdElasticPsi,
                                               variableMatrix &dPlasticMicroGradientLdElasticGamma,
                                               variableMatrix &dPlasticMicroGradientLdMicroFlowDirection,
@@ -1980,12 +1980,12 @@ namespace micromorphicElastoPlasticity{
         unsigned int dim = 3;
 
         if ( elasticRightCauchyGreen.size() != dim * dim ){
-            return new errorNode( "computePlasticVelocityGradients (jacobian)",
+            return new errorNode( "computePlasticVelocityGradients (full jacobian)",
                                   "The elastic right Cauchy-Green deformation tensor must be 3D" );
         }
 
         if ( elasticPsi.size() != dim * dim ){
-            return new errorNode( "computePlasticVelocityGradients (jacobian)",
+            return new errorNode( "computePlasticVelocityGradients (full jacobian)",
                                   "The elastic micro deformation metric Psi must be 3D" );
         }
 
@@ -2002,7 +2002,7 @@ namespace micromorphicElastoPlasticity{
                                                               dPlasticMacroLdMicroFlowDirection );
 
         if ( error ){
-            errorOut result = new errorNode( "computePlasticVelocityGradients (jacobian)",
+            errorOut result = new errorNode( "computePlasticVelocityGradients (full jacobian)",
                                              "Error in computation of plastic macro velocity gradient" );
             result->addNext( error );
             return result;
@@ -2010,10 +2010,11 @@ namespace micromorphicElastoPlasticity{
 
         error = computePlasticMicroVelocityGradient( microGamma, elasticMicroRightCauchyGreen, elasticPsi, inverseElasticPsi,
                                                      microFlowDirection, plasticMicroVelocityGradient,
-                                                     dPlasticMicroLdMicroGamma );
+                                                     dPlasticMicroLdMicroGamma, dPlasticMicroLdElasticMicroRCG,
+                                                     dPlasticMicroLdElasticPsi, dPlasticMicroLdMicroFlowDirection );
 
         if ( error ){
-            errorOut result = new errorNode( "computePlasticVelocityGradients (jacobian)",
+            errorOut result = new errorNode( "computePlasticVelocityGradients (full jacobian)",
                                              "Error in computation of plastic micro velocity gradient" );
             result->addNext( error );
             return result;
@@ -2030,7 +2031,7 @@ namespace micromorphicElastoPlasticity{
                                                               dPlasticMicroLdMicroGamma );
 
         if ( error ){
-            errorOut result = new errorNode( "computePlasticVelocityGradients (jacobian)",
+            errorOut result = new errorNode( "computePlasticVelocityGradients (full jacobian)",
                                              "Error in computation of plastic micro gradient velocity gradient" );
             result->addNext( error );
             return result;

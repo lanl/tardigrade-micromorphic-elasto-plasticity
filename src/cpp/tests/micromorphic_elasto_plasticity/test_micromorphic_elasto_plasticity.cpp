@@ -1846,15 +1846,15 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
             return 1;
         }
 
-//        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroElasticRCGJ2[ j ][ i ] ) ){
-//                results << "test_computePlasticVelocityGradients (test 24) & False\n";
-//                return 1;
-//            }
-//        }
-//
+        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroElasticRCGJ2[ j ][ i ] ) ){
+                results << "test_computePlasticVelocityGradients (test 24) & False\n";
+                return 1;
+            }
+        }
+
 //        gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 //
 //        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
@@ -1899,15 +1899,15 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
             return 1;
         }
 
-//        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroElasticRCGJ2[ j ][ i ] ) ){
-//                results << "test_computePlasticVelocityGradients (test 27) & False\n";
-//                return 1;
-//            }
-//        }
-//
+        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdElasticPsiJ2[ j ][ i ] ) ){
+                results << "test_computePlasticVelocityGradients (test 27) & False\n";
+                return 1;
+            }
+        }
+
 //        gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 //
 //        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
@@ -1952,15 +1952,15 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
             return 1;
         }
 
-//        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroElasticRCGJ2[ j ][ i ] ) ){
-//                results << "test_computePlasticVelocityGradients (test 30) & False\n";
-//                return 1;
-//            }
-//        }
-//
+        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_computePlasticVelocityGradients (test 30) & False\n";
+                return 1;
+            }
+        }
+
 //        gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 //
 //        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
@@ -2007,15 +2007,15 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
             }
         }
 
-//        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroElasticRCGJ2[ j ][ i ] ) ){
-//                results << "test_computePlasticVelocityGradients (test 33) & False\n";
-//                return 1;
-//            }
-//        }
-//
+        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_computePlasticVelocityGradients (test 33) & False\n";
+                return 1;
+            }
+        }
+
 //        gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 //
 //        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
@@ -2062,15 +2062,15 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
             }
         }
 
-//        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroElasticRCGJ2[ j ][ i ] ) ){
-//                results << "test_computePlasticVelocityGradients (test 36) & False\n";
-//                return 1;
-//            }
-//        }
-//
+        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroFlowDirectionJ2[ j ][ i ] ) ){
+                results << "test_computePlasticVelocityGradients (test 36) & False\n";
+                return 1;
+            }
+        }
+
 //        gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 //
 //        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
@@ -2117,15 +2117,15 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
             }
         }
 
-//        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroElasticRCGJ2[ j ][ i ] ) ){
-//                results << "test_computePlasticVelocityGradients (test 39) & False\n";
-//                return 1;
-//            }
-//        }
-//
+        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ ( int )( i / 27 ) ][ i % 27 ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_computePlasticVelocityGradients (test 39) & False\n";
+                return 1;
+            }
+        }
+
 //        gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 //
 //        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
