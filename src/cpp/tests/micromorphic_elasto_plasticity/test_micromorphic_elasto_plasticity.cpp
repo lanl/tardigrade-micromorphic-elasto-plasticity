@@ -2309,6 +2309,31 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
         return 1;
     }
 
+    variableVector resultMicroGradLpJ2, resultSkewTerm2;
+    variableMatrix dPlasticMicroGradientLdMicroGradientGamma2;
+    variableMatrix dPlasticMicroGradientLdPlasticMicroL2;
+
+    error = micromorphicElastoPlasticity::computePlasticMicroGradientVelocityGradient( microGradientGamma, Psie, invPsie,
+                                                                                       elasticGamma, microGradientFlowDirection,
+                                                                                       microLp, resultMicroGradLpJ2, resultSkewTerm2,
+                                                                                       dPlasticMicroGradientLdMicroGradientGamma2,
+                                                                                       dPlasticMicroGradientLdPlasticMicroL2 );
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMicroGradientVelocityGradient & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ2 ) ){
+        results << "test_computePlasticMicroGradientVelocityGradient (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerSkewTerm, resultSkewTerm2 ) ){
+        results << "test_computePlasticMicroGradientVelocityGradient (test 6) & False\n";
+        return 1;
+    }
+
     //Test computation of Jacobians w.r.t. microGradientGamma
     constantType eps = 1e-6;
     for ( unsigned int i = 0; i < microGradientGamma.size(); i++ ){
@@ -2341,7 +2366,14 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientGamma[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 5) & False\n";
+                results << "test_computePlasticMicroGradientVelocityGradient (test 7) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientGamma2[ j ][ i ] ) ){
+                results << "test_computePlasticMicroGradientVelocityGradient (test 8) & False\n";
                 return 1;
             }
         }
@@ -2377,7 +2409,14 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 6) & False\n";
+                results << "test_computePlasticMicroGradientVelocityGradient (test 9) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL2[ j ][ i ] ) ){
+                results << "test_computePlasticMicroGradientVelocityGradient (test 10) & False\n";
                 return 1;
             }
         }

@@ -1549,6 +1549,126 @@ namespace micromorphicElastoPlasticity{
          *     velocity gradient w.r.t. the platic micro velocity gradient.
          */
 
+        variableVector skewTerm;
+        return computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi, elasticGamma,
+                                                            microGradientFlowDirection, plasticMicroVelocityGradient,
+                                                            plasticMicroGradientVelocityGradient, skewTerm,
+                                                            dPlasticMicroGradientLdMicroGradientGamma,
+                                                            dPlasticMicroGradientLdPlasticMicroL );
+    }
+
+    errorOut computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableMatrix &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableVector &skewTerm,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL ){
+        /*!
+         * Compute the plastic micro gradient velocity gradient.
+         *
+         * \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]
+         *
+         * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
+         * 
+         * :param const variableVector &microGradientGamma: The micro gradient plastic multiplier.
+         * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
+         * :param const variableVector &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
+         * :param const variableVector &elasticGamma: The elastic higher order deformation measure Gamma.
+         * :param const variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+         * :param const variableVector &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
+         * :param variableVector &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
+         * :param variableVector &skewTerm: Two times the skew term.
+         * :param variableMatrix &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient 
+         *     velocity gradient w.r.t. the micro gradient gamma.
+         * :param variableMatrix &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient 
+         *     velocity gradient w.r.t. the platic micro velocity gradient.
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        errorOut error = computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
+                                                                      elasticGamma, microGradientFlowDirection,
+                                                                      plasticMicroVelocityGradient, 
+                                                                      plasticMicroGradientVelocityGradient, skewTerm );
+
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticMicroGradientVelocityGradient (jacobian)",
+                                             "Error in computation of the plasticMicroVelocityGradient" );
+            result->addNext( error );
+            return result;
+        }
+
+        constantVector eye( dim * dim );
+        vectorTools::eye( eye );
+
+        dPlasticMicroGradientLdPlasticMicroL = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
+        dPlasticMicroGradientLdMicroGradientGamma = variableMatrix( dim * dim * dim, variableVector( dim, 0 ) );
+
+        for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+            for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                    for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
+                        for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
+
+                            dPlasticMicroGradientLdMicroGradientGamma[ dim * dim * Lb + dim * Mb + Kb ][ Ob ]
+                                += inverseElasticPsi[ dim * Lb + Pb ]
+                                 * microGradientFlowDirection[ Ob ][ dim * dim * Kb + dim * Pb + Mb ];
+
+                            for ( unsigned int Qb = 0; Qb < dim; Qb++ ){
+                                dPlasticMicroGradientLdPlasticMicroL[ dim * dim * Lb + dim * Mb + Kb ][ dim * Ob + Pb ]
+                                    += eye[ dim * Lb + Ob ] * inverseElasticPsi[ dim * Pb + Qb ]
+                                     * elasticGamma[ dim * dim * Qb + dim * Mb + Kb ]
+                                     - eye[ dim * Mb + Pb ] * inverseElasticPsi[ dim * Lb + Qb ]
+                                     * elasticGamma[ dim * dim * Qb + dim * Ob + Kb ];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return NULL;
+    }
+
+    errorOut computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableMatrix &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL,
+                                                          variableMatrix &dPlasticMicroGradientLdElasticPsi,
+                                                          variableMatrix &dPlasticMicroGradientLdElasticGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientFlowDirection ){
+        /*!
+         * Compute the plastic micro gradient velocity gradient.
+         *
+         * \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]
+         *
+         * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
+         * 
+         * :param const variableVector &microGradientGamma: The micro gradient plastic multiplier.
+         * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
+         * :param const variableVector &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
+         * :param const variableVector &elasticGamma: The elastic higher order deformation measure Gamma.
+         * :param const variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+         * :param const variableVector &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
+         * :param variableVector &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
+         * :param variableMatrix &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient 
+         *     velocity gradient w.r.t. the micro gradient gamma.
+         * :param variableMatrix &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient 
+         *     velocity gradient w.r.t. the platic micro velocity gradient.
+         * :param variableMatrix &dPlasticMicroGradientLdElasticPsi: The Jacobian of the plastic micro gradient
+         *     velocity gradient w.r.t. the elastic micro deformation tensor Psi.
+         * :param variableMatrix &dPlasticMicroGradientLdElasticGamma: The Jacobian of the plastic micro gradient
+         *     velocity gradient w.r.t. the elastic higher ordrer deformation tensor Gamma.
+         * :param variableMatrix &dPlasticMicroGradientLdMicroGradientFlowDirection: The Jacobian of the plastic micro gradient
+         *     velocity gradient w.r.t. the micro gradient flow direction.
+         */
+
         //Assume 3D
         unsigned int dim = 3;
 
