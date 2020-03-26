@@ -2334,6 +2334,32 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
         return 1;
     }
 
+    variableVector resultMicroGradLpJ3;
+    variableMatrix dPlasticMicroGradientLdMicroGradientGamma3;
+    variableMatrix dPlasticMicroGradientLdPlasticMicroL3;
+    variableMatrix dPlasticMicroGradientLdElasticPsi;
+    variableMatrix dPlasticMicroGradientLdElasticGamma;
+    variableMatrix dPlasticMicroGradientLdMicroGradientFlowDirection;
+
+    error = micromorphicElastoPlasticity::computePlasticMicroGradientVelocityGradient( microGradientGamma, Psie, invPsie,
+                                                                                       elasticGamma, microGradientFlowDirection,
+                                                                                       microLp, resultMicroGradLpJ3,
+                                                                                       dPlasticMicroGradientLdMicroGradientGamma3,
+                                                                                       dPlasticMicroGradientLdPlasticMicroL3,
+                                                                                       dPlasticMicroGradientLdElasticPsi,
+                                                                                       dPlasticMicroGradientLdElasticGamma,
+                                                                                       dPlasticMicroGradientLdMicroGradientFlowDirection );
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMicroGradientVelocityGradient & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ3 ) ){
+        results << "test_computePlasticMicroGradientVelocityGradient (test 5) & False\n";
+        return 1;
+    }
+
     //Test computation of Jacobians w.r.t. microGradientGamma
     constantType eps = 1e-6;
     for ( unsigned int i = 0; i < microGradientGamma.size(); i++ ){
@@ -2377,8 +2403,16 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
                 return 1;
             }
         }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientGamma3[ j ][ i ] ) ){
+                results << "test_computePlasticMicroGradientVelocityGradient (test 9) & False\n";
+                return 1;
+            }
+        }
     }
 
+    //Test computation of Jacobians w.r.t. the plastic micro velocity gradient
     for ( unsigned int i = 0; i < microLp.size(); i++ ){
         constantVector delta( microLp.size(), 0 );
         delta[i] = eps * fabs( microLp[i] ) + eps;
@@ -2409,18 +2443,73 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 9) & False\n";
+                results << "test_computePlasticMicroGradientVelocityGradient (test 10) & False\n";
                 return 1;
             }
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL2[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 10) & False\n";
+                results << "test_computePlasticMicroGradientVelocityGradient (test 11) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL3[ j ][ i ] ) ){
+                results << "test_computePlasticMicroGradientVelocityGradient (test 12) & False\n";
                 return 1;
             }
         }
     }
+
+    //Test computation of Jacobian w.r.t. the micro deformation measure Psi
+    for ( unsigned int i = 0; i < Psie.size(); i++ ){
+        constantVector delta( Psie.size(), 0 );
+        delta[i] = eps * fabs( Psie[i] ) + eps;
+
+        variableVector resultMicroGradLpP, resultMicroGradLpM;
+
+        variableVector PsieTemp = Psie + delta;
+        variableVector invPsieTemp = vectorTools::inverse( PsieTemp, 3, 3 );
+
+        error = micromorphicElastoPlasticity::computePlasticMicroGradientVelocityGradient( microGradientGamma, PsieTemp, invPsieTemp,
+                                                                                           elasticGamma, microGradientFlowDirection,
+                                                                                           microLp, resultMicroGradLpP );
+
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
+            return 1;
+        }
+
+        PsieTemp = Psie - delta;
+        invPsieTemp = vectorTools::inverse( PsieTemp, 3, 3 );
+
+        error = micromorphicElastoPlasticity::computePlasticMicroGradientVelocityGradient( microGradientGamma, PsieTemp, invPsieTemp,
+                                                                                           elasticGamma, microGradientFlowDirection,
+                                                                                           microLp, resultMicroGradLpM );
+
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdElasticPsi[ j ][ i ] ) ){
+                std::cout << "i, j: " << i << ", " << j << "\n";
+                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
+                std::cout << "dPlasticMicroGradientLdElasticPsi:\n"; vectorTools::print( dPlasticMicroGradientLdElasticPsi );
+                results << "test_computePlasticMicroGradientVelocityGradient (test 13) & False\n";
+                return 1;
+            }
+        }
+
+    }
+
 
     results << "test_computePlasticMicroGradientVelocityGradient & True\n";
     return 0;

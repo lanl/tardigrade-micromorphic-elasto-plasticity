@@ -1672,10 +1672,13 @@ namespace micromorphicElastoPlasticity{
         //Assume 3D
         unsigned int dim = 3;
 
+        variableVector skewTerm;
         errorOut error = computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
                                                                       elasticGamma, microGradientFlowDirection,
                                                                       plasticMicroVelocityGradient, 
-                                                                      plasticMicroGradientVelocityGradient );
+                                                                      plasticMicroGradientVelocityGradient, skewTerm,
+                                                                      dPlasticMicroGradientLdMicroGradientGamma,
+                                                                      dPlasticMicroGradientLdPlasticMicroL );
 
         if ( error ){
             errorOut result = new errorNode( "computePlasticMicroGradientVelocityGradient (jacobian)",
@@ -1687,46 +1690,42 @@ namespace micromorphicElastoPlasticity{
         constantVector eye( dim * dim );
         vectorTools::eye( eye );
 
-        dPlasticMicroGradientLdPlasticMicroL = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
-        dPlasticMicroGradientLdMicroGradientGamma = variableMatrix( dim * dim * dim, variableVector( dim, 0 ) );
-//        variableMatrix dSkewTermdPsi( dim * dim * dim, variableVector( dim * dim, 0 ) );
-//        variableMatrix dSkewTermdElasticGamma( dim * dim * dim, variableVector( dim * dim, 0 ) );
+        dPlasticMicroGradientLdElasticPsi = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
+        dPlasticMicroGradientLdElasticGamma = variableMatrix( dim * dim * dim, variableVector( dim * dim * dim, 0 ) );
+        dPlasticMicroGradientLdMicroGradientFlowDirection = variableMatrix( dim * dim * dim, variableVector( dim * dim * dim * dim, 0 ) );
 
-        for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+        for ( unsigned int Db = 0; Db < dim; Db++ ){
             for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
                 for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
                     for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
                         for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
-
-                            dPlasticMicroGradientLdMicroGradientGamma[ dim * dim * Lb + dim * Mb + Kb ][ Ob ]
-                                += inverseElasticPsi[ dim * Lb + Pb ]
-                                 * microGradientFlowDirection[ Ob ][ dim * dim * Kb + dim * Pb + Mb ];
+                            dPlasticMicroGradientLdElasticPsi[ dim * dim * Db + dim * Mb + Kb ][ dim * Ob + Pb ]
+                                += -inverseElasticPsi[ dim * Db + Ob ]
+                                 * plasticMicroGradientVelocityGradient[ dim * dim * Pb + dim * Mb + Kb ]
+                                 + inverseElasticPsi[ dim * Db + Ob ] * skewTerm[ dim * dim * Pb + dim * Mb + Kb ];
 
                             for ( unsigned int Qb = 0; Qb < dim; Qb++ ){
-                                dPlasticMicroGradientLdPlasticMicroL[ dim * dim * Lb + dim * Mb + Kb ][ dim * Ob + Pb ]
-                                    += eye[ dim * Lb + Ob ] * inverseElasticPsi[ dim * Pb + Qb ]
-                                     * elasticGamma[ dim * dim * Qb + dim * Mb + Kb ]
-                                     - eye[ dim * Mb + Pb ] * inverseElasticPsi[ dim * Lb + Qb ]
-                                     * elasticGamma[ dim * dim * Qb + dim * Ob + Kb ];
-                                
-//                                for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
-//                                    dSkewTermdPsi[ dim * dim * Lb + dim * Mb + Kb ][ dim * Ob + Pb ]
-//                                        += ( plasticMicroVelocityGradient[ dim * Lb + Rb ]
-//                                         *   inverseElasticPsi[ dim * Rb + Ob ]
-//                                         *   elasticGamma[ dim * dim * Qb + dim * Mb + Kb ]
-//                                         -   plasticMicroVelocityGradient[ dim * Rb + Mb ]
-//                                         *   inverseElasticPsi[ dim * Db + Ob ]
-//                                         *   elasticGamma[ dim * dim * Qb + dim * Rb + Kb ] )
-//                                         *  inverseElasticPsi[ dim * Pb + Qb ];
-//
-//                                    dSkewTermdElasticGamma[ dim * dim * Lb + dim * Mb + Kb ][ dim * dim * Ob + dim * Pb + Qb ]
-//                                        += plasticMicroVelocityGradient[ dim * Lb + Rb ]
-//                                         * inverseElasticPsi[ dim * Rb + Ob ]
-//                                         * eye[ dim * Mb + Pb ] * eye[ dim * Kb + Qb ]
-//                                         - plasticMicroVelocityGradient[ dim * Pb + Mb ]
-//                                         * inverseElasticPsi[ dim * Lb + Ob ]
-//                                         * eye[ dim * Kb + Qb ];
-//                                }
+                                dPlasticMicroGradientLdElasticGamma[ dim * dim * Db + dim * Mb + Kb ][ dim * dim * Ob + dim * Pb + Qb ]
+                                    -= plasticMicroVelocityGradient[ dim * Pb + Mb ]
+                                     * inverseElasticPsi[ dim * Db + Ob ] * eye[ dim * Kb + Qb ]; 
+
+                                for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
+                                    dPlasticMicroGradientLdElasticPsi[ dim * dim * Db + dim * Mb + Kb ][ dim * Ob + Pb ]
+                                        -= plasticMicroVelocityGradient[ dim * Db + Qb ]
+                                         * inverseElasticPsi[ dim * Qb + Ob ] * inverseElasticPsi[ dim * Pb + Rb ]
+                                         * elasticGamma[ dim * dim * Rb + dim * Mb + Kb ]
+                                         - plasticMicroVelocityGradient[ dim * Qb + Mb ]
+                                         * inverseElasticPsi[ dim * Db + Ob ] * inverseElasticPsi[ dim * Pb + Rb ]
+                                         * elasticGamma[ dim * dim * Rb + dim * Qb + Kb ];
+                                    
+                                    dPlasticMicroGradientLdElasticGamma[ dim * dim * Db + dim * Mb + Kb ][ dim * dim * Ob + dim * Pb + Qb ]
+                                        += plasticMicroVelocityGradient[ dim * Db + Rb ] * inverseElasticPsi[ dim * Rb + Ob ]
+                                         * eye[ dim * Mb + Pb ] * eye[ dim * Kb + Qb ];
+
+                                    dPlasticMicroGradientLdMicroGradientFlowDirection[ dim * dim * Db + dim * Mb + Kb ][ dim * dim * dim * Ob + dim * dim * Pb + dim * Qb + Rb ]
+                                        += inverseElasticPsi[ dim * Db + Qb ] * microGradientGamma[ Ob ]
+                                         * eye[ dim * Kb + Pb ] * eye[ dim * Mb + Rb ];
+                                }
                             }
                         }
                     }
