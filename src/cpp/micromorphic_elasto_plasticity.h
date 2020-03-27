@@ -247,11 +247,11 @@ namespace micromorphicElastoPlasticity{
                                               variableMatrix &dPlasticMicroGradientLdMicroGradientFlowDirection );
 
     errorOut evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const variableVector &currentPlasticMicroDeformation,
+                                        const variableVector &currentInversePlasticMicroDeformation,
                                         const variableVector &currentPlasticMacroVelocityGradient,
                                         const variableVector &currentPlasticMicroVelocityGradient,
                                         const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousPlasticMicroDeformation,
+                                        const variableVector &previousInversePlasticMicroDeformation,
                                         const variableVector &previousPlasticMicroGradient,
                                         const variableVector &previousPlasticMacroVelocityGradient,
                                         const variableVector &previousPlasticMicroVelocityGradient,
