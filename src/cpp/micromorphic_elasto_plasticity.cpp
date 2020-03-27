@@ -2025,10 +2025,22 @@ namespace micromorphicElastoPlasticity{
                                                              elasticGamma, microGradientFlowDirection, 
                                                              plasticMicroVelocityGradient, plasticMicroGradientVelocityGradient,
                                                              dPlasticMicroGradientLdMicroGradientGamma,
-                                                             dPlasticMicroGradientLdPlasticMicroL );
+                                                             dPlasticMicroGradientLdPlasticMicroL,
+                                                             dPlasticMicroGradientLdElasticPsi,
+                                                             dPlasticMicroGradientLdElasticGamma,
+                                                             dPlasticMicroGradientLdMicroGradientFlowDirection );
 
         dPlasticMicroGradientLdMicroGamma = vectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
                                                               dPlasticMicroLdMicroGamma );
+
+        dPlasticMicroGradientLdElasticMicroRCG = vectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
+                                                                   dPlasticMicroLdElasticMicroRCG );
+
+        dPlasticMicroGradientLdElasticPsi += vectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
+                                                               dPlasticMicroLdElasticPsi );
+
+        dPlasticMicroGradientLdMicroFlowDirection = vectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
+                                                                      dPlasticMicroLdMicroFlowDirection );
 
         if ( error ){
             errorOut result = new errorNode( "computePlasticVelocityGradients (full jacobian)",
