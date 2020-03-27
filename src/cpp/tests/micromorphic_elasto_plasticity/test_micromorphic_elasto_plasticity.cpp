@@ -3173,15 +3173,15 @@ int test_evolvePlasticMicroGradChi( std::ofstream &results ){
     variableMatrix LHS2;
 
     error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
-                                                                         currentPlasticMacroVelocityGradient,
-                                                                         currentPlasticMicroVelocityGradient,
-                                                                         currentPlasticMicroGradientVelocityGradient,
-                                                                         previousInversePlasticMicroDeformation,
-                                                                         previousPlasticMicroGradient,
-                                                                         previousPlasticMacroVelocityGradient,
-                                                                         previousPlasticMicroVelocityGradient,
-                                                                         previousPlasticMicroGradientVelocityGradient,
-                                                                         resultCurrentPlasticMicroGradient2, LHS2, alpha );
+                                                                     currentPlasticMacroVelocityGradient,
+                                                                     currentPlasticMicroVelocityGradient,
+                                                                     currentPlasticMicroGradientVelocityGradient,
+                                                                     previousInversePlasticMicroDeformation,
+                                                                     previousPlasticMicroGradient,
+                                                                     previousPlasticMacroVelocityGradient,
+                                                                     previousPlasticMicroVelocityGradient,
+                                                                     previousPlasticMicroGradientVelocityGradient,
+                                                                     resultCurrentPlasticMicroGradient2, LHS2, alpha );
 
     if ( error ){
         error->print();
@@ -3197,6 +3197,94 @@ int test_evolvePlasticMicroGradChi( std::ofstream &results ){
     if ( !vectorTools::fuzzyEquals( answerLHS, LHS2 ) ){
         results << "test_evolvePlasticMicroGradChi (test 3)  & False\n";
         return 1;
+    }
+
+    //Test the Jacobians
+    variableVector resultCurrentPlasticMicroGradientJ;
+
+    variableMatrix dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+                   dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+                   dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+                   dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient;
+
+    error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, 
+                                                                     currentPlasticMacroVelocityGradient,
+                                                                     currentPlasticMicroVelocityGradient,
+                                                                     currentPlasticMicroGradientVelocityGradient,
+                                                                     previousInversePlasticMicroDeformation,
+                                                                     previousPlasticMicroGradient,
+                                                                     previousPlasticMacroVelocityGradient,
+                                                                     previousPlasticMicroVelocityGradient,
+                                                                     previousPlasticMicroGradientVelocityGradient,
+                                                                     resultCurrentPlasticMicroGradientJ,
+                                                                     dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+                                                                     dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+                                                                     dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+                                                                     dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
+                                                                     alpha );
+
+    if ( error ){
+        error->print();
+        results << "test_evolvePlasticMicroGradChi & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradientJ ) ){
+        results << "test_evolvePlasticMicroGradChi (test 4)  & False\n";
+        return 1;
+    }
+
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
+        constantVector delta( currentPlasticMicroDeformation.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMicroDeformation[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation + delta,
+                                                                         currentPlasticMacroVelocityGradient,
+                                                                         currentPlasticMicroVelocityGradient,
+                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                         previousInversePlasticMicroDeformation,
+                                                                         previousPlasticMicroGradient,
+                                                                         previousPlasticMacroVelocityGradient,
+                                                                         previousPlasticMicroVelocityGradient,
+                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                         resultP, alpha );
+
+        if ( error ){
+            error->print();
+            results << "test_evolvePlasticMicroGradChi & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation - delta,
+                                                                         currentPlasticMacroVelocityGradient,
+                                                                         currentPlasticMicroVelocityGradient,
+                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                         previousInversePlasticMicroDeformation,
+                                                                         previousPlasticMicroGradient,
+                                                                         previousPlasticMacroVelocityGradient,
+                                                                         previousPlasticMicroVelocityGradient,
+                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                         resultM, alpha );
+
+        if ( error ){
+            error->print();
+            results << "test_evolvePlasticMicroGradChi & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroDeformation[ j ][ i ] ) ){
+                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
+                std::cout << "jacobian:\n"; vectorTools::print( dCurrentPlasticMicroGradientdPlasticMicroDeformation );
+                results << "tet_evolvePlasticMicroGradChi (test 5) & False\n";
+                return 1;
+            }
+        }
     }
 
     results << "test_evolvePlasticMicroGradChi & True\n";
