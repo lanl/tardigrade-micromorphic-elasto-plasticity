@@ -1780,8 +1780,7 @@ namespace micromorphicElastoPlasticity{
         variableVector inverseElasticRightCauchyGreen = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
         variableVector inverseElasticPsi = vectorTools::inverse( elasticPsi, dim, dim );
 
-        //Compute the macro-scale velocity gradient
-
+        //Compute the macro velocity gradient
         errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
                                                               macroFlowDirection, microFlowDirection, plasticMacroVelocityGradient );
 
@@ -1792,6 +1791,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        //Compute the plastic micro velocity gradient
         error = computePlasticMicroVelocityGradient( microGamma, elasticMicroRightCauchyGreen, elasticPsi, inverseElasticPsi,
                                                      microFlowDirection, plasticMicroVelocityGradient );
 
@@ -1802,6 +1802,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        //Compute the plastic micro gradient velocity gradient
         error = computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
                                                              elasticGamma, microGradientFlowDirection, 
                                                              plasticMicroVelocityGradient, plasticMicroGradientVelocityGradient );
@@ -1874,8 +1875,7 @@ namespace micromorphicElastoPlasticity{
         variableVector inverseElasticRightCauchyGreen = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
         variableVector inverseElasticPsi = vectorTools::inverse( elasticPsi, dim, dim );
 
-        //Compute the macro-scale velocity gradient
-
+        //Compute the plastic macro velocity gradient
         errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
                                                               macroFlowDirection, microFlowDirection, plasticMacroVelocityGradient,
                                                               dPlasticMacroLdMacroGamma, dPlasticMacroLdMicroGamma );
@@ -1887,6 +1887,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        //Compute the plastic micro velocity gradient
         error = computePlasticMicroVelocityGradient( microGamma, elasticMicroRightCauchyGreen, elasticPsi, inverseElasticPsi,
                                                      microFlowDirection, plasticMicroVelocityGradient,
                                                      dPlasticMicroLdMicroGamma );
@@ -1898,6 +1899,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        //Compute the plastic micro gradient velocity gradient
         variableMatrix dPlasticMicroGradientLdPlasticMicroL;
         error = computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
                                                              elasticGamma, microGradientFlowDirection, 
@@ -1993,8 +1995,7 @@ namespace micromorphicElastoPlasticity{
         variableVector inverseElasticRightCauchyGreen = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
         variableVector inverseElasticPsi = vectorTools::inverse( elasticPsi, dim, dim );
 
-        //Compute the macro-scale velocity gradient
-
+        //Compute the plastic macro velocity gradient
         errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
                                                               macroFlowDirection, microFlowDirection, plasticMacroVelocityGradient,
                                                               dPlasticMacroLdMacroGamma, dPlasticMacroLdMicroGamma,
@@ -2008,6 +2009,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        //Compute the plastic micro velocity gradient
         error = computePlasticMicroVelocityGradient( microGamma, elasticMicroRightCauchyGreen, elasticPsi, inverseElasticPsi,
                                                      microFlowDirection, plasticMicroVelocityGradient,
                                                      dPlasticMicroLdMicroGamma, dPlasticMicroLdElasticMicroRCG,
@@ -2020,6 +2022,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        //Compute the plastic micro gradient velocity gradient
         variableMatrix dPlasticMicroGradientLdPlasticMicroL;
         error = computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
                                                              elasticGamma, microGradientFlowDirection, 
