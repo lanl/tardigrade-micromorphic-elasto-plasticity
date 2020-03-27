@@ -3059,9 +3059,9 @@ int test_evolvePlasticMicroGradChi( std::ofstream &results ){
 
     variableType Dt = 7.888463751831797;
 
-    variableVector currentInversePlasticMicroDeformation = { -2.01348181, -1.09702286,  0.06356849,
-                                                             -0.75309745,  0.95308573,  1.83747601,
-                                                              1.13975887,  0.82796399, -2.84461778 };
+    variableVector currentPlasticMicroDeformation = { -0.49993961, -0.36238477, -0.24525394,
+                                                      -0.00566907,  0.66797545,  0.43135092,
+                                                      -0.20196189,  0.04922572, -0.32425703 };
 
     variableVector currentPlasticMacroVelocityGradient = { -0.05489573, -0.01980382, -0.06060589,
                                                             1.1610081 ,  0.4002548 ,  0.86866858,
@@ -3079,9 +3079,9 @@ int test_evolvePlasticMicroGradChi( std::ofstream &results ){
                                                                    -31.89136164,    2.12480823,   -4.79956514,  -26.12979314,
                                                                     27.25829277,  -30.0572412 ,    1.8995271 };
 
-    variableVector previousInversePlasticMicroDeformation = { -0.74221096,  0.12231464, -0.72313854,
-                                                              -0.78237428,  0.01302213,  0.71457857,
-                                                               0.26140223,  1.13057512,  0.17117188 };
+    variableVector previousInversePlasticMicroDeformation = { -0.62976501, -0.65543815,  0.07568244,
+                                                               0.25069488,  0.04845195,  0.85682533,
+                                                              -0.69408256,  0.68092037,  0.06724845 };
 
     variableVector previousPlasticMicroGradient = { 0.02280625, 0.22512007, 0.85575746, 0.1825644 , 0.97734329,
                                                     0.15265694, 0.0984977 , 0.73878709, 0.14943404, 0.50190449,
@@ -3107,13 +3107,13 @@ int test_evolvePlasticMicroGradChi( std::ofstream &results ){
 
     parameterType alpha = 0.19639211333133877;
 
-    variableVector answerCurrentPlasticMicroGradient = { 3871.70305733,  -177.79606012,  1286.40784696,  2140.07935364,
-                                                         -102.64218369,   712.92667378, -4658.78725203,   216.25820701,
-                                                        -1550.20579569, -3770.21297736,   -45.39172675,  -835.12481588,
-                                                        -2085.03505295,   -20.30354033,  -468.37186622,  4551.09221862,
-                                                           49.51118837,  1013.18488923,  2118.1908903 ,  -124.27291866,
-                                                          760.38816951,  1169.96506022,   -70.10508733,   423.26846463,
-                                                        -2550.46430641,   152.24613189,  -918.85515155 };
+    variableVector answerCurrentPlasticMicroGradient = {  201.71721607,   -8.0663384 ,   63.93960976,  299.19611487,
+                                                          -15.75827887,   98.74480552, -319.49770439,   13.5458325 ,
+                                                         -102.33587287, -195.29766492,   -5.08537627,  -39.70978333,
+                                                         -291.02098952,   -3.24570068,  -64.71587095,  314.13870087,
+                                                            5.09285553,   66.08381791,  109.96443867,   -5.79910293,
+                                                           37.22865464,  163.04783477,  -10.35151403,   59.19030845,
+                                                         -175.10575052,   10.13754922,  -60.7404024 };
 
     variableMatrix answerLHS = {
         {1.3643808e+02, 7.3598994e+00, 2.1304384e+00, 0., 0., 0., 0., 0., 0., 2.6812412e+01, 0., 0., 0., 0., 0., 0., 0., 0., -2.0179650e+02, 0., 0., 0., 0., 0., 0., 0., 0.},
@@ -3147,7 +3147,7 @@ int test_evolvePlasticMicroGradChi( std::ofstream &results ){
 
     variableVector resultCurrentPlasticMicroGradient;
 
-    errorOut error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentInversePlasticMicroDeformation,
+    errorOut error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
                                                                               currentPlasticMacroVelocityGradient,
                                                                               currentPlasticMicroVelocityGradient,
                                                                               currentPlasticMicroGradientVelocityGradient,
@@ -3172,7 +3172,7 @@ int test_evolvePlasticMicroGradChi( std::ofstream &results ){
     variableVector resultCurrentPlasticMicroGradient2;
     variableMatrix LHS2;
 
-    error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentInversePlasticMicroDeformation,
+    error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
                                                                          currentPlasticMacroVelocityGradient,
                                                                          currentPlasticMicroVelocityGradient,
                                                                          currentPlasticMicroGradientVelocityGradient,
