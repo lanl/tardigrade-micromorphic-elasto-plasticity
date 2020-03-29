@@ -2339,13 +2339,16 @@ namespace micromorphicElastoPlasticity{
                     for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
                         for ( unsigned int S = 0; S < dim; S++ ){
                             dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * Db + dim * B + Kb ][ dim * Rb + S ]
-                                += currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ]
+                                += Dt * ( 1. - alpha ) * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ]
                                  * eye[ dim * B + S ];
 
 
                             for ( unsigned int Tb = 0; Tb < dim; Tb++ ){
                                 negdRdCurrentDtAtilde[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Rb + dim * S + Tb ]
-                                    += Dt * ( 1. - alpha ) * eye[ dim * Db + Rb ] * eye[ dim * B + S ] * eye[ dim * Kb + Tb ];
+                                    += eye[ dim * Db + Rb ] * eye[ dim * B + S ] * eye[ dim * Kb + Tb ];
+
+                                dCurrentDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * B + Kb ][ dim * dim * Rb + dim * S + Tb ]
+                                    += Dt * ( 1. - alpha ) * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ] * currentPlasticMicroDeformation[ dim * S + B ];
 
                                 dCurrentFourthAdMacroVelocityGradient[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Rb ][ dim * S + Tb ]
                                     -= eye[ dim * Rb + S ] * eye[ dim * Kb + Tb ] * eye[ dim * Db + B ];
@@ -2387,7 +2390,6 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dCurrentPlasticMicroGradientdCurrentDTAtilde = vectorTools::inflate( vecdCurrentPlasticMicroGradientdCurrentDTAtilde, dim * dim * dim, dim * dim * dim );
         variableMatrix dCurrentPlasticMicroGradientdCurrentFourthA = vectorTools::inflate( vecdCurrentPlasticMicroGradientdCurrentFourthA, dim * dim * dim, dim * dim * dim * dim );
 
-//        std::cout << "dCurrentPlasticMicroGradientdCurrentDTAtilde:\n"; vectorTools::print( dCurrentPlasticMicroGradientdCurrentDTAtilde );
 //        std::cout << "dCurrentPlasticMicroGradientdCurrentFourthA:\n"; vectorTools::print( dCurrentPlasticMicroGradientdCurrentFourthA );
 //        std::cout << "dCurrentDTAtildedPlasticMicroDeformation:\n"; vectorTools::print( dCurrentDTAtildedPlasticMicroDeformation );
 
@@ -2400,6 +2402,16 @@ namespace micromorphicElastoPlasticity{
 
         dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = vectorTools::dot( dCurrentPlasticMicroGradientdCurrentFourthA,
                                                                                       dCurrentFourthAdMicroVelocityGradient );
+
+//        std::cout << "LHSMAT:\n" << LHSMat << "\n";
+//        std::cout << "nDRDCDA:\n" << nDRDCDA << "\n";
+//        std::cout << "vCP:\n"; vectorTools::print( vecdCurrentPlasticMicroGradientdCurrentDTAtilde );
+//        variableVector flt = vectorTools::appendVectors( dCurrentPlasticMicroGradientdCurrentDTAtilde );
+//        Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > V( flt.data(), 27, 27 );
+//        std::cout << "V:\n" << V << "\n";
+//
+//        std::cout << "TERM:\n"; vectorTools::print( dCurrentPlasticMicroGradientdCurrentDTAtilde );
+//        std::cout << "TERM2:\n"; vectorTools::print( dCurrentDTAtildedPlasticMicroGradientVelocityGradient );
 
         dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = vectorTools::dot( dCurrentPlasticMicroGradientdCurrentDTAtilde,
                                                                                  dCurrentDTAtildedPlasticMicroGradientVelocityGradient );

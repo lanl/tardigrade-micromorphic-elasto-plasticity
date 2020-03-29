@@ -435,8 +435,6 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
                         p = ( i - 9 * n - 3 * o ) % 3;
                         if ( !vectorTools::fuzzyEquals( gradMat[ j ][ 9 * k + 3 * l + m ],
                                                         d2FdStress2J2[ j ][ 243 * k + 81 * l + 27 * m + 9 * n + 3 * o + p ] ) ){
-                            std::cout << gradMat[ j ][ 9 * k + 3 * l + m ] << "\n";
-                            std::cout << d2FdStress2J2[ j ][ 243 * k + 81 * l + 27 * m + 9 * n + 3 * o + p ] << "\n";
                             results << "test_computeHigherOrderDruckerPragerYieldEquation (test 6) & False\n";
                             return 1;
                         }
@@ -565,8 +563,6 @@ int test_computeHigherOrderDruckerPragerYieldEquation( std::ofstream &results ){
                         o = ( i % 3 );
                         if ( !vectorTools::fuzzyEquals( gradMat[ j ][ 9 * k + 3 * l + m ],
                                                         d2FdStressdRCGJ2[ j ][ 81 * k + 27 * l + 9 * m + 3 * n + o ] ) ){
-                            std::cout << gradMat[ j ][ 9 * k + 3 * l + m ] << "\n";
-                            std::cout << d2FdStress2J2[ j ][ 81 * k + 27 * l + 9 * m + 3 * n + o ] << "\n";
                             results << "test_computeHigherOrderDruckerPragerYieldEquation (test 11) & False\n";
                             return 1;
                         }
@@ -659,8 +655,6 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
     }
 
     if ( !vectorTools::fuzzyEquals( resultGradChie, answerGradChie ) ){
-        std::cout << "answerGradChie:\n"; vectorTools::print( answerGradChie );
-        std::cout << "resultGradChie:\n"; vectorTools::print( resultGradChie );
         results << "test_computeElasticPartOfDeformation (test 3) & False\n";
         return 1;
     }
@@ -953,9 +947,6 @@ int test_computeElasticPartOfDeformation( std::ofstream &results ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], dChiedChip[ j ][ i ] ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                vectorTools::print( gradCol );
-                vectorTools::print( dChiedChip );
                 results << "test_computeElasticPartOfDeformation (test 21) & False\n";
                 return 1;
             }
@@ -2959,9 +2950,6 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdElasticPsi[ j ][ i ] ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
-                std::cout << "dPlasticMicroGradientLdElasticPsi:\n"; vectorTools::print( dPlasticMicroGradientLdElasticPsi );
                 results << "test_computePlasticMicroGradientVelocityGradient (test 13) & False\n";
                 return 1;
             }
@@ -3234,6 +3222,7 @@ int test_evolvePlasticMicroGradChi( std::ofstream &results ){
         return 1;
     }
 
+    //Test the jacobian w.r.t. the current plastic macro deformation
     constantType eps = 1e-6;
     for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
         constantVector delta( currentPlasticMicroDeformation.size(), 0 );
@@ -3279,13 +3268,65 @@ int test_evolvePlasticMicroGradChi( std::ofstream &results ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroDeformation[ j ][ i ] ) ){
-                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
-                std::cout << "jacobian:\n"; vectorTools::print( dCurrentPlasticMicroGradientdPlasticMicroDeformation );
                 results << "tet_evolvePlasticMicroGradChi (test 5) & False\n";
                 return 1;
             }
         }
     }
+
+    //Test the jacobian w.r.t. the current plastic micro gradient velocity gradient
+    for ( unsigned int i = 0; i < currentPlasticMicroGradientVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMicroGradientVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMicroGradientVelocityGradient[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                         currentPlasticMacroVelocityGradient,
+                                                                         currentPlasticMicroVelocityGradient,
+                                                                         currentPlasticMicroGradientVelocityGradient + delta,
+                                                                         previousInversePlasticMicroDeformation,
+                                                                         previousPlasticMicroGradient,
+                                                                         previousPlasticMacroVelocityGradient,
+                                                                         previousPlasticMicroVelocityGradient,
+                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                         resultP, alpha );
+
+        if ( error ){
+            error->print();
+            results << "test_evolvePlasticMicroGradChi & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                         currentPlasticMacroVelocityGradient,
+                                                                         currentPlasticMicroVelocityGradient,
+                                                                         currentPlasticMicroGradientVelocityGradient - delta,
+                                                                         previousInversePlasticMicroDeformation,
+                                                                         previousPlasticMicroGradient,
+                                                                         previousPlasticMacroVelocityGradient,
+                                                                         previousPlasticMicroVelocityGradient,
+                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                         resultM, alpha );
+
+        if ( error ){
+            error->print();
+            results << "test_evolvePlasticMicroGradChi & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient[ j ][ i ] ) ){
+                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
+                std::cout << "jacobian:\n"; vectorTools::print( dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient );
+                results << "tet_evolvePlasticMicroGradChi (test 8) & False\n";
+                return 1;
+            }
+        }
+    }
+
 
     results << "test_evolvePlasticMicroGradChi & True\n";
     return 0;
