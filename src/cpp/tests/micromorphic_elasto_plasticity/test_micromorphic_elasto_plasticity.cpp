@@ -3647,6 +3647,75 @@ int test_evolvePlasticDeformation( std::ofstream &results ){
         }
     }
 
+    for ( unsigned int i = 0; i < currentPlasticMicroVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMicroVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( delta[ i ] ) + eps;
+
+        variableVector resultMacroP, resultMicroP, resultMicroGradP;
+        variableVector resultMacroM, resultMicroM, resultMicroGradM;
+
+        error = micromorphicElastoPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                            currentPlasticMicroVelocityGradient + delta,
+                                                                            currentPlasticMicroGradientVelocityGradient,
+                                                                            previousPlasticDeformationGradient,
+                                                                            previousPlasticMicroDeformation,
+                                                                            previousPlasticMicroGradient,
+                                                                            previousPlasticMacroVelocityGradient,
+                                                                            previousPlasticMicroVelocityGradient,
+                                                                            previousPlasticMicroGradientVelocityGradient,
+                                                                            resultMacroP, resultMicroP, resultMicroGradP,
+                                                                            alphaMacro, alphaMicro, alphaMicroGrad );
+
+        if ( error ){
+            results << "test_evolvePlasticDeformation & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                            currentPlasticMicroVelocityGradient - delta,
+                                                                            currentPlasticMicroGradientVelocityGradient,
+                                                                            previousPlasticDeformationGradient,
+                                                                            previousPlasticMicroDeformation,
+                                                                            previousPlasticMicroGradient,
+                                                                            previousPlasticMacroVelocityGradient,
+                                                                            previousPlasticMicroVelocityGradient,
+                                                                            previousPlasticMicroGradientVelocityGradient,
+                                                                            resultMacroM, resultMicroM, resultMicroGradM,
+                                                                            alphaMacro, alphaMicro, alphaMicroGrad );
+
+        if ( error ){
+            results << "test_evolvePlasticDeformation & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_evolvePlasticDeformation (test 10) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dChidMicroL[ j ][ i ] ) ){
+                results << "test_evolvePlasticDeformation (test 11) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dGradChidMicroL[ j ][ i ] ) ){
+                results << "test_evolvePlasticDeformation (test 12) & False\n";
+                return 1;
+            }
+        }
+    }
+
     results << "test_evolvePlasticDeformation & True\n";
     return 0;
 }
