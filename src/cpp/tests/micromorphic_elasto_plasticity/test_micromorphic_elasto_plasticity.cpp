@@ -3427,8 +3427,124 @@ int test_evolvePlasticMicroGradChi( std::ofstream &results ){
         }
     }
 
-
     results << "test_evolvePlasticMicroGradChi & True\n";
+    return 0;
+}
+
+int test_evolvePlasticDeformation( std::ofstream &results ){
+    /*!
+     * Evolve the plastic deformation.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    variableType Dt = 8.009359239014827;
+    variableType alphaMacro = 0.48581069403548804;
+    variableType alphaMicro = 0.827106668527372;
+    variableType alphaMicroGrad = 0.608865458065455;
+
+    variableVector currentPlasticMacroVelocityGradient = { -0.27014632, -0.35189361,  0.13880036,
+                                                           -0.35584915, -0.48046671,  0.0912627 ,
+                                                            0.47263309, -0.31133122, -0.2948745 };
+
+    variableVector currentPlasticMicroVelocityGradient = { -0.01186714,  0.06090556,  0.40756696,
+                                                            0.32909297,  0.28343008,  0.32993809,
+                                                           -0.1899835 ,  0.41541764, -0.04761333 };
+
+    variableVector currentPlasticMicroGradientVelocityGradient = { -0.44741758,  0.19632574,  0.20883732, -0.18740653,  0.30768804,
+                                                                    0.46878663,  0.17691702, -0.07494477, -0.29871104, -0.46454855,
+                                                                   -0.34339229, -0.24065171, -0.0737629 ,  0.48339896,  0.25954592,
+                                                                    0.06579716, -0.43873995,  0.46482816,  0.20699556, -0.2417395 ,
+                                                                   -0.46792573,  0.39616741, -0.22954849, -0.097399  ,  0.20759377,
+                                                                   -0.35477122,  0.21945037 };
+
+    variableVector previousPlasticDeformationGradient = { -0.45932572, -0.49691079, -0.13107169,
+                                                           0.22431024, -0.61998429, -0.62903476,
+                                                          -0.90544313,  0.41193656, -0.14749891 };
+
+    variableVector previousPlasticMicroDeformation = { 0.28821738,  0.34407584,  0.06697721,
+                                                       0.31626116, -0.62278299,  0.83699009,
+                                                       0.16315786, -0.9434692 , -0.09991987 };
+
+    variableVector previousPlasticMicroGradient = { -0.4908299 , -0.09107442,  0.11438472, -0.468681  , -0.09518528,
+                                                     0.39306299,  0.30090607, -0.47472135, -0.39873768,  0.2071941 ,
+                                                     0.3967767 , -0.40333359, -0.10263381, -0.39238343, -0.21260101,
+                                                    -0.36133084, -0.32771357,  0.49025487,  0.01729508, -0.10338882,
+                                                     0.15828675,  0.31044611, -0.30362281, -0.03972172, -0.377879  ,
+                                                     0.11046526, -0.46997605 };
+
+    variableVector previousPlasticMacroVelocityGradient = { -0.4362157 , -0.37728779,  0.40148895,
+                                                            -0.15976616, -0.15839888,  0.26580961,
+                                                             0.23215055, -0.02231055,  0.35815526 };
+
+    variableVector previousPlasticMicroVelocityGradient = { 0.07222414, -0.40261712,  0.48556998,
+                                                            0.45642476, -0.09409791, -0.49992287,
+                                                            0.48252843,  0.48267731, -0.06878613 };
+
+    variableVector previousPlasticMicroGradientVelocityGradient = { -0.15695492,  0.45802473, -0.38830808, -0.29241496, -0.34225716,
+                                                                    -0.26127347, -0.41201504, -0.36558117, -0.24714561,  0.09340483,
+                                                                     0.40887886, -0.1481247 ,  0.15128499, -0.04882876, -0.30445054,
+                                                                     0.11557493, -0.20789811, -0.33913681,  0.3142761 ,  0.09871806,
+                                                                     0.11316847, -0.45596559,  0.19030294, -0.33056333, -0.49391146,
+                                                                     0.40129161, -0.06836289 };
+
+    variableVector answerMacro = { -1.56924249,  1.75893631,  0.91035498,
+                                    0.24241493, -0.43775652, -0.44317337,
+                                   -2.6946146 ,  2.06645595,  0.86856673 };
+
+    variableVector answerMicro = { 3.30247398,  2.51469186,  1.61673915,
+                                   6.78559987, 11.60984671,  7.25516648,
+                                   4.74326427,  4.32671877,  6.17698967 };
+
+    variableVector answerMicroGrad = {  0.18184066,   0.06902067,  -4.65044761,  -4.6051252 ,
+                                       -0.67925892,  -5.62411017,  -5.22449727,   0.2149805 ,
+                                       -8.35852814, -14.60027145,  11.46879229,   1.1063327 ,
+                                      -30.40158864,  24.16079446,  -3.60050806, -20.35119344,
+                                       18.13574972,  -5.22922306,   4.00630219,  -2.39707255,
+                                       -7.34817085,   3.12285942,  -6.24320576, -15.1020395 ,
+                                       -5.11190824,   3.50558822,  -4.01621741 };
+
+    variableVector resultMacro, resultMicro, resultMicroGrad;
+
+    errorOut error = micromorphicElastoPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                             currentPlasticMicroVelocityGradient,
+                                                                             currentPlasticMicroGradientVelocityGradient,
+                                                                             previousPlasticDeformationGradient,
+                                                                             previousPlasticMicroDeformation,
+                                                                             previousPlasticMicroGradient,
+                                                                             previousPlasticMacroVelocityGradient,
+                                                                             previousPlasticMicroVelocityGradient,
+                                                                             previousPlasticMicroGradientVelocityGradient,
+                                                                             resultMacro, resultMicro, resultMicroGrad,
+                                                                             alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        results << "test_evolvePlasticDeformation & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMacro, answerMacro ) ){
+        std::cout << "answer:\n"; vectorTools::print( answerMacro );
+        std::cout << "result:\n"; vectorTools::print( resultMacro );
+        results << "test_evolvePlasticDeformation (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicro, answerMicro ) ){
+        std::cout << "answer:\n"; vectorTools::print( answerMicro );
+        std::cout << "result:\n"; vectorTools::print( resultMicro );
+        results << "test_evolvePlasticDeformation (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicroGrad, answerMicroGrad ) ){
+        std::cout << "answer:\n"; vectorTools::print( answerMicroGrad );
+        std::cout << "result:\n"; vectorTools::print( resultMicroGrad );
+        results << "test_evolvePlasticDeformation (test 3) & False\n";
+        return 1;
+    }
+
+    results << "test_evolvePlasticDeformation & True\n";
     return 0;
 }
 
@@ -3454,6 +3570,7 @@ int main(){
     test_computePlasticMicroGradientVelocityGradient( results );
     test_computePlasticVelocityGradients( results );
     test_evolvePlasticMicroGradChi( results );
+    test_evolvePlasticDeformation( results );
 
     //Close the results file
     results.close();

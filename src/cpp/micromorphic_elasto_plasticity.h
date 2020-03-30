@@ -251,7 +251,7 @@ namespace micromorphicElastoPlasticity{
                                         const variableVector &currentPlasticMacroVelocityGradient,
                                         const variableVector &currentPlasticMicroVelocityGradient,
                                         const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousInversePlasticMicroDeformation,
+                                        const variableVector &previousPlasticMicroDeformation,
                                         const variableVector &previousPlasticMicroGradient,
                                         const variableVector &previousPlasticMacroVelocityGradient,
                                         const variableVector &previousPlasticMicroVelocityGradient,
@@ -264,7 +264,7 @@ namespace micromorphicElastoPlasticity{
                                         const variableVector &currentPlasticMacroVelocityGradient,
                                         const variableVector &currentPlasticMicroVelocityGradient,
                                         const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousInversePlasticMicroDeformation,
+                                        const variableVector &previousPlasticMicroDeformation,
                                         const variableVector &previousPlasticMicroGradient,
                                         const variableVector &previousPlasticMacroVelocityGradient,
                                         const variableVector &previousPlasticMicroVelocityGradient,
@@ -278,7 +278,7 @@ namespace micromorphicElastoPlasticity{
                                         const variableVector &currentPlasticMacroVelocityGradient,
                                         const variableVector &currentPlasticMicroVelocityGradient,
                                         const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousInversePlasticMicroDeformation,
+                                        const variableVector &previousPlasticMicroDeformation,
                                         const variableVector &previousPlasticMicroGradient,
                                         const variableVector &previousPlasticMacroVelocityGradient,
                                         const variableVector &previousPlasticMicroVelocityGradient,
@@ -289,6 +289,23 @@ namespace micromorphicElastoPlasticity{
                                         variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
                                         variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
                                         const parameterType alpha = 0.5 );
+
+    errorOut evolvePlasticDeformation( const variableType &Dt,
+                                       const variableVector &currentPlasticMacroVelocityGradient,
+                                       const variableVector &currentPlasticMicroVelocityGradient,
+                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
+                                       const variableVector &previousPlasticDeformationGradient,
+                                       const variableVector &previousPlasticMicroDeformation,
+                                       const variableVector &previousPlasticMicroGradient,
+                                       const variableVector &previousPlasticMacroVelocityGradient,
+                                       const variableVector &previousPlasticMicroVelocityGradient,
+                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
+                                       variableVector &currentPlasticDeformationGradient,
+                                       variableVector &currentPlasticMicroDeformation,
+                                       variableVector &currentPlasticMicroGradient,
+                                       const parameterType alphaMacro = 0.5,
+                                       const parameterType alphaMicro = 0.5,
+                                       const parameterType alphaMicroGradient = 0.5 );
 }
 
 #endif
