@@ -306,6 +306,28 @@ namespace micromorphicElastoPlasticity{
                                        const parameterType alphaMacro = 0.5,
                                        const parameterType alphaMicro = 0.5,
                                        const parameterType alphaMicroGradient = 0.5 );
+
+    errorOut evolvePlasticDeformation( const variableType &Dt,
+                                       const variableVector &currentPlasticMacroVelocityGradient,
+                                       const variableVector &currentPlasticMicroVelocityGradient,
+                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
+                                       const variableVector &previousPlasticDeformationGradient,
+                                       const variableVector &previousPlasticMicroDeformation,
+                                       const variableVector &previousPlasticMicroGradient,
+                                       const variableVector &previousPlasticMacroVelocityGradient,
+                                       const variableVector &previousPlasticMicroVelocityGradient,
+                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
+                                       variableVector &currentPlasticDeformationGradient,
+                                       variableVector &currentPlasticMicroDeformation,
+                                       variableVector &currentPlasticMicroGradient,
+                                       variableMatrix &dPlasticFdPlasticMacroL,
+                                       variableMatrix &dPlasticMicroDeformationdPlasticMicroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMacroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMicroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMicroGradientL,
+                                       const parameterType alphaMacro = 0.5,
+                                       const parameterType alphaMicro = 0.5,
+                                       const parameterType alphaMicroGradient = 0.5 );
 }
 
 #endif

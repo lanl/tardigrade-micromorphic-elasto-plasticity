@@ -2486,4 +2486,108 @@ namespace micromorphicElastoPlasticity{
 
         return NULL;
     }
+
+    errorOut evolvePlasticDeformation( const variableType &Dt,
+                                       const variableVector &currentPlasticMacroVelocityGradient,
+                                       const variableVector &currentPlasticMicroVelocityGradient,
+                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
+                                       const variableVector &previousPlasticDeformationGradient,
+                                       const variableVector &previousPlasticMicroDeformation,
+                                       const variableVector &previousPlasticMicroGradient,
+                                       const variableVector &previousPlasticMacroVelocityGradient,
+                                       const variableVector &previousPlasticMicroVelocityGradient,
+                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
+                                       variableVector &currentPlasticDeformationGradient,
+                                       variableVector &currentPlasticMicroDeformation,
+                                       variableVector &currentPlasticMicroGradient,
+                                       variableMatrix &dPlasticFdPlasticMacroL,
+                                       variableMatrix &dPlasticMicroDeformationdPlasticMicroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMacroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMicroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMicroGradientL,
+                                       const parameterType alphaMacro,
+                                       const parameterType alphaMicro,
+                                       const parameterType alphaMicroGradient ){
+        /*!
+         * Evolve the plastic deformation
+         *
+         * :param const variableType &Dt: The timestep
+         * :param const variableVector &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
+         * :param const variableVector &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
+         * :param const variableVector &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient 
+         *     velocity gradient.
+         * :param const variableVector &previousPlasticDeformationGradient: The plastic deformation gradient at the end of the last 
+         *     converged timestep.
+         * :param const variableVector &previousPlasticMicroDeformation: The plastic micro deformation at the end of the last converged 
+         *     timestep.
+         * :param const variableVector &previousPlasticMicroGradient: The plastic micro gradient at the end of the last converged 
+         *     timestep.
+         * :param const variableVector &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient at the end of the 
+         *     last converged timestep.
+         * :param const variableVector &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient at the end of the 
+         *     last converged timestep.
+         * :param const variableVector &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient 
+         *     at the end of the last converged timestep.
+         * :param variableVector &currentPlasticDeformationGradient: The current value of the plastic deformation gradient.
+         * :param variableVector &currentPlasticMicroDeformation: The current value of the plastic micro deformation.
+         * :param variableVector &currentPlasticMicroGradient: The current value of the plastic micro gradient.
+         * :param variableMatrix &dPlasticFdPlasticMacroL: The Jacobian of the plastic deformation gradient w.r.t. the plastic 
+         *     macro velocity gradient.
+         * :param variableMatrix &dPlasticMicroDeformationdPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t. 
+         *     the plastic micro velocity gradient.
+         * :param variableMatrix &dPlasticMicroGradientdPlasticMacroL: The Jacobian of the plastic micro gradient deformation 
+         *     w.r.t. the plastic macro velocity gradient.
+         * :param variableMatrix &dPlasticMicroGradientdPlasticMicroL: The Jacobian of the plastic micro gradient deformation
+         *     w.r.t. the plastic micro velocity gradient.
+         * :param variableMatrix &dPlasticMicroGradientdPlasticMicroGradientL: The Jacobian of the plastic micro gradient deformation
+         *     w.r.t. the plastic micro gradient velocity gradient.
+         * :param parameterType alphaMacro: The integration parameter for the macro plasticity. Defaults to 0.5.
+         * :param parameterType alphaMicro: The integration parameter for the micro plasticity. Defaults to 0.5.
+         * :param parameterType alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
+         */
+
+        errorOut error = constitutiveTools::evolveF( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                                                     currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
+                                                     dPlasticFdPlasticMacroL, alphaMacro, 1 );
+
+        if ( error ){
+            errorOut result = new errorNode( "evolvePlasticDeformation (jacobian)",
+                                             "Error in computation of the plastic macro deformation gradient" );
+            result->addNext( error );
+            return result;
+        }
+
+        error = constitutiveTools::evolveF( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                                            currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
+                                            dPlasticMicroDeformationdPlasticMicroL, alphaMicro, 1 );
+
+        if ( error ){
+            errorOut result = new errorNode( "evolvePlasticDeformation (jacobian)",
+                                             "Error in computation of the plastic micro deformation" );
+            result->addNext( error );
+            return result;
+        }
+
+        variableMatrix dPlasticMicroGradientdPlasticMicroDeformation;
+        error = evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
+                                           currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
+                                           previousPlasticMicroDeformation, previousPlasticMicroGradient,
+                                           previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
+                                           previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
+                                           dPlasticMicroGradientdPlasticMicroDeformation,
+                                           dPlasticMicroGradientdPlasticMacroL, dPlasticMicroGradientdPlasticMicroL,
+                                           dPlasticMicroGradientdPlasticMicroGradientL, alphaMicroGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "evolvePlasticDeformation",
+                                             "Error in computation of the plastic micro gradient" );
+            result->addNext( error );
+            return result;
+        }
+
+        dPlasticMicroGradientdPlasticMicroL += vectorTools::dot( dPlasticMicroGradientdPlasticMicroDeformation,
+                                                                 dPlasticMicroDeformationdPlasticMicroL );
+
+        return NULL;
+    }
 }

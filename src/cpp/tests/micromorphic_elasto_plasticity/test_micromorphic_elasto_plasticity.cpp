@@ -3524,25 +3524,59 @@ int test_evolvePlasticDeformation( std::ofstream &results ){
     }
 
     if ( !vectorTools::fuzzyEquals( resultMacro, answerMacro ) ){
-        std::cout << "answer:\n"; vectorTools::print( answerMacro );
-        std::cout << "result:\n"; vectorTools::print( resultMacro );
         results << "test_evolvePlasticDeformation (test 1) & False\n";
         return 1;
     }
 
     if ( !vectorTools::fuzzyEquals( resultMicro, answerMicro ) ){
-        std::cout << "answer:\n"; vectorTools::print( answerMicro );
-        std::cout << "result:\n"; vectorTools::print( resultMicro );
         results << "test_evolvePlasticDeformation (test 2) & False\n";
         return 1;
     }
 
     if ( !vectorTools::fuzzyEquals( resultMicroGrad, answerMicroGrad ) ){
-        std::cout << "answer:\n"; vectorTools::print( answerMicroGrad );
-        std::cout << "result:\n"; vectorTools::print( resultMicroGrad );
         results << "test_evolvePlasticDeformation (test 3) & False\n";
         return 1;
     }
+
+    //Test the computation of the Jacobians
+    variableVector resultMacroJ, resultMicroJ, resultMicroGradJ;
+    variableMatrix dFdMacroL, dChidMicroL, dGradChidMacroL, dGradChidMicroL, dGradChidMicroGradL;
+
+    error = micromorphicElastoPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                             currentPlasticMicroVelocityGradient,
+                                                                             currentPlasticMicroGradientVelocityGradient,
+                                                                             previousPlasticDeformationGradient,
+                                                                             previousPlasticMicroDeformation,
+                                                                             previousPlasticMicroGradient,
+                                                                             previousPlasticMacroVelocityGradient,
+                                                                             previousPlasticMicroVelocityGradient,
+                                                                             previousPlasticMicroGradientVelocityGradient,
+                                                                             resultMacroJ, resultMicroJ, resultMicroGradJ,
+                                                                             dFdMacroL, dChidMicroL, dGradChidMacroL,
+                                                                             dGradChidMicroL, dGradChidMicroGradL,
+                                                                             alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        results << "test_evolvePlasticDeformation & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMacroJ, answerMacro ) ){
+        results << "test_evolvePlasticDeformation (test 4) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicroJ, answerMicro ) ){
+        results << "test_evolvePlasticDeformation (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicroGradJ, answerMicroGrad ) ){
+        results << "test_evolvePlasticDeformation (test 6) & False\n";
+        return 1;
+    }
+
+
 
     results << "test_evolvePlasticDeformation & True\n";
     return 0;
