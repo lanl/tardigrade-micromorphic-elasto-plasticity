@@ -2590,4 +2590,64 @@ namespace micromorphicElastoPlasticity{
 
         return NULL;
     }
+
+    errorOut evolveStrainStateVariables( const constantType &Dt, const variableType &currentMacroGamma,
+                                         const variableType &currentMicroGamma, const variableVector &currentMicroGradientGamma,
+                                         const variableType &currentdMacroGdMacroC, const variableType &currentdMicroGdMicroC,
+                                         const variableMatrix &currentdMicroGradientGdMicroGradientC,
+                                         const variableType &previousMacroStrainISV, const variableType &previousMicroStrainISV,
+                                         const variableVector &previousMicroGradientStrainISV,
+                                         const variableType &previousMacroGamma, const variableType &previousMicroGamma,
+                                         const variableVector &previousMicroGradientGamma, const variableType &previousdMacroGdMacroC,
+                                         const variableType &previousdMicroGdMicroC,
+                                         const variableMatrix &previousdMicroGradientGdMicroGradientC,
+                                         variableType &currentMacroStrainISV, variableType &currentMicroStrainISV,
+                                         variableVector &currentMicroGradientStrainISV,
+                                         const parameterType &alphaMacro,
+                                         const parameterType &alphaMicro,
+                                         const parameterType alphaMicroGradient ){
+        /*!
+         * Evolve the strain-like state variables.
+         *
+         * :param const constantType &Dt: The timestep
+         * :param const variableType &currentMacroGamma: The current macro-scale plastic multiplier.
+         * :param const variableType &currentMicroGamma: The current micro-scale plastic multiplier.
+         * :param const variableVector &currentMicroGradientGamma: The current micro-scale gradient plastic multiplier.
+         * :param const variableType &currentdMacroGdMacroC: The current Jacobian of the macro plastic potential 
+         *     w.r.t. the macro cohesion.
+         * :param const variableType &currentdMicroGdMicroC: The current Jacobian of the micro plastic potential 
+         *     w.r.t. the micro cohesion.
+         * :param const variableVector &currentdMicroGradientGdMicroGradientC: The current Jacobian of the micro gradient 
+         *     plastic potential w.r.t. the micro gradient cohesion.
+         * :param variableType &previousMacroStrainISV: The previous value of the macro strain like ISV.
+         * :param variableType &previousMicroStrainISV: The previous value of the micro strain like ISV.
+         * :param variableVector &previousMicroGradientStrainISV: The previous value of the micro gradient strain like ISV.
+         * :param const variableType &previousMacroGamma: The previous macro-scale plastic multiplier.
+         * :param const variableType &previousMicroGamma: The previous micro-scale plastic multiplier.
+         * :param const variableVector &previousMicroGradientGamma: The previous micro-scale gradient plastic multiplier.
+         * :param const variableType &previousdMacroGdMacroC: The previous Jacobian of the macro plastic potential 
+         *     w.r.t. the macro cohesion.
+         * :param const variableType &previousdMicroGdMicroC: The previous Jacobian of the micro plastic potential 
+         *     w.r.t. the micro cohesion.
+         * :param const variableVector &previousdMicroGradientGdMicroGradientC: The previous Jacobian of the micro gradient 
+         *     plastic potential w.r.t. the micro gradient cohesion.
+         */
+
+        //Evolve the macro-scale internal strain-like state variable
+        currentMacroStrainISV = previousMacroStrainISV + Dt * (         - alphaMacro * previousMacroGamma * previousdMacroGdMacroC
+                                                                - ( 1 - alphaMacro ) *  currentMacroGamma * currentdMacroGdMacroC );
+
+        //Evolve the micro-scale internal strain-like state variable
+        currentMicroStrainISV = previousMicroStrainISV + Dt * (         - alphaMicro * previousMicroGamma * previousdMicroGdMicroC
+                                                                - ( 1 - alphaMicro ) *  currentMicroGamma * currentdMicroGdMicroC );
+
+        //Evolve the micro gradient internal strain-like state variables
+        currentMicroGradientStrainISV = previousMicroGradientStrainISV
+        + Dt * ( 
+            - alphaMicroGradient * vectorTools::Tdot( previousdMicroGradientGdMicroGradientC, previousMicroGradientGamma )
+            - ( 1 - alphaMicroGradient ) * vectorTools::Tdot( currentdMicroGradientGdMicroGradientC, currentMicroGradientGamma )
+        );
+
+        return NULL;
+    }
 }

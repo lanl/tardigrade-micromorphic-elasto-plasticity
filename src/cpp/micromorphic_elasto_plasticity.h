@@ -328,6 +328,22 @@ namespace micromorphicElastoPlasticity{
                                        const parameterType alphaMacro = 0.5,
                                        const parameterType alphaMicro = 0.5,
                                        const parameterType alphaMicroGradient = 0.5 );
+
+    errorOut evolveStrainStateVariables( const constantType &Dt, const variableType &currentMacroGamma,
+                                         const variableType &currentMicroGamma, const variableVector &currentMicroGradientGamma,
+                                         const variableType &currentdMacroGdMacroC, const variableType &currentdMicroGdMicroC,
+                                         const variableMatrix &currentdMicroGradientGdMicroGradientC,
+                                         const variableType &previousMacroISV, const variableType &previousMicroISV,
+                                         const variableVector &previousMicroGradientISV,
+                                         const variableType &previousMacroGamma, const variableType &previousMicroGamma,
+                                         const variableVector &previousMicroGradientGamma, const variableType &previousdMacroGdMacroC,
+                                         const variableType &previousdMicroGdMicroC,
+                                         const variableMatrix &previousdMicroGradientGdMicroGradientC,
+                                         variableType &currentMacroISV, variableType &currentMicroISV,
+                                         variableVector &currentMicroGradientISV,
+                                         const parameterType &alphaMacro = 0.5,
+                                         const parameterType &alphaMicro = 0.5,
+                                         const parameterType alphaMicroGradient = 0.5 );
 }
 
 #endif

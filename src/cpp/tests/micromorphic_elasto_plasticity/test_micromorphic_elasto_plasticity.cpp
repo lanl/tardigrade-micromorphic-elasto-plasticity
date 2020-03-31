@@ -3789,6 +3789,86 @@ int test_evolvePlasticDeformation( std::ofstream &results ){
     return 0;
 }
 
+int test_evolveStrainStateVariables( std::ofstream &results){
+    /*!
+     * Test the evolution of the strain-like state variables.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    constantType Dt = 0.9173854839516489;
+
+    parameterType alphaMacro = 0.5223948976356186;
+    parameterType alphaMicro = 0.04303308197223432;
+    parameterType alphaMicroGrad = 0.42138618879779943;
+
+    variableType previousMacroISV = 0.7142072212214646;
+    variableType previousMicroISV = 0.15443588642592365;
+    variableVector previousMicroGradISV = { 0.05041408, 0.69624665, 0.8766614 };
+
+    variableType currentMacroGamma = 0.17261697034297152;
+    variableType currentMicroGamma = 0.02350474056209273;
+    variableVector currentMicroGradientGamma = { 0.59406857, 0.79573586, 0.21213138 };
+
+    variableType previousMacroGamma = 0.4782163679903608;
+    variableType previousMicroGamma = 0.3546242470180624;
+    variableVector previousMicroGradientGamma = { 0.6291708 , 0.48565385, 0.67132896 };
+
+    variableType currentdGdMacroC = 0.2792660775467988;
+    variableType currentdGdMicroC = 0.04579313341096025;
+    variableMatrix currentdGdMicroGradC = { { 0.88556864, 0.08992741, 0.75316186 },
+                                            { 0.76279627, 0.5635193 , 0.18529158 },
+                                            { 0.05722408, 0.65275234, 0.97189144 } };
+
+    variableType previousdGdMacroC = 0.6843499996792325;
+    variableType previousdGdMicroC = 0.9662410574335287;
+    variableMatrix previousdGdMicroGradC = { { 0.84374092, 0.21040392, 0.13887068 },
+                                             { 0.34423717, 0.50801461, 0.28726825 },
+                                             { 0.52590869, 0.36090934, 0.97602275 } };
+
+    variableType answerMacroISV = 0.5362470356440043;
+    variableType answerMicroISV = 0.13996373570538626;
+    variableVector answerMicroGradISV = { -0.96380356,  0.11615298,  0.11045521 };
+
+    variableType resultMacroISV, resultMicroISV;
+    variableVector resultMicroGradISV;
+
+    errorOut error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
+                                                                               currentMicroGradientGamma, currentdGdMacroC,
+                                                                               currentdGdMicroC, currentdGdMicroGradC,
+                                                                               previousMacroISV, previousMicroISV,
+                                                                               previousMicroGradISV, previousMacroGamma,
+                                                                               previousMicroGamma, previousMicroGradientGamma,
+                                                                               previousdGdMacroC, previousdGdMicroC,
+                                                                               previousdGdMicroGradC, resultMacroISV,
+                                                                               resultMicroISV, resultMicroGradISV,
+                                                                               alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        error->print();
+        results << "test_evolveStrainStateVariables & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMacroISV, answerMacroISV ) ){
+        results << "test_evolveStrainStateVariables (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicroISV, answerMicroISV ) ){
+        results << "test_evolveStrainStateVariables (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicroGradISV, answerMicroGradISV ) ){
+        results << "test_evolveStrainStateVariables (test 3) & False\n";
+        return 1;
+    }
+
+    results << "test_evolveStrainStateVariables & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -3812,6 +3892,7 @@ int main(){
     test_computePlasticVelocityGradients( results );
     test_evolvePlasticMicroGradChi( results );
     test_evolvePlasticDeformation( results );
+    test_evolveStrainStateVariables( results );
 
     //Close the results file
     results.close();
