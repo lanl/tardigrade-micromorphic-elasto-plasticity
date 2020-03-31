@@ -2603,8 +2603,8 @@ namespace micromorphicElastoPlasticity{
                                          const variableMatrix &previousdMicroGradientGdMicroGradientC,
                                          variableType &currentMacroStrainISV, variableType &currentMicroStrainISV,
                                          variableVector &currentMicroGradientStrainISV,
-                                         const parameterType &alphaMacro,
-                                         const parameterType &alphaMicro,
+                                         const parameterType alphaMacro,
+                                         const parameterType alphaMicro,
                                          const parameterType alphaMicroGradient ){
         /*!
          * Evolve the strain-like state variables.
@@ -2631,7 +2631,47 @@ namespace micromorphicElastoPlasticity{
          *     w.r.t. the micro cohesion.
          * :param const variableVector &previousdMicroGradientGdMicroGradientC: The previous Jacobian of the micro gradient 
          *     plastic potential w.r.t. the micro gradient cohesion.
+         * :param variableType &currentMacroStrainISV: The new value of the macro strain ISV
+         * :param variableType &currentMicroStrainISV: The new value of the micro strain ISV
+         * :param variableVector &currentMicroGradientStrainISV: The new value of the micro gradient strain ISV.
+         * :param const variableType alphaMacro: The integration parameter for the macro strain-like ISV
+         * :param const variableType alphaMicro: The integration parameter for the micro strain-like ISV
+         * :param const variableType alphaMicroGradient: The integration parameter for the micro Gradient strain-like ISV
          */
+
+        if ( currentMicroGradientGamma.size() != 3 ){
+            return new errorNode( "evolveStrainStateVariables",
+                                  "The current micro gradient gamma must be 3 dimensional" );
+        }
+
+        if ( previousMicroGradientGamma.size() != 3 ){
+            return new errorNode( "evolveStrainStateVariables",
+                                  "The previous micro gradient gamma must be 3 dimensional" );
+        }
+
+        if ( currentMicroGradientGamma.size() != currentdMicroGradientGdMicroGradientC.size() ){
+            return new errorNode( "evolveStrainStateVariables",
+                                  "The current micro gradient gamma and the current derivative of the plastic potential function w.r.t. the micro gradient cohesion are not consistent" );
+        }
+
+        if ( previousMicroGradientGamma.size() != previousdMicroGradientGdMicroGradientC.size() ){
+            return new errorNode( "evolveStrainStateVariables",
+                                  "The previous micro gradient gamma and the previous derivative of the plastic potential function w.r.t. the micro gradient cohesion are not consistent" );
+        }
+
+        for ( unsigned int i = 0; i < currentdMicroGradientGdMicroGradientC.size(); i++ ){
+            if ( currentdMicroGradientGdMicroGradientC[ i ].size() != previousMicroGradientStrainISV.size() ){
+                return new errorNode( "evolveStrainStateVariables",
+                                      "The current derivative of the plastic potential function w.r.t. the micro gradient cohesion is not a square matrix" ); 
+            }
+        }
+
+        for ( unsigned int i = 0; i < previousdMicroGradientGdMicroGradientC.size(); i++ ){
+            if ( previousdMicroGradientGdMicroGradientC[ i ].size() != previousMicroGradientStrainISV.size() ){
+                return new errorNode( "evolveStrainStateVariables",
+                                      "The previous derivative of the plastic potential function w.r.t. the micro gradient cohesion is not a square matrix" ); 
+            }
+        }
 
         //Evolve the macro-scale internal strain-like state variable
         currentMacroStrainISV = previousMacroStrainISV + Dt * (         - alphaMacro * previousMacroGamma * previousdMacroGdMacroC
@@ -2647,6 +2687,124 @@ namespace micromorphicElastoPlasticity{
             - alphaMicroGradient * vectorTools::Tdot( previousdMicroGradientGdMicroGradientC, previousMicroGradientGamma )
             - ( 1 - alphaMicroGradient ) * vectorTools::Tdot( currentdMicroGradientGdMicroGradientC, currentMicroGradientGamma )
         );
+
+        return NULL;
+    }
+
+    errorOut evolveStrainStateVariables( const constantType &Dt, const variableType &currentMacroGamma,
+                                         const variableType &currentMicroGamma, const variableVector &currentMicroGradientGamma,
+                                         const variableType &currentdMacroGdMacroC, const variableType &currentdMicroGdMicroC,
+                                         const variableMatrix &currentdMicroGradientGdMicroGradientC,
+                                         const variableType &previousMacroStrainISV, const variableType &previousMicroStrainISV,
+                                         const variableVector &previousMicroGradientStrainISV,
+                                         const variableType &previousMacroGamma, const variableType &previousMicroGamma,
+                                         const variableVector &previousMicroGradientGamma, const variableType &previousdMacroGdMacroC,
+                                         const variableType &previousdMicroGdMicroC,
+                                         const variableMatrix &previousdMicroGradientGdMicroGradientC,
+                                         variableType &currentMacroStrainISV, variableType &currentMicroStrainISV,
+                                         variableVector &currentMicroGradientStrainISV,
+                                         variableType &dCurrentMacroISVdCurrentMacroGamma, variableType &dCurrentMacroISVddMacroGdMacroC,
+                                         variableType &dCurrentMicroISVdCurrentMicroGamma, variableType &dCurrentMicroISVddMicroGdMicroC,
+                                         variableMatrix &dCurrentMicroGradISVdCurrentMicroGradGamma,
+                                         variableMatrix &dCurrentMicroGradISVddMicroGradGdMicroGradC,
+                                         const parameterType alphaMacro,
+                                         const parameterType alphaMicro,
+                                         const parameterType alphaMicroGradient){
+        /*!
+         * Evolve the strain-like state variables.
+         *
+         * :param const constantType &Dt: The timestep
+         * :param const variableType &currentMacroGamma: The current macro-scale plastic multiplier.
+         * :param const variableType &currentMicroGamma: The current micro-scale plastic multiplier.
+         * :param const variableVector &currentMicroGradientGamma: The current micro-scale gradient plastic multiplier.
+         * :param const variableType &currentdMacroGdMacroC: The current Jacobian of the macro plastic potential 
+         *     w.r.t. the macro cohesion.
+         * :param const variableType &currentdMicroGdMicroC: The current Jacobian of the micro plastic potential 
+         *     w.r.t. the micro cohesion.
+         * :param const variableVector &currentdMicroGradientGdMicroGradientC: The current Jacobian of the micro gradient 
+         *     plastic potential w.r.t. the micro gradient cohesion.
+         * :param variableType &previousMacroStrainISV: The previous value of the macro strain like ISV.
+         * :param variableType &previousMicroStrainISV: The previous value of the micro strain like ISV.
+         * :param variableVector &previousMicroGradientStrainISV: The previous value of the micro gradient strain like ISV.
+         * :param const variableType &previousMacroGamma: The previous macro-scale plastic multiplier.
+         * :param const variableType &previousMicroGamma: The previous micro-scale plastic multiplier.
+         * :param const variableVector &previousMicroGradientGamma: The previous micro-scale gradient plastic multiplier.
+         * :param const variableType &previousdMacroGdMacroC: The previous Jacobian of the macro plastic potential 
+         *     w.r.t. the macro cohesion.
+         * :param const variableType &previousdMicroGdMicroC: The previous Jacobian of the micro plastic potential 
+         *     w.r.t. the micro cohesion.
+         * :param const variableVector &previousdMicroGradientGdMicroGradientC: The previous Jacobian of the micro gradient 
+         *     plastic potential w.r.t. the micro gradient cohesion.
+         * :param variableType &dCurrentMacroISVdCurrentMacroGamma: The Jacobian of the 
+         * :param variableType &currentMacroStrainISV: The new value of the macro strain ISV
+         * :param variableType &currentMicroStrainISV: The new value of the micro strain ISV
+         * :param variableVector &currentMicroGradientStrainISV: The new value of the micro gradient strain ISV.
+         * :param variableType &dCurrentMacroISVdCurrentMacroGamma: The Jacobian of the current macro strain ISV w.r.t. the 
+         *     macro plastic multiplier.
+         * :param variableType &dCurrentMacroISVddMacroGdMacroC: The Jacobian of the current macro strain ISV w.r.t. the 
+         *     derivative of the macro plastic potential w.r.t. the macro cohesion.
+         * :param variableType &dCurrentMicroISVdCurrentMicroGamma: The Jacobian of the current micro strain ISV w.r.t. the 
+         *     micro plastic multiplier.
+         * :param variableType &dCurrentMicroISVddMicroGdMicroC: The Jacobian of the current micro strain ISV w.r.t. the 
+         *     derivative of the micro plastic potential w.r.t. the micro cohesion.
+         * :param variableMatrix &dCurrentMicroGradientISVdCurrentMicroGradientGamma: The Jacobian of the current micro 
+         *     strain ISV w.r.t. the micro plastic multiplier.
+         * :param variableMatrix &dCurrentMicroGradientISVddMicroGradientGdMicroGradientC: The Jacobian of the current 
+         *     micro gradient strain ISV w.r.t. the derivative of the micro gradient plastic potential w.r.t. the micro 
+         *     gradient cohesion.
+         * :param const variableType alphaMacro: The integration parameter for the macro strain-like ISV
+         * :param const variableType alphaMicro: The integration parameter for the micro strain-like ISV
+         * :param const variableType alphaMicroGradient: The integration parameter for the micro Gradient strain-like ISV
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        errorOut error = evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
+                                                     currentdMacroGdMacroC, currentdMicroGdMicroC,
+                                                     currentdMicroGradientGdMicroGradientC,
+                                                     previousMacroStrainISV, previousMicroStrainISV, previousMicroGradientStrainISV,
+                                                     previousMacroGamma, previousMicroGamma, previousMicroGradientGamma,
+                                                     previousdMacroGdMacroC, previousdMicroGdMicroC,
+                                                     previousdMicroGradientGdMicroGradientC,
+                                                     currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV,
+                                                     alphaMacro, alphaMicro, alphaMicroGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "evolveStrainStateVariables (jacobian)",
+                                             "Error in the evolution of the strain-like ISVs" );
+            result->addNext( error );
+            return result;
+        }
+
+        //Compute the Jacobians of the macro ISV evolution w.r.t. the current macro gamma and the derivative of the plastic 
+        //potential function w.r.t. the macro cohesion
+        dCurrentMacroISVdCurrentMacroGamma = - Dt * ( 1 - alphaMacro ) * currentdMacroGdMacroC;
+        dCurrentMacroISVddMacroGdMacroC = - Dt * ( 1 - alphaMacro ) * currentMacroGamma;
+
+        //Compute the Jacobians of the micro ISV evolution w.r.t. the current micro gamma and the derivative of the plastic 
+        //potential function w.r.t. the micro cohesion
+        dCurrentMicroISVdCurrentMicroGamma = - Dt * ( 1 - alphaMicro ) * currentdMicroGdMicroC;
+        dCurrentMicroISVddMicroGdMicroC = - Dt * ( 1 - alphaMicro ) * currentMicroGamma;
+
+        //Compute the Jacobians of the micro gradient ISV evolution w.r.t. the current micro gradient gamma and the derivative
+        //of the plastic potential function w.r.t. the micro gradient cohesion.
+        dCurrentMicroGradISVdCurrentMicroGradGamma = variableMatrix( dim, variableVector( dim, 0 ) );
+        dCurrentMicroGradISVddMicroGradGdMicroGradC = variableMatrix( dim, variableVector( dim * dim, 0 ) );
+
+        constantVector eye( dim * dim );
+        vectorTools::eye( eye );
+
+        for ( unsigned int i = 0; i < dim; i++ ){
+            for ( unsigned int j = 0; j < dim; j++ ){
+                dCurrentMicroGradISVdCurrentMicroGradGamma[ i ][ j ] -= Dt * ( 1 - alphaMicroGradient )
+                                                                      * currentdMicroGradientGdMicroGradientC[ j ][ i ];
+                for ( unsigned int k = 0; k < dim; k++ ){
+                    dCurrentMicroGradISVddMicroGradGdMicroGradC[ i ][ dim * j + k ]
+                        -= Dt * ( 1 - alphaMicroGradient ) * currentMicroGradientGamma[ j ] * eye[ dim * i + k ];
+                }
+            }
+        }
 
         return NULL;
     }

@@ -3865,6 +3865,424 @@ int test_evolveStrainStateVariables( std::ofstream &results){
         return 1;
     }
 
+    variableType resultMacroISVJ, resultMicroISVJ;
+    variableVector resultMicroGradISVJ;
+
+    variableType dMacroISVdMacroGamma, dMacroISVddGdMacroC;
+    variableType dMicroISVdMicroGamma, dMicroISVddGdMicroC;
+    variableMatrix dMicroGradientISVdMicroGradGamma, dMicroGradientISVddGdMicroGradGamma;
+
+    //Test the Jacobians
+    error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
+                                                                      currentMicroGradientGamma, currentdGdMacroC,
+                                                                      currentdGdMicroC, currentdGdMicroGradC,
+                                                                      previousMacroISV, previousMicroISV,
+                                                                      previousMicroGradISV, previousMacroGamma,
+                                                                      previousMicroGamma, previousMicroGradientGamma,
+                                                                      previousdGdMacroC, previousdGdMicroC,
+                                                                      previousdGdMicroGradC, resultMacroISVJ,
+                                                                      resultMicroISVJ, resultMicroGradISVJ,
+                                                                      dMacroISVdMacroGamma, dMacroISVddGdMacroC,
+                                                                      dMicroISVdMicroGamma, dMicroISVddGdMicroC,
+                                                                      dMicroGradientISVdMicroGradGamma,
+                                                                      dMicroGradientISVddGdMicroGradGamma,
+                                                                      alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        error->print();
+        results << "test_evolveStrainStateVariables & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMacroISVJ, answerMacroISV ) ){
+        results << "test_evolveStrainStateVariables (test 4) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicroISVJ, answerMicroISV ) ){
+        results << "test_evolveStrainStateVariables (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultMicroGradISVJ, answerMicroGradISV ) ){
+        results << "test_evolveStrainStateVariables (test 6) & False\n";
+        return 1;
+    }
+
+    //Test the Jacobians w.r.t. the current macro gamma
+    constantType eps = 1e-6;
+
+    constantType scalarDelta;
+    scalarDelta = eps * fabs( currentMacroGamma ) + eps;
+
+    variableType resultMacroISVP, resultMicroISVP;
+    variableVector resultMicroGradISVP;
+    variableType resultMacroISVM, resultMicroISVM;
+    variableVector resultMicroGradISVM;
+
+    error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma + scalarDelta, currentMicroGamma,
+                                                                      currentMicroGradientGamma, currentdGdMacroC,
+                                                                      currentdGdMicroC, currentdGdMicroGradC,
+                                                                      previousMacroISV, previousMicroISV,
+                                                                      previousMicroGradISV, previousMacroGamma,
+                                                                      previousMicroGamma, previousMicroGradientGamma,
+                                                                      previousdGdMacroC, previousdGdMicroC,
+                                                                      previousdGdMicroGradC, resultMacroISVP,
+                                                                      resultMicroISVP, resultMicroGradISVP,
+                                                                      alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        error->print();
+        results << "test_evolveStrainStateVariables & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma - scalarDelta, currentMicroGamma,
+                                                                      currentMicroGradientGamma, currentdGdMacroC,
+                                                                      currentdGdMicroC, currentdGdMicroGradC,
+                                                                      previousMacroISV, previousMicroISV,
+                                                                      previousMicroGradISV, previousMacroGamma,
+                                                                      previousMicroGamma, previousMicroGradientGamma,
+                                                                      previousdGdMacroC, previousdGdMicroC,
+                                                                      previousdGdMicroGradC, resultMacroISVM,
+                                                                      resultMicroISVM, resultMicroGradISVM,
+                                                                      alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        error->print();
+        results << "test_evolveStrainStateVariables & False\n";
+        return 1;
+    }
+
+    variableType gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradS, dMacroISVdMacroGamma ) ){
+        results << "test_evolveStrainStateVariables (test 7) & False\n";
+        return 1;
+    }
+
+    gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradS, 0. ) ){
+        results << "test_evolveStrainStateVariables (test 8) & False\n";
+        return 1;
+    }
+
+    variableVector gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * scalarDelta );
+
+    for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+        if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+            results << "test_evolveStrainStateVariables (test 9) * False\n";
+            return 1;
+        }
+    }
+
+    //Test the Jacobians w.r.t. the current micro gamma
+    scalarDelta = eps * fabs( currentMacroGamma ) + eps;
+
+    error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma + scalarDelta,
+                                                                      currentMicroGradientGamma, currentdGdMacroC,
+                                                                      currentdGdMicroC, currentdGdMicroGradC,
+                                                                      previousMacroISV, previousMicroISV,
+                                                                      previousMicroGradISV, previousMacroGamma,
+                                                                      previousMicroGamma, previousMicroGradientGamma,
+                                                                      previousdGdMacroC, previousdGdMicroC,
+                                                                      previousdGdMicroGradC, resultMacroISVP,
+                                                                      resultMicroISVP, resultMicroGradISVP,
+                                                                      alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        error->print();
+        results << "test_evolveStrainStateVariables & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma - scalarDelta,
+                                                                      currentMicroGradientGamma, currentdGdMacroC,
+                                                                      currentdGdMicroC, currentdGdMicroGradC,
+                                                                      previousMacroISV, previousMicroISV,
+                                                                      previousMicroGradISV, previousMacroGamma,
+                                                                      previousMicroGamma, previousMicroGradientGamma,
+                                                                      previousdGdMacroC, previousdGdMicroC,
+                                                                      previousdGdMicroGradC, resultMacroISVM,
+                                                                      resultMicroISVM, resultMicroGradISVM,
+                                                                      alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        error->print();
+        results << "test_evolveStrainStateVariables & False\n";
+        return 1;
+    }
+
+    gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradS, 0. ) ){
+        results << "test_evolveStrainStateVariables (test 10) & False\n";
+        return 1;
+    }
+
+    gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradS, dMicroISVdMicroGamma ) ){
+        results << "test_evolveStrainStateVariables (test 11) & False\n";
+        return 1;
+    }
+
+    gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * scalarDelta );
+
+    for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+        if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+            results << "test_evolveStrainStateVariables (test 12) * False\n";
+            return 1;
+        }
+    }
+
+    //Test the Jacobians w.r.t. the current derivative of the macro plastic flow direction w.r.t. the macro cohesion
+    scalarDelta = eps * fabs( currentdGdMacroC ) + eps;
+
+    error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
+                                                                      currentMicroGradientGamma, currentdGdMacroC + scalarDelta,
+                                                                      currentdGdMicroC, currentdGdMicroGradC,
+                                                                      previousMacroISV, previousMicroISV,
+                                                                      previousMicroGradISV, previousMacroGamma,
+                                                                      previousMicroGamma, previousMicroGradientGamma,
+                                                                      previousdGdMacroC, previousdGdMicroC,
+                                                                      previousdGdMicroGradC, resultMacroISVP,
+                                                                      resultMicroISVP, resultMicroGradISVP,
+                                                                      alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        error->print();
+        results << "test_evolveStrainStateVariables & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
+                                                                      currentMicroGradientGamma, currentdGdMacroC - scalarDelta,
+                                                                      currentdGdMicroC, currentdGdMicroGradC,
+                                                                      previousMacroISV, previousMicroISV,
+                                                                      previousMicroGradISV, previousMacroGamma,
+                                                                      previousMicroGamma, previousMicroGradientGamma,
+                                                                      previousdGdMacroC, previousdGdMicroC,
+                                                                      previousdGdMicroGradC, resultMacroISVM,
+                                                                      resultMicroISVM, resultMicroGradISVM,
+                                                                      alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        error->print();
+        results << "test_evolveStrainStateVariables & False\n";
+        return 1;
+    }
+
+    gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradS, dMacroISVddGdMacroC ) ){
+        results << "test_evolveStrainStateVariables (test 13) & False\n";
+        return 1;
+    }
+
+    gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradS, 0. ) ){
+        results << "test_evolveStrainStateVariables (test 14) & False\n";
+        return 1;
+    }
+
+    gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * scalarDelta );
+
+    for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+        if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+            results << "test_evolveStrainStateVariables (test 15) * False\n";
+            return 1;
+        }
+    }
+
+    //Test the Jacobians w.r.t. the current derivative of the micro plastic flow direction w.r.t. the micro cohesion
+    scalarDelta = eps * fabs( currentdGdMicroC ) + eps;
+
+    error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
+                                                                      currentMicroGradientGamma, currentdGdMacroC,
+                                                                      currentdGdMicroC + scalarDelta, currentdGdMicroGradC,
+                                                                      previousMacroISV, previousMicroISV,
+                                                                      previousMicroGradISV, previousMacroGamma,
+                                                                      previousMicroGamma, previousMicroGradientGamma,
+                                                                      previousdGdMacroC, previousdGdMicroC,
+                                                                      previousdGdMicroGradC, resultMacroISVP,
+                                                                      resultMicroISVP, resultMicroGradISVP,
+                                                                      alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        error->print();
+        results << "test_evolveStrainStateVariables & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
+                                                                      currentMicroGradientGamma, currentdGdMacroC,
+                                                                      currentdGdMicroC - scalarDelta, currentdGdMicroGradC,
+                                                                      previousMacroISV, previousMicroISV,
+                                                                      previousMicroGradISV, previousMacroGamma,
+                                                                      previousMicroGamma, previousMicroGradientGamma,
+                                                                      previousdGdMacroC, previousdGdMicroC,
+                                                                      previousdGdMicroGradC, resultMacroISVM,
+                                                                      resultMicroISVM, resultMicroGradISVM,
+                                                                      alphaMacro, alphaMicro, alphaMicroGrad );
+
+    if ( error ){
+        error->print();
+        results << "test_evolveStrainStateVariables & False\n";
+        return 1;
+    }
+
+    gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradS, 0. ) ){
+        results << "test_evolveStrainStateVariables (test 16) & False\n";
+        return 1;
+    }
+
+    gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * scalarDelta );
+
+    if ( !vectorTools::fuzzyEquals( gradS, dMicroISVddGdMicroC ) ){
+        results << "test_evolveStrainStateVariables (test 17) & False\n";
+        return 1;
+    }
+
+    gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * scalarDelta );
+
+    for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+        if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+            results << "test_evolveStrainStateVariables (test 18) * False\n";
+            return 1;
+        }
+    }
+
+    //Test the Jacobians w.r.t. the micro gradient gamma
+    for ( unsigned int i = 0; i < currentMicroGradientGamma.size(); i++ ){
+        constantVector delta( currentMicroGradientGamma.size(), 0 );
+        delta[ i ] = eps * fabs( currentMicroGradientGamma[ i ] ) + eps;
+
+        error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
+                                                                          currentMicroGradientGamma + delta, currentdGdMacroC,
+                                                                          currentdGdMicroC, currentdGdMicroGradC,
+                                                                          previousMacroISV, previousMicroISV,
+                                                                          previousMicroGradISV, previousMacroGamma,
+                                                                          previousMicroGamma, previousMicroGradientGamma,
+                                                                          previousdGdMacroC, previousdGdMicroC,
+                                                                          previousdGdMicroGradC, resultMacroISVP,
+                                                                          resultMicroISVP, resultMicroGradISVP,
+                                                                          alphaMacro, alphaMicro, alphaMicroGrad );
+    
+        if ( error ){
+            error->print();
+            results << "test_evolveStrainStateVariables & False\n";
+            return 1;
+        }
+    
+        error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
+                                                                          currentMicroGradientGamma - delta, currentdGdMacroC,
+                                                                          currentdGdMicroC, currentdGdMicroGradC,
+                                                                          previousMacroISV, previousMicroISV,
+                                                                          previousMicroGradISV, previousMacroGamma,
+                                                                          previousMicroGamma, previousMicroGradientGamma,
+                                                                          previousdGdMacroC, previousdGdMicroC,
+                                                                          previousdGdMicroGradC, resultMacroISVM,
+                                                                          resultMicroISVM, resultMicroGradISVM,
+                                                                          alphaMacro, alphaMicro, alphaMicroGrad );
+    
+        if ( error ){
+            error->print();
+            results << "test_evolveStrainStateVariables & False\n";
+            return 1;
+        }
+    
+        gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * delta[ i ] );
+    
+        if ( !vectorTools::fuzzyEquals( gradS, 0. ) ){
+            results << "test_evolveStrainStateVariables (test 19) & False\n";
+            return 1;
+        }
+    
+        gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * delta[ i ] );
+    
+        if ( !vectorTools::fuzzyEquals( gradS, 0. ) ){
+            results << "test_evolveStrainStateVariables (test 20) & False\n";
+            return 1;
+        }
+    
+        gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * delta[ i ] );
+    
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientISVdMicroGradGamma[ j ][ i ] ) ){
+                results << "test_evolveStrainStateVariables (test 21) * False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test the Jacobians w.r.t. the derivative of the micro gradient plastic potential w.r.t. the micro gradient cohesion
+    for ( unsigned int i = 0; i < 9; i++ ){
+        constantMatrix delta( 3, constantVector( 3, 0 ) );
+        delta[ ( int )( i / 3) ][ i % 3 ] = eps * fabs( currentMicroGradientGamma[ i ] ) + eps;
+
+        error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
+                                                                          currentMicroGradientGamma, currentdGdMacroC,
+                                                                          currentdGdMicroC, currentdGdMicroGradC + delta,
+                                                                          previousMacroISV, previousMicroISV,
+                                                                          previousMicroGradISV, previousMacroGamma,
+                                                                          previousMicroGamma, previousMicroGradientGamma,
+                                                                          previousdGdMacroC, previousdGdMicroC,
+                                                                          previousdGdMicroGradC, resultMacroISVP,
+                                                                          resultMicroISVP, resultMicroGradISVP,
+                                                                          alphaMacro, alphaMicro, alphaMicroGrad );
+    
+        if ( error ){
+            error->print();
+            results << "test_evolveStrainStateVariables & False\n";
+            return 1;
+        }
+    
+        error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
+                                                                          currentMicroGradientGamma, currentdGdMacroC,
+                                                                          currentdGdMicroC, currentdGdMicroGradC - delta,
+                                                                          previousMacroISV, previousMicroISV,
+                                                                          previousMicroGradISV, previousMacroGamma,
+                                                                          previousMicroGamma, previousMicroGradientGamma,
+                                                                          previousdGdMacroC, previousdGdMicroC,
+                                                                          previousdGdMicroGradC, resultMacroISVM,
+                                                                          resultMicroISVM, resultMicroGradISVM,
+                                                                          alphaMacro, alphaMicro, alphaMicroGrad );
+    
+        if ( error ){
+            error->print();
+            results << "test_evolveStrainStateVariables & False\n";
+            return 1;
+        }
+    
+        gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * delta[ ( int )( i / 3 ) ][ i % 3 ] );
+    
+        if ( !vectorTools::fuzzyEquals( gradS, 0. ) ){
+            results << "test_evolveStrainStateVariables (test 22) & False\n";
+            return 1;
+        }
+    
+        gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * delta[ ( int )( i / 3 ) ][ i % 3 ] );
+    
+        if ( !vectorTools::fuzzyEquals( gradS, 0. ) ){
+            results << "test_evolveStrainStateVariables (test 23) & False\n";
+            return 1;
+        }
+    
+        gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * delta[ ( int )( i / 3 ) ][ i % 3 ] );
+    
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientISVddGdMicroGradGamma[ j ][ i ] ) ){
+                results << "test_evolveStrainStateVariables (test 24) * False\n";
+                return 1;
+            }
+        }
+    }
+
     results << "test_evolveStrainStateVariables & True\n";
     return 0;
 }
