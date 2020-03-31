@@ -2884,4 +2884,103 @@ namespace micromorphicElastoPlasticity{
 
         return NULL;
     }
+
+    errorOut computeFlowDirections( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                    const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                    const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroParameters,
+                                    const parameterVector &microParameters, const parameterVector &microGradientParameters,
+                                    variableVector &macroFlowDirection, variableVector &microFlowDirection,
+                                    variableMatrix &microGradientFlowDirection, variableType &dGdMacroCohesion,
+                                    variableType &dGdMicroCohesion, variableMatrix &dGdMicroGradientCohesion,
+                                    variableMatrix &dMacroFlowDirectiondPK2ReferenceMicroStress,
+                                    variableMatrix &dMacroFlowDirectiondElasticRCG,
+                                    variableMatrix &dMicroFlowDirectiondSigma, variableMatrix &dMicroFlowDirectiondElasticRCG,
+                                    variableMatrix &dMicroGradientFlowDirectiondM,
+                                    variableMatrix &dMicroGradientFlowDirectiondElasticRCG ){
+        /*!
+         * Compute all of the flow directions.
+         *
+         * :param const variableVector &PK2Stress: The second Piola-Kirchhoff stress.
+         * :param const variableVector &referenceMicroStress: The reference symmetric micro stress.
+         * :param const variableVector &referenceHigherOrderStress: The reference higher order stress.
+         * :param const variableType &macroCohesion: The macro cohesion value.
+         * :param const variableType &microCohesion: The micro cohesion value.
+         * :param const variableVector &microGradientCohesion: The micro gradient cohesion value.
+         * :param const variableVector &elasticRightCauchyGreen: The elastic right cauchy green deformation.
+         * :param const parameterVector &macroParameters: The macro plastic parameters.
+         *     [ friction angle, beta, yield value, hardening curve values ]
+         * :param const parameterVector &microParameters: The micro plastic parameters.
+         *     [ friction angle, beta, yield value, hardening curve values ]
+         * :param const parameterVector &microGradientParameters: The micro gradient plastic parameters.
+         *     [ friction angle, beta, yield value, hardening curve values ]
+         * :param variableVector &macroFlowDirection: The flow direction for the macro scale plasticity.
+         * :param variableVector &microFlowDirection: The flow direction for the micro scale plasticity.
+         * :param variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient 
+         *     plasticity.
+         * :param variableType &dGdMacroCohesion: The Jacobian of the macro plastic potential w.r.t. the 
+         *     macro cohesion.
+         * :param variableType &dGdMicroCohesion: The Jacobian of the micro plastic potential w.r.t. the 
+         *     micro cohesion.
+         * :param variableVector &dGdMicroGradientCohesion: The Jacobian of the micro gradient plastic 
+         *     potential w.r.t. the micro gradient cohesion.
+         * :param variableMatrix &dMacroFlowDirectiondPK2Stress: The Jacobian of the macro flow direction w.r.t.
+         *     the PK2 stress.
+         * :param variableMatrix &dMacroFlowDirectiondElasticRCG: The Jacobian of the macro flow direction w.r.t.
+         *     the elastic right Green-Lagrange deformation tensor.
+         * :param variableMatrix &dMicroFlowDirectiondReferenceMicroStress: The Jacobian of the micro flow direction w.r.t.
+         *     the reference symmetric micro stress.
+         * :param variableMatrix &dMicroFlowDirectiondElasticRCG: The Jacobian of the micro flow direction w.r.t.
+         *     the elastic right Green-Lagrange deformation tensor.
+         * :param variableMatrix &dMicroGradientFlowDirectiondReferenceHigherOrderStress: The Jacobian of the micro gradient flow 
+         *     direction w.r.t.the reference higher order stress.
+         * :param variableMatrix &dMicroGradientFlowDirectiondElasticRCG: The Jacobian of the micro gradient flow direction w.r.t.
+         *     the elastic right Green-Lagrange deformation tensor.
+         */
+
+        variableVector tmp;
+
+        parameterType macroFrictionAngle = macroParameters[ 0 ];
+        parameterType macroBeta          = macroParameters[ 1 ];
+        parameterType macroYieldValue    = macroParameters[ 2 ];
+        errorOut error = computeSecondOrderDruckerPragerYieldEquation( PK2Stress, macroCohesion, elasticRightCauchyGreen,
+                                                                       macroFrictionAngle, macroBeta, macroYieldValue, 
+                                                                       macroFlowDirection, dGdMacroCohesion, tmpVec,
+                                                                       dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRCG );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeFlowDirections",
+                                             "Error in the computation of the macro flow direction" );
+            result->addNext( error );
+            return result;
+        }
+
+        parameterType microFrictionAngle = microParameters[ 0 ];
+        parameterType microBeta          = microParameters[ 1 ];
+        parameterType microYieldValue    = microParameters[ 2 ];
+        error = computeSecondOrderDruckerPragerYieldEquation( referenceMicroStress, microCohesion, elasticRightCauchyGreen,
+                                                              microFrictionAngle, microBeta, microYieldValue, 
+                                                              microFlowDirection, dGdMicroCohesion, tmpVec,
+                                                              dMicroFlowDirectiondReferenceMicroStress,
+                                                              dMicroFlowDirectiondElasticRCG );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeFlowDirections",
+                                             "Error in the computation of the macro flow direction" );
+            result->addNext( error );
+            return result;
+        }
+
+        parameterType microGradientFrictionAngle = microGradientParameters[ 0 ];
+        parameterType microGradientBeta          = microGradientParameters[ 1 ];
+        parameterType microGradientYieldValue    = microGradientParameters[ 2 ];
+        error = computeHigherOrderDruckerPragerYieldEquation( referenceHigherOrderStress, microGradientCohesion, elasticRightCauchyGreen,
+                                                              microGradientFrictionAngle, microGradientBeta, microGradientYieldValue,
+                                                              microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat,
+                                                              dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                                              dMicroGradientFlowDirectiondElasticRCG ); 
+
+        return NULL;
+
+    }
 }

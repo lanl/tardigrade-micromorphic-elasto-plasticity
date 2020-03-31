@@ -373,6 +373,20 @@ namespace micromorphicElastoPlasticity{
                                     variableVector &macroFlowDirection, variableVector &microFlowDirection,
                                     variableMatrix &microGradientFlowDirection, variableType &dGdMacroCohesion,
                                     variableType &dGdMicroCohesion, variableMatrix &dGdMicroGradientCohesion );
+
+    errorOut computeFlowDirections( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                    const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                    const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroParameters,
+                                    const parameterVector &microParameters, const parameterVector &microGradientParameters,
+                                    variableVector &macroFlowDirection, variableVector &microFlowDirection,
+                                    variableMatrix &microGradientFlowDirection, variableType &dGdMacroCohesion,
+                                    variableType &dGdMicroCohesion, variableMatrix &dGdMicroGradientCohesion,
+                                    variableMatrix &dMacroFlowDirectiondPK2Stress, variableMatrix &dMacroFlowDirectiondElasticRCG,
+                                    variableMatrix &dMicroFlowDirectiondReferenceMicroStress,
+                                    variableMatrix &dMicroFlowDirectiondElasticRCG,
+                                    variableMatrix &dMicroGradientFlowDirectiondM,
+                                    variableMatrix &dMicroGradientFlowDirectiondElasticRCG );
 }
 
 #endif
