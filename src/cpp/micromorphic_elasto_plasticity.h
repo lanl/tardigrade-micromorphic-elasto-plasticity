@@ -364,6 +364,15 @@ namespace micromorphicElastoPlasticity{
                                          const parameterType alphaMacro = 0.5,
                                          const parameterType alphaMicro = 0.5,
                                          const parameterType alphaMicroGradient = 0.5 );
+
+    errorOut computeFlowDirections( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                    const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                    const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroParameters,
+                                    const parameterVector &microParameters, const parameterVector &microGradientParameters,
+                                    variableVector &macroFlowDirection, variableVector &microFlowDirection,
+                                    variableMatrix &microGradientFlowDirection, variableType &dGdMacroCohesion,
+                                    variableType &dGdMicroCohesion, variableMatrix &dGdMicroGradientCohesion );
 }
 
 #endif
