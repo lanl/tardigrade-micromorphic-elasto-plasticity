@@ -3059,11 +3059,14 @@ namespace micromorphicElastoPlasticity{
                                                               microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat,
                                                               tmp1, tmp2 );
 
+        std::cout << "tmp1: " << tmp1.size() << " x " << tmp1[0].size() << "\n";
+        std::cout << "tmp2: " << tmp2.size() << " x " << tmp2[0].size() << "\n";
+
         //Reform the jacobians to a matrix form which enables matrix multiplication of the jacobians
-        dMicroGradientFlowDirectiondReferenceHigherOrderStress = variableMatrix( microGradientFlowDirection.size(),
-                                                                 variableVector( referenceHigherOrderStress.size(), 0 ) );
-        dMicroGradientFlowDirectiondElasticRCG = variableMatrix( microGradientFlowDirection.size(),
-                                                 variableVector( elasticRightCauchyGreen.size(), 0 ) );
+        dMicroGradientFlowDirectiondReferenceHigherOrderStress = variableMatrix( dim * dim * dim * dim,
+                                                                 variableVector( dim * dim * dim, 0 ) );
+        dMicroGradientFlowDirectiondElasticRCG = variableMatrix( dim * dim * dim * dim,
+                                                 variableVector( dim * dim, 0 ) );
 
         for ( unsigned int i = 0; i < dim; i++ ){
             for ( unsigned int j = 0; j < dim; j++ ){
@@ -3073,6 +3076,7 @@ namespace micromorphicElastoPlasticity{
                             dMicroGradientFlowDirectiondElasticRCG[ dim * dim * i + dim * j + k ][ dim * l + m ]
                                 = tmp2[ i ][ dim * dim * dim * j + dim * dim * k + dim * l + m ];
                             for ( unsigned int n = 0; n < dim; n++ ){
+                                std::cout << i << j << k << l << m << n << "\n";
                                 dMicroGradientFlowDirectiondReferenceHigherOrderStress[ dim * dim * i + dim * j + k ][ dim * dim * l + dim * m + n ]
                                     = tmp1[ i ][ dim * dim * dim * dim * j + dim * dim * dim * k + dim * dim * l + dim * m + n ];
                             }
