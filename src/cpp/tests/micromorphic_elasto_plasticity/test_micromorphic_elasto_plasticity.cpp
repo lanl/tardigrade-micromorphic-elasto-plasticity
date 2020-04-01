@@ -4845,6 +4845,267 @@ int test_computeFlowDirections( std::ofstream &results ){
         }
     }
 
+    //Test the Jacobian w.r.t. the macro Cohesion
+    constantType deltaScalar = eps * fabs( macroCohesion) + eps;
+
+    variableVector resultMacroFlowDirectionP, resultMicroFlowDirectionP, resultMicroGradientFlowDirectionP;
+    variableVector resultMacroFlowDirectionM, resultMicroFlowDirectionM, resultMicroGradientFlowDirectionM;
+
+    variableType resultdGdMacroCohesionP, resultdGdMicroCohesionP;
+    variableType resultdGdMacroCohesionM, resultdGdMicroCohesionM;
+
+    variableMatrix resultdGdMicroGradientCohesionP;
+    variableMatrix resultdGdMicroGradientCohesionM;
+
+    error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                 macroCohesion + deltaScalar, microCohesion, microGradientCohesion,
+                                                                 elasticRightCauchyGreen, macroFlowParameters,
+                                                                 microFlowParameters, microGradientFlowParameters,
+                                                                 resultMacroFlowDirectionP, resultMicroFlowDirectionP,
+                                                                 resultMicroGradientFlowDirectionP, resultdGdMacroCohesionP,
+                                                                 resultdGdMicroCohesionP, resultdGdMicroGradientCohesionP );
+
+    if ( error ){
+        error->print();
+        results << "test_computeFlowDirections & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                 macroCohesion - deltaScalar, microCohesion, microGradientCohesion,
+                                                                 elasticRightCauchyGreen, macroFlowParameters,
+                                                                 microFlowParameters, microGradientFlowParameters,
+                                                                 resultMacroFlowDirectionM, resultMicroFlowDirectionM,
+                                                                 resultMicroGradientFlowDirectionM, resultdGdMacroCohesionM,
+                                                                 resultdGdMicroCohesionM, resultdGdMicroGradientCohesionM );
+
+    if ( error ){
+        error->print();
+        results << "test_computeFlowDirections & False\n";
+        return 1;
+    }
+
+    variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * deltaScalar );
+
+    for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+        if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+            results << "test_computeFlowDirections (test 37) & False\n";
+            return 1;
+        }
+    }
+
+    gradCol = ( resultMicroFlowDirectionP - resultMicroFlowDirectionM ) / ( 2 * deltaScalar );
+
+    for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+        if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+            results << "test_computeFlowDirections (test 38) & False\n";
+            return 1;
+        }
+    }
+
+    gradCol = ( resultMicroGradientFlowDirectionP - resultMicroGradientFlowDirectionM ) / ( 2 * deltaScalar );
+
+    for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+        if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+            results << "test_computeFlowDirections (test 39) & False\n";
+            return 1;
+        }
+    }
+
+    variableType gradScalar = ( resultdGdMacroCohesionP - resultdGdMacroCohesionM ) / ( 2 * deltaScalar );
+
+    if ( !vectorTools::fuzzyEquals( gradScalar, 0. ) ){
+        results << "test_computeFlowDirections (test 40) & False\n";
+        return 1;
+    }
+
+    gradScalar = ( resultdGdMicroCohesionP - resultdGdMicroCohesionM ) / ( 2 * deltaScalar );
+
+    if ( !vectorTools::fuzzyEquals( gradScalar, 0. ) ){
+        results << "test_computeFlowDirections (test 41) & False\n";
+        return 1;
+    }
+
+    variableMatrix gradMat = ( resultdGdMicroGradientCohesionP - resultdGdMicroGradientCohesionM ) / ( 2 * deltaScalar );
+
+    for ( unsigned int j = 0; j < gradMat.size(); j++ ){
+        for ( unsigned int k = 0; k < gradMat[ j ].size(); k++ ){
+            if ( !vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) ){
+                results << "test_computeFlowDirections (test 42) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test the Jacobian w.r.t. the micro Cohesion
+    deltaScalar = eps * fabs( microCohesion) + eps;
+
+    error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                 macroCohesion, microCohesion + deltaScalar, microGradientCohesion,
+                                                                 elasticRightCauchyGreen, macroFlowParameters,
+                                                                 microFlowParameters, microGradientFlowParameters,
+                                                                 resultMacroFlowDirectionP, resultMicroFlowDirectionP,
+                                                                 resultMicroGradientFlowDirectionP, resultdGdMacroCohesionP,
+                                                                 resultdGdMicroCohesionP, resultdGdMicroGradientCohesionP );
+
+    if ( error ){
+        error->print();
+        results << "test_computeFlowDirections & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                 macroCohesion, microCohesion - deltaScalar, microGradientCohesion,
+                                                                 elasticRightCauchyGreen, macroFlowParameters,
+                                                                 microFlowParameters, microGradientFlowParameters,
+                                                                 resultMacroFlowDirectionM, resultMicroFlowDirectionM,
+                                                                 resultMicroGradientFlowDirectionM, resultdGdMacroCohesionM,
+                                                                 resultdGdMicroCohesionM, resultdGdMicroGradientCohesionM );
+
+    if ( error ){
+        error->print();
+        results << "test_computeFlowDirections & False\n";
+        return 1;
+    }
+
+    gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * deltaScalar );
+
+    for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+        if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+            results << "test_computeFlowDirections (test 43) & False\n";
+            return 1;
+        }
+    }
+
+    gradCol = ( resultMicroFlowDirectionP - resultMicroFlowDirectionM ) / ( 2 * deltaScalar );
+
+    for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+        if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+            results << "test_computeFlowDirections (test 44) & False\n";
+            return 1;
+        }
+    }
+
+    gradCol = ( resultMicroGradientFlowDirectionP - resultMicroGradientFlowDirectionM ) / ( 2 * deltaScalar );
+
+    for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+        if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+            results << "test_computeFlowDirections (test 45) & False\n";
+            return 1;
+        }
+    }
+
+    gradScalar = ( resultdGdMacroCohesionP - resultdGdMacroCohesionM ) / ( 2 * deltaScalar );
+
+    if ( !vectorTools::fuzzyEquals( gradScalar, 0. ) ){
+        results << "test_computeFlowDirections (test 46) & False\n";
+        return 1;
+    }
+
+    gradScalar = ( resultdGdMicroCohesionP - resultdGdMicroCohesionM ) / ( 2 * deltaScalar );
+
+    if ( !vectorTools::fuzzyEquals( gradScalar, 0. ) ){
+        results << "test_computeFlowDirections (test 47) & False\n";
+        return 1;
+    }
+
+    gradMat = ( resultdGdMicroGradientCohesionP - resultdGdMicroGradientCohesionM ) / ( 2 * deltaScalar );
+
+    for ( unsigned int j = 0; j < gradMat.size(); j++ ){
+        for ( unsigned int k = 0; k < gradMat[ j ].size(); k++ ){
+            if ( !vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) ){
+                results << "test_computeFlowDirections (test 48) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test the jacobians w.r.t. the micro gradient cohesion
+    for ( unsigned int i = 0; i < microGradientCohesion.size(); i++ ){
+        constantVector delta( microGradientCohesion.size(), 0 );
+        delta[ i ] = eps * fabs( microGradientCohesion[ i ] ) + eps;
+
+        error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                     macroCohesion, microCohesion, microGradientCohesion + delta,
+                                                                     elasticRightCauchyGreen, macroFlowParameters,
+                                                                     microFlowParameters, microGradientFlowParameters,
+                                                                     resultMacroFlowDirectionP, resultMicroFlowDirectionP,
+                                                                     resultMicroGradientFlowDirectionP, resultdGdMacroCohesionP,
+                                                                     resultdGdMicroCohesionP, resultdGdMicroGradientCohesionP );
+
+        if ( error ){
+            error->print();
+            results << "test_computeFlowDirections & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                     macroCohesion, microCohesion, microGradientCohesion - delta,
+                                                                     elasticRightCauchyGreen, macroFlowParameters,
+                                                                     microFlowParameters, microGradientFlowParameters,
+                                                                     resultMacroFlowDirectionM, resultMicroFlowDirectionM,
+                                                                     resultMicroGradientFlowDirectionM, resultdGdMacroCohesionM,
+                                                                     resultdGdMicroCohesionM, resultdGdMicroGradientCohesionM );
+
+        if ( error ){
+            error->print();
+            results << "test_computeFlowDirections & False\n";
+            return 1;
+        }
+
+        gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_computeFlowDirections (test 49) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( resultMicroFlowDirectionP - resultMicroFlowDirectionM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_computeFlowDirections (test 50) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( resultMicroGradientFlowDirectionP - resultMicroGradientFlowDirectionM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_computeFlowDirections (test 51) & False\n";
+                return 1;
+            }
+        }
+
+        gradScalar = ( resultdGdMacroCohesionP - resultdGdMacroCohesionM ) / ( 2 * delta[ i ] );
+
+        if ( !vectorTools::fuzzyEquals( gradScalar, 0. ) ){
+            results << "test_computeFlowDirections (test 52) & False\n";
+            return 1;
+        }
+
+        gradScalar = ( resultdGdMicroCohesionP - resultdGdMicroCohesionM ) / ( 2 * delta[ i ] );
+
+        if ( !vectorTools::fuzzyEquals( gradScalar, 0. ) ){
+            results << "test_computeFlowDirections (test 53) & False\n";
+            return 1;
+        }
+
+        variableMatrix gradMat = ( resultdGdMicroGradientCohesionP - resultdGdMicroGradientCohesionM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradMat.size(); j++ ){
+            for ( unsigned int k = 0; k < gradMat[ j ].size(); k++ ){
+                if ( !vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) ){
+                    results << "test_computeFlowDirections (test 54) & False\n";
+                    return 1;
+                }
+            }
+        }
+    }
+
     results << "test_computeFlowDirections & True\n";
     return 0;
 }
