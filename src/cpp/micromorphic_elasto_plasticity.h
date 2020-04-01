@@ -14,6 +14,7 @@
 #include<constitutive_tools.h>
 #include<micromorphic_tools.h>
 #include<micromorphic_linear_elasticity.h>
+#include<solver_tools.h>
 
 namespace micromorphicElastoPlasticity{
 
@@ -387,6 +388,10 @@ namespace micromorphicElastoPlasticity{
                                     variableMatrix &dMicroFlowDirectiondElasticRCG,
                                     variableMatrix &dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                     variableMatrix &dMicroGradientFlowDirectiondElasticRCG );
+
+    errorOut computeResidual( const solverTools::floatVector &gammas, const solverTools::floatMatrix &floatArgs,
+                              const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts );
 }
 
 #endif

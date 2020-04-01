@@ -3111,4 +3111,299 @@ namespace micromorphicElastoPlasticity{
 
         return NULL;
     }
+
+    errorOut computeResidual( const solverTools::floatVector &gammas, const solverTools::floatMatrix &floatArgs,
+                              const solverTools::intMatrix intArgs, solverTools::floatVector &residual,
+                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts ){
+        /*!
+         * Compute the residual for use in the non-linear solve.
+         *
+         * :param const solverTools::floatVector &gammas: The incoming vector of plastic multipliers.
+         *     gammas = [ macroGamma, microGamma, microGradientGamma_1, microGradientGamma_2, microGradientGamma_3 ]
+         * :param const solverTools::floatMatrix &floatArgs: The floating points arguments.
+         * :param const solverTools::intMatrix &intArgs: The integer arguments.
+         * :param const solverTools::floatVector &residual: The residual value.
+         * :param const solverTools::floatMatrix &floatOuts: Additional floating point outputs.
+         * :param const solverTools::intMatrix &intOuts: Additional integer outputs.
+         *
+         * The floatArgs matrix is organized as
+         * floatArgs[ 0] = { Dt }
+         * floatArgs[ 1] = currentDeformationGradient
+         * floatArgs[ 2] = currentMicroDeformation
+         * floatArgs[ 3] = currentGradientMicroDeformation
+         * floatArgs[ 4] = previousPlasticDeformationGradient
+         * floatArgs[ 5] = previousPlasticMicroDeformation
+         * floatArgs[ 6] = previousPlasticMicroGradient
+         * floatArgs[ 7] = previousPlasticMacroVelocityGradient
+         * floatArgs[ 8] = previousPlasticMicroVelocityGradient
+         * floatArgs[ 9] = previousPlasticMicroGradientVelocityGradient
+         * floatArgs[10] = { previousMacroStrainISV }
+         * floatArgs[11] = { previousMicroStrainISV }
+         * floatArgs[12] = previousMicroGradientStrainISV
+         * floatArgs[13] = { previousMacroGamma }
+         * floatArgs[14] = { previousMicroGamma }
+         * floatArgs[15] = previousMicroGradientGamma
+         * floatArgs[16] = previousdMacroGdMacroCohesion
+         * floatArgs[17] = previousdMicroGdMicroCohesion
+         * floatArgs[18] = previousdMicroGradientGdMicroGradientCohesion
+         * floatArgs[19] = macroHardeningParameters
+         * floatArgs[20] = microHardeningParameters
+         * floatArgs[21] = microGradientHardeningParameters
+         * floatArgs[22] = macroFlowParameters
+         * floatArgs[23] = microFlowParameters
+         * floatArgs[24] = microGradientFlowParameters
+         * floatArgs[25] = macroYieldParameters
+         * floatArgs[26] = microYieldParameters
+         * floatArgs[27] = icroGradientYieldParameters
+         * floatArgs[28] = Amatrix
+         * floatArgs[29] = Bmatrix
+         * floatArgs[30] = Cmatrix
+         * floatArgs[31] = Dmatrix
+         * floatArgs[32] = alphaMacro
+         * floatArgs[33] = alphaMicro
+         * floatArgs[34] = alphaMicroGradient
+         *
+         * The floatOuts matrix is organized as
+         * floatOuts[ 0] = currentElasticDeformationGradient
+         * floatOuts[ 1] = currentElasticMicroDeformation
+         * floatOuts[ 2] = currentElasticMicroGradient
+         * floatOuts[ 3] = currentPK2Stress
+         * floatOuts[ 4] = currentReferenceMicroStress
+         * floatOuts[ 5] = currentReferenceHigherOrderStress
+         * floatOuts[ 6] = { currentMacroStrainISV }
+         * floatOuts[ 7] = { currentMicroStrainISV }
+         * floatOuts[ 8] = currentMicroGradientStrainISV
+         * floatOuts[ 9] = currentPlasticDeformationGradient
+         * floatOuts[10] = currentPlasticMicroDeformation
+         * floatOuts[11] = currentPlasticMicroGradient
+         *
+         */
+
+        //Extract the values from floatArgs
+        unsigned int ii = 0;
+        const constantType    *Dt                                           = &floatArgs[ ii++ ][0];
+        const variableVector  *currentDeformationGradient                   = &floatArgs[ ii++ ];
+        const variableVector  *currentMicroDeformation                      = &floatArgs[ ii++ ];
+        const variableVector  *currentGradientMicroDeformation              = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticDeformationGradient           = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticMicroDeformation              = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticMicroGradient                 = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticMacroVelocityGradient         = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticMicroVelocityGradient         = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticMicroGradientVelocityGradient = &floatArgs[ ii++ ];
+        const variableType    *previousMacroStrainISV                       = &floatArgs[ ii++ ][ 0 ];
+        const variableType    *previousMicroStrainISV                       = &floatArgs[ ii++ ][ 0 ];
+        const variableVector  *previousMicroGradientStrainISV               = &floatArgs[ ii++ ];
+        const variableType    *previousMacroGamma                           = &floatArgs[ ii++ ][ 0 ];
+        const variableType    *previousMicroGamma                           = &floatArgs[ ii++ ][ 0 ];
+        const variableVector  *previousMicroGradientGamma                   = &floatArgs[ ii++ ];
+        const variableType    *previousdMacroGdMacroCohesion                = &floatArgs[ ii++ ][ 0 ];
+        const variableType    *previousdMicroGdMicroCohesion                = &floatArgs[ ii++ ][ 0 ];
+        const variableMatrix  previousdMicroGradientGdMicroGradientCohesion = vectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
+        const parameterVector *macroHardeningParameters                     = &floatArgs[ ii++ ];
+        const parameterVector *microHardeningParameters                     = &floatArgs[ ii++ ];
+        const parameterVector *microGradientHardeningParameters             = &floatArgs[ ii++ ];
+        const parameterVector *macroFlowParameters                          = &floatArgs[ ii++ ];
+        const parameterVector *microFlowParameters                          = &floatArgs[ ii++ ];
+        const parameterVector *microGradientFlowParameters                  = &floatArgs[ ii++ ];
+        const parameterVector *macroYieldParameters                         = &floatArgs[ ii++ ];
+        const parameterVector *microYieldParameters                         = &floatArgs[ ii++ ];
+        const parameterVector *microGradientYieldParameters                 = &floatArgs[ ii++ ];
+        const parameterVector *Amatrix                                      = &floatArgs[ ii++ ];
+        const parameterVector *Bmatrix                                      = &floatArgs[ ii++ ];
+        const parameterVector *Cmatrix                                      = &floatArgs[ ii++ ];
+        const parameterVector *Dmatrix                                      = &floatArgs[ ii++ ];
+        const parameterType   *alphaMacro                                   = &floatArgs[ ii++ ][ 0 ];
+        const parameterType   *alphaMicro                                   = &floatArgs[ ii++ ][ 0 ];
+        const parameterType   *alphaMicroGradient                           = &floatArgs[ ii++ ][ 0 ];
+
+        //Extract the values from floatOuts
+        ii = 0;
+        variableVector *currentElasticDeformationGradient = &floatOuts[ ii++ ];
+        variableVector *currentElasticMicroDeformation    = &floatOuts[ ii++ ];
+        variableVector *currentElasticMicroGradient       = &floatOuts[ ii++ ];
+        variableVector *currentPK2Stress                  = &floatOuts[ ii++ ];
+        variableVector *currentReferenceMicroStress       = &floatOuts[ ii++ ];
+        variableVector *currentReferenceHigherOrderStress = &floatOuts[ ii++ ];
+        variableType   *currentMacroStrainISV             = &floatOuts[ ii++ ][ 0 ];
+        variableType   *currentMicroStrainISV             = &floatOuts[ ii++ ][ 0 ];
+        variableVector *currentMicroGradientStrainISV     = &floatOuts[ ii++ ];
+        variableVector *currentPlasticDeformationGradient = &floatOuts[ ii++ ];
+        variableVector *currentPlasticMicroDeformation    = &floatOuts[ ii++ ];
+        variableVector *currentPlasticMicroGradient       = &floatOuts[ ii++ ];
+
+        //Extract the Gammas
+        variableType currentMacroGamma = gammas[0];
+        variableType currentMicroGamma = gammas[1];
+        variableVector currentMicroGradientGamma( gammas.begin() + 2, gammas.begin() + 5 );
+
+        //Compute the cohesions
+        variableType currentMacroCohesion = ( ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] ) * *currentMacroStrainISV;
+        variableType currentMicroCohesion = ( ( *microHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] ) * *currentMicroStrainISV;
+        variableVector currentMicroGradientCohesion = ( ( *microGradientHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] ) * *currentMicroGradientStrainISV;
+
+        //Compute the elastic deformation measures
+        variableVector currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen, currentElasticPsi, currentElasticGamma;
+
+        errorOut error = computeElasticDeformationMeasures( *currentElasticDeformationGradient, *currentElasticMicroDeformation,
+                                                            *currentElasticMicroGradient, currentElasticRightCauchyGreen,
+                                                            currentElasticMicroRightCauchyGreen, currentElasticPsi,
+                                                            currentElasticGamma );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the computation of the elastic deformation measures" );
+            result->addNext( error );
+            return result;
+        }
+
+        //Compute the Flow directions
+        variableVector currentMacroFlowDirection, currentMicroFlowDirection, currentMicroGradientFlowDirection;
+        variableType currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion;
+        variableMatrix currentdMicroGradientGdMicroGradientCohesion;
+
+        error = computeFlowDirections( *currentPK2Stress, *currentReferenceMicroStress, *currentReferenceHigherOrderStress,
+                                       currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion,
+                                       currentElasticRightCauchyGreen, *macroFlowParameters, *microFlowParameters,
+                                       *microGradientFlowParameters, currentMacroFlowDirection, currentMicroFlowDirection,
+                                       currentMicroGradientFlowDirection, currentdMacroGdMacroCohesion,
+                                       currentdMicroGdMicroCohesion, currentdMicroGradientGdMicroGradientCohesion );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the computation of the flow directions" );
+            result->addNext( error );
+            return result;
+        }
+
+        //Evolve the strain-like ISVs
+        error = evolveStrainStateVariables( *Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
+                                            currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion,
+                                            currentdMicroGradientGdMicroGradientCohesion, *previousMacroStrainISV,
+                                            *previousMicroStrainISV, *previousMicroGradientStrainISV,
+                                            *previousMacroGamma, *previousMicroGamma, *previousMicroGradientGamma,
+                                            *previousdMacroGdMacroCohesion, *previousdMicroGdMicroCohesion,
+                                            previousdMicroGradientGdMicroGradientCohesion,
+                                            *currentMacroStrainISV, *currentMicroStrainISV, *currentMicroGradientStrainISV,
+                                            *alphaMacro, *alphaMicro, *alphaMicroGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the evolution of the strain-like ISVs" );
+            result->addNext( result );
+            return result;
+        }
+
+        //Compute the new cohesion values
+        currentMacroCohesion = ( ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] ) * *currentMacroStrainISV;
+        currentMicroCohesion = ( ( *microHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] ) * *currentMicroStrainISV;
+        currentMicroGradientCohesion = ( ( *microGradientHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] ) * *currentMicroGradientStrainISV;
+
+        //Compute the new plastic velocity gradients
+        variableVector currentPlasticMacroVelocityGradient, currentPlasticMicroVelocityGradient,
+                       currentPlasticMicroGradientVelocityGradient;
+
+        error = computePlasticVelocityGradients( currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
+                                                 currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen,
+                                                 currentElasticPsi, currentElasticGamma,
+                                                 currentMacroFlowDirection, currentMicroFlowDirection,
+                                                 currentMicroGradientFlowDirection, currentPlasticMacroVelocityGradient,
+                                                 currentPlasticMicroVelocityGradient,
+                                                 currentPlasticMicroGradientVelocityGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the evolution of the plastic velocity gradients" );
+            result->addNext( result );
+            return result;
+        }
+
+        //Compute the new plastic deformation
+        error = evolvePlasticDeformation( *Dt, currentPlasticMacroVelocityGradient, currentPlasticMicroVelocityGradient,
+                                          currentPlasticMicroGradientVelocityGradient, *previousPlasticDeformationGradient,
+                                          *previousPlasticMicroDeformation, *previousPlasticMicroGradient,
+                                          *previousPlasticMacroVelocityGradient, *previousPlasticMicroVelocityGradient,
+                                          *previousPlasticMicroGradientVelocityGradient, *currentPlasticDeformationGradient,
+                                          *currentPlasticMicroDeformation, *currentPlasticMicroGradient,
+                                          *alphaMacro, *alphaMicro, *alphaMicroGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the evolution of the plastic deformation" );
+            result->addNext( error );
+            return result;
+        }
+
+        //Compute the new elastic deformation
+        error = computeElasticPartOfDeformation( *currentDeformationGradient, *currentMicroDeformation, *currentGradientMicroDeformation,
+                                                 *currentPlasticDeformationGradient, *currentPlasticMicroDeformation,
+                                                 *currentPlasticMicroGradient, *currentElasticDeformationGradient,
+                                                 *currentElasticMicroDeformation, *currentElasticMicroGradient );
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the computation of the elastic part of deformation" );
+            result->addNext( error );
+            return result;
+        }
+
+        //Compute the new stress
+        error = micromorphicLinearElasticity::linearElasticityReference( *currentElasticDeformationGradient,
+                                                                         *currentElasticMicroDeformation,
+                                                                         *currentElasticMicroGradient,
+                                                                         *Amatrix, *Bmatrix, *Cmatrix, *Dmatrix,
+                                                                         *currentPK2Stress, *currentReferenceMicroStress,
+                                                                         *currentReferenceHigherOrderStress );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the computation of the current stresses" );
+            result->addNext( error );
+            return result;
+        }
+
+        //Compute the yield functions
+        residual.resize( 5 );
+        error = computeSecondOrderDruckerPragerYieldEquation( *currentPK2Stress, currentMacroCohesion, currentElasticRightCauchyGreen,
+                                                              ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
+                                                              residual[ 0 ] );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the computation of the macro yield equation" );
+            result->addNext( error );
+            return result;
+        }
+                        
+        error = computeSecondOrderDruckerPragerYieldEquation( *currentReferenceMicroStress, currentMicroCohesion,
+                                                              currentElasticRightCauchyGreen,
+                                                              ( *microYieldParameters )[ 0 ], ( *microYieldParameters )[ 1 ],
+                                                              residual[ 1 ] );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the computation of the micro yield equation" );
+            result->addNext( error );
+            return result;
+        }
+        
+        variableVector rtmp;
+        error = computeHigherOrderDruckerPragerYieldEquation( *currentReferenceHigherOrderStress, currentMicroGradientCohesion,
+                                                              currentElasticRightCauchyGreen,
+                                                              ( *microGradientYieldParameters )[ 0 ],
+                                                              ( *microGradientYieldParameters )[ 1 ],
+                                                              rtmp );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the computation of the micro yield equation" );
+            result->addNext( error );
+            return result;
+        }
+
+        residual[ 2 ] = rtmp[ 0 ];
+        residual[ 3 ] = rtmp[ 1 ];
+        residual[ 4 ] = rtmp[ 2 ];
+
+        return NULL;
+    }
 }
