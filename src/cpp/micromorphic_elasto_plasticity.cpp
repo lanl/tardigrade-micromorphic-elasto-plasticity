@@ -1428,7 +1428,7 @@ namespace micromorphicElastoPlasticity{
 
     errorOut computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
                                                           const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableMatrix &microGradientFlowDirection,
+                                                          const variableVector &microGradientFlowDirection,
                                                           const variableVector &plasticMicroVelocityGradient,
                                                           variableVector &plasticMicroGradientVelocityGradient ){
         /*!
@@ -1442,7 +1442,7 @@ namespace micromorphicElastoPlasticity{
          * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
          * :param const variableVector &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
          * :param const variableVector &elasticGamma: The elastic higher order deformation measure Gamma.
-         * :param const variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+         * :param const variableVector &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
          * :param const variableVector &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
          * :param variableVector &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
          */
@@ -1456,7 +1456,7 @@ namespace micromorphicElastoPlasticity{
     }
     errorOut computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
                                                           const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableMatrix &microGradientFlowDirection,
+                                                          const variableVector &microGradientFlowDirection,
                                                           const variableVector &plasticMicroVelocityGradient,
                                                           variableVector &plasticMicroGradientVelocityGradient,
                                                           variableVector &skewTerm ){
@@ -1471,7 +1471,7 @@ namespace micromorphicElastoPlasticity{
          * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
          * :param const variableVector &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
          * :param const variableVector &elasticGamma: The elastic higher order deformation measure Gamma.
-         * :param const variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+         * :param const variableVector &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
          * :param const variableVector &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
          * :param variableVector &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
          * :param variableVector &skewTerm: The skew term ( times 2 ) from the higher order computation.
@@ -1500,16 +1500,9 @@ namespace micromorphicElastoPlasticity{
                                   "The elastic higher order deformation measure Gamma must be 3D" );
         }
 
-        if ( microGradientFlowDirection.size() != dim ){
+        if ( microGradientFlowDirection.size() != dim * dim * dim * dim ){
             return new errorNode( "computePlasticVelocityGradients",
                                   "The micro gradient flow direction must be 3D" );
-        }
-
-        for ( unsigned int i = 0; i < dim; i++ ){
-            if ( microGradientFlowDirection[ i ].size() != dim * dim * dim ){
-                return new errorNode( "computePlasticVelocityGradients",
-                                      "The rows of the micro gradient flow direction must be of length 27" );
-            }
         }
 
         if ( plasticMicroVelocityGradient.size() != dim * dim ){
@@ -1547,7 +1540,7 @@ namespace micromorphicElastoPlasticity{
                         for ( unsigned int Ib = 0; Ib < dim; Ib++ ){
                             plasticMicroGradientVelocityGradient[ dim * dim * Nb + dim * Mb + Kb ]
                                 += inverseElasticPsi[ dim * Nb + Lb ]
-                                 * ( microGradientGamma[ Ib ] * microGradientFlowDirection[ Ib ][ dim * dim * Kb + dim * Lb + Mb ]
+                                 * ( microGradientGamma[ Ib ] * microGradientFlowDirection[ dim * dim * dim * Ib + dim * dim * Kb + dim * Lb + Mb ]
                                  +   elasticPsi[ dim * Lb + Ib ] * skewTerm[ dim * dim * Ib + dim * Mb + Kb ] );
                         }
                     }
@@ -1560,7 +1553,7 @@ namespace micromorphicElastoPlasticity{
 
     errorOut computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
                                                           const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableMatrix &microGradientFlowDirection,
+                                                          const variableVector &microGradientFlowDirection,
                                                           const variableVector &plasticMicroVelocityGradient,
                                                           variableVector &plasticMicroGradientVelocityGradient,
                                                           variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
@@ -1576,7 +1569,7 @@ namespace micromorphicElastoPlasticity{
          * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
          * :param const variableVector &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
          * :param const variableVector &elasticGamma: The elastic higher order deformation measure Gamma.
-         * :param const variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+         * :param const variableVector &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
          * :param const variableVector &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
          * :param variableVector &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
          * :param variableMatrix &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient 
@@ -1595,7 +1588,7 @@ namespace micromorphicElastoPlasticity{
 
     errorOut computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
                                                           const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableMatrix &microGradientFlowDirection,
+                                                          const variableVector &microGradientFlowDirection,
                                                           const variableVector &plasticMicroVelocityGradient,
                                                           variableVector &plasticMicroGradientVelocityGradient,
                                                           variableVector &skewTerm,
@@ -1612,7 +1605,7 @@ namespace micromorphicElastoPlasticity{
          * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
          * :param const variableVector &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
          * :param const variableVector &elasticGamma: The elastic higher order deformation measure Gamma.
-         * :param const variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+         * :param const variableVector &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
          * :param const variableVector &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
          * :param variableVector &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
          * :param variableVector &skewTerm: Two times the skew term.
@@ -1651,7 +1644,7 @@ namespace micromorphicElastoPlasticity{
 
                             dPlasticMicroGradientLdMicroGradientGamma[ dim * dim * Lb + dim * Mb + Kb ][ Ob ]
                                 += inverseElasticPsi[ dim * Lb + Pb ]
-                                 * microGradientFlowDirection[ Ob ][ dim * dim * Kb + dim * Pb + Mb ];
+                                 * microGradientFlowDirection[ dim * dim * dim * Ob + dim * dim * Kb + dim * Pb + Mb ];
 
                             for ( unsigned int Qb = 0; Qb < dim; Qb++ ){
                                 dPlasticMicroGradientLdPlasticMicroL[ dim * dim * Lb + dim * Mb + Kb ][ dim * Ob + Pb ]
@@ -1671,7 +1664,7 @@ namespace micromorphicElastoPlasticity{
 
     errorOut computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
                                                           const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableMatrix &microGradientFlowDirection,
+                                                          const variableVector &microGradientFlowDirection,
                                                           const variableVector &plasticMicroVelocityGradient,
                                                           variableVector &plasticMicroGradientVelocityGradient,
                                                           variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
@@ -1690,7 +1683,7 @@ namespace micromorphicElastoPlasticity{
          * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
          * :param const variableVector &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
          * :param const variableVector &elasticGamma: The elastic higher order deformation measure Gamma.
-         * :param const variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+         * :param const variableVector &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
          * :param const variableVector &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
          * :param variableVector &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
          * :param variableMatrix &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient 
@@ -1776,7 +1769,7 @@ namespace micromorphicElastoPlasticity{
                                               const variableVector &microGradientGamma, const variableVector &elasticRightCauchyGreen,
                                               const variableVector &elasticMicroRightCauchyGreen, const variableVector &elasticPsi,
                                               const variableVector &elasticGamma, const variableVector &macroFlowDirection,
-                                              const variableVector &microFlowDirection, const variableMatrix &microGradientFlowDirection,
+                                              const variableVector &microFlowDirection, const variableVector &microGradientFlowDirection,
                                               variableVector &plasticMacroVelocityGradient, variableVector &plasticMicroVelocityGradient,
                                               variableVector &plasticMicroGradientVelocityGradient ){
         /*!
@@ -1791,7 +1784,7 @@ namespace micromorphicElastoPlasticity{
          * :param const variableVector &elasticGamma: The elastic higher order deformation metric Gamma.
          * :param const variableVector &macroFlowDirection: The flow direction of the macro plasticity.
          * :param const variableVector &microFlowDirection: The flow direction of the micro plasticity.
-         * :param const variableMatrix &microGradientFlowDirection: The flow direction of the micro gradient plasticity.
+         * :param const variableVector &microGradientFlowDirection: The flow direction of the micro gradient plasticity.
          *     Note: This is a matrix because it is computed as the gradient of the flow potential which is a vector.
          * :param variableVector &plasticMacroVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
          * :param variableVector &plasticMicroVelocityGradient: The plastic velocity gradient for the micro plastic deformation.
@@ -1857,7 +1850,7 @@ namespace micromorphicElastoPlasticity{
                                               const variableVector &microGradientGamma, const variableVector &elasticRightCauchyGreen,
                                               const variableVector &elasticMicroRightCauchyGreen, const variableVector &elasticPsi,
                                               const variableVector &elasticGamma, const variableVector &macroFlowDirection,
-                                              const variableVector &microFlowDirection, const variableMatrix &microGradientFlowDirection,
+                                              const variableVector &microFlowDirection, const variableVector &microGradientFlowDirection,
                                               variableVector &plasticMacroVelocityGradient, variableVector &plasticMicroVelocityGradient,
                                               variableVector &plasticMicroGradientVelocityGradient,
                                               variableVector &dPlasticMacroLdMacroGamma,
@@ -1876,7 +1869,7 @@ namespace micromorphicElastoPlasticity{
          * :param const variableVector &elasticGamma: The elastic higher order deformation metric Gamma.
          * :param const variableVector &macroFlowDirection: The flow direction of the macro plasticity.
          * :param const variableVector &microFlowDirection: The flow direction of the micro plasticity.
-         * :param const variableMatrix &microGradientFlowDirection: The flow direction of the micro gradient plasticity.
+         * :param const variableVector &microGradientFlowDirection: The flow direction of the micro gradient plasticity.
          *     Note: This is a matrix because it is computed as the gradient of the flow potential which is a vector.
          * :param variableVector &plasticMacroVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
          * :param variableVector &plasticMicroVelocityGradient: The plastic velocity gradient for the micro plastic deformation.
@@ -1960,7 +1953,7 @@ namespace micromorphicElastoPlasticity{
                                               const variableVector &microGradientGamma, const variableVector &elasticRightCauchyGreen,
                                               const variableVector &elasticMicroRightCauchyGreen, const variableVector &elasticPsi,
                                               const variableVector &elasticGamma, const variableVector &macroFlowDirection,
-                                              const variableVector &microFlowDirection, const variableMatrix &microGradientFlowDirection,
+                                              const variableVector &microFlowDirection, const variableVector &microGradientFlowDirection,
                                               variableVector &plasticMacroVelocityGradient, variableVector &plasticMicroVelocityGradient,
                                               variableVector &plasticMicroGradientVelocityGradient,
                                               variableVector &dPlasticMacroLdMacroGamma,
@@ -1990,7 +1983,7 @@ namespace micromorphicElastoPlasticity{
          * :param const variableVector &elasticGamma: The elastic higher order deformation metric Gamma.
          * :param const variableVector &macroFlowDirection: The flow direction of the macro plasticity.
          * :param const variableVector &microFlowDirection: The flow direction of the micro plasticity.
-         * :param const variableMatrix &microGradientFlowDirection: The flow direction of the micro gradient plasticity.
+         * :param const variableVector &microGradientFlowDirection: The flow direction of the micro gradient plasticity.
          *     Note: This is a matrix because it is computed as the gradient of the flow potential which is a vector.
          * :param variableVector &plasticMacroVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
          * :param variableVector &plasticMicroVelocityGradient: The plastic velocity gradient for the micro plastic deformation.
@@ -2851,7 +2844,7 @@ namespace micromorphicElastoPlasticity{
                                     const variableVector &elasticRightCauchyGreen, const parameterVector &macroFlowParameters,
                                     const parameterVector &microFlowParameters, const parameterVector &microGradientFlowParameters,
                                     variableVector &macroFlowDirection, variableVector &microFlowDirection,
-                                    variableMatrix &microGradientFlowDirection, variableType &dGdMacroCohesion, 
+                                    variableVector &microGradientFlowDirection, variableType &dGdMacroCohesion, 
                                     variableType &dGdMicroCohesion, variableMatrix &dGdMicroGradientCohesion ){
         /*!
          * Compute all of the flow directions.
@@ -2871,7 +2864,7 @@ namespace micromorphicElastoPlasticity{
          *     [ friction angle, beta, yield value ]
          * :param variableVector &macroFlowDirection: The flow direction for the macro scale plasticity.
          * :param variableVector &microFlowDirection: The flow direction for the micro scale plasticity.
-         * :param variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient 
+         * :param variableVector &microGradientFlowDirection: The flow direction for the micro gradient 
          *     plasticity.
          * :param variableType &dGdMacroCohesion: The Jacobian of the macro plastic potential w.r.t. the 
          *     macro cohesion.
@@ -2880,6 +2873,9 @@ namespace micromorphicElastoPlasticity{
          * :param variableVector &dGdMicroGradientCohesion: The Jacobian of the micro gradient plastic 
          *     potential w.r.t. the micro gradient cohesion.
          */
+
+        //Assume 3D
+        unsigned int dim = 3;
 
         //Error handling
         if ( macroFlowParameters.size() != 3 ){
@@ -2904,6 +2900,7 @@ namespace micromorphicElastoPlasticity{
         parameterType macroFrictionAngle = macroFlowParameters[ 0 ];
         parameterType macroBeta          = macroFlowParameters[ 1 ];
         parameterType macroYieldValue    = macroFlowParameters[ 2 ];
+
         errorOut error = computeSecondOrderDruckerPragerYieldEquation( PK2Stress, macroCohesion, elasticRightCauchyGreen,
                                                                        macroFrictionAngle, macroBeta, macroYieldValue, 
                                                                        macroFlowDirection, dGdMacroCohesion, tmpVec );
@@ -2933,9 +2930,23 @@ namespace micromorphicElastoPlasticity{
         parameterType microGradientBeta          = microGradientFlowParameters[ 1 ];
         parameterVector microGradientYieldValue  = parameterVector( microGradientFlowParameters.begin() + 2,
                                                                     microGradientFlowParameters.begin() + 5 );
+
+        variableMatrix _microGradientFlowDirection;
         error = computeHigherOrderDruckerPragerYieldEquation( referenceHigherOrderStress, microGradientCohesion, elasticRightCauchyGreen,
                                                               microGradientFrictionAngle, microGradientBeta, microGradientYieldValue,
-                                                              microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat ); 
+                                                              _microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat ); 
+
+        microGradientFlowDirection = variableVector( dim * dim * dim * dim, 0 );
+        for ( unsigned int I = 0; I < dim; I++ ){
+            for ( unsigned int K = 0; K < dim; K++ ){
+                for ( unsigned int L = 0; L < dim; L++ ){
+                    for ( unsigned int M = 0; M < dim; M++ ){
+                        microGradientFlowDirection[ dim * dim * dim * I + dim * dim * K + dim * L + M ]
+                            = _microGradientFlowDirection[ I ][ dim * dim * K + dim * L + M ];
+                    }
+                }
+            }
+        }
 
         return NULL;
     }
@@ -2946,7 +2957,7 @@ namespace micromorphicElastoPlasticity{
                                     const variableVector &elasticRightCauchyGreen, const parameterVector &macroFlowParameters,
                                     const parameterVector &microFlowParameters, const parameterVector &microGradientFlowParameters,
                                     variableVector &macroFlowDirection, variableVector &microFlowDirection,
-                                    variableMatrix &microGradientFlowDirection, variableType &dGdMacroCohesion,
+                                    variableVector &microGradientFlowDirection, variableType &dGdMacroCohesion,
                                     variableType &dGdMicroCohesion, variableMatrix &dGdMicroGradientCohesion,
                                     variableMatrix &dMacroFlowDirectiondPK2Stress,
                                     variableMatrix &dMacroFlowDirectiondElasticRCG,
@@ -2972,7 +2983,7 @@ namespace micromorphicElastoPlasticity{
          *     [ friction angle, beta, yield value, nHardeningCurveParameters ]
          * :param variableVector &macroFlowDirection: The flow direction for the macro scale plasticity.
          * :param variableVector &microFlowDirection: The flow direction for the micro scale plasticity.
-         * :param variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient 
+         * :param variableVector &microGradientFlowDirection: The flow direction for the micro gradient 
          *     plasticity.
          * :param variableType &dGdMacroCohesion: The Jacobian of the macro plastic potential w.r.t. the 
          *     macro cohesion.
@@ -3019,6 +3030,7 @@ namespace micromorphicElastoPlasticity{
         parameterType macroFrictionAngle = macroFlowParameters[ 0 ];
         parameterType macroBeta          = macroFlowParameters[ 1 ];
         parameterType macroYieldValue    = macroFlowParameters[ 2 ];
+
         errorOut error = computeSecondOrderDruckerPragerYieldEquation( PK2Stress, macroCohesion, elasticRightCauchyGreen,
                                                                        macroFrictionAngle, macroBeta, macroYieldValue, 
                                                                        macroFlowDirection, dGdMacroCohesion, tmpVec,
@@ -3054,13 +3066,23 @@ namespace micromorphicElastoPlasticity{
 
         variableMatrix tmp1, tmp2;
 
+        variableMatrix _microGradientFlowDirection;
         error = computeHigherOrderDruckerPragerYieldEquation( referenceHigherOrderStress, microGradientCohesion, elasticRightCauchyGreen,
                                                               microGradientFrictionAngle, microGradientBeta, microGradientYieldValue,
-                                                              microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat,
+                                                              _microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat,
                                                               tmp1, tmp2 );
 
-        std::cout << "tmp1: " << tmp1.size() << " x " << tmp1[0].size() << "\n";
-        std::cout << "tmp2: " << tmp2.size() << " x " << tmp2[0].size() << "\n";
+        microGradientFlowDirection = variableVector( dim * dim * dim * dim, 0 );
+        for ( unsigned int I = 0; I < dim; I++ ){
+            for ( unsigned int K = 0; K < dim; K++ ){
+                for ( unsigned int L = 0; L < dim; L++ ){
+                    for ( unsigned int M = 0; M < dim; M++ ){
+                        microGradientFlowDirection[ dim * dim * dim * I + dim * dim * K + dim * L + M ]
+                            = _microGradientFlowDirection[ I ][ dim * dim * K + dim * L + M ];
+                    }
+                }
+            }
+        }
 
         //Reform the jacobians to a matrix form which enables matrix multiplication of the jacobians
         dMicroGradientFlowDirectiondReferenceHigherOrderStress = variableMatrix( dim * dim * dim * dim,
@@ -3073,12 +3095,13 @@ namespace micromorphicElastoPlasticity{
                 for ( unsigned int k = 0; k < dim; k++ ){
                     for ( unsigned int l = 0; l < dim; l++ ){
                         for ( unsigned int m = 0; m < dim; m++ ){
-                            dMicroGradientFlowDirectiondElasticRCG[ dim * dim * i + dim * j + k ][ dim * l + m ]
-                                = tmp2[ i ][ dim * dim * dim * j + dim * dim * k + dim * l + m ];
                             for ( unsigned int n = 0; n < dim; n++ ){
-                                std::cout << i << j << k << l << m << n << "\n";
-                                dMicroGradientFlowDirectiondReferenceHigherOrderStress[ dim * dim * i + dim * j + k ][ dim * dim * l + dim * m + n ]
-                                    = tmp1[ i ][ dim * dim * dim * dim * j + dim * dim * dim * k + dim * dim * l + dim * m + n ];
+                                dMicroGradientFlowDirectiondElasticRCG[ dim * dim * dim * i + dim * dim * j + dim * k + l ][ dim * m + n ]
+                                    = tmp2[ i ][ dim * dim * dim * dim * j + dim * dim * dim * k + dim * dim * l + dim * m + n ];
+                                for ( unsigned int o = 0; o < dim; o++ ){
+                                    dMicroGradientFlowDirectiondReferenceHigherOrderStress[ dim * dim * dim * i + dim * dim * j + dim * k + l ][ dim * dim * m + dim * n + o ]
+                                        = tmp1[ i ][ dim * dim * dim * dim * dim * j + dim * dim * dim * dim * k + dim * dim * dim * l + dim * dim * m + dim * n + o ];
+                                }
                             }
                         }
                     }

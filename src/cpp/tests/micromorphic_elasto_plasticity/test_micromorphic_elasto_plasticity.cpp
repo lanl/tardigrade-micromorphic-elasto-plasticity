@@ -1420,24 +1420,23 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
                                           0.27780339, 0.26054793, 0.33313753,
                                           0.34289169, 0.57971261, 0.51536929 };
 
-    variableMatrix microGradientFlowDirection = { { 0.38320117, 0.00147635, 0.22526135, 0.24857347, 0.44904944,
-                                                    0.39175461, 0.94088825, 0.04088633, 0.95042374, 0.44676197,
-                                                    0.33100061, 0.79806506, 0.05883935, 0.20924962, 0.83681153,
-                                                    0.12116776, 0.39737069, 0.07417313, 0.5859491 , 0.28899583,
-                                                    0.91967175, 0.413024  , 0.97723212, 0.81694258, 0.92037483,
-                                                    0.84857389, 0.74623422 },
-                                                  { 0.65442987, 0.15706966, 0.03580793, 0.98977654, 0.6414159 ,
-                                                    0.03345668, 0.73436727, 0.25417675, 0.594925  , 0.4871345 ,
-                                                    0.27395216, 0.23644903, 0.42902409, 0.24760169, 0.16207352,
-                                                    0.68475097, 0.86214768, 0.9734798 , 0.86141159, 0.98250926,
-                                                    0.25056881, 0.8315578 , 0.95970017, 0.62180382, 0.52207192,
-                                                    0.66811873, 0.06083854 },
-                                                  { 0.59855098, 0.41784728, 0.41193658, 0.3161969 , 0.75697096,
-                                                    0.2172361 , 0.5170385 , 0.52482239, 0.55849978, 0.60039656,
-                                                    0.38358062, 0.66214191, 0.22829067, 0.10781315, 0.40531347,
-                                                    0.25340843, 0.89016033, 0.85477638, 0.43630125, 0.35699992,
-                                                    0.3784267 , 0.12262464, 0.38383612, 0.12695384, 0.74207569,
-                                                    0.58531619, 0.08294492 } };
+    variableVector microGradientFlowDirection = { 0.38320117, 0.00147635, 0.22526135, 0.24857347, 0.44904944,
+                                                  0.39175461, 0.94088825, 0.04088633, 0.95042374, 0.44676197,
+                                                  0.33100061, 0.79806506, 0.05883935, 0.20924962, 0.83681153,
+                                                  0.12116776, 0.39737069, 0.07417313, 0.5859491 , 0.28899583,
+                                                  0.91967175, 0.413024  , 0.97723212, 0.81694258, 0.92037483,
+                                                  0.84857389, 0.74623422, 0.65442987, 0.15706966, 0.03580793,
+                                                  0.98977654, 0.6414159 , 0.03345668, 0.73436727, 0.25417675,
+                                                  0.594925  , 0.4871345 , 0.27395216, 0.23644903, 0.42902409,
+                                                  0.24760169, 0.16207352, 0.68475097, 0.86214768, 0.9734798 ,
+                                                  0.86141159, 0.98250926, 0.25056881, 0.8315578 , 0.95970017,
+                                                  0.62180382, 0.52207192, 0.66811873, 0.06083854, 0.59855098,
+                                                  0.41784728, 0.41193658, 0.3161969 , 0.75697096, 0.2172361 ,
+                                                  0.5170385 , 0.52482239, 0.55849978, 0.60039656, 0.38358062,
+                                                  0.66214191, 0.22829067, 0.10781315, 0.40531347, 0.25340843,
+                                                  0.89016033, 0.85477638, 0.43630125, 0.35699992, 0.3784267 ,
+                                                  0.12262464, 0.38383612, 0.12695384, 0.74207569, 0.58531619,
+                                                  0.08294492 };
 
     variableVector answerLp = { -0.05489573, -0.01980382, -0.06060589,
                                  1.1610081 ,  0.4002548 ,  0.86866858,
@@ -2073,9 +2072,9 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
     }
 
     //Test of Jacobians w.r.t. the micro gradient flow direction
-    for ( unsigned int i = 0; i < 3 * 27; i++ ){
-        constantMatrix delta( 3, constantVector( 27, 0 ) );
-        delta[ ( int )( i / 27 ) ][ i % 27 ] = eps * fabs( microGradientFlowDirection[ ( int )( i / 27 ) ][ i % 27 ] ) + eps;
+    for ( unsigned int i = 0; i < microGradientFlowDirection.size(); i++ ){
+        constantVector delta( microGradientFlowDirection.size(), 0 );
+        delta[ i ] = eps * fabs( microGradientFlowDirection[ i ] ) + eps;
 
         error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
                                                                                Ce, microCe, Psie, Gammae, macroFlowDirection,
@@ -2099,7 +2098,7 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
             return 1;
         }
 
-        gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ ( int )( i / 27 ) ][ i % 27 ] );
+        gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
@@ -2108,7 +2107,7 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
             }
         }
 
-        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ ( int )( i / 27 ) ][ i % 27 ] );
+        gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
@@ -2117,7 +2116,7 @@ int test_computePlasticVelocityGradients( std::ofstream &results ){
             }
         }
 
-        gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ ( int )( i / 27 ) ][ i % 27 ] );
+        gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientFlowDirectionJ2[ j ][ i ] ) ){
@@ -2658,24 +2657,23 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
                                     9.86433536,  0.55102384, -3.97123001,  1.26600849, 14.19808301,
                                     8.33368016,  0.57102355 };
 
-    variableMatrix microGradientFlowDirection = { { 0.38320117, 0.00147635, 0.22526135, 0.24857347, 0.44904944,
-                                                    0.39175461, 0.94088825, 0.04088633, 0.95042374, 0.44676197,
-                                                    0.33100061, 0.79806506, 0.05883935, 0.20924962, 0.83681153,
-                                                    0.12116776, 0.39737069, 0.07417313, 0.5859491 , 0.28899583,
-                                                    0.91967175, 0.413024  , 0.97723212, 0.81694258, 0.92037483,
-                                                    0.84857389, 0.74623422 },
-                                                  { 0.65442987, 0.15706966, 0.03580793, 0.98977654, 0.6414159 ,
-                                                    0.03345668, 0.73436727, 0.25417675, 0.594925  , 0.4871345 ,
-                                                    0.27395216, 0.23644903, 0.42902409, 0.24760169, 0.16207352,
-                                                    0.68475097, 0.86214768, 0.9734798 , 0.86141159, 0.98250926,
-                                                    0.25056881, 0.8315578 , 0.95970017, 0.62180382, 0.52207192,
-                                                    0.66811873, 0.06083854 },
-                                                  { 0.59855098, 0.41784728, 0.41193658, 0.3161969 , 0.75697096,
-                                                    0.2172361 , 0.5170385 , 0.52482239, 0.55849978, 0.60039656,
-                                                    0.38358062, 0.66214191, 0.22829067, 0.10781315, 0.40531347,
-                                                    0.25340843, 0.89016033, 0.85477638, 0.43630125, 0.35699992,
-                                                    0.3784267 , 0.12262464, 0.38383612, 0.12695384, 0.74207569,
-                                                    0.58531619, 0.08294492 } };
+    variableVector microGradientFlowDirection = { 0.38320117, 0.00147635, 0.22526135, 0.24857347, 0.44904944,
+                                                  0.39175461, 0.94088825, 0.04088633, 0.95042374, 0.44676197,
+                                                  0.33100061, 0.79806506, 0.05883935, 0.20924962, 0.83681153,
+                                                  0.12116776, 0.39737069, 0.07417313, 0.5859491 , 0.28899583,
+                                                  0.91967175, 0.413024  , 0.97723212, 0.81694258, 0.92037483,
+                                                  0.84857389, 0.74623422, 0.65442987, 0.15706966, 0.03580793,
+                                                  0.98977654, 0.6414159 , 0.03345668, 0.73436727, 0.25417675,
+                                                  0.594925  , 0.4871345 , 0.27395216, 0.23644903, 0.42902409,
+                                                  0.24760169, 0.16207352, 0.68475097, 0.86214768, 0.9734798 ,
+                                                  0.86141159, 0.98250926, 0.25056881, 0.8315578 , 0.95970017,
+                                                  0.62180382, 0.52207192, 0.66811873, 0.06083854, 0.59855098,
+                                                  0.41784728, 0.41193658, 0.3161969 , 0.75697096, 0.2172361 ,
+                                                  0.5170385 , 0.52482239, 0.55849978, 0.60039656, 0.38358062,
+                                                  0.66214191, 0.22829067, 0.10781315, 0.40531347, 0.25340843,
+                                                  0.89016033, 0.85477638, 0.43630125, 0.35699992, 0.3784267 ,
+                                                  0.12262464, 0.38383612, 0.12695384, 0.74207569, 0.58531619,
+                                                  0.08294492 };
 
     variableVector microLp = { -85.67983387, -16.91839826, 127.3318347 ,
                                  0.65035144,   0.1459189 ,  -0.71988301,
@@ -2996,9 +2994,9 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
     }
 
     //Test computation of Jacobian w.r.t. the elastic higher order deformation metric Gamma
-    for ( unsigned int i = 0; i < 3 * 27; i++ ){
-        constantMatrix delta( 3, constantVector( 27, 0 ) );
-        delta[ ( int )( i / 27 ) ][ i % 27 ] = eps * fabs( microGradientFlowDirection[ ( int )( i / 27) ][ i % 27 ] ) + eps;
+    for ( unsigned int i = 0; i < microGradientFlowDirection.size(); i++ ){
+        constantVector delta( microGradientFlowDirection.size(), 0 );
+        delta[ i ] = eps * fabs( microGradientFlowDirection[ i ] ) + eps;
 
         variableVector resultMicroGradLpP, resultMicroGradLpM;
 
@@ -3024,7 +3022,7 @@ int test_computePlasticMicroGradientVelocityGradient( std::ofstream &results ){
             return 1;
         }
 
-        variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ ( int )( i / 27 ) ][ i % 27 ] );
+        variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientFlowDirection[ j ][ i ] ) ){
@@ -4329,24 +4327,23 @@ int test_computeFlowDirections( std::ofstream &results ){
                                                -0.5805495 ,  0.22548302, -0.04324937,
                                                -0.3154144 , -0.04324937,  0.43080041 };
 
-    variableMatrix answerMicroGradientFlowDirection = { { 3.20270548,  0.        ,  0.        ,  3.07726673,  0.        ,
-                                                          0.        ,  0.88460336,  0.        ,  0.        ,  3.15471725,
-                                                          0.        ,  0.        ,  2.44225234,  0.        ,  0.        ,
-                                                          0.16004057,  0.        ,  0.        ,  0.85841697,  0.        ,
-                                                          0.        ,  0.62874426,  0.        ,  0.        ,  1.46940889,
-                                                          0.        ,  0.        },
-                                                        { 0.        ,  0.76329042,  0.        ,  0.        ,  0.17122146,
-                                                          0.        ,  0.        , -0.31051637,  0.        ,  0.        ,
-                                                          0.73871243,  0.        ,  0.        ,  0.6214531 ,  0.        ,
-                                                          0.        , -0.24342941,  0.        ,  0.        , -0.40887761,
-                                                          0.        ,  0.        , -0.01215767,  0.        ,  0.        ,
-                                                          0.79231477,  0.        },
-                                                        { 0.        ,  0.        ,  1.54713668,  0.        ,  0.        ,
-                                                          1.17046377,  0.        ,  0.        ,  0.70180792,  0.        ,
-                                                          0.        ,  1.88446996,  0.        ,  0.        ,  2.02250715,
-                                                          0.        ,  0.        ,  0.30838528,  0.        ,  0.        ,
-                                                          0.70653213,  0.        ,  0.        ,  0.19691721,  0.        ,
-                                                          0.        ,  0.50658513 } };
+    variableVector answerMicroGradientFlowDirection = { 3.20270548,  0.        ,  0.        ,  3.07726673,  0.        ,
+                                                        0.        ,  0.88460336,  0.        ,  0.        ,  3.15471725,
+                                                        0.        ,  0.        ,  2.44225234,  0.        ,  0.        ,
+                                                        0.16004057,  0.        ,  0.        ,  0.85841697,  0.        ,
+                                                        0.        ,  0.62874426,  0.        ,  0.        ,  1.46940889,
+                                                        0.        ,  0.        ,  0.        ,  0.76329042,  0.        ,
+                                                        0.        ,  0.17122146,  0.        ,  0.        , -0.31051637,
+                                                        0.        ,  0.        ,  0.73871243,  0.        ,  0.        ,
+                                                        0.6214531 ,  0.        ,  0.        , -0.24342941,  0.        ,
+                                                        0.        , -0.40887761,  0.        ,  0.        , -0.01215767,
+                                                        0.        ,  0.        ,  0.79231477,  0.        ,  0.        ,
+                                                        0.        ,  1.54713668,  0.        ,  0.        ,  1.17046377,
+                                                        0.        ,  0.        ,  0.70180792,  0.        ,  0.        ,
+                                                        1.88446996,  0.        ,  0.        ,  2.02250715,  0.        ,
+                                                        0.        ,  0.30838528,  0.        ,  0.        ,  0.70653213,
+                                                        0.        ,  0.        ,  0.19691721,  0.        ,  0.        ,
+                                                        0.50658513 };
 
     variableType answerdGdMacroCohesion = -1.1365150471282142;
     variableType answerdGdMicroCohesion = -0.9616229151402682;
@@ -4354,8 +4351,7 @@ int test_computeFlowDirections( std::ofstream &results ){
                                                       { -0.        , -1.08210161, -0.        },
                                                       { -0.        , -0.        , -1.08210161 } };
 
-    variableVector resultMacroFlowDirection, resultMicroFlowDirection;
-    variableMatrix resultMicroGradientFlowDirection;
+    variableVector resultMacroFlowDirection, resultMicroFlowDirection, resultMicroGradientFlowDirection;
 
     variableType resultdGdMacroCohesion, resultdGdMicroCohesion;
     variableMatrix resultdGdMicroGradientCohesion;
@@ -4405,8 +4401,7 @@ int test_computeFlowDirections( std::ofstream &results ){
     }
 
     //Tests of the Jacobian
-    variableVector resultMacroFlowDirectionJ, resultMicroFlowDirectionJ;
-    variableMatrix resultMicroGradientFlowDirectionJ;
+    variableVector resultMacroFlowDirectionJ, resultMicroFlowDirectionJ, resultMicroGradientFlowDirectionJ;
 
     variableType resultdGdMacroCohesionJ, resultdGdMicroCohesionJ;
     variableMatrix resultdGdMicroGradientCohesionJ;
@@ -4468,11 +4463,8 @@ int test_computeFlowDirections( std::ofstream &results ){
         constantVector delta( PK2Stress.size(), 0 );
         delta[ i ] = eps * fabs( PK2Stress[ i ] ) + eps;
 
-        variableVector resultMacroFlowDirectionP, resultMicroFlowDirectionP;
-        variableVector resultMacroFlowDirectionM, resultMicroFlowDirectionM;
-
-        variableMatrix resultMicroGradientFlowDirectionP;
-        variableMatrix resultMicroGradientFlowDirectionM;
+        variableVector resultMacroFlowDirectionP, resultMicroFlowDirectionP, resultMicroGradientFlowDirectionP;
+        variableVector resultMacroFlowDirectionM, resultMicroFlowDirectionM, resultMicroGradientFlowDirectionM;
 
         variableType resultdGdMacroCohesionP, resultdGdMicroCohesionP;
         variableType resultdGdMacroCohesionM, resultdGdMicroCohesionM;
