@@ -368,8 +368,8 @@ namespace micromorphicElastoPlasticity{
     errorOut computeFlowDirections( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
-                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroParameters,
-                                    const parameterVector &microParameters, const parameterVector &microGradientParameters,
+                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroFlowParameters,
+                                    const parameterVector &microFlowParameters, const parameterVector &microGradientFlowParameters,
                                     variableVector &macroFlowDirection, variableVector &microFlowDirection,
                                     variableMatrix &microGradientFlowDirection, variableType &dGdMacroCohesion,
                                     variableType &dGdMicroCohesion, variableMatrix &dGdMicroGradientCohesion );
@@ -377,15 +377,15 @@ namespace micromorphicElastoPlasticity{
     errorOut computeFlowDirections( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
-                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroParameters,
-                                    const parameterVector &microParameters, const parameterVector &microGradientParameters,
+                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroFlowParameters,
+                                    const parameterVector &microFlowParameters, const parameterVector &microGradientFlowParameters,
                                     variableVector &macroFlowDirection, variableVector &microFlowDirection,
                                     variableMatrix &microGradientFlowDirection, variableType &dGdMacroCohesion,
                                     variableType &dGdMicroCohesion, variableMatrix &dGdMicroGradientCohesion,
                                     variableMatrix &dMacroFlowDirectiondPK2Stress, variableMatrix &dMacroFlowDirectiondElasticRCG,
                                     variableMatrix &dMicroFlowDirectiondReferenceMicroStress,
                                     variableMatrix &dMicroFlowDirectiondElasticRCG,
-                                    variableMatrix &dMicroGradientFlowDirectiondM,
+                                    variableMatrix &dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                     variableMatrix &dMicroGradientFlowDirectiondElasticRCG );
 }
 

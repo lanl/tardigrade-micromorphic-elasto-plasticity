@@ -4287,6 +4287,129 @@ int test_evolveStrainStateVariables( std::ofstream &results){
     return 0;
 }
 
+int test_computeFlowDirections( std::ofstream &results ){
+    /*!
+     * Test the computation of the flow directions
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    variableVector PK2Stress = { 0.980355  ,  3.91541513,  1.67081083,
+                                 4.54780598, -1.66521928,  4.96044281,
+                                -0.12713388, -3.38729265, -2.25983197 };
+
+    variableVector referenceMicroStress = { -2.01499646, -2.1610567 , -3.89718611,
+                                            -2.1610567 , -0.43115989, -0.56605099,
+                                            -3.89718611, -0.56605099,  4.22700636 };
+
+    variableVector referenceHigherOrderStress = { -1.77580937, -1.71997457, -4.64296768,  3.20981958, -1.08382425,
+                                                  -3.34229545,  4.85033094, -3.43682646,  4.09026212,  4.77299084,
+                                                   3.93749094,  4.54620748, -2.79096599, -2.26200392,  4.61848971,
+                                                  -4.82983291, -2.94604018,  0.91357337,  4.32181519, -4.30715354,
+                                                   4.14245623,  4.62993794, -0.89968459, -0.31795132,  3.63048259,
+                                                   2.65476864, -3.55307922 };
+
+    variableType macroCohesion = 0.7183361521887071;
+    variableType microCohesion = 0.6949323866523027;
+    variableVector microGradientCohesion = { 0.713247  , 1.36791014, 1.5104695 };
+    
+    variableVector elasticRightCauchyGreen = { 4.59901102, 3.44800453, 0.77606303,
+                                               3.44800453, 3.74960315, 0.52781964,
+                                               0.77606303, 0.52781964, 1.93499034 };
+
+    parameterVector macroFlowParameters = { 0.69418171, 0.48920844, 0.37059555 };
+    parameterVector microFlowParameters = { 0.92593374, 0.07788052, 0.70255635 };
+    parameterVector microGradientFlowParameters = { 0.75106525, 0.45320165, 0.02355991, 0.68213594, 0.26385375 };
+
+    variableVector answerMacroFlowDirection = { 3.38898459, 3.21365446, 0.74954484,
+                                                3.24601877, 2.52116441, 0.6615649 ,
+                                                0.65753016, 0.234347  , 1.18170509 };
+
+    variableVector answerMicroFlowDirection = { 0.03163404, -0.5805495 , -0.3154144 ,
+                                               -0.5805495 ,  0.22548302, -0.04324937,
+                                               -0.3154144 , -0.04324937,  0.43080041 };
+
+    variableMatrix answerMicroGradientFlowDirection = { { 3.20270548,  0.        ,  0.        ,  3.07726673,  0.        ,
+                                                          0.        ,  0.88460336,  0.        ,  0.        ,  3.15471725,
+                                                          0.        ,  0.        ,  2.44225234,  0.        ,  0.        ,
+                                                          0.16004057,  0.        ,  0.        ,  0.85841697,  0.        ,
+                                                          0.        ,  0.62874426,  0.        ,  0.        ,  1.46940889,
+                                                          0.        ,  0.        },
+                                                        { 0.        ,  0.76329042,  0.        ,  0.        ,  0.17122146,
+                                                          0.        ,  0.        , -0.31051637,  0.        ,  0.        ,
+                                                          0.73871243,  0.        ,  0.        ,  0.6214531 ,  0.        ,
+                                                          0.        , -0.24342941,  0.        ,  0.        , -0.40887761,
+                                                          0.        ,  0.        , -0.01215767,  0.        ,  0.        ,
+                                                          0.79231477,  0.        },
+                                                        { 0.        ,  0.        ,  1.54713668,  0.        ,  0.        ,
+                                                          1.17046377,  0.        ,  0.        ,  0.70180792,  0.        ,
+                                                          0.        ,  1.88446996,  0.        ,  0.        ,  2.02250715,
+                                                          0.        ,  0.        ,  0.30838528,  0.        ,  0.        ,
+                                                          0.70653213,  0.        ,  0.        ,  0.19691721,  0.        ,
+                                                          0.        ,  0.50658513 } };
+
+    variableType answerdGdMacroCohesion = -1.1365150471282142;
+    variableType answerdGdMicroCohesion = -0.9616229151402682;
+    variableMatrix answerdGdMicroGradientCohesion = { { -1.08210161, -0.        , -0.        },
+                                                      { -0.        , -1.08210161, -0.        },
+                                                      { -0.        , -0.        , -1.08210161 } };
+
+    variableVector resultMacroFlowDirection, resultMicroFlowDirection;
+    variableMatrix resultMicroGradientFlowDirection;
+
+    variableType resultdGdMacroCohesion, resultdGdMicroCohesion;
+    variableMatrix resultdGdMicroGradientCohesion;
+
+    errorOut error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                          macroCohesion, microCohesion, microGradientCohesion,
+                                                                          elasticRightCauchyGreen, macroFlowParameters,
+                                                                          microFlowParameters, microGradientFlowParameters,
+                                                                          resultMacroFlowDirection, resultMicroFlowDirection,
+                                                                          resultMicroGradientFlowDirection, resultdGdMacroCohesion,
+                                                                          resultdGdMicroCohesion, resultdGdMicroGradientCohesion );
+
+    if ( error ){
+        error->print();
+        results << "test_computeFlowDirections & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMacroFlowDirection, resultMacroFlowDirection ) ){
+        results << "test_computeFlowDirections (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMicroFlowDirection, resultMicroFlowDirection ) ){
+        results << "test_computeFlowDirections (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMicroGradientFlowDirection, resultMicroGradientFlowDirection ) ){
+        std::cout << "result:\n"; vectorTools::print( resultMicroGradientFlowDirection );
+        std::cout << "answer:\n"; vectorTools::print( answerMicroGradientFlowDirection );
+        results << "test_computeFlowDirections (test 3) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerdGdMacroCohesion, resultdGdMacroCohesion ) ){
+        results << "test_computeFlowDirection (test 4) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerdGdMicroCohesion, resultdGdMicroCohesion ) ){
+        results << "test_computeFlowDirection (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerdGdMicroGradientCohesion, resultdGdMicroGradientCohesion ) ){
+        results << "test_computeFlowDirection (test 6) & False\n";
+        return 1;
+    }
+
+    results << "test_computeFlowDirections & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -4311,6 +4434,7 @@ int main(){
     test_evolvePlasticMicroGradChi( results );
     test_evolvePlasticDeformation( results );
     test_evolveStrainStateVariables( results );
+    test_computeFlowDirections( results );
 
     //Close the results file
     results.close();

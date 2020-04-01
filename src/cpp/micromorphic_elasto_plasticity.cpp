@@ -35,6 +35,12 @@ namespace micromorphicElastoPlasticity{
          * :param variableType &yieldValue: The yield value.
          */
 
+        //Make sure the beta parameter is within bounds
+        if ( abs( beta ) > 1 ){
+            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
+                                  "Beta must be between -1 and 1" );
+        }
+
         //Compute the parameters
         parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
 
@@ -99,6 +105,12 @@ namespace micromorphicElastoPlasticity{
          * :param variableType &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
          * :param variableVector &dFdElasticRCG: The Jacobian of the yield surface w.r.t. the elastic 
          */
+
+        //Make sure the beta parameter is within bounds
+        if ( abs( beta ) > 1 ){
+            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
+                                  "Beta must be between -1 and 1" );
+        }
 
         //Compute the parameters
         parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
@@ -189,6 +201,12 @@ namespace micromorphicElastoPlasticity{
          */
         //Assume 3D
         unsigned int dim = 3;
+
+        //Make sure the beta parameter is within bounds
+        if ( abs( beta ) > 1 ){
+            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
+                                  "Beta must be between -1 and 1" );
+        }
 
         //Compute the parameters
         parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
@@ -286,6 +304,12 @@ namespace micromorphicElastoPlasticity{
          * :param variableVector &yieldValue: The yield value.
          */
 
+        //Make sure the beta parameter is within bounds
+        if ( abs( beta ) > 1 ){
+            return new errorNode( "computeHigherOrderDruckerPragerYieldEquation",
+                                  "Beta must be between -1 and 1" );
+        }
+
         //Compute the parameters
         parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
 
@@ -356,6 +380,12 @@ namespace micromorphicElastoPlasticity{
          * :param variableMatrix &dFdElasticRCG: The Jacobian of the yield function w.r.t. the elastic right Cauchy-Green
          *     deformation tensor.
          */
+
+        //Make sure the beta parameter is within bounds
+        if ( abs( beta ) > 1 ){
+            return new errorNode( "computeHigherOrderDruckerPragerYieldEquation",
+                                  "Beta must be between -1 and 1" );
+        }
 
         //Compute the parameters
         parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
@@ -449,6 +479,12 @@ namespace micromorphicElastoPlasticity{
 
         //Assume 3D
         unsigned int dim = 3;
+
+        //Make sure the beta parameter is within bounds
+        if ( abs( beta ) > 1 ){
+            return new errorNode( "computeHigherOrderDruckerPragerYieldEquation",
+                                  "Beta must be between -1 and 1" );
+        }
 
         //Compute the parameters
         parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
@@ -2812,8 +2848,8 @@ namespace micromorphicElastoPlasticity{
     errorOut computeFlowDirections( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
-                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroParameters,
-                                    const parameterVector &microParameters, const parameterVector &microGradientParameters,
+                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroFlowParameters,
+                                    const parameterVector &microFlowParameters, const parameterVector &microGradientFlowParameters,
                                     variableVector &macroFlowDirection, variableVector &microFlowDirection,
                                     variableMatrix &microGradientFlowDirection, variableType &dGdMacroCohesion, 
                                     variableType &dGdMicroCohesion, variableMatrix &dGdMicroGradientCohesion ){
@@ -2827,12 +2863,12 @@ namespace micromorphicElastoPlasticity{
          * :param const variableType &microCohesion: The micro cohesion value.
          * :param const variableVector &microGradientCohesion: The micro gradient cohesion value.
          * :param const variableVector &elasticRightCauchyGreen: The elastic right cauchy green deformation.
-         * :param const parameterVector &macroParameters: The macro plastic parameters.
-         *     [ friction angle, beta, yield value, hardening curve values ]
-         * :param const parameterVector &microParameters: The micro plastic parameters.
-         *     [ friction angle, beta, yield value, hardening curve values ]
-         * :param const parameterVector &microGradientParameters: The micro gradient plastic parameters.
-         *     [ friction angle, beta, yield value, hardening curve values ]
+         * :param const parameterVector &macroFlowParameters: The macro plastic parameters.
+         *     [ friction angle, beta, yield value ]
+         * :param const parameterVector &microFlowParameters: The micro plastic parameters.
+         *     [ friction angle, beta, yield value ]
+         * :param const parameterVector &microGradientFlowParameters: The micro gradient plastic parameters.
+         *     [ friction angle, beta, yield value ]
          * :param variableVector &macroFlowDirection: The flow direction for the macro scale plasticity.
          * :param variableVector &microFlowDirection: The flow direction for the micro scale plasticity.
          * :param variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient 
@@ -2845,11 +2881,29 @@ namespace micromorphicElastoPlasticity{
          *     potential w.r.t. the micro gradient cohesion.
          */
 
-        variableVector tmp;
+        //Error handling
+        if ( macroFlowParameters.size() != 3 ){
+            return new errorNode( "computeFlowDirections",
+                                  "The number of macro flow parameters must be 3" );
+        }
 
-        parameterType macroFrictionAngle = macroParameters[ 0 ];
-        parameterType macroBeta          = macroParameters[ 1 ];
-        parameterType macroYieldValue    = macroParameters[ 2 ];
+        if ( microFlowParameters.size() != 3 ){
+            return new errorNode( "computeFlowDirections",
+                                  "The number of micro flow parameters must be 3" );
+        }
+
+        if ( microGradientFlowParameters.size() != 5 ){
+            return new errorNode( "computeFlowDirections",
+                                  "The number of micro gradient flow parameters must be 5" );
+        }
+
+        //Set temporary variables
+        variableVector tmpVec;
+        variableMatrix tmpMat;
+
+        parameterType macroFrictionAngle = macroFlowParameters[ 0 ];
+        parameterType macroBeta          = macroFlowParameters[ 1 ];
+        parameterType macroYieldValue    = macroFlowParameters[ 2 ];
         errorOut error = computeSecondOrderDruckerPragerYieldEquation( PK2Stress, macroCohesion, elasticRightCauchyGreen,
                                                                        macroFrictionAngle, macroBeta, macroYieldValue, 
                                                                        macroFlowDirection, dGdMacroCohesion, tmpVec );
@@ -2861,9 +2915,9 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        parameterType microFrictionAngle = microParameters[ 0 ];
-        parameterType microBeta          = microParameters[ 1 ];
-        parameterType microYieldValue    = microParameters[ 2 ];
+        parameterType microFrictionAngle = microFlowParameters[ 0 ];
+        parameterType microBeta          = microFlowParameters[ 1 ];
+        parameterType microYieldValue    = microFlowParameters[ 2 ];
         error = computeSecondOrderDruckerPragerYieldEquation( referenceMicroStress, microCohesion, elasticRightCauchyGreen,
                                                               microFrictionAngle, microBeta, microYieldValue, 
                                                               microFlowDirection, dGdMicroCohesion, tmpVec );
@@ -2875,9 +2929,10 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        parameterType microGradientFrictionAngle = microGradientParameters[ 0 ];
-        parameterType microGradientBeta          = microGradientParameters[ 1 ];
-        parameterType microGradientYieldValue    = microGradientParameters[ 2 ];
+        parameterType microGradientFrictionAngle = microGradientFlowParameters[ 0 ];
+        parameterType microGradientBeta          = microGradientFlowParameters[ 1 ];
+        parameterVector microGradientYieldValue  = parameterVector( microGradientFlowParameters.begin() + 2,
+                                                                    microGradientFlowParameters.begin() + 5 );
         error = computeHigherOrderDruckerPragerYieldEquation( referenceHigherOrderStress, microGradientCohesion, elasticRightCauchyGreen,
                                                               microGradientFrictionAngle, microGradientBeta, microGradientYieldValue,
                                                               microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat ); 
@@ -2888,15 +2943,16 @@ namespace micromorphicElastoPlasticity{
     errorOut computeFlowDirections( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
-                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroParameters,
-                                    const parameterVector &microParameters, const parameterVector &microGradientParameters,
+                                    const variableVector &elasticRightCauchyGreen, const parameterVector &macroFlowParameters,
+                                    const parameterVector &microFlowParameters, const parameterVector &microGradientFlowParameters,
                                     variableVector &macroFlowDirection, variableVector &microFlowDirection,
                                     variableMatrix &microGradientFlowDirection, variableType &dGdMacroCohesion,
                                     variableType &dGdMicroCohesion, variableMatrix &dGdMicroGradientCohesion,
-                                    variableMatrix &dMacroFlowDirectiondPK2ReferenceMicroStress,
+                                    variableMatrix &dMacroFlowDirectiondPK2Stress,
                                     variableMatrix &dMacroFlowDirectiondElasticRCG,
-                                    variableMatrix &dMicroFlowDirectiondSigma, variableMatrix &dMicroFlowDirectiondElasticRCG,
-                                    variableMatrix &dMicroGradientFlowDirectiondM,
+                                    variableMatrix &dMicroFlowDirectiondReferenceMicroStress,
+                                    variableMatrix &dMicroFlowDirectiondElasticRCG,
+                                    variableMatrix &dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                     variableMatrix &dMicroGradientFlowDirectiondElasticRCG ){
         /*!
          * Compute all of the flow directions.
@@ -2908,12 +2964,12 @@ namespace micromorphicElastoPlasticity{
          * :param const variableType &microCohesion: The micro cohesion value.
          * :param const variableVector &microGradientCohesion: The micro gradient cohesion value.
          * :param const variableVector &elasticRightCauchyGreen: The elastic right cauchy green deformation.
-         * :param const parameterVector &macroParameters: The macro plastic parameters.
-         *     [ friction angle, beta, yield value, hardening curve values ]
-         * :param const parameterVector &microParameters: The micro plastic parameters.
-         *     [ friction angle, beta, yield value, hardening curve values ]
-         * :param const parameterVector &microGradientParameters: The micro gradient plastic parameters.
-         *     [ friction angle, beta, yield value, hardening curve values ]
+         * :param const parameterVector &macroFlowParameters: The macro plastic parameters.
+         *     [ friction angle, beta, yield value ]
+         * :param const parameterVector &microFlowParameters: The micro plastic parameters.
+         *     [ friction angle, beta, yield value, nHardeningCurveParameters ]
+         * :param const parameterVector &microGradientFlowParameters: The micro gradient plastic parameters.
+         *     [ friction angle, beta, yield value, nHardeningCurveParameters ]
          * :param variableVector &macroFlowDirection: The flow direction for the macro scale plasticity.
          * :param variableVector &microFlowDirection: The flow direction for the micro scale plasticity.
          * :param variableMatrix &microGradientFlowDirection: The flow direction for the micro gradient 
@@ -2938,11 +2994,31 @@ namespace micromorphicElastoPlasticity{
          *     the elastic right Green-Lagrange deformation tensor.
          */
 
-        variableVector tmp;
+        //Assume 3D
+        unsigned int dim = 3;
 
-        parameterType macroFrictionAngle = macroParameters[ 0 ];
-        parameterType macroBeta          = macroParameters[ 1 ];
-        parameterType macroYieldValue    = macroParameters[ 2 ];
+        //Error handling
+        if ( macroFlowParameters.size() != 3 ){
+            return new errorNode( "computeFlowDirections",
+                                  "The number of macro flow parameters must be 3" );
+        }
+
+        if ( microFlowParameters.size() != 3 ){
+            return new errorNode( "computeFlowDirections",
+                                  "The number of micro flow parameters must be 3" );
+        }
+
+        if ( microGradientFlowParameters.size() != 5 ){
+            return new errorNode( "computeFlowDirections",
+                                  "The number of micro gradient flow parameters must be 5" );
+        }
+
+        variableVector tmpVec;
+        variableMatrix tmpMat;
+
+        parameterType macroFrictionAngle = macroFlowParameters[ 0 ];
+        parameterType macroBeta          = macroFlowParameters[ 1 ];
+        parameterType macroYieldValue    = macroFlowParameters[ 2 ];
         errorOut error = computeSecondOrderDruckerPragerYieldEquation( PK2Stress, macroCohesion, elasticRightCauchyGreen,
                                                                        macroFrictionAngle, macroBeta, macroYieldValue, 
                                                                        macroFlowDirection, dGdMacroCohesion, tmpVec,
@@ -2955,9 +3031,9 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        parameterType microFrictionAngle = microParameters[ 0 ];
-        parameterType microBeta          = microParameters[ 1 ];
-        parameterType microYieldValue    = microParameters[ 2 ];
+        parameterType microFrictionAngle = microFlowParameters[ 0 ];
+        parameterType microBeta          = microFlowParameters[ 1 ];
+        parameterType microYieldValue    = microFlowParameters[ 2 ];
         error = computeSecondOrderDruckerPragerYieldEquation( referenceMicroStress, microCohesion, elasticRightCauchyGreen,
                                                               microFrictionAngle, microBeta, microYieldValue, 
                                                               microFlowDirection, dGdMicroCohesion, tmpVec,
@@ -2971,16 +3047,41 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        parameterType microGradientFrictionAngle = microGradientParameters[ 0 ];
-        parameterType microGradientBeta          = microGradientParameters[ 1 ];
-        parameterType microGradientYieldValue    = microGradientParameters[ 2 ];
+        parameterType microGradientFrictionAngle = microGradientFlowParameters[ 0 ];
+        parameterType microGradientBeta          = microGradientFlowParameters[ 1 ];
+        parameterVector microGradientYieldValue  = parameterVector( microGradientFlowParameters.begin() + 2,
+                                                                    microGradientFlowParameters.begin() + 5 );
+
+        variableMatrix tmp1, tmp2;
+
         error = computeHigherOrderDruckerPragerYieldEquation( referenceHigherOrderStress, microGradientCohesion, elasticRightCauchyGreen,
                                                               microGradientFrictionAngle, microGradientBeta, microGradientYieldValue,
                                                               microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat,
-                                                              dMicroGradientFlowDirectiondReferenceHigherOrderStress,
-                                                              dMicroGradientFlowDirectiondElasticRCG ); 
+                                                              tmp1, tmp2 );
+
+        //Reform the jacobians to a matrix form which enables matrix multiplication of the jacobians
+        dMicroGradientFlowDirectiondReferenceHigherOrderStress = variableMatrix( microGradientFlowDirection.size(),
+                                                                 variableVector( referenceHigherOrderStress.size(), 0 ) );
+        dMicroGradientFlowDirectiondElasticRCG = variableMatrix( microGradientFlowDirection.size(),
+                                                 variableVector( elasticRightCauchyGreen.size(), 0 ) );
+
+        for ( unsigned int i = 0; i < dim; i++ ){
+            for ( unsigned int j = 0; j < dim; j++ ){
+                for ( unsigned int k = 0; k < dim; k++ ){
+                    for ( unsigned int l = 0; l < dim; l++ ){
+                        for ( unsigned int m = 0; m < dim; m++ ){
+                            dMicroGradientFlowDirectiondElasticRCG[ dim * dim * i + dim * j + k ][ dim * l + m ]
+                                = tmp2[ i ][ dim * dim * dim * j + dim * dim * k + dim * l + m ];
+                            for ( unsigned int n = 0; n < dim; n++ ){
+                                dMicroGradientFlowDirectiondReferenceHigherOrderStress[ dim * dim * i + dim * j + k ][ dim * dim * l + dim * m + n ]
+                                    = tmp1[ i ][ dim * dim * dim * dim * j + dim * dim * dim * k + dim * dim * l + dim * m + n ];
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         return NULL;
-
     }
 }
