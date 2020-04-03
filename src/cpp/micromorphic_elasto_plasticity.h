@@ -99,9 +99,9 @@ namespace micromorphicElastoPlasticity{
                                               variableVector &elasticGradientMicroDeformation,
                                               variableMatrix &dElasticFdF, variableMatrix &dElasticFdPlasticF,
                                               variableMatrix &dElasticChidChi, variableMatrix &dElasticChidPlasticChi,
-                                              variableMatrix &dGradElasticChidGradChi, variableMatrix &dElasticGradChidPlasticGradChi,
-                                              variableMatrix &dGradElasticChidPlasticF, variableMatrix &dGradElasticChidChi,
-                                              variableMatrix &dGradElasticChidPlasticChi );
+                                              variableMatrix &dElasticGradChidGradChi, variableMatrix &dElasticGradChidPlasticGradChi,
+                                              variableMatrix &dElasticGradChidPlasticF, variableMatrix &dElasticGradChidChi,
+                                              variableMatrix &dElasticGradChidPlasticChi );
 
     errorOut computeElasticDeformationMeasures( const variableVector &elasticDeformationGradient,
                                                 const variableVector &elasticMicroDeformation,
@@ -389,8 +389,13 @@ namespace micromorphicElastoPlasticity{
                                     variableMatrix &dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                     variableMatrix &dMicroGradientFlowDirectiondElasticRCG );
 
-    errorOut computeResidual( const solverTools::floatVector &gammas, const solverTools::floatMatrix &floatArgs,
+    errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts );
+
+    errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                              const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                              solverTools::floatMatrix &jacobian,
                               solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts );
 }
 
