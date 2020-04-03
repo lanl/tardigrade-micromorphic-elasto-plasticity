@@ -3360,7 +3360,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Update the elastic Right Cauchy Green
-        error = computeRightCauchyGreen( currentElasticDeformationGradient, currentElasticRightCauchyGreen );
+        error = constitutiveTools::computeRightCauchyGreen( *currentElasticDeformationGradient, currentElasticRightCauchyGreen );
 
         if ( error ){
             errorOut result = new errorNode( "computeResidual",
@@ -3639,7 +3639,7 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dCurrentMicroGradISVdCurrentMicroGradGamma;
 
         variableType dCurrentMacroISVddMacroGdMacroC, dCurrentMicroISVddMicroGdMicroC;
-        variableMatrix dCurrentMicroGradISVddMicroGradGdMicroGradC;
+        variableMatrix dCurrentMicroGradISVddMicroGraddGdMicroGradC;
 
         error = evolveStrainStateVariables( *Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
                                             currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion,
@@ -3670,13 +3670,13 @@ namespace micromorphicElastoPlasticity{
         //Compute the jacobians so far
         variableType dMacroCdMacroGamma = ( *macroHardeningParameters )[ 1 ] * dCurrentMacroISVdCurrentMacroGamma;
         variableType dMicroCdMicroGamma = ( *microHardeningParameters )[ 1 ] * dCurrentMicroISVdCurrentMicroGamma;
-        variableMatrix dMicroGradientCdMicroGradientGamma = microGradientHardeningParameters[ 1 ] * vectorTools::eye< variableType >( 3 );
+        variableMatrix dMicroGradientCdMicroGradientGamma = ( *microGradientHardeningParameters )[ 1 ] * vectorTools::eye< variableType >( 3 );
 
         //Compute the new plastic velocity gradients
         variableVector currentPlasticMacroVelocityGradient, currentPlasticMicroVelocityGradient,
                        currentPlasticMicroGradientVelocityGradient;
 
-        variableVector dMacroLpdMacroGamma, dMicroLpdMicroGamma, dMicroGradientLpdMicroGamma,
+        variableVector dMacroLpdMacroGamma, dMacroLpdMicroGamma, dMicroLpdMicroGamma, dMicroGradientLpdMicroGamma;
         variableMatrix dMicroGradientLpdMicroGradientGamma;
 
         error = computePlasticVelocityGradients( currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
@@ -3686,7 +3686,8 @@ namespace micromorphicElastoPlasticity{
                                                  currentMicroGradientFlowDirection, currentPlasticMacroVelocityGradient,
                                                  currentPlasticMicroVelocityGradient,
                                                  currentPlasticMicroGradientVelocityGradient,
-                                                 dMacroLpdMacroGamma, dMicroLpdMicroGamma, dMicroGradientLpdMicroGamma,
+                                                 dMacroLpdMacroGamma, dMacroLpdMicroGamma, dMicroLpdMicroGamma,
+                                                 dMicroGradientLpdMicroGamma,
                                                  dMicroGradientLpdMicroGradientGamma );
 
         if ( error ){
@@ -3722,6 +3723,8 @@ namespace micromorphicElastoPlasticity{
 
         //Assemble the Jacobians so far
         variableVector dPlasticFpdMacroGamma = vectorTools::dot( dPlasticFdPlasticMacroL, dMacroLpdMacroGamma );
+        variableVector dPlasticFpdMicroGamma = vectorTools::dot( dPlasticFdPlasticMacroL, dMacroLpdMicroGamma );
+
         variableVector dPlasticMicroDeformationdMicroGamma = vectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, dMicroLpdMicroGamma );
         variableVector dPlasticMicroGradientdMacroGamma = vectorTools::dot( dPlasticMicroGradientdPlasticMacroL, dMacroLpdMacroGamma );
         variableVector dPlasticMicroGradientdMicroGamma = vectorTools::dot( dPlasticMicroGradientdPlasticMicroL, dMicroLpdMicroGamma )
@@ -3753,17 +3756,20 @@ namespace micromorphicElastoPlasticity{
 
         //Assemble the Jacobians so far
         variableVector dElasticFdMacroGamma = vectorTools::Tdot( dElasticFdPlasticF, dPlasticFpdMacroGamma );
-        variableVector dElasticChidMicroGamma = vectorTools::Tdot( dElasticChidPlasticChi, dPlasticChidMicroGamma );
+        variableVector dElasticFdMicroGamma = vectorTools::Tdot( dElasticFdPlasticF, dPlasticFpdMicroGamma );
+        variableVector dElasticChidMicroGamma = vectorTools::Tdot( dElasticChidPlasticChi, dPlasticMicroDeformationdMicroGamma );
         variableVector dElasticGradChidMacroGamma = vectorTools::Tdot( dElasticGradChidPlasticF, dPlasticFpdMacroGamma )
                                                   + vectorTools::Tdot( dElasticGradChidPlasticGradChi, dPlasticMicroGradientdMacroGamma );
-        variableVector dElasticGradChidMicroGamma = vectorTools::Tdot( dElasticGradChidPlasticChi, dPlasticChidMicroGamma )
+        variableVector dElasticGradChidMicroGamma = vectorTools::Tdot( dElasticGradChidPlasticChi, dPlasticMicroDeformationdMicroGamma )
                                                   = vectorTools::Tdot( dElasticGradChidPlasticGradChi, dPlasticMicroGradientdMicroGamma );
-        variableVector dElasticGradChidMicroGradientGamma = vectorTools::dot( dElasticGradChidPlasticGradChi,
+        variableMatrix dElasticGradChidMicroGradientGamma = vectorTools::dot( dElasticGradChidPlasticGradChi,
                                                                               dPlasticMicroGradientdMicroGradientGamma );
 
         //Compute the new elastic right Cauchy-Green deformation tesnor
-        variableMatrix dElasticRCGdElasticF
-        error = computeRightCauchyGreen( currentElasticDeformationGradient, currentElasticRightCauchyGreen, dElasticRCGdElasticF );
+        variableMatrix dElasticRCGdElasticF;
+        error = constitutiveTools::computeRightCauchyGreen( *currentElasticDeformationGradient,
+                                                            currentElasticRightCauchyGreen,
+                                                            dElasticRCGdElasticF );
 
         if ( error ){
             errorOut result = new errorNode( "computeResidual",
@@ -3774,6 +3780,7 @@ namespace micromorphicElastoPlasticity{
 
         //Assemble the Jacobian
         variableVector dElasticRCGdMacroGamma = vectorTools::Tdot( dElasticRCGdElasticF, dElasticFdMacroGamma );
+        variableVector dElasticRCGdMicroGamma = vectorTools::Tdot( dElasticRCGdElasticF, dElasticFdMicroGamma );
 
         //Compute the new stress
 
@@ -3802,19 +3809,22 @@ namespace micromorphicElastoPlasticity{
         //Assemble the Jacobians so far
         variableVector dPK2dMacroGamma = vectorTools::Tdot( dPK2StressdElasticF, dElasticFdMacroGamma )
                                        + vectorTools::Tdot( dPK2StressdElasticGradChi, dElasticGradChidMacroGamma );
-        variableVector dPK2dMicroGamma = vectorTools::Tdot( dPK2StressdElasticChi, dElasticChidMicroGamma )
+        variableVector dPK2dMicroGamma = vectorTools::Tdot( dPK2StressdElasticF, dElasticFdMicroGamma)
+                                       + vectorTools::Tdot( dPK2StressdElasticChi, dElasticChidMicroGamma )
                                        + vectorTools::Tdot( dPK2StressdElasticGradChi, dElasticGradChidMicroGamma );
-        variableMatrix dPK2dMicroGradientGamma = vectorTools::dot( dPK2StressdElasticGradChi, dElasticGradGhidMicroGradientGamma );
+        variableMatrix dPK2dMicroGradientGamma = vectorTools::dot( dPK2StressdElasticGradChi, dElasticGradChidMicroGradientGamma );
 
-        variableMatrix dSigmadMacroGamma = vectorTools::Tdot( dSigmadElasticF, dElasticFdMacroGamma )
+        variableVector dSigmadMacroGamma = vectorTools::Tdot( dSigmadElasticF, dElasticFdMacroGamma )
                                          + vectorTools::Tdot( dSigmadElasticGradChi, dElasticGradChidMacroGamma );
-        variableMatrix dSigmadMicroGamma = vectorTools::Tdot( dSigmadElasticChi, dElasticChidMicroGamma )
+        variableVector dSigmadMicroGamma = vectorTools::Tdot( dSigmadElasticF, dElasticFdMicroGamma )
+                                         + vectorTools::Tdot( dSigmadElasticChi, dElasticChidMicroGamma )
                                          + vectorTools::Tdot( dSigmadElasticGradChi, dElasticGradChidMicroGamma );
         variableMatrix dSigmadMicroGradientGamma = vectorTools::dot( dSigmadElasticGradChi, dElasticGradChidMicroGradientGamma );
 
-        variableMatrix dMdMacroGamma = vectorTools::Tdot( dMdElasticF, dElasticFdMacroGamma )
+        variableVector dMdMacroGamma = vectorTools::Tdot( dMdElasticF, dElasticFdMacroGamma )
                                      + vectorTools::dot( dMdElasticGradChi, dElasticGradChidMacroGamma );
-        variableMatrix dMdMicroGamma = vectorTools::Tdot( dMdElasticGradChi, dElasticGradChidMicroGamma );
+        variableVector dMdMicroGamma = vectorTools::Tdot( dMdElasticF, dElasticFdMicroGamma )
+                                     + vectorTools::Tdot( dMdElasticGradChi, dElasticGradChidMicroGamma );
         variableMatrix dMdMicroGradientGamma = vectorTools::Tdot( dMdElasticGradChi, dElasticGradChidMicroGradientGamma );
 
         //Compute the yield functions
@@ -3823,11 +3833,11 @@ namespace micromorphicElastoPlasticity{
         variableVector dMacroFdPK2, dMicroFdSigma;
         variableMatrix dMicroGradientFdM;
 
-        variableType dMacroFdC, dMicroFdC;
-        variableVector dMicroGradientFdC;
+        variableType dMacroFdMacroC, dMicroFdMicroC;
+        variableMatrix dMicroGradientFdMicroGradientC;
 
         variableVector dMacroFdElasticRCG, dMicroFdElasticRCG;
-        variableMAtrix dMicroGradientFdElasticRCG;
+        variableMatrix dMicroGradientFdElasticRCG;
 
         error = computeSecondOrderDruckerPragerYieldEquation( *currentPK2Stress, currentMacroCohesion, currentElasticRightCauchyGreen,
                                                               ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
@@ -3845,7 +3855,8 @@ namespace micromorphicElastoPlasticity{
                                         + vectorTools::dot( dMacroFdElasticRCG, dElasticRCGdMacroGamma )
                                         + dMacroFdMacroC * dMacroCdMacroGamma;
 
-        variableType dMacroFdMicroGamma = vectorTools::dot( dMacroFdPK2, dPK2dMicroGamma );
+        variableType dMacroFdMicroGamma = vectorTools::dot( dMacroFdPK2, dPK2dMicroGamma )
+                                        + vectorTools::dot( dMacroFdElasticRCG, dElasticRCGdMicroGamma );
 
         variableVector dMacroFdMicroGradientGamma = vectorTools::Tdot( dPK2dMicroGradientGamma, dMacroFdPK2 );
                         
@@ -3865,7 +3876,8 @@ namespace micromorphicElastoPlasticity{
         variableType dMicroFdMacroGamma = vectorTools::dot( dMicroFdSigma, dSigmadMacroGamma )
                                         + vectorTools::dot( dMicroFdElasticRCG, dElasticRCGdMacroGamma );
 
-        variableType dMicroFdMicroGamma = vectorTools::dot( dMicroFdSigma, dSigmaMicroGamma )
+        variableType dMicroFdMicroGamma = vectorTools::dot( dMicroFdSigma, dSigmadMicroGamma )
+                                        + vectorTools::dot( dMicroFdElasticRCG, dElasticRCGdMicroGamma )
                                         + dMicroFdMicroC * dMicroCdMicroGamma;
 
         variableVector dMicroFdMicroGradientGamma = vectorTools::Tdot( dSigmadMicroGradientGamma, dMicroFdSigma );
@@ -3890,10 +3902,11 @@ namespace micromorphicElastoPlasticity{
         yieldFunctionValues[ 4 ] = yftmp[ 2 ];
 
         //Assemble the Jacobians
-        variableMatrix dMicroGradientFdMacroGamma = vectorTools::dot( dMicroGradientFdM, dMdMacroGamma )
+        variableVector dMicroGradientFdMacroGamma = vectorTools::dot( dMicroGradientFdM, dMdMacroGamma )
                                                   + vectorTools::dot( dMicroGradientFdElasticRCG, dElasticRCGdMacroGamma );
 
-        variableMatrix dMicroGradientFdMicroGamma = vectorTools::dot( dMicroGradientFdM, dMdMicroGamma );
+        variableVector dMicroGradientFdMicroGamma = vectorTools::dot( dMicroGradientFdM, dMdMicroGamma )
+                                                  + vectorTools::dot( dMicroGradientFdElasticRCG, dElasticRCGdMicroGamma );
 
         variableMatrix dMicroGradientFdMicroGradientGamma = vectorTools::dot( dMicroGradientFdM, dMdMicroGradientGamma )
                                                           + vectorTools::dot( dMicroGradientFdMicroGradientC,
@@ -3942,25 +3955,25 @@ namespace micromorphicElastoPlasticity{
         jacobian[ 1 ][ 4 ] = dMicroFdMicroGradientGamma[ 2 ];
         jacobian[ 1 ][ 6 ] = 2 * x[ 6 ];
 
-        jacobian[ 2 ][ 0 ] = dMicroGradientFdMacroGamma;
-        jacobian[ 2 ][ 1 ] = dMicroGradientFdMicroGamma;
+        jacobian[ 2 ][ 0 ] = dMicroGradientFdMacroGamma[ 0 ];
+        jacobian[ 2 ][ 1 ] = dMicroGradientFdMicroGamma[ 0 ];
         jacobian[ 2 ][ 2 ] = dMicroGradientFdMicroGradientGamma[ 0 ][ 0 ];
         jacobian[ 2 ][ 3 ] = dMicroGradientFdMicroGradientGamma[ 1 ][ 0 ];
         jacobian[ 2 ][ 4 ] = dMicroGradientFdMicroGradientGamma[ 2 ][ 0 ];
         jacobian[ 2 ][ 7 ] = 2 * x[ 7 ];
 
-        jacobian[ 3 ][ 0 ] = dMicroGradientFdMacroGamma;
-        jacobian[ 3 ][ 1 ] = dMicroGradientFdMicroGamma;
+        jacobian[ 3 ][ 0 ] = dMicroGradientFdMacroGamma[ 1 ];
+        jacobian[ 3 ][ 1 ] = dMicroGradientFdMicroGamma[ 1 ];
         jacobian[ 3 ][ 2 ] = dMicroGradientFdMicroGradientGamma[ 0 ][ 1 ];
         jacobian[ 3 ][ 3 ] = dMicroGradientFdMicroGradientGamma[ 1 ][ 1 ];
         jacobian[ 3 ][ 4 ] = dMicroGradientFdMicroGradientGamma[ 2 ][ 1 ];
         jacobian[ 3 ][ 8 ] = 2 * x[ 8 ];
 
-        jacobian[ 4 ][ 0 ] = dMicroGradientFdMacroGamma;
-        jacobian[ 4 ][ 1 ] = dMicroGradientFdMicroGamma;
-        jacobian[ 4 ][ 2 ] = dMicroGradientFdMicroGradientGamma[ 0 ][ 1 ];
-        jacobian[ 4 ][ 3 ] = dMicroGradientFdMicroGradientGamma[ 1 ][ 1 ];
-        jacobian[ 4 ][ 4 ] = dMicroGradientFdMicroGradientGamma[ 2 ][ 1 ];
+        jacobian[ 4 ][ 0 ] = dMicroGradientFdMacroGamma[ 2 ];
+        jacobian[ 4 ][ 1 ] = dMicroGradientFdMicroGamma[ 2 ];
+        jacobian[ 4 ][ 2 ] = dMicroGradientFdMicroGradientGamma[ 0 ][ 2 ];
+        jacobian[ 4 ][ 3 ] = dMicroGradientFdMicroGradientGamma[ 1 ][ 2 ];
+        jacobian[ 4 ][ 4 ] = dMicroGradientFdMicroGradientGamma[ 2 ][ 2 ];
         jacobian[ 4 ][ 9 ] = 2 * x[ 9 ];
 
         jacobian[ 5 ][ 0  ] = x[ 10 ];
