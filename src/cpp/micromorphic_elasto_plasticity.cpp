@@ -3285,7 +3285,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         #ifdef DEBUG_MODE
-            DEBUG.emplace( "currentElasticRightCauchyGreen", currentElasticRightCauchyGreen );
+            DEBUG.emplace( "currentElasticRightCauchyGreen_1", currentElasticRightCauchyGreen );
             DEBUG.emplace( "currentElasticMicroRightCauchyGreen", currentElasticMicroRightCauchyGreen );
             DEBUG.emplace( "currentElasticPsi", currentElasticPsi );
             DEBUG.emplace( "currentElasticGamma", currentElasticGamma );
@@ -3341,8 +3341,10 @@ namespace micromorphicElastoPlasticity{
         }
 
         #ifdef DEBUG_MODE
-            DEBUG.emplace( "currentMacroStrainISV", *currentMacroStrainISV );
-            DEBUG.emplace( "currentMicroStrainISV", *currentMicroStrainISV );
+            tmp = { *currentMacroStrainISV };
+            DEBUG.emplace( "currentMacroStrainISV", tmp );
+            tmp = { *currentMicroStrainISV };
+            DEBUG.emplace( "currentMicroStrainISV", tmp );
             DEBUG.emplace( "currentMicroGradientStrainISV", *currentMicroGradientStrainISV );
         #endif
 
@@ -3436,7 +3438,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         #ifdef DEBUG_MODE
-            DEBUG.emplace( "currentElasticRightCauchyGreen", currentElasticRightCauchyGreen );
+            DEBUG.emplace( "currentElasticRightCauchyGreen_2", currentElasticRightCauchyGreen );
         #endif
 
         //Compute the new stress
@@ -3514,7 +3516,7 @@ namespace micromorphicElastoPlasticity{
         yieldFunctionValues[ 4 ] = yftmp[ 2 ];
 
         #ifdef DEBUG_MODE
-            DEBUG.emplace( "macroYieldFunction", yftmp );
+            DEBUG.emplace( "microGradientYieldFunction", yftmp );
         #endif
 
         //Assemble the residual
@@ -3889,9 +3891,9 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Assemble the Jacobians so far
-        variableVector dElasticFdMacroGamma = vectorTools::Tdot( dElasticFdPlasticF, dPlasticFpdMacroGamma );
-        variableVector dElasticFdMicroGamma = vectorTools::Tdot( dElasticFdPlasticF, dPlasticFpdMicroGamma );
-        variableVector dElasticChidMicroGamma = vectorTools::Tdot( dElasticChidPlasticChi, dPlasticMicroDeformationdMicroGamma );
+        variableVector dElasticFdMacroGamma = vectorTools::dot( dElasticFdPlasticF, dPlasticFpdMacroGamma );
+        variableVector dElasticFdMicroGamma = vectorTools::dot( dElasticFdPlasticF, dPlasticFpdMicroGamma );
+        variableVector dElasticChidMicroGamma = vectorTools::dot( dElasticChidPlasticChi, dPlasticMicroDeformationdMicroGamma );
         variableVector dElasticGradChidMacroGamma = vectorTools::dot( dElasticGradChidPlasticF, dPlasticFpdMacroGamma )
                                                   + vectorTools::dot( dElasticGradChidPlasticGradChi, dPlasticMicroGradientdMacroGamma );
         variableVector dElasticGradChidMicroGamma = vectorTools::dot( dElasticGradChidPlasticChi, dPlasticMicroDeformationdMicroGamma )
@@ -3923,8 +3925,8 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Assemble the Jacobian
-        variableVector dElasticRCGdMacroGamma = vectorTools::Tdot( dElasticRCGdElasticF, dElasticFdMacroGamma );
-        variableVector dElasticRCGdMicroGamma = vectorTools::Tdot( dElasticRCGdElasticF, dElasticFdMicroGamma );
+        variableVector dElasticRCGdMacroGamma = vectorTools::dot( dElasticRCGdElasticF, dElasticFdMacroGamma );
+        variableVector dElasticRCGdMicroGamma = vectorTools::dot( dElasticRCGdElasticF, dElasticFdMicroGamma );
 
         #ifdef DEBUG_MODE
             DEBUG.emplace( "dElasticRCGdMacroGamma", dElasticRCGdMacroGamma );
