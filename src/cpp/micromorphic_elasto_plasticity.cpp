@@ -3112,9 +3112,16 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
+    #ifdef DEBUG_MODE
+    errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                              const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts,
+                              std::map< std::string, solverTools::floatVector > &DEBUG ){
+    #else
     errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                               solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts ){
+    #endif
         /*!
          * Compute the residual for use in the non-linear solve.
          *
@@ -3254,6 +3261,14 @@ namespace micromorphicElastoPlasticity{
         variableType currentMicroCohesion = ( *microHardeningParameters )[ 0 ] + ( *microHardeningParameters )[ 1 ] * * currentMicroStrainISV;
         variableVector currentMicroGradientCohesion = ( *microGradientHardeningParameters )[ 0 ] + ( *microGradientHardeningParameters )[ 1 ] * * currentMicroGradientStrainISV;
 
+        #ifdef DEBUG_MODE
+            solverTools::floatVector tmp = { currentMacroCohesion };
+            DEBUG.emplace( "currentMacroCohesion_1", tmp );
+            tmp = { currentMicroCohesion };
+            DEBUG.emplace( "currentMicroCohesion_1", tmp );
+            DEBUG.emplace( "currentMicroGradientCohesion_1", currentMicroGradientCohesion );
+        #endif
+
         //Compute the elastic deformation measures
         variableVector currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen, currentElasticPsi, currentElasticGamma;
 
@@ -3268,6 +3283,13 @@ namespace micromorphicElastoPlasticity{
             result->addNext( error );
             return result;
         }
+
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "currentElasticRightCauchyGreen", currentElasticRightCauchyGreen );
+            DEBUG.emplace( "currentElasticMicroRightCauchyGreen", currentElasticMicroRightCauchyGreen );
+            DEBUG.emplace( "currentElasticPsi", currentElasticPsi );
+            DEBUG.emplace( "currentElasticGamma", currentElasticGamma );
+        #endif
 
         //Compute the Flow directions
         variableVector currentMacroFlowDirection, currentMicroFlowDirection, currentMicroGradientFlowDirection;
@@ -3288,6 +3310,18 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "currentMacroFlowDirection", currentMacroFlowDirection );
+            DEBUG.emplace( "currentMicroFlowDirection", currentMicroFlowDirection );
+            DEBUG.emplace( "currentMicroGradientFlowDirection", currentMicroGradientFlowDirection );
+            tmp = { currentdMacroGdMacroCohesion };
+            DEBUG.emplace( "currentdMacroGdMacroCohesion", tmp );
+            tmp = { currentdMicroGdMicroCohesion };
+            DEBUG.emplace( "currentdMicroGdMicroCohesion", tmp );
+            DEBUG.emplace( "currentdMicroGradientGdMicroGradientCohesion",
+                           vectorTools::appendVectors( currentdMicroGradientGdMicroGradientCohesion ) );
+        #endif
+
         //Evolve the strain-like ISVs
         error = evolveStrainStateVariables( *Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
                                             currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion,
@@ -3306,10 +3340,24 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "currentMacroStrainISV", *currentMacroStrainISV );
+            DEBUG.emplace( "currentMicroStrainISV", *currentMicroStrainISV );
+            DEBUG.emplace( "currentMicroGradientStrainISV", *currentMicroGradientStrainISV );
+        #endif
+
         //Compute the new cohesion values
         currentMacroCohesion = ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] * * currentMacroStrainISV;
         currentMicroCohesion = ( *microHardeningParameters )[ 0 ] + ( *microHardeningParameters )[ 1 ] * * currentMicroStrainISV;
         currentMicroGradientCohesion = ( *microGradientHardeningParameters )[ 0 ] + ( *microGradientHardeningParameters )[ 1 ] * * currentMicroGradientStrainISV;
+
+        #ifdef DEBUG_MODE
+            tmp = { currentMacroCohesion };
+            DEBUG.emplace( "currentMacroCohesion_2", tmp );
+            tmp = { currentMicroCohesion };
+            DEBUG.emplace( "currentMicroCohesion_2", tmp );
+            DEBUG.emplace( "currentMicroGradientCohesion_2", currentMicroGradientCohesion );
+        #endif
 
         //Compute the new plastic velocity gradients
         variableVector currentPlasticMacroVelocityGradient, currentPlasticMicroVelocityGradient,
@@ -3330,6 +3378,12 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "currentPlasticMacroVelocityGradient", currentPlasticMacroVelocityGradient );
+            DEBUG.emplace( "currentPlasticMicroVelocityGradient", currentPlasticMicroVelocityGradient );
+            DEBUG.emplace( "currentPlasticMicroGradientVelocityGradient", currentPlasticMicroGradientVelocityGradient );
+        #endif
+
         //Compute the new plastic deformation
         error = evolvePlasticDeformation( *Dt, currentPlasticMacroVelocityGradient, currentPlasticMicroVelocityGradient,
                                           currentPlasticMicroGradientVelocityGradient, *previousPlasticDeformationGradient,
@@ -3346,6 +3400,12 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "currentPlasticDeformationGradient", *currentPlasticDeformationGradient );
+            DEBUG.emplace( "currentPlasticMicroDeformation", *currentPlasticMicroDeformation );
+            DEBUG.emplace( "currentPlasticMicroGradient", *currentPlasticMicroGradient );
+        #endif
+
         //Compute the new elastic deformation
         error = computeElasticPartOfDeformation( *currentDeformationGradient, *currentMicroDeformation, *currentGradientMicroDeformation,
                                                  *currentPlasticDeformationGradient, *currentPlasticMicroDeformation,
@@ -3359,6 +3419,12 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "currentElasticDeformationGradient", *currentElasticDeformationGradient );
+            DEBUG.emplace( "currentElasticMicroDeformation", *currentElasticMicroDeformation );
+            DEBUG.emplace( "currentElasticMicroGradient", *currentElasticMicroGradient );
+        #endif
+
         //Update the elastic Right Cauchy Green
         error = constitutiveTools::computeRightCauchyGreen( *currentElasticDeformationGradient, currentElasticRightCauchyGreen );
 
@@ -3368,6 +3434,10 @@ namespace micromorphicElastoPlasticity{
             result->addNext( error );
             return result;
         }
+
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "currentElasticRightCauchyGreen", currentElasticRightCauchyGreen );
+        #endif
 
         //Compute the new stress
         error = micromorphicLinearElasticity::linearElasticityReference( *currentElasticDeformationGradient,
@@ -3384,6 +3454,12 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "currentPK2Stress", *currentPK2Stress );
+            DEBUG.emplace( "currentReferenceMicroStress", *currentReferenceMicroStress );
+            DEBUG.emplace( "currentReferenceHigherOrderStress", *currentReferenceHigherOrderStress );
+        #endif
+
         //Compute the yield functions
         variableVector yieldFunctionValues( 5, 0 );
         error = computeSecondOrderDruckerPragerYieldEquation( *currentPK2Stress, currentMacroCohesion, currentElasticRightCauchyGreen,
@@ -3396,6 +3472,11 @@ namespace micromorphicElastoPlasticity{
             result->addNext( error );
             return result;
         }
+
+        #ifdef DEBUG_MODE
+            tmp = { yieldFunctionValues[ 0 ] };
+            DEBUG.emplace( "macroYieldFunction", tmp );
+        #endif
                         
         error = computeSecondOrderDruckerPragerYieldEquation( *currentReferenceMicroStress, currentMicroCohesion,
                                                               currentElasticRightCauchyGreen,
@@ -3408,6 +3489,11 @@ namespace micromorphicElastoPlasticity{
             result->addNext( error );
             return result;
         }
+
+        #ifdef DEBUG_MODE
+            tmp = { yieldFunctionValues[ 1 ] };
+            DEBUG.emplace( "microYieldFunction", tmp );
+        #endif
         
         variableVector yftmp;
         error = computeHigherOrderDruckerPragerYieldEquation( *currentReferenceHigherOrderStress, currentMicroGradientCohesion,
@@ -3426,6 +3512,10 @@ namespace micromorphicElastoPlasticity{
         yieldFunctionValues[ 2 ] = yftmp[ 0 ];
         yieldFunctionValues[ 3 ] = yftmp[ 1 ];
         yieldFunctionValues[ 4 ] = yftmp[ 2 ];
+
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "macroYieldFunction", yftmp );
+        #endif
 
         //Assemble the residual
         residual = solverTools::floatVector( x.size(), 0 );
@@ -3456,10 +3546,18 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
+    #ifdef DEBUG_MODE
+    errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                              const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                              solverTools::floatMatrix &jacobian,
+                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts,
+                              std::map< std::string, solverTools::floatVector > &DEBUG ){
+    #else
     errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                               solverTools::floatMatrix &jacobian,
                               solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts ){
+    #endif
         /*!
          * Compute the residual for use in the non-linear solve.
          *
@@ -3528,12 +3626,12 @@ namespace micromorphicElastoPlasticity{
          */
 
         if ( floatArgs.size() != 35 ){
-            return new errorNode( "computeResidual",
+            return new errorNode( "computeResidual (jacobian)",
                                   "35 terms are required for the floatArgs matrix" );
         }
 
         if ( floatOuts.size() != 12 ){
-            return new errorNode( "computeResidual",
+            return new errorNode( "computeResidual (jacobian)",
                                   "12 terms are required for the floatOuts matrix" );
         }
 
@@ -3596,11 +3694,13 @@ namespace micromorphicElastoPlasticity{
         variableVector currentMicroGradientGamma( x.begin() + 2, x.begin() + 5 );
 
         //Compute the cohesions
+        std::cout << "compute the cohesions\n";
         variableType currentMacroCohesion = ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] * * currentMacroStrainISV;
         variableType currentMicroCohesion = ( *microHardeningParameters )[ 0 ] + ( *microHardeningParameters )[ 1 ] * * currentMicroStrainISV;
         variableVector currentMicroGradientCohesion = ( *microGradientHardeningParameters )[ 0 ] + ( *microGradientHardeningParameters )[ 1 ] * * currentMicroGradientStrainISV;
 
         //Compute the elastic deformation measures
+        std::cout << "compute the elastic deformation measures\n";
         variableVector currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen, currentElasticPsi, currentElasticGamma;
 
         errorOut error = computeElasticDeformationMeasures( *currentElasticDeformationGradient, *currentElasticMicroDeformation,
@@ -3609,13 +3709,14 @@ namespace micromorphicElastoPlasticity{
                                                             currentElasticGamma );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the computation of the elastic deformation measures" );
             result->addNext( error );
             return result;
         }
 
         //Compute the Flow directions
+        std::cout << "compute the flow directions\n";
         variableVector currentMacroFlowDirection, currentMicroFlowDirection, currentMicroGradientFlowDirection;
         variableType currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion;
         variableMatrix currentdMicroGradientGdMicroGradientCohesion;
@@ -3628,13 +3729,14 @@ namespace micromorphicElastoPlasticity{
                                        currentdMicroGdMicroCohesion, currentdMicroGradientGdMicroGradientCohesion );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the computation of the flow directions" );
             result->addNext( error );
             return result;
         }
 
         //Evolve the strain-like ISVs
+        std::cout << "compute the strain like ISVs\n";
         variableType dCurrentMacroISVdCurrentMacroGamma, dCurrentMicroISVdCurrentMicroGamma;
         variableMatrix dCurrentMicroGradISVdCurrentMicroGradGamma;
 
@@ -3656,13 +3758,14 @@ namespace micromorphicElastoPlasticity{
                                             *alphaMacro, *alphaMicro, *alphaMicroGradient );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the evolution of the strain-like ISVs" );
             result->addNext( error );
             return result;
         }
 
         //Compute the new cohesion values
+        std::cout << "compute the new cohesion values\n";
         currentMacroCohesion = ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] * * currentMacroStrainISV;
         currentMicroCohesion = ( *microHardeningParameters )[ 0 ] + ( *microHardeningParameters )[ 1 ] * * currentMicroStrainISV;
         currentMicroGradientCohesion = ( *microGradientHardeningParameters )[ 0 ] + ( *microGradientHardeningParameters )[ 1 ] * * currentMicroGradientStrainISV;
@@ -3673,6 +3776,7 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dMicroGradientCdMicroGradientGamma = ( *microGradientHardeningParameters )[ 1 ] * vectorTools::eye< variableType >( 3 );
 
         //Compute the new plastic velocity gradients
+        std::cout << "compute the new plastic velocity gradients\n";
         variableVector currentPlasticMacroVelocityGradient, currentPlasticMicroVelocityGradient,
                        currentPlasticMicroGradientVelocityGradient;
 
@@ -3691,13 +3795,14 @@ namespace micromorphicElastoPlasticity{
                                                  dMicroGradientLpdMicroGradientGamma );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the evolution of the plastic velocity gradients" );
             result->addNext( error );
             return result;
         }
 
         //Compute the new plastic deformation
+        std::cout << "compute the new plastic deformation\n";
         
         variableMatrix dPlasticFdPlasticMacroL, dPlasticMicroDeformationdPlasticMicroL, dPlasticMicroGradientdPlasticMacroL,
                        dPlasticMicroGradientdPlasticMicroL, dPlasticMicroGradientdPlasticMicroGradientL;
@@ -3715,7 +3820,7 @@ namespace micromorphicElastoPlasticity{
                                           *alphaMacro, *alphaMicro, *alphaMicroGradient );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the evolution of the plastic deformation" );
             result->addNext( error );
             return result;
@@ -3734,6 +3839,7 @@ namespace micromorphicElastoPlasticity{
                                                                                     dMicroGradientLpdMicroGradientGamma );
 
         //Compute the new elastic deformation
+        std::cout << "compute the new elastic deformation\n";
 
         variableMatrix dElasticFdF, dElasticFdPlasticF, dElasticChidChi, dElasticChidPlasticChi, dElasticGradChidGradChi,
                        dElasticGradChidPlasticGradChi, dElasticGradChidPlasticF, dElasticGradChidChi, dElasticGradChidPlasticChi;
@@ -3748,7 +3854,7 @@ namespace micromorphicElastoPlasticity{
                                                  dElasticGradChidPlasticChi );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the computation of the elastic part of deformation" );
             result->addNext( error );
             return result;
@@ -3758,21 +3864,22 @@ namespace micromorphicElastoPlasticity{
         variableVector dElasticFdMacroGamma = vectorTools::Tdot( dElasticFdPlasticF, dPlasticFpdMacroGamma );
         variableVector dElasticFdMicroGamma = vectorTools::Tdot( dElasticFdPlasticF, dPlasticFpdMicroGamma );
         variableVector dElasticChidMicroGamma = vectorTools::Tdot( dElasticChidPlasticChi, dPlasticMicroDeformationdMicroGamma );
-        variableVector dElasticGradChidMacroGamma = vectorTools::Tdot( dElasticGradChidPlasticF, dPlasticFpdMacroGamma )
-                                                  + vectorTools::Tdot( dElasticGradChidPlasticGradChi, dPlasticMicroGradientdMacroGamma );
-        variableVector dElasticGradChidMicroGamma = vectorTools::Tdot( dElasticGradChidPlasticChi, dPlasticMicroDeformationdMicroGamma )
-                                                  = vectorTools::Tdot( dElasticGradChidPlasticGradChi, dPlasticMicroGradientdMicroGamma );
+        variableVector dElasticGradChidMacroGamma = vectorTools::dot( dElasticGradChidPlasticF, dPlasticFpdMacroGamma )
+                                                  + vectorTools::dot( dElasticGradChidPlasticGradChi, dPlasticMicroGradientdMacroGamma );
+        variableVector dElasticGradChidMicroGamma = vectorTools::dot( dElasticGradChidPlasticChi, dPlasticMicroDeformationdMicroGamma )
+                                                  + vectorTools::dot( dElasticGradChidPlasticGradChi, dPlasticMicroGradientdMicroGamma );
         variableMatrix dElasticGradChidMicroGradientGamma = vectorTools::dot( dElasticGradChidPlasticGradChi,
                                                                               dPlasticMicroGradientdMicroGradientGamma );
 
         //Compute the new elastic right Cauchy-Green deformation tesnor
+        std::cout << "compute the new elastic right Cauchy-Green deformation tensor\n";
         variableMatrix dElasticRCGdElasticF;
         error = constitutiveTools::computeRightCauchyGreen( *currentElasticDeformationGradient,
                                                             currentElasticRightCauchyGreen,
                                                             dElasticRCGdElasticF );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the computation of the updated elastic right Cauchy-Green deformation tensor" );
             result->addNext( error );
             return result;
@@ -3783,6 +3890,7 @@ namespace micromorphicElastoPlasticity{
         variableVector dElasticRCGdMicroGamma = vectorTools::Tdot( dElasticRCGdElasticF, dElasticFdMicroGamma );
 
         //Compute the new stress
+        std::cout << "compute the new stress\n";
 
         variableMatrix dPK2StressdElasticF, dPK2StressdElasticChi, dPK2StressdElasticGradChi;
         variableMatrix dSigmadElasticF, dSigmadElasticChi, dSigmadElasticGradChi;
@@ -3800,34 +3908,35 @@ namespace micromorphicElastoPlasticity{
                                                                           dSigmadElasticGradChi, dMdElasticF, dMdElasticGradChi );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the computation of the current stresses" );
             result->addNext( error );
             return result;
         }
 
         //Assemble the Jacobians so far
-        variableVector dPK2dMacroGamma = vectorTools::Tdot( dPK2StressdElasticF, dElasticFdMacroGamma )
-                                       + vectorTools::Tdot( dPK2StressdElasticGradChi, dElasticGradChidMacroGamma );
-        variableVector dPK2dMicroGamma = vectorTools::Tdot( dPK2StressdElasticF, dElasticFdMicroGamma)
-                                       + vectorTools::Tdot( dPK2StressdElasticChi, dElasticChidMicroGamma )
-                                       + vectorTools::Tdot( dPK2StressdElasticGradChi, dElasticGradChidMicroGamma );
+        variableVector dPK2dMacroGamma = vectorTools::dot( dPK2StressdElasticF, dElasticFdMacroGamma )
+                                       + vectorTools::dot( dPK2StressdElasticGradChi, dElasticGradChidMacroGamma );
+        variableVector dPK2dMicroGamma = vectorTools::dot( dPK2StressdElasticF, dElasticFdMicroGamma)
+                                       + vectorTools::dot( dPK2StressdElasticChi, dElasticChidMicroGamma )
+                                       + vectorTools::dot( dPK2StressdElasticGradChi, dElasticGradChidMicroGamma );
         variableMatrix dPK2dMicroGradientGamma = vectorTools::dot( dPK2StressdElasticGradChi, dElasticGradChidMicroGradientGamma );
 
-        variableVector dSigmadMacroGamma = vectorTools::Tdot( dSigmadElasticF, dElasticFdMacroGamma )
-                                         + vectorTools::Tdot( dSigmadElasticGradChi, dElasticGradChidMacroGamma );
-        variableVector dSigmadMicroGamma = vectorTools::Tdot( dSigmadElasticF, dElasticFdMicroGamma )
-                                         + vectorTools::Tdot( dSigmadElasticChi, dElasticChidMicroGamma )
-                                         + vectorTools::Tdot( dSigmadElasticGradChi, dElasticGradChidMicroGamma );
+        variableVector dSigmadMacroGamma = vectorTools::dot( dSigmadElasticF, dElasticFdMacroGamma )
+                                         + vectorTools::dot( dSigmadElasticGradChi, dElasticGradChidMacroGamma );
+        variableVector dSigmadMicroGamma = vectorTools::dot( dSigmadElasticF, dElasticFdMicroGamma )
+                                         + vectorTools::dot( dSigmadElasticChi, dElasticChidMicroGamma )
+                                         + vectorTools::dot( dSigmadElasticGradChi, dElasticGradChidMicroGamma );
         variableMatrix dSigmadMicroGradientGamma = vectorTools::dot( dSigmadElasticGradChi, dElasticGradChidMicroGradientGamma );
 
-        variableVector dMdMacroGamma = vectorTools::Tdot( dMdElasticF, dElasticFdMacroGamma )
+        variableVector dMdMacroGamma = vectorTools::dot( dMdElasticF, dElasticFdMacroGamma )
                                      + vectorTools::dot( dMdElasticGradChi, dElasticGradChidMacroGamma );
-        variableVector dMdMicroGamma = vectorTools::Tdot( dMdElasticF, dElasticFdMicroGamma )
-                                     + vectorTools::Tdot( dMdElasticGradChi, dElasticGradChidMicroGamma );
-        variableMatrix dMdMicroGradientGamma = vectorTools::Tdot( dMdElasticGradChi, dElasticGradChidMicroGradientGamma );
+        variableVector dMdMicroGamma = vectorTools::dot( dMdElasticF, dElasticFdMicroGamma )
+                                     + vectorTools::dot( dMdElasticGradChi, dElasticGradChidMicroGamma );
+        variableMatrix dMdMicroGradientGamma = vectorTools::dot( dMdElasticGradChi, dElasticGradChidMicroGradientGamma );
 
         //Compute the yield functions
+        std::cout << "compute the yield functions\n";
         variableVector yieldFunctionValues( 5, 0 );
 
         variableVector dMacroFdPK2, dMicroFdSigma;
@@ -3844,7 +3953,7 @@ namespace micromorphicElastoPlasticity{
                                                               yieldFunctionValues[ 0 ], dMacroFdPK2, dMacroFdMacroC, dMacroFdElasticRCG );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the computation of the macro yield equation" );
             result->addNext( error );
             return result;
@@ -3866,7 +3975,7 @@ namespace micromorphicElastoPlasticity{
                                                               yieldFunctionValues[ 1 ], dMicroFdSigma, dMicroFdMicroC, dMicroFdElasticRCG );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the computation of the micro yield equation" );
             result->addNext( error );
             return result;
@@ -3891,7 +4000,7 @@ namespace micromorphicElastoPlasticity{
                                                               yftmp, dMicroGradientFdM, dMicroGradientFdMicroGradientC, dMicroGradientFdElasticRCG );
 
         if ( error ){
-            errorOut result = new errorNode( "computeResidual",
+            errorOut result = new errorNode( "computeResidual (jacobian)",
                                              "Error in the computation of the micro yield equation" );
             result->addNext( error );
             return result;
@@ -3913,6 +4022,7 @@ namespace micromorphicElastoPlasticity{
                                                                               dMicroGradientCdMicroGradientGamma );
 
         //Assemble the residual
+        std::cout << "assemble the residual\n";
         residual = solverTools::floatVector( x.size(), 0 );
 
         //The plastic multipliers must be zero if they are not on the yield surface
@@ -3939,6 +4049,7 @@ namespace micromorphicElastoPlasticity{
         residual[ 14 ] = x[ 9 ] * x[ 14 ];
 
         //Assemble the Jacobian
+        std::cout << "assemble the jacobian\n";
         jacobian = solverTools::floatMatrix( 15, solverTools::floatVector( 15, 0 ) );
 
         jacobian[ 0 ][ 0 ] = dMacroFdMacroGamma;

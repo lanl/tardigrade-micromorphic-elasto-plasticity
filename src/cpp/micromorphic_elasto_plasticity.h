@@ -389,6 +389,18 @@ namespace micromorphicElastoPlasticity{
                                     variableMatrix &dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                     variableMatrix &dMicroGradientFlowDirectiondElasticRCG );
 
+    #ifdef DEBUG_MODE
+    errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                              const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts,
+                              std::map< std::string, solverTools::floatVector > &DEBUG );
+
+    errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                              const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                              solverTools::floatMatrix &jacobian,
+                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts,
+                              std::map< std::string, solverTools::floatVector > &DEBUG );
+    #else
     errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                               solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts );
@@ -397,6 +409,7 @@ namespace micromorphicElastoPlasticity{
                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                               solverTools::floatMatrix &jacobian,
                               solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts );
+    #endif
 }
 
 #endif

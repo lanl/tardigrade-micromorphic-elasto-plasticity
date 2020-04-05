@@ -34,7 +34,7 @@ LOCAL_CFLAGS=-ggdb
 #Set the mode due to the method variable
 DBG =
 ifeq ($(METHOD),dbg)
-  DBG = -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -g
+  DBG = -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -g -DDEBUG_MODE
 endif
 ifeq ($(METHOD),oprof)
   DBG = -pg

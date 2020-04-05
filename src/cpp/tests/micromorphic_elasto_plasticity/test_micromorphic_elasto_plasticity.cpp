@@ -4221,7 +4221,7 @@ int test_evolveStrainStateVariables( std::ofstream &results){
     //Test the Jacobians w.r.t. the derivative of the micro gradient plastic potential w.r.t. the micro gradient cohesion
     for ( unsigned int i = 0; i < 9; i++ ){
         constantMatrix delta( 3, constantVector( 3, 0 ) );
-        delta[ ( int )( i / 3) ][ i % 3 ] = eps * fabs( currentMicroGradientGamma[ i ] ) + eps;
+        delta[ ( int )( i / 3) ][ i % 3 ] = eps * fabs( currentdGdMicroGradC[ ( int )( i / 3 ) ][ i % 3 ] ) + eps;
 
         error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
                                                                           currentMicroGradientGamma, currentdGdMacroC,
@@ -4281,6 +4281,7 @@ int test_evolveStrainStateVariables( std::ofstream &results){
         }
     }
 
+    std::cerr << "exiting test of strain state variables\n";
     results << "test_evolveStrainStateVariables & True\n";
     return 0;
 }
@@ -5506,7 +5507,7 @@ int test_computeResidual( std::ofstream &results ){
                                                              0.88429187, 0.27738708, 0.74751012, 0.60944075, 0.74349372,
                                                              0.28709008, 0.1208852 };
 
-    solverTools::floatMatrix floatArgs =
+    solverTools::floatMatrix floatArgsDefault =
         {
             { Dt },
             currentDeformationGradient,
@@ -5545,7 +5546,7 @@ int test_computeResidual( std::ofstream &results ){
             { alphaMicroGradient }
         };
 
-    solverTools::floatMatrix floatOuts = 
+    solverTools::floatMatrix floatOutsDefault = 
         {
             currentElasticDeformationGradient,
             currentElasticMicroDeformation,
@@ -5565,7 +5566,7 @@ int test_computeResidual( std::ofstream &results ){
 
     variableVector x = vectorTools::appendVectors( { gammas, ses, ls } );
 
-    variableVector answerResidual = { 2362.41, 3482.79, -910.153, -1031.79, -807.904,
+    variableVector answerResidual = { 15980.2, 32017.2, 4458.34, 4987.47, 4457.51,
                                       ls[ 0 ] * gammas[ 0 ], ls[ 1 ] * gammas[ 1 ], ls[ 2 ] * gammas[ 2 ],
                                       ls[ 3 ] * gammas[ 3 ], ls[ 4 ] * gammas[ 4 ],
                                       ls[ 0 ] * ses[ 0 ], ls[ 1 ] * ses[ 1 ], ls[ 2 ] * ses[ 2 ],
@@ -5579,7 +5580,15 @@ int test_computeResidual( std::ofstream &results ){
                                                   -4.02403153, -2.73316293 };
 
     variableVector resultResidual;
+    solverTools::floatMatrix floatArgs = floatArgsDefault;
+    solverTools::floatMatrix floatOuts = floatOutsDefault;
+    std::cout << "entering no-jacobian residual\n";
+    #ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG;
+    errorOut error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, resultResidual, floatOuts, intOuts, DEBUG );
+    #else
     errorOut error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, resultResidual, floatOuts, intOuts );
+    #endif
 
     if ( error ){
         error->print();
@@ -5606,6 +5615,86 @@ int test_computeResidual( std::ofstream &results ){
         results << "test_computeResidual (test 4) & False\n";
         return 1;
     }
+
+    //Test the Jacobians
+    solverTools::floatVector resultResidualJ;
+    floatArgs = floatArgsDefault;
+    floatOuts = floatOutsDefault;
+    solverTools::floatMatrix jacobian;
+
+    std::cerr<< "entering jacobian residual\n";
+    #ifdef DEBUG_MODE
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, resultResidualJ,
+                                                           jacobian, floatOuts, intOuts, DEBUG );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, resultResidualJ,
+                                                           jacobian, floatOuts, intOuts );
+    #endif
+
+    if ( error ){
+        error->print();
+        results << "test_computeResidual & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals< solverTools::floatType >( resultResidualJ, answerResidual, 1e-5 ) ){
+        results << "test_computeResidual (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( currentDeformationGradient, vectorTools::matrixMultiply( floatOuts[ 0 ], floatOuts[ 3 ], 3, 3, 3, 3 ) ) ){
+        results << "test_computeResidual (test 6) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( currentMicroDeformation, vectorTools::matrixMultiply( floatOuts[ 1 ], floatOuts[ 4 ], 3, 3, 3, 3 ) ) ){
+        results << "test_computeResidual (test 7) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerElasticMicroGradient, floatOuts[ 2 ], 1e-5, 1e-4 ) ){
+        results << "test_computeResidual (test 8) & False\n";
+        return 1;
+    }
+
+    constantType eps = 1e-6;
+    #ifdef DEBUG_MODE
+    for ( unsigned int i = 0; i < 5; i++ ){
+        solverTools::floatVector delta( x.size(), 0 );
+        delta[ i ] = eps * fabs( x[ i ] ) + eps;
+
+        solverTools::floatVector P, M;
+
+        floatArgs = floatArgsDefault;
+        floatOuts = floatOutsDefault;
+        error = micromorphicElastoPlasticity::computeResidual( x + delta, floatArgs, intArgs, resultResidualJ,
+                                                               jacobian, floatOuts, intOuts, DEBUG );
+
+//        P = DEBUG[""];
+    
+        if ( error ){
+            error->print();
+            results << "test_computeResidual & False\n";
+            return 1;
+        }
+
+        floatArgs = floatArgsDefault;
+        floatOuts = floatOutsDefault;
+        error = micromorphicElastoPlasticity::computeResidual( x - delta, floatArgs, intArgs, resultResidualJ,
+                                                               floatOuts, intOuts, DEBUG );
+    
+        if ( error ){
+            error->print();
+            results << "test_computeResidual & False\n";
+            return 1;
+        }
+
+ //       M = DEBUG[""];
+
+        solverTools::floatVector gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+    }
+    #endif
 
     results << "test_computeResidual & True\n";
     return 0;
