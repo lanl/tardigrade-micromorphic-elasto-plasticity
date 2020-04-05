@@ -5119,21 +5119,20 @@ int test_computeResidual( std::ofstream &results ){
      * :param std::ofstream &results: The output file.
      */
 
-    solverTools::floatVector gammas = { 0.87902842, 0.55222615, 0.51297817, 0.56717187, 0.6469931 };
-    gammas *= 1e-5;
+    solverTools::floatVector gammas = { 8.79028423e-06, 5.52226146e-06, 5.12978173e-06, 5.67171873e-06, 6.46993099e-06 };
 
     solverTools::floatVector ses    = { 1, 2, 3, 4, 5 };
     solverTools::floatVector ls     = { 6, 7, 8, 9, 10 };
 
     solverTools::floatType Dt = 6.867410424824635;
 
-    solverTools::floatVector currentDeformationGradient = { -1.09682115, -1.61883667, -1.5145808 ,
-                                                             0.33285016, -0.70570984, -0.96554393,
-                                                            -1.46981997, -1.41550446, -3.5088589 };
+    solverTools::floatVector currentDeformationGradient = { -0.59712837, -0.74175714,  0.12227677,
+                                                            -0.73225042,  0.6025886 , -0.25093911,
+                                                             0.14896011, -0.21148619, -0.99899327 };
 
-    solverTools::floatVector currentMicroDeformation = { -0.63980234, -1.64050069, -0.5199173 ,
-                                                          2.44050171,  2.80725417,  4.67505775,
-                                                          1.99529569, -0.02395037,  0.95208604 };
+    solverTools::floatVector currentMicroDeformation = { -0.82792037, -0.32233057,  0.44528056,
+                                                          0.37287375,  0.16864785,  0.95050342,
+                                                         -0.33873036,  0.90420205, -0.02666455 };
 
     solverTools::floatVector currentGradientMicroDeformation = { -0.0149665 ,  0.06095584,  0.13338065, -0.43638215,  0.44766035,
                                                                   0.03721981, -0.28652256, -0.2099459 ,  0.21949816,  0.33977289,
@@ -5142,36 +5141,36 @@ int test_computeResidual( std::ofstream &results ){
                                                                  -0.47758355, -0.41184988, -0.37158834, -0.22519797, -0.06346757,
                                                                   0.32424538, -0.09800669 };
 
-    solverTools::floatVector previousPlasticDeformationGradient = { 3.9728331 ,  2.99143887,  3.91465804,
-                                                                    -1.59588001, -1.1147451 , -2.26412751,
-                                                                     2.44637434, -1.41931622,  1.38616173 };
+    solverTools::floatVector previousPlasticDeformationGradient = { 0.71462444,  0.66839242,  0.26307041,
+                                                                    0.29434242,  0.03695804, -0.97809092,
+                                                                    0.70705832, -0.77772875,  0.21091525 };
 
-    solverTools::floatVector previousPlasticMicroDeformation = { -0.68522686, -2.5136326 , -0.96398205,
-                                                                  1.64602412,  3.46549158,  4.10321782,
-                                                                 -4.51179248, -1.86352976, -2.98014054 };
+    solverTools::floatVector previousPlasticMicroDeformation = { -0.2443346 ,  0.55472099, -0.7664812 ,
+                                                                  0.91741992,  0.36762017,  0.00387774,
+                                                                  0.18390445, -0.71529299, -0.66325411 };
 
-    solverTools::floatVector previousPlasticMicroGradient = { -0.18082691, -0.2693206 , -0.37220387,  0.24033489, -0.46192578,
-                                                               0.11706357,  0.25004529,  0.06119053,  0.03871141, -0.44638368,
-                                                               0.46051575, -0.45749675, -0.49223528,  0.10912365,  0.02852944,
-                                                               0.22913152,  0.2233409 ,  0.17992362,  0.38852157,  0.2680352 ,
-                                                              -0.29578611, -0.02249967,  0.47978705, -0.46151168, -0.37382677,
-                                                              -0.02586793, -0.37537671 };
+    solverTools::floatVector previousPlasticMicroGradient = { -0.00180827, -0.00269321, -0.00372204,  0.00240335, -0.00461926,
+                                                               0.00117064,  0.00250045,  0.00061191,  0.00038711, -0.00446384,
+                                                               0.00460516, -0.00457497, -0.00492235,  0.00109124,  0.00028529,
+                                                               0.00229132,  0.00223341,  0.00179924,  0.00388522,  0.00268035,
+                                                              -0.00295786, -0.000225  ,  0.00479787, -0.00461512, -0.00373827,
+                                                              -0.00025868, -0.00375377 };
 
-    solverTools::floatVector previousPlasticMacroVelocityGradient = { 0.43884554, -0.96934646,  0.72794076,
-                                                                     -0.02038278, -0.06885291, -0.715859  ,
-                                                                     -0.9467196 ,  0.00411923,  0.87759064 };
+    solverTools::floatVector previousPlasticMacroVelocityGradient = {  2.19422772e-03, -4.84673232e-03,  3.63970379e-03,
+                                                                      -1.01913921e-04, -3.44264545e-04, -3.57929500e-03,
+                                                                      -4.73359799e-03,  2.05961538e-05,  4.38795320e-03 };
 
-    solverTools::floatVector previousPlasticMicroVelocityGradient = { 0.31654503,  0.02329911, -0.55124296,
-                                                                      0.46000208,  0.60515502, -0.17037691,
-                                                                      0.54751895, -0.60727845, -0.27784676 };
+    solverTools::floatVector previousPlasticMicroVelocityGradient = { 0.00158273,  0.0001165 , -0.00275621,
+                                                                      0.00230001,  0.00302578, -0.00085188,
+                                                                      0.00273759, -0.00303639, -0.00138923 };
 
-    solverTools::floatVector previousPlasticMicroGradientVelocityGradient = { 0.66755613,  0.57749383,  0.60722739,  0.76002978,
-                                                                             -0.35389018,  0.8540096 ,  0.53411477,  0.48798766,
-                                                                              0.29727961, -0.73172568,  0.19048298, -0.27021172,
-                                                                              0.29801442, -0.02477835,  0.56198429, -0.5792467 ,
-                                                                             -0.8379516 , -0.33952603,  0.09410075,  0.65083286,
-                                                                             -0.50023563, -0.84717415,  0.92822718,  0.69720235,
-                                                                              0.33343225, -0.56868387, -0.28581551 };
+    solverTools::floatVector previousPlasticMicroGradientVelocityGradient = { 0.00333778,  0.00288747,  0.00303614,  0.00380015,
+                                                                             -0.00176945,  0.00427005,  0.00267057,  0.00243994,
+                                                                              0.0014864 , -0.00365863,  0.00095241, -0.00135106,
+                                                                              0.00149007, -0.00012389,  0.00280992, -0.00289623,
+                                                                             -0.00418976, -0.00169763,  0.0004705 ,  0.00325416,
+                                                                             -0.00250118, -0.00423587,  0.00464114,  0.00348601,
+                                                                              0.00166716, -0.00284342, -0.00142908 };
 
     solverTools::floatType previousMacroStrainISV = 0.35364362717230047;
 
@@ -5179,11 +5178,11 @@ int test_computeResidual( std::ofstream &results ){
 
     solverTools::floatVector previousMicroGradientStrainISV = { 0.86263736, 0.18943229, 0.17855118 };
 
-    solverTools::floatType previousMacroGamma = 0.08485955888055519;
+    solverTools::floatType previousMacroGamma = 8.485955888055519e-07;
 
-    solverTools::floatType previousMicroGamma = 0.5234944962734851;
+    solverTools::floatType previousMicroGamma = 5.234944962734852e-06;
 
-    solverTools::floatVector previousMicroGradientGamma = { 0.5309917 , 0.21964468, 0.28903728 };
+    solverTools::floatVector previousMicroGradientGamma = { 5.30991705e-06, 2.19644682e-06, 2.89037284e-06 };
 
     solverTools::floatType previousdMacroGdMacroCohesion = 0.8269304350280192;
 
@@ -5455,20 +5454,21 @@ int test_computeResidual( std::ofstream &results ){
 
     solverTools::floatType alphaMicroGradient = 0.8003116264732453;
 
-    solverTools::floatVector currentElasticDeformationGradient = { 3.51530143,  4.00060421,  3.48896829,
-                                                                   1.21496753,  0.84194696, -1.4741083 ,
-                                                                  -3.96576805, -1.43538554, -3.2022917 };
+    solverTools::floatVector currentElasticDeformationGradient = { 1.00689861,  0.09224087,  0.21654602,
+                                                                   0.11113114,  0.75383361, -0.7106512 ,
+                                                                   0.13831688, -0.64454366, -0.74094417 };
 
-    solverTools::floatVector currentElasticMicroDeformation = { 2.61162049,  2.91754222,  1.56405467,
-                                                               -1.2969129 , -0.42451376, -1.32103819,
-                                                               -2.10823993, -0.41544862, -1.11729025 };
+    solverTools::floatVector currentElasticMicroDeformation = { 0.82618105, -0.01336797,  0.52899063,
+                                                                0.42643081, -0.61595002, -0.6270148 ,
+                                                               -0.39621571, -0.74087789,  0.53303634 };
 
-    solverTools::floatVector currentElasticMicroGradient = { 0.57638723, -0.70491838, -0.89893386,  0.51109206, -0.33479678,
-                                                            -0.6798894 , -0.72072599,  0.64061066,  0.08606407,  0.49182918,
-                                                             0.9965571 , -0.94313912,  0.51022677,  0.17163766, -0.00409244,
-                                                             0.30774521,  0.67929737,  0.7511899 ,  0.20174339, -0.33195694,
-                                                             0.54890613, -0.02038355,  0.13720231, -0.66893457, -0.13609295,
-                                                            -0.46115286,  0.5836855 };
+    solverTools::floatVector currentElasticMicroGradient = { 2.88193613e-03, -3.52459190e-03, -4.49466929e-03,  2.55546031e-03,
+                                                            -1.67398392e-03, -3.39944700e-03, -3.60362996e-03,  3.20305328e-03,
+                                                             4.30320373e-04,  2.45914590e-03,  4.98278548e-03, -4.71569558e-03,
+                                                             2.55113385e-03,  8.58188313e-04, -2.04621902e-05,  1.53872604e-03,
+                                                             3.39648683e-03,  3.75594952e-03,  1.00871697e-03, -1.65978469e-03,
+                                                             2.74453064e-03, -1.01917751e-04,  6.86011563e-04, -3.34467284e-03,
+                                                            -6.80464731e-04, -2.30576428e-03,  2.91842751e-03 };
 
     solverTools::floatVector currentPK2Stress = { 0.52380888, 0.21677263, 0.00070288,
                                                   0.23692701, 0.62366402, 0.61310665,
@@ -5491,20 +5491,21 @@ int test_computeResidual( std::ofstream &results ){
 
     solverTools::floatVector currentMicroGradientStrainISV = { 0.81024298, 0.06618223, 0.2580753 };
 
-    solverTools::floatVector currentPlasticDeformationGradient = { 0.30009171,  0.38627311,  0.88271028,
-                                                                  -2.91410793, -3.32044734, -2.71015022,
-                                                                  -0.41870408,  0.20286006, -1.73247111 };
+    solverTools::floatVector currentPlasticDeformationGradient = { -0.64232754,  0.76045526,  0.11740517,
+                                                                   -0.55963441, -0.37452247, -0.71437547,
+                                                                   -0.50872934, -0.50367488,  0.64971862 };
 
-    solverTools::floatVector currentPlasticMicroDeformation = { -2.01141525, -2.13825166,  0.18292485,
-                                                                 3.3412672 ,  2.33003682,  2.40018286,
-                                                                 1.69275375, -0.2060891 , -0.08297485 };
+    solverTools::floatVector currentPlasticMicroDeformation = { -0.73611818, -0.34637929,  0.66070056,
+                                                                 0.59650727,  0.21262375,  0.75061071,
+                                                                -0.37480155,  0.88808075, -0.00981704 };
 
-    solverTools::floatVector currentPlasticMicroGradient = { 0.50909221, 0.0024437 , 0.87536487, 0.43042343, 0.26721471,
-                                                             0.32615779, 0.37175055, 0.10419016, 0.02261482, 0.90056757,
-                                                             0.76059815, 0.93333684, 0.01890347, 0.12424935, 0.44126771,
-                                                             0.67629078, 0.13920899, 0.99507903, 0.46848931, 0.31338337,
-                                                             0.88429187, 0.27738708, 0.74751012, 0.60944075, 0.74349372,
-                                                             0.28709008, 0.1208852 };
+    solverTools::floatVector currentPlasticMicroGradient = { 9.09221091e-05, -4.97556298e-03,  3.75364875e-03, -6.95765698e-04,
+                                                            -2.32785285e-03, -1.73842209e-03, -1.28249451e-03, -3.95809840e-03,
+                                                            -4.77385177e-03,  4.00567574e-03,  2.60598145e-03,  4.33336843e-03,
+                                                            -4.81096527e-03, -3.75750650e-03, -5.87322930e-04,  1.76290780e-03,
+                                                            -3.60791005e-03,  4.95079033e-03, -3.15106866e-04, -1.86616625e-03,
+                                                             3.84291870e-03, -2.22612924e-03,  2.47510119e-03,  1.09440750e-03,
+                                                             2.43493719e-03, -2.12909924e-03, -3.79114796e-03 };
 
     solverTools::floatMatrix floatArgsDefault =
         {
@@ -5565,18 +5566,18 @@ int test_computeResidual( std::ofstream &results ){
 
     variableVector x = vectorTools::appendVectors( { gammas, ses, ls } );
 
-    variableVector answerResidual = { 15980.2, 32017.2, 4458.34, 4987.47, 4457.51,
+    variableVector answerResidual = { 3.77092, 8.0997, 10.3146, 16.7308, 26.2027,
                                       ls[ 0 ] * gammas[ 0 ], ls[ 1 ] * gammas[ 1 ], ls[ 2 ] * gammas[ 2 ],
                                       ls[ 3 ] * gammas[ 3 ], ls[ 4 ] * gammas[ 4 ],
                                       ls[ 0 ] * ses[ 0 ], ls[ 1 ] * ses[ 1 ], ls[ 2 ] * ses[ 2 ],
                                       ls[ 3 ] * ses[ 3 ], ls[ 4 ] * ses[ 4 ] };
 
-    variableVector answerElasticMicroGradient = { -1.03948748, -3.2292752 , -0.24518456, -2.80505954, -1.18940537,
-                                                  -3.12478355, -3.50154188, -1.78701019, -0.37257837,  0.87726881,
-                                                  -4.7908974 ,  0.94480142, -4.41796978, -0.25630004, -2.081208  ,
-                                                   0.15217936,  1.0035593 ,  1.94069477, -0.73752384,  1.18384878,
-                                                  -3.2226185 , -3.12898125,  1.13078652,  0.17842404, -1.21578227,
-                                                  -4.02403153, -2.73316293 };
+    variableVector answerElasticMicroGradient = { 0.19740483,  0.17269619, -0.3678423 ,  0.08953459, -0.1405664 ,
+                                                 -0.18935258,  0.18035407,  0.24419328,  0.39392356,  0.67019271,
+                                                 -0.26558889, -0.08769537,  0.46701901,  0.07696557,  0.09980104,
+                                                  0.2731155 , -0.10287654,  0.1019402 , -0.47220379, -0.09295431,
+                                                  0.33946221, -0.3351329 ,  0.35476669, -0.6010457 ,  0.30065071,
+                                                 -0.03147447, -0.00606308 };
 
     variableVector resultResidual;
     solverTools::floatMatrix floatArgs = floatArgsDefault;
@@ -5690,7 +5691,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentMacroStrainISV" )->second;
         M = DEBUG_M.find( "currentMacroStrainISV" )->second;
         solverTools::floatVector gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol: "; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5706,7 +5706,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentMicroStrainISV" )->second;
         M = DEBUG_M.find( "currentMicroStrainISV" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol: "; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5724,7 +5723,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentMicroGradientStrainISV" )->second;
         M = DEBUG_M.find( "currentMicroGradientStrainISV" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol: "; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5742,7 +5740,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentMacroCohesion_2" )->second;
         M = DEBUG_M.find( "currentMacroCohesion_2" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol: "; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5760,7 +5757,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentMicroCohesion_2" )->second;
         M = DEBUG_M.find( "currentMicroCohesion_2" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5778,7 +5774,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentMicroGradientCohesion_2" )->second;
         M = DEBUG_M.find( "currentMicroGradientCohesion_2" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5796,7 +5791,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentPlasticMacroVelocityGradient" )->second;
         M = DEBUG_M.find( "currentPlasticMacroVelocityGradient" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5814,7 +5808,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentPlasticMicroVelocityGradient" )->second;
         M = DEBUG_M.find( "currentPlasticMicroVelocityGradient" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
@@ -5827,7 +5820,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentPlasticMicroGradientVelocityGradient" )->second;
         M = DEBUG_M.find( "currentPlasticMicroGradientVelocityGradient" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5845,7 +5837,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentPlasticDeformationGradient" )->second;
         M = DEBUG_M.find( "currentPlasticDeformationGradient" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5863,7 +5854,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentPlasticMicroDeformation" )->second;
         M = DEBUG_M.find( "currentPlasticMicroDeformation" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5881,7 +5871,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentPlasticMicroGradient" )->second;
         M = DEBUG_M.find( "currentPlasticMicroGradient" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5899,7 +5888,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentElasticDeformationGradient" )->second;
         M = DEBUG_M.find( "currentElasticDeformationGradient" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5917,7 +5905,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentElasticMicroDeformation" )->second;
         M = DEBUG_M.find( "currentElasticMicroDeformation" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5935,7 +5922,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentElasticMicroGradient" )->second;
         M = DEBUG_M.find( "currentElasticMicroGradient" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5953,7 +5939,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentElasticRightCauchyGreen_2" )->second;
         M = DEBUG_M.find( "currentElasticRightCauchyGreen_2" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5971,7 +5956,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentPK2Stress" )->second;
         M = DEBUG_M.find( "currentPK2Stress" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -5989,7 +5973,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentReferenceMicroStress" )->second;
         M = DEBUG_M.find( "currentReferenceMicroStress" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -6007,7 +5990,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "currentReferenceHigherOrderStress" )->second;
         M = DEBUG_M.find( "currentReferenceHigherOrderStress" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -6025,7 +6007,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "macroYieldFunction" )->second;
         M = DEBUG_M.find( "macroYieldFunction" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -6043,7 +6024,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "microYieldFunction" )->second;
         M = DEBUG_M.find( "microYieldFunction" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -6061,7 +6041,6 @@ int test_computeResidual( std::ofstream &results ){
         P = DEBUG_P.find( "microGradientYieldFunction" )->second;
         M = DEBUG_M.find( "microGradientYieldFunction" )->second;
         gradCol = ( P - M ) / ( 2 * delta[ i ] );
-        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 
         if ( gradCol.size() == 0 ){
             std::cout << "Map error!\n";
@@ -6076,7 +6055,857 @@ int test_computeResidual( std::ofstream &results ){
             }
         }
     }
+
+    std::cout << "DEBUGGING micro Gamma derivatives\n";
+    for ( unsigned int i = 1; i < 2; i++ ){
+        solverTools::floatVector delta( x.size(), 0 );
+        delta[ i ] = eps * fabs( x[ i ] ) + eps;
+
+        solverTools::floatVector P, M;
+
+        floatArgs = floatArgsDefault;
+        floatOuts = floatOutsDefault;
+        std::map< std::string, solverTools::floatVector > DEBUG_P, DEBUG_M;
+        error = micromorphicElastoPlasticity::computeResidual( x + delta, floatArgs, intArgs, resultResidualJ,
+                                                               floatOuts, intOuts, DEBUG_P );
+
+        if ( error ){
+            error->print();
+            results << "test_computeResidual & False\n";
+            return 1;
+        }
+
+        floatArgs = floatArgsDefault;
+        floatOuts = floatOutsDefault;
+        error = micromorphicElastoPlasticity::computeResidual( x - delta, floatArgs, intArgs, resultResidualJ,
+                                                               floatOuts, intOuts, DEBUG_M );
+    
+        if ( error ){
+            error->print();
+            results << "test_computeResidual & False\n";
+            return 1;
+        }
+
+        P = DEBUG_P.find( "currentMacroStrainISV" )->second;
+        M = DEBUG_M.find( "currentMacroStrainISV" )->second;
+        solverTools::floatVector gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            std::cerr << "ERROR: dCurrentMacroISVdCurrentMicroGamma is not consistent!\n";
+            std::cerr << "result: "; vectorTools::print( gradCol );
+            std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+        }
+
+        P = DEBUG_P.find( "currentMicroStrainISV" )->second;
+        M = DEBUG_M.find( "currentMicroStrainISV" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dCurrentMicroISVdCurrentMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dCurrentMicroISVdCurrentMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: " << 0 << "\n";
+            }
+        }
+
+        P = DEBUG_P.find( "currentMicroGradientStrainISV" )->second;
+        M = DEBUG_M.find( "currentMicroGradientStrainISV" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dCurrentMicroISVdCurrentMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: " << 0 << "\n";
+            }
+        }
+
+        P = DEBUG_P.find( "currentMacroCohesion_2" )->second;
+        M = DEBUG_M.find( "currentMacroCohesion_2" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dMacroCdMicroGamma_2 is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMacroCdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentMicroCohesion_2" )->second;
+        M = DEBUG_M.find( "currentMicroCohesion_2" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMicroCdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dMicroCdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMicroCdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentMicroGradientCohesion_2" )->second;
+        M = DEBUG_M.find( "currentMicroGradientCohesion_2" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dMicroGradientCdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticMacroVelocityGradient" )->second;
+        M = DEBUG_M.find( "currentPlasticMacroVelocityGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMacroLpdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dMacroLpdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMacroLpdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticMicroVelocityGradient" )->second;
+        M = DEBUG_M.find( "currentPlasticMicroVelocityGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMicroLpdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dMicroLpdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMicroLpdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticMicroGradientVelocityGradient" )->second;
+        M = DEBUG_M.find( "currentPlasticMicroGradientVelocityGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMicroGradientLpdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dPlasticMicroGradientVelocityGradientdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMicroGradientLpdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticDeformationGradient" )->second;
+        M = DEBUG_M.find( "currentPlasticDeformationGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dPlasticFpdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dPlasticFpdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dPlasticFpdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticMicroDeformation" )->second;
+        M = DEBUG_M.find( "currentPlasticMicroDeformation" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dPlasticMicroDeformationdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dPlasticMicroDeformationdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dPlasticMicroDeformationdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticMicroGradient" )->second;
+        M = DEBUG_M.find( "currentPlasticMicroGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dPlasticMicroGradientdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dPlasticMicroGradientdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dPlasticMicroGradientdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentElasticDeformationGradient" )->second;
+        M = DEBUG_M.find( "currentElasticDeformationGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dElasticFdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dElasticFdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dElasticFdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentElasticMicroDeformation" )->second;
+        M = DEBUG_M.find( "currentElasticMicroDeformation" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dElasticChidMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dElasticChidMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dElasticChidMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentElasticMicroGradient" )->second;
+        M = DEBUG_M.find( "currentElasticMicroGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dElasticGradChidMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dElasticGradChidMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dElasticGradChidMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentElasticRightCauchyGreen_2" )->second;
+        M = DEBUG_M.find( "currentElasticRightCauchyGreen_2" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dElasticRCGdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dElasticRCGdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dElasticRCGdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPK2Stress" )->second;
+        M = DEBUG_M.find( "currentPK2Stress" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dPK2dMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dPK2dMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dPK2dMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentReferenceMicroStress" )->second;
+        M = DEBUG_M.find( "currentReferenceMicroStress" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dSigmadMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dSigmadMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dSigmadMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentReferenceHigherOrderStress" )->second;
+        M = DEBUG_M.find( "currentReferenceHigherOrderStress" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dMdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "macroYieldFunction" )->second;
+        M = DEBUG_M.find( "macroYieldFunction" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMacroFdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dMacroFdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMacroFdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "microYieldFunction" )->second;
+        M = DEBUG_M.find( "microYieldFunction" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMicroFdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dMicroFdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMicroFdMicroGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "microGradientYieldFunction" )->second;
+        M = DEBUG_M.find( "microGradientYieldFunction" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMicroGradientFdMicroGamma" ][ j ] ) ){
+                std::cerr << "ERROR: dMicroGradientFdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMicroGradientFdMicroGamma" ] );
+            }
+        }
+    }
+
+    std::cout << "DEBUGGING micro gradient gamma derivatives\n";
+    for ( unsigned int i = 2; i < 5; i++ ){
+        solverTools::floatVector delta( x.size(), 0 );
+        delta[ i ] = eps * fabs( x[ i ] ) + eps;
+
+        solverTools::floatVector P, M;
+
+        floatArgs = floatArgsDefault;
+        floatOuts = floatOutsDefault;
+        std::map< std::string, solverTools::floatVector > DEBUG_P, DEBUG_M;
+        error = micromorphicElastoPlasticity::computeResidual( x + delta, floatArgs, intArgs, resultResidualJ,
+                                                               floatOuts, intOuts, DEBUG_P );
+
+        if ( error ){
+            error->print();
+            results << "test_computeResidual & False\n";
+            return 1;
+        }
+
+        floatArgs = floatArgsDefault;
+        floatOuts = floatOutsDefault;
+        error = micromorphicElastoPlasticity::computeResidual( x - delta, floatArgs, intArgs, resultResidualJ,
+                                                               floatOuts, intOuts, DEBUG_M );
+    
+        if ( error ){
+            error->print();
+            results << "test_computeResidual & False\n";
+            return 1;
+        }
+
+        P = DEBUG_P.find( "currentMacroStrainISV" )->second;
+        M = DEBUG_M.find( "currentMacroStrainISV" )->second;
+        solverTools::floatVector gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        if ( !vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
+            std::cerr << "ERROR: dCurrentMacroISVdCurrentMicroGradientGamma is not consistent!\n";
+            std::cerr << "result: "; vectorTools::print( gradCol );
+            std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+        }
+
+        P = DEBUG_P.find( "currentMicroStrainISV" )->second;
+        M = DEBUG_M.find( "currentMicroStrainISV" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dCurrentMicroISVdCurrentMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentMicroGradientStrainISV" )->second;
+        M = DEBUG_M.find( "currentMicroGradientStrainISV" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dCurrentMicroGradISVdCurrentMicroGradGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dCurrentMicroISVdCurrentMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer:\n"; vectorTools::print( DEBUG_JACOBIAN[ "dCurrentMicroGradISVdCurrentMicroGradGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentMacroCohesion_2" )->second;
+        M = DEBUG_M.find( "currentMacroCohesion_2" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dMacroCdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentMicroCohesion_2" )->second;
+        M = DEBUG_M.find( "currentMicroCohesion_2" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dMicroGradientCdMicroGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentMicroGradientCohesion_2" )->second;
+        M = DEBUG_M.find( "currentMicroGradientCohesion_2" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMicroGradientCdMicroGadientGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dMicroCdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMicroGradientCdMicroGadientGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticMacroVelocityGradient" )->second;
+        M = DEBUG_M.find( "currentPlasticMacroVelocityGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dMacroLpdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticMicroVelocityGradient" )->second;
+        M = DEBUG_M.find( "currentPlasticMicroVelocityGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dMicroLpdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticMicroGradientVelocityGradient" )->second;
+        M = DEBUG_M.find( "currentPlasticMicroGradientVelocityGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMicroGradientLpdMicroGradientGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dPlasticMicroGradientVelocityGradientdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMicroGradientLpdMicroGradientGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticDeformationGradient" )->second;
+        M = DEBUG_M.find( "currentPlasticDeformationGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dPlasticFpdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticMicroDeformation" )->second;
+        M = DEBUG_M.find( "currentPlasticMicroDeformation" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dPlasticMicroDeformationdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPlasticMicroGradient" )->second;
+        M = DEBUG_M.find( "currentPlasticMicroGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dPlasticMicroGradientdMicroGradientGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dPlasticMicroGradientdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dPlasticMicroGradientdMicroGradientGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentElasticDeformationGradient" )->second;
+        M = DEBUG_M.find( "currentElasticDeformationGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dElasticFdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentElasticMicroDeformation" )->second;
+        M = DEBUG_M.find( "currentElasticMicroDeformation" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dElasticChidMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentElasticMicroGradient" )->second;
+        M = DEBUG_M.find( "currentElasticMicroGradient" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dElasticGradChidMicroGradientGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dElasticGradChidMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dElasticGradChidMicroGradientGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentElasticRightCauchyGreen_2" )->second;
+        M = DEBUG_M.find( "currentElasticRightCauchyGreen_2" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                std::cerr << "ERROR: dElasticRCGdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( variableVector( gradCol.size(), 0 ) );
+            }
+        }
+
+        P = DEBUG_P.find( "currentPK2Stress" )->second;
+        M = DEBUG_M.find( "currentPK2Stress" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dPK2dMicroGradientGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dPK2dMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dPK2dMicroGradientGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentReferenceMicroStress" )->second;
+        M = DEBUG_M.find( "currentReferenceMicroStress" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dSigmadMicroGradientGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dSigmadMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dSigmadMicroGradientGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "currentReferenceHigherOrderStress" )->second;
+        M = DEBUG_M.find( "currentReferenceHigherOrderStress" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMdMicroGradientGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dMdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMdMicroGradientGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "macroYieldFunction" )->second;
+        M = DEBUG_M.find( "macroYieldFunction" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMacroFdMicroGradientGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dMacroFdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMacroFdMicroGradientGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "microYieldFunction" )->second;
+        M = DEBUG_M.find( "microYieldFunction" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMicroFdMicroGradientGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dMicroFdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMicroFdMicroGradientGamma" ] );
+            }
+        }
+
+        P = DEBUG_P.find( "microGradientYieldFunction" )->second;
+        M = DEBUG_M.find( "microGradientYieldFunction" )->second;
+        gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        if ( gradCol.size() == 0 ){
+            std::cout << "Map error!\n";
+            assert( 1 == 0 );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DEBUG_JACOBIAN[ "dMicroGradientFdMicroGradientGamma" ][ 3 * j + i - 2 ] ) ){
+                std::cerr << "ERROR: dMicroGradientFdMicroGradientGamma is not consistent!\n";
+                std::cerr << "result: "; vectorTools::print( gradCol );
+                std::cerr << "answer: "; vectorTools::print( DEBUG_JACOBIAN[ "dMicroGradientFdMicroGradientGamma" ] );
+            }
+        }
+    }
     #endif
+
+    for ( unsigned int i = 0; i < x.size(); i++ ){
+
+        constantVector delta( x.size(), 0 );
+        delta[ i ] = eps * fabs( x[ i ] ) + eps;
+
+        solverTools::floatVector P, M;
+
+        floatArgs = floatArgsDefault;
+        floatOuts = floatOutsDefault;
+
+        #ifdef DEBUG_MODE
+        std::map< std::string, solverTools::floatVector > DEBUG_P, DEBUG_M;
+        error = micromorphicElastoPlasticity::computeResidual( x + delta, floatArgs, intArgs, P,
+                                                               floatOuts, intOuts, DEBUG_P );
+        #else
+        error = micromorphicElastoPlasticity::computeResidual( x + delta, floatArgs, intArgs, P,
+                                                               floatOuts, intOuts );
+        #endif
+
+        if ( error ){
+            error->print();
+            results << "test_computeResidual & False\n";
+            return 1;
+        }
+
+        floatArgs = floatArgsDefault;
+        floatOuts = floatOutsDefault;
+        #ifdef DEBUG_MODE
+        error = micromorphicElastoPlasticity::computeResidual( x - delta, floatArgs, intArgs, M,
+                                                               floatOuts, intOuts, DEBUG_M );
+        #else
+        error = micromorphicElastoPlasticity::computeResidual( x - delta, floatArgs, intArgs, M,
+                                                               floatOuts, intOuts );
+        #endif
+    
+        if ( error ){
+            error->print();
+            results << "test_computeResidual & False\n";
+            return 1;
+        }
+
+        solverTools::floatVector gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ] ) ){
+                std::cout << "i, j: " << i << ", " << j << "\n";
+                std::cout << "numeric:\n"; vectorTools::print( gradCol );
+                std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+                results << "test_computeResidual (test 9) & False\n";
+                return 1;
+            }
+        }
+    }
 
     results << "test_computeResidual & True\n";
     return 0;
