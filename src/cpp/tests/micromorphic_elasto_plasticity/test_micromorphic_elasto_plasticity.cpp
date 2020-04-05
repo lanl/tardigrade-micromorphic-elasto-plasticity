@@ -4281,7 +4281,6 @@ int test_evolveStrainStateVariables( std::ofstream &results){
         }
     }
 
-    std::cerr << "exiting test of strain state variables\n";
     results << "test_evolveStrainStateVariables & True\n";
     return 0;
 }
@@ -5582,7 +5581,6 @@ int test_computeResidual( std::ofstream &results ){
     variableVector resultResidual;
     solverTools::floatMatrix floatArgs = floatArgsDefault;
     solverTools::floatMatrix floatOuts = floatOutsDefault;
-    std::cout << "entering no-jacobian residual\n";
     #ifdef DEBUG_MODE
     std::map< std::string, solverTools::floatVector > DEBUG;
     errorOut error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, resultResidual, floatOuts, intOuts, DEBUG );
@@ -5622,7 +5620,6 @@ int test_computeResidual( std::ofstream &results ){
     floatOuts = floatOutsDefault;
     solverTools::floatMatrix jacobian;
 
-    std::cerr<< "entering jacobian residual\n";
     #ifdef DEBUG_MODE
     error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, resultResidualJ,
                                                            jacobian, floatOuts, intOuts, DEBUG );
@@ -5668,7 +5665,7 @@ int test_computeResidual( std::ofstream &results ){
         floatArgs = floatArgsDefault;
         floatOuts = floatOutsDefault;
         error = micromorphicElastoPlasticity::computeResidual( x + delta, floatArgs, intArgs, resultResidualJ,
-                                                               jacobian, floatOuts, intOuts, DEBUG );
+                                                               floatOuts, intOuts, DEBUG );
 
 //        P = DEBUG[""];
     

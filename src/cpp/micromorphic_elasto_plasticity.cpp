@@ -3694,13 +3694,11 @@ namespace micromorphicElastoPlasticity{
         variableVector currentMicroGradientGamma( x.begin() + 2, x.begin() + 5 );
 
         //Compute the cohesions
-        std::cout << "compute the cohesions\n";
         variableType currentMacroCohesion = ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] * * currentMacroStrainISV;
         variableType currentMicroCohesion = ( *microHardeningParameters )[ 0 ] + ( *microHardeningParameters )[ 1 ] * * currentMicroStrainISV;
         variableVector currentMicroGradientCohesion = ( *microGradientHardeningParameters )[ 0 ] + ( *microGradientHardeningParameters )[ 1 ] * * currentMicroGradientStrainISV;
 
         //Compute the elastic deformation measures
-        std::cout << "compute the elastic deformation measures\n";
         variableVector currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen, currentElasticPsi, currentElasticGamma;
 
         errorOut error = computeElasticDeformationMeasures( *currentElasticDeformationGradient, *currentElasticMicroDeformation,
@@ -3716,7 +3714,6 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the Flow directions
-        std::cout << "compute the flow directions\n";
         variableVector currentMacroFlowDirection, currentMicroFlowDirection, currentMicroGradientFlowDirection;
         variableType currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion;
         variableMatrix currentdMicroGradientGdMicroGradientCohesion;
@@ -3736,7 +3733,6 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Evolve the strain-like ISVs
-        std::cout << "compute the strain like ISVs\n";
         variableType dCurrentMacroISVdCurrentMacroGamma, dCurrentMicroISVdCurrentMicroGamma;
         variableMatrix dCurrentMicroGradISVdCurrentMicroGradGamma;
 
@@ -3764,8 +3760,16 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        #ifdef DEBUG_MODE
+            solverTools::floatVector tmp = { dCurrentMacroISVdCurrentMacroGamma };
+            DEBUG.emplace( "dCurrentMacroISVdCurrentMacroGamma", tmp );
+            tmp = { dCurrentMicroISVdCurrentMicroGamma };
+            DEBUG.emplace( "dCurrentMicroISVdCurrentMicroGAmma", tmp );
+            DEBUG.emplace( "dCurrentMicroGradISVdCurrentMicroGradGamma",
+                           vectorTools::appendVectors( dCurrentMicroGradISVdCurrentMicroGradGamma ) );
+        #endif
+
         //Compute the new cohesion values
-        std::cout << "compute the new cohesion values\n";
         currentMacroCohesion = ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] * * currentMacroStrainISV;
         currentMicroCohesion = ( *microHardeningParameters )[ 0 ] + ( *microHardeningParameters )[ 1 ] * * currentMicroStrainISV;
         currentMicroGradientCohesion = ( *microGradientHardeningParameters )[ 0 ] + ( *microGradientHardeningParameters )[ 1 ] * * currentMicroGradientStrainISV;
@@ -3774,9 +3778,16 @@ namespace micromorphicElastoPlasticity{
         variableType dMacroCdMacroGamma = ( *macroHardeningParameters )[ 1 ] * dCurrentMacroISVdCurrentMacroGamma;
         variableType dMicroCdMicroGamma = ( *microHardeningParameters )[ 1 ] * dCurrentMicroISVdCurrentMicroGamma;
         variableMatrix dMicroGradientCdMicroGradientGamma = ( *microGradientHardeningParameters )[ 1 ] * vectorTools::eye< variableType >( 3 );
+        #ifdef DEBUG_MODE
+            tmp = { dMacroCdMacroGamma };
+            DEBUG.emplace( "dMacroCdMacroGamma", tmp );
+            tmp = { dMicroCdMicroGamma };
+            DEBUG.emplace( "dMicroCdMicroGamma", tmp );
+            DEBUG.emplace( "dMicroGradientCdMicroGadientGamma",
+                           vectorTools::appendVectors( dMicroGradientCdMicroGradientGamma ) );
+        #endif
 
         //Compute the new plastic velocity gradients
-        std::cout << "compute the new plastic velocity gradients\n";
         variableVector currentPlasticMacroVelocityGradient, currentPlasticMicroVelocityGradient,
                        currentPlasticMicroGradientVelocityGradient;
 
@@ -3801,8 +3812,16 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "dMacroLpdMacroGamma", dMacroLpdMacroGamma );
+            DEBUG.emplace( "dMacroLpdMicroGamma", dMacroLpdMicroGamma );
+            DEBUG.emplace( "dMicroLpdMicroGamma", dMicroLpdMicroGamma );
+            DEBUG.emplace( "dMicroGradientLpdMicroGamma", dMicroGradientLpdMicroGamma );
+            DEBUG.emplace( "dMicroGradientLpdMicroGradientGamma",
+                           vectorTools::appendVectors( dMicroGradientLpdMicroGradientGamma ) );
+        #endif
+
         //Compute the new plastic deformation
-        std::cout << "compute the new plastic deformation\n";
         
         variableMatrix dPlasticFdPlasticMacroL, dPlasticMicroDeformationdPlasticMicroL, dPlasticMicroGradientdPlasticMacroL,
                        dPlasticMicroGradientdPlasticMicroL, dPlasticMicroGradientdPlasticMicroGradientL;
@@ -3838,8 +3857,17 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dPlasticMicroGradientdMicroGradientGamma = vectorTools::dot( dPlasticMicroGradientdPlasticMicroGradientL,
                                                                                     dMicroGradientLpdMicroGradientGamma );
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "dPlasticFpdMacroGamma", dPlasticFpdMacroGamma );
+            DEBUG.emplace( "dPlasticFpdMicroGamma", dPlasticFpdMicroGamma );
+            DEBUG.emplace( "dPlasticMicroDeformationdMicroGamma", dPlasticMicroDeformationdMicroGamma );
+            DEBUG.emplace( "dPlasticMicroGradientdMacroGamma", dPlasticMicroGradientdMacroGamma );
+            DEBUG.emplace( "dPlasticMicroGradientdMicroGamma", dPlasticMicroGradientdMicroGamma );
+            DEBUG.emplace( "dPlasticMicroGradientdMicroGradientGamma",
+                           vectorTools::appendVectors( dPlasticMicroGradientdMicroGradientGamma ) );
+        #endif
+
         //Compute the new elastic deformation
-        std::cout << "compute the new elastic deformation\n";
 
         variableMatrix dElasticFdF, dElasticFdPlasticF, dElasticChidChi, dElasticChidPlasticChi, dElasticGradChidGradChi,
                        dElasticGradChidPlasticGradChi, dElasticGradChidPlasticF, dElasticGradChidChi, dElasticGradChidPlasticChi;
@@ -3871,8 +3899,17 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dElasticGradChidMicroGradientGamma = vectorTools::dot( dElasticGradChidPlasticGradChi,
                                                                               dPlasticMicroGradientdMicroGradientGamma );
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "dElasticFdMacroGamma", dElasticFdMacroGamma );
+            DEBUG.emplace( "dElasticFdMicroGamma", dElasticFdMicroGamma );
+            DEBUG.emplace( "dElasticChidMicroGamma", dElasticChidMicroGamma );
+            DEBUG.emplace( "dElasticGradChidMacroGamma", dElasticGradChidMacroGamma );
+            DEBUG.emplace( "dElasticGradChidMicroGamma", dElasticGradChidMicroGamma );
+            DEBUG.emplace( "dElasticGradChidMicroGradientGamma",
+                           vectorTools::appendVectors( dElasticGradChidMicroGradientGamma ) );
+        #endif
+
         //Compute the new elastic right Cauchy-Green deformation tesnor
-        std::cout << "compute the new elastic right Cauchy-Green deformation tensor\n";
         variableMatrix dElasticRCGdElasticF;
         error = constitutiveTools::computeRightCauchyGreen( *currentElasticDeformationGradient,
                                                             currentElasticRightCauchyGreen,
@@ -3889,8 +3926,12 @@ namespace micromorphicElastoPlasticity{
         variableVector dElasticRCGdMacroGamma = vectorTools::Tdot( dElasticRCGdElasticF, dElasticFdMacroGamma );
         variableVector dElasticRCGdMicroGamma = vectorTools::Tdot( dElasticRCGdElasticF, dElasticFdMicroGamma );
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "dElasticRCGdMacroGamma", dElasticRCGdMacroGamma );
+            DEBUG.emplace( "dElasticRCGdMicroGamma", dElasticRCGdMicroGamma );
+        #endif
+
         //Compute the new stress
-        std::cout << "compute the new stress\n";
 
         variableMatrix dPK2StressdElasticF, dPK2StressdElasticChi, dPK2StressdElasticGradChi;
         variableMatrix dSigmadElasticF, dSigmadElasticChi, dSigmadElasticGradChi;
@@ -3935,8 +3976,21 @@ namespace micromorphicElastoPlasticity{
                                      + vectorTools::dot( dMdElasticGradChi, dElasticGradChidMicroGamma );
         variableMatrix dMdMicroGradientGamma = vectorTools::dot( dMdElasticGradChi, dElasticGradChidMicroGradientGamma );
 
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "dPK2dMacroGamma", dPK2dMacroGamma );
+            DEBUG.emplace( "dPK2dMicroGamma", dPK2dMicroGamma );
+            DEBUG.emplace( "dPK2dMicroGradientGamma", vectorTools::appendVectors( dPK2dMicroGradientGamma ) );
+
+            DEBUG.emplace( "dSigmadMacroGamma", dSigmadMacroGamma );
+            DEBUG.emplace( "dSigmadMicroGamma", dSigmadMicroGamma );
+            DEBUG.emplace( "dSigmadMicroGradientGamma", vectorTools::appendVectors( dSigmadMicroGradientGamma ) );
+
+            DEBUG.emplace( "dMdMacroGamma", dMdMacroGamma );
+            DEBUG.emplace( "dMdMicroGamma", dMdMicroGamma );
+            DEBUG.emplace( "dMdMicroGradientGamma", vectorTools::appendVectors( dMdMicroGradientGamma ) );
+        #endif
+
         //Compute the yield functions
-        std::cout << "compute the yield functions\n";
         variableVector yieldFunctionValues( 5, 0 );
 
         variableVector dMacroFdPK2, dMicroFdSigma;
@@ -4021,8 +4075,27 @@ namespace micromorphicElastoPlasticity{
                                                           + vectorTools::dot( dMicroGradientFdMicroGradientC,
                                                                               dMicroGradientCdMicroGradientGamma );
 
+        #ifdef DEBUG_MODE
+            tmp = { dMacroFdMacroGamma };
+            DEBUG.emplace( "dMacroFdMacroGamma", tmp );
+            tmp = { dMacroFdMicroGamma };
+            DEBUG.emplace( "dMacroFdMicroGamma", tmp );
+            DEBUG.emplace( "dMacroFdMicroGradientGamma", dMacroFdMicroGradientGamma );
+
+            tmp = { dMicroFdMacroGamma };
+            DEBUG.emplace( "dMicroFdMacroGamma", tmp );
+            tmp = { dMicroFdMicroGamma };
+            DEBUG.emplace( "dMicroFdMicroGamma", tmp );
+            DEBUG.emplace( "dMicroFdMicroGradientGamma", dMicroFdMicroGradientGamma );
+
+
+            DEBUG.emplace( "dMicroGradientFdMacroGamma", dMicroGradientFdMacroGamma );
+            DEBUG.emplace( "dMicroGradientFdMicroGamma", dMicroGradientFdMicroGamma );
+            DEBUG.emplace( "dMicroGradientFdMicroGradientGamma",
+                           vectorTools::appendVectors( dMicroGradientFdMicroGradientGamma ) );
+        #endif
+
         //Assemble the residual
-        std::cout << "assemble the residual\n";
         residual = solverTools::floatVector( x.size(), 0 );
 
         //The plastic multipliers must be zero if they are not on the yield surface
@@ -4049,7 +4122,6 @@ namespace micromorphicElastoPlasticity{
         residual[ 14 ] = x[ 9 ] * x[ 14 ];
 
         //Assemble the Jacobian
-        std::cout << "assemble the jacobian\n";
         jacobian = solverTools::floatMatrix( 15, solverTools::floatVector( 15, 0 ) );
 
         jacobian[ 0 ][ 0 ] = dMacroFdMacroGamma;
