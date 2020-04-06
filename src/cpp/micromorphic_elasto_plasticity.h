@@ -390,6 +390,21 @@ namespace micromorphicElastoPlasticity{
                                     variableMatrix &dMicroGradientFlowDirectiondElasticRCG );
 
     #ifdef DEBUG_MODE
+    errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                     const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
+                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues,
+                                     std::map< std::string, solverTools::floatVector > &DEBUG );
+    #else
+    errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                     const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
+                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues );
+    #endif
+
+    #ifdef DEBUG_MODE
     errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                               solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts,
@@ -410,6 +425,60 @@ namespace micromorphicElastoPlasticity{
                               solverTools::floatMatrix &jacobian,
                               solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts );
     #endif
+
+    errorOut extractMaterialParameters( std::vector< double > &fparams,
+                                        variableVector &macroHardeningParameters, variableVector &microHardeningParameters,
+                                        variableVector &microGradientHardeningParameters,
+                                        variableVector &macroFlowParameters, variableVector &microFlowParameters,
+                                        variableVector &microGradientFlowParameters,
+                                        variableVector &macroYieldParameters, variableVector &microYieldParameters,
+                                        variableVector &microGradientYieldParameters,
+                                        variableVector &Amatrix, variableVector &Bmatrix,
+                                        variableVector &Cmatrix, variableVector &Dmatrix,
+                                        constantType &alphaMacro, constantType &alphaMicro, constantType &alphaMicroGradient,
+                                        constantType &relativeTolerance, constantType &absoluteTolerance );
+
+    errorOut extractStateVariables( std::vector< double > &SDVS,
+                                    variableType &previousMacroStrainISV, variableType &previousMicroStrainISV,
+                                    variableType &previousMicroGradientStrainISV,
+                                    variableType &previousMacroGamma, variableType &previousMicroGamma,
+                                    variableVector &previousMicroGradientGamma,
+                                    variableVector &previousPlasticDeformationGradient,
+                                    variableVector &previousPlasticMicroDeformation,
+                                    variableVector &previousPlasticMicroGradient );
+
+    int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
+                        const double ( &current_grad_u )[ 3 ][ 3 ],   const double ( &current_phi )[ 9 ],
+                        const double ( &current_grad_phi )[ 9 ][ 3 ], const double ( &previous_grad_u )[ 3 ][ 3 ],
+                        const double ( &previous_phi )[ 9 ],          const double ( &previous_grad_phi )[ 9 ][ 3 ],
+                        std::vector< double > &SDVS,
+                        const std::vector< double > &current_ADD_DOF,
+                        const std::vector< std::vector< double > > &current_ADD_grad_DOF,
+                        const std::vector< double > &previous_ADD_DOF,
+                        const std::vector< std::vector< double > > &previous_ADD_grad_DOF,
+                        std::vector< double > &PK2, std::vector< double > &SIGMA, std::vector< double > &M,
+                        std::vector< std::vector< double > > &ADD_TERMS,
+                        std::string &output_message );
+
+    int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
+                        const double ( &current_grad_u )[ 3 ][ 3 ],   const double ( &current_phi )[ 9 ],
+                        const double ( &current_grad_phi )[ 9 ][ 3 ], const double ( &previous_grad_u )[ 3 ][ 3 ],
+                        const double ( &previous_phi )[ 9 ],          const double ( &previous_grad_phi )[ 9 ][ 3 ],
+                        std::vector< double > &SDVS,
+                        const std::vector< double > &current_ADD_DOF,
+                        const std::vector< std::vector< double > > &current_ADD_grad_DOF,
+                        const std::vector< double > &previous_ADD_DOF,
+                        const std::vector< std::vector< double > > &previous_ADD_grad_DOF,
+                        std::vector< double > &PK2, std::vector< double > &SIGMA, std::vector< double > &M,
+                        std::vector< std::vector< double > > &DPK2Dgrad_u,   std::vector< std::vector< double > > &DPK2Dphi,
+                        std::vector< std::vector< double > > &DPK2Dgrad_phi,
+                        std::vector< std::vector< double > > &DSIGMADgrad_u, std::vector< std::vector< double > > &DSIGMADphi,
+                        std::vector< std::vector< double > > &DSIGMADgrad_phi,
+                        std::vector< std::vector< double > > &DMDgrad_u,     std::vector< std::vector< double > > &DMDphi,
+                        std::vector< std::vector< double > > &DMDgrad_phi,
+                        std::vector< std::vector< double > > &ADD_TERMS,
+                        std::vector< std::vector< std::vector< double > > > &ADD_JACOBIANS,
+                        std::string &output_message );
 }
 
 #endif

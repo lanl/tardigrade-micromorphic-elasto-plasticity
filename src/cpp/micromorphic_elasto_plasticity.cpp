@@ -9,6 +9,31 @@
 
 namespace micromorphicElastoPlasticity{
 
+    struct cout_redirect{
+        cout_redirect( std::streambuf * new_buffer)
+            : old( std::cout.rdbuf( new_buffer ) )
+        { }
+    
+        ~cout_redirect( ) {
+            std::cout.rdbuf( old );
+        }
+    
+        private:
+            std::streambuf * old;
+    };
+    
+    struct cerr_redirect{
+        cerr_redirect( std::streambuf * new_buffer)
+            : old( std::cerr.rdbuf( new_buffer ) )
+        { }
+    
+        ~cerr_redirect( ) {
+            std::cerr.rdbuf( old );
+        }
+    
+        private:
+            std::streambuf * old;
+    };
 
     errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
                                                            const variableVector &elasticRightCauchyGreen,
@@ -4194,5 +4219,558 @@ namespace micromorphicElastoPlasticity{
         jacobian[ 14 ][ 14 ] = x[ 9 ];
 
         return NULL;
+    }
+
+    int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
+                        const double ( &current_grad_u )[ 3 ][ 3 ],   const double ( &current_phi )[ 9 ],
+                        const double ( &current_grad_phi )[ 9 ][ 3 ], const double ( &previous_grad_u )[ 3 ][ 3 ],
+                        const double ( &previous_phi )[ 9 ],          const double ( &previous_grad_phi )[ 9 ][ 3 ],
+                        std::vector< double > &SDVS,
+                        const std::vector< double > &current_ADD_DOF,
+                        const std::vector< std::vector< double > > &current_ADD_grad_DOF,
+                        const std::vector< double > &previous_ADD_DOF,
+                        const std::vector< std::vector< double > > &previous_ADD_grad_DOF,
+                        std::vector< double > &current_PK2, std::vector< double > &current_SIGMA, std::vector< double > &current_M,
+                        std::vector< std::vector< double > > &ADD_TERMS
+                        std::string &output_message );
+        /*!
+         * Evaluate the elasto-plastic constitutive model. Note the format of the header changed to provide a 
+         * consistant interface with the material model library.
+         *
+         * :param const std::vector< double > &time: The current time and the timestep
+         *     [ current_t, dt ]
+         * :param const std::vector< double > ( &fparams ): The parameters for the constitutive model
+         *     [ num_Amatrix_parameters, Amatrix_parameters, num_Bmatrix_parameters, Bmatrix_parameters,
+         *       num_Cmatrix_parameters, Cmatrix_parameters, num_Dmatrix_parameters, Dmatrix_parameters,
+         *       num_macroHardeningParameters, macroHardeningParameters,
+         *       num_microHardeningParameters, microHardeningParameters,
+         *       num_microGradientHardeningParameters, microGradientHardeningParameters,
+         *       num_macroFlowParameters, macroFlowParameters,
+         *       num_microFlowParameters, microFlowParameters,
+         *       num_microGradientFlowParameters, microGradientFlowParameters,
+         *       num_macroYieldParameters, macroYieldParameters,
+         *       num_microYieldParameters, microYieldParameters,
+         *       num_microGradientYieldParameters, microGradientYieldParameters,
+         *       alphaMacro, alphaMicro, alphaMicroGradient,
+         *       relativeTolerance, absoluteTolerance ]
+         *
+         * :param const double ( &current_grad_u )[ 3 ][ 3 ]: The current displacement gradient
+         *     Assumed to be of the form [ [ u_{1,1}, u_{1,2}, u_{1,3} ],
+         *                                 [ u_{2,1}, u_{2,2}, u_{2,3} ],
+         *                                 [ u_{3,1}, u_{3,2}, u_{3,3} ] ]
+         * :param const double ( &current_phi )[ 9 ]: The current micro displacment values.
+         *     Assumed to be of the form [ \phi_{11}, \phi_{12}, \phi_{13}, \phi_{21}, \phi_{22}, \phi_{23}, \phi_{31}, \phi_{32}, \phi_{33} ]
+         * :param const double ( &current_grad_phi )[ 9 ][ 3 ]: The current micro displacement gradient
+         *     Assumed to be of the form [ [ \phi_{11,1}, \phi_{11,2}, \phi_{11,3} ],
+         *                                 [ \phi_{12,1}, \phi_{12,2}, \phi_{12,3} ],
+         *                                 [ \phi_{13,1}, \phi_{13,2}, \phi_{13,3} ],
+         *                                 [ \phi_{21,1}, \phi_{21,2}, \phi_{21,3} ],
+         *                                 [ \phi_{22,1}, \phi_{22,2}, \phi_{22,3} ],
+         *                                 [ \phi_{23,1}, \phi_{23,2}, \phi_{23,3} ],
+         *                                 [ \phi_{31,1}, \phi_{31,2}, \phi_{31,3} ],
+         *                                 [ \phi_{32,1}, \phi_{32,2}, \phi_{32,3} ],
+         *                                 [ \phi_{33,1}, \phi_{33,2}, \phi_{33,3} ] ]
+         * :param const double ( &previous_grad_u )[ 3 ][ 3 ]: The previous displacement gradient.
+         * :param const double ( &previous_phi )[ 9 ]: The previous micro displacement.
+         * :param const double ( &previous_grad_phi )[ 9 ][ 3 ]: The previous micro displacement gradient.
+         * :param std::vector< double > &SDVS: The previously converged values of the state variables
+         *     [ previousMacroStrainISV, previousMicroStrainISV, previousMicroGradientStrainISV,
+         *       previousMacroGamma, previousMicroGamma, previousMicroGradientGamma,
+         *       previousPlasticDeformationGradient - eye, previousPlasticMicroDeformation - eye,
+         *       previousPlasticMicroGradient ]
+         * :param std::vector< double > &current_ADD_DOF: The current values of the additional degrees of freedom ( unused )
+         * :param std::vector< std::vector< double > > &current_ADD_grad_DOF: The current values of the gradients of the 
+         *     additional degrees of freedom ( unused )
+         * :param std::vector< double > &current_PK2: The current value of the second Piola Kirchhoff stress tensor. The format is
+         *     [ S_{11}, S_{12}, S_{13}, S_{21}, S_{22}, S_{23}, S_{31}, S_{32}, S_{33} ]
+         * :param std::vector< double > &current_SIGMA: The current value of the reference micro stress. The format is
+         *     [ S_{11}, S_{12}, S_{13}, S_{21}, S_{22}, S_{23}, S_{31}, S_{32}, S_{33} ]
+         * :param std::vector< double > &current_M: The current value of the reference higher order stress. The format is
+         *     [ M_{111}, M_{112}, M_{113}, M_{121}, M_{122}, M_{123}, M_{131}, M_{132}, M_{133},
+         *       M_{211}, M_{212}, M_{213}, M_{221}, M_{222}, M_{223}, M_{231}, M_{232}, M_{233},
+         *       M_{311}, M_{312}, M_{313}, M_{321}, M_{322}, M_{323}, M_{331}, M_{332}, M_{333} ]
+         * :param std::vector< std::vector< double > > &ADD_TERMS: Additional terms ( unused )
+         * :param std::string &output_message: The output message string.
+         *
+         * Returns:
+         *     0: No errors. Solution converged.
+         *     1: Convergence Error. Request timestep cutback.
+         *     2: Fatal Errors encountered. Terminate the simulation.
+         */
+
+        //Assume 3D
+        unsigned int dim = 3;
+
+        //Construct identity matrix
+        constantVector eye( dim * dim );
+        vectorTools::eye( eye );
+
+        //Re-direct the output to a buffer
+        std::stringbuf buffer;
+        cerr_redirect rd( &buffer );
+
+        //Extract the time
+        if ( time.size() != 2 ){
+            errorOut result = new errorNode( "evaluate_model",
+                                             "The time vector is not of size 2" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message printing
+            return 2;
+        }
+
+        constantType T  = time[ 0 ];
+        constantType Dt = time[ 1 ];
+
+        //Extract the parameters
+        parameterVector macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters;
+        parameterVector macroFlowParameters, microFlowParameters, microGradientFlowParameters;
+        parameterVector macroYieldParameters, microYieldParameters, microGradientYieldParameters;
+        parameterType alphaMacro, alphaMicro, alphaMicroGradient;
+        parameterType relativeTolerance, absoluteTolerance;
+
+        errorOut error = extractMaterialParameters( fparams,
+                                                    macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
+                                                    macroFlowParameters, microFlowParameters, microGradientFlowParameters,
+                                                    macroYieldParameters, microYieldParameters, microGradientYieldParameters,
+                                                    Amatrix, Bmatrix, Cmatrix, Dmatrix, alphaMacro, alphaMicro, alphaMicroGradient,
+                                                    relativeTolerance, absoluteTolerance );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model",
+                                             "Error in the extraction of the material parameters" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message printing
+            return 2;
+        }
+
+        //Extract the state variables
+        variableType previousMacroStrainISV, previousMicroStrainISV;
+        variableVector previousMicroGradientStrainISV;
+
+        variableType previousMacroGamma, previousMicroGamma;
+        variableVector previousMicroGradientGamma;
+
+        variableVector previousPlasticDeformationGradient, previousPlasticMicroDeformation, previousPlasticMicroGradient;
+
+        error = extractStateVariables( SDVS,
+                                       previousMacroStrainISV, previousMicroStrainISV, previousMicroGradientStrainISV,
+                                       previousMacroGamma, previousMicroGamma, previousMicroGradientGamma,
+                                       previousPlasticDeformationGradient, previousPlasticMicroDeformation,
+                                       previousPlasticMicroGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model",
+                                             "Error in the extraction of the state variables" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message printing
+            return 2;
+        }
+
+        //Compute the fundamental deformation measures from the degrees of freedom
+        variableVector previousDeformationGradient, previousMicroDeformation, previousGradientMicroDeformation;
+
+        error = assembleFundamentalDeformationMeasures( previous_grad_u, previous_phi, previous_grad_phi,
+                                                        previousDeformationGradient, previousMicroDeformation,
+                                                        previousGradientMicroDeformation );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model",
+                                             "Error in the computation of the previous deformation measures" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message printing
+            return 2;
+        }
+
+        variableVector currentDeformationGradient, currentMicroDeformation, currentGradientMicroDeformation;
+
+        error = assembleFundamentalDeformationMeasures( current_grad_u, current_phi, current_grad_phi,
+                                                        currentDeformationGradient, currentMicroDeformation,
+                                                        currentGradientMicroDeformation );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model",
+                                             "Error in the computation of the current deformation measures" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message printing
+            return 2;
+        }
+
+        //Solve for the previous elastic deformation measures
+        error = computeElasticPartOfDeformation( previousDeformationGradient, previousMicroDeformation,
+                                                 previousGradientMicroDeformation, previousPlasticDeformationGradient,
+                                                 previousPlasticMicroDeformation, previousPlasticGradientMicroDeformation,
+                                                 previousElasticDeformationGradient, previousElasticMicroDeformation,
+                                                 previousElasticGradientMicroDeformation );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model",
+                                             "Error in the computation of the previous elastic deformation meaures" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message printing
+            return 2;
+        }
+
+        //Assume that the new plastic multipliers are zero
+        variableType currentMacroGamma = 0.;
+        variableType currentMicroGamma = 0.;
+        variableVector currentMicroGradientGammma( 3, 0. );
+
+        //Set the current plastic deformation to the previously converged values
+        variableVector currentPlasticDeformationGradient      = previousPlasticDeformationGradient;
+        variableVector currentPlasticMicroDeformation         = previousPlasticMicroDeformation;
+        variableVector currentPlasticGradientMicroDeformation = previousPlasticGradientMicroDeformation;
+
+        //Initialize the previous stresses. If the evolution of plastic strain was previously zero these won't matter
+        variableVector previousPK2Stress( dim * dim, 0 );
+        variableVector previousReferenceMicroStress( dim * dim, 0 );
+        variableVector previousReferenceHigherOrderStress( dim * dim * dim, 0 );
+
+        //Initialize previous elastic deformation measures. If the evolution of plastic strain was previously zero these won't matter
+        variableVector previousElasticRightCauchyGreen, previousMicroRightCauchyGreen, previousElasticPsi, previousElasticGamma;
+
+        //Initialize the previous elastic plastic flow directions. If the evolution of plastic strain was previously zero these won't matter.
+        variableVector previousMacroFlowDirection( dim * dim, 0 );
+        variableVector previousMicroFlowDirection( dim * dim, 0 );
+        variableVector previousMicroGradientFlowDirection( dim * dim * dim, 0 );
+
+        //Compute the previous cohesion values
+        variableType previousMacroCohesion = macroHardeningParameters[ 0 ] + macroHardeningParameters[ 1 ] * previousMacroStrainISV;
+        variableType previousMicroCohesion = microHardeningParameters[ 0 ] + microHardeningParameters[ 1 ] * previousMicroStrainISV;
+        variableVector previousMicroGradientCohesion = microGradientHardeningParameters[ 0 ]
+                                                     + macroGradientHardeningParameters[ 1 ] * previousMacroGradientStrainISV;
+
+        //Initialize the previous plastic velocity gradients
+        variableVector previousPlasticMacroVelocityGradient( dim * dim, 0 );
+        variableVector previousPlasticMicroVelocityGradient( dim * dim, 0 );
+        variableVector previousPlasticMicroGradientVelocityGradient( dim * dim * dim, 0 );
+
+        //Check if the previous increment had plastic yielding
+        if ( ( previousMacroGamma > 0 ) || ( previousMicroGamma > 0 ) || ( previousMicroGradientGamma[ 0 ] > 0 ) || ( previousMicroGradientGamma[ 1 ] > 0 ) || previousMicroGradientGamma[ 2 ] > 0 ){
+            //Compute the previous stress
+            error = micromorphicLinearElasticity::linearElasticityReference( previousElasticDeformationGradient,
+                                                                             previousElasticMicroDeformation,
+                                                                             previousElasticMicroGradient,
+                                                                             Amatrix, Bmatrix, Cmatrix, Dmatrix,
+                                                                             previousPK2Stress, previousReferenceMicroStress,
+                                                                             previousReferenceHigherOrderStress );
+
+            if ( error ){
+                errorOut result = new errorNode( "evaluate_model",
+                                                 "Error in the computation of the previous stress meaures" );
+                result->addNext( error );
+                result->print();           //Print the error message
+                output_message = rd.str(); //Save the output to enable message passing
+                return 2;
+            }
+
+            //Compute the elastic deformation measures for the plastic evolution
+            error = computeElasticDeformationMeasures( previousElasticDeformationGradient, previousElasticMicroDeformation,
+                                                       previousElasticGradientMicroDeformation,
+                                                       previousElasticRightCauchyGreen, previousMicroRightCauchyGreen,
+                                                       previousElasticPsi, previousElasticGamma );
+
+            if ( error ){
+                errorOut result = new errorNode( "evaluate_model",
+                                                 "Error in the computation of the previous derived elastic deformation meaures" );
+                result->addNext( error );
+                result->print();           //Print the error message
+                output_message = rd.str(); //Save the output to enable message passing
+                return 2;
+            }
+
+            //Compute the previous plastic flow directions
+            variableType unneededScalar1, unneededScalar2;
+            variableMatrix unneededMatrix1;
+
+            error = computeFlowDirections( previousPK2Stress, previousReferenceMicroStress, previousReferenceHigherOrderStress,
+                                           previousMacroCohesion, previousMicroCohesion, previousMicroGradientCohesion,
+                                           previousElasticRightCauchyGreen, macroFlowParameters, microFlowParameters,
+                                           microGradientFlowParameters, previousMacroFlowDirection, previousMicroFlowDirection,
+                                           previousMicroGradientFlowDirection, unneededScalar1, unneededScalar2, unneededMatrix1 );
+
+            if ( error ){
+                errorOut result = new errorNode( "evaluate_model",
+                                                 "Error in the computation of the previous plastic flow directions" );
+                result->addNext( error );
+                result->print();           //Print the error message
+                output_message = rd.str(); //Save the output to enable message passing
+                return 2;
+            }
+
+            //Compute the previous plastic velocity gradients
+            error = computePlasticVelocityGradients( previousMacroGamma, previousMicroGamma, previousMicroGradientGamma,
+                                                     previousElasticRightCauchyGreen, previousElasticMicroRightCauchyGreen,
+                                                     previousElasticPsi, previousElasticGamma, previousMacroFlowDirection,
+                                                     previousMicroFlowDirection, previousMicroGradientFlowDirection,
+                                                     previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
+                                                     previousPlasticMicroGradientVelocityGradient );
+
+            if ( error ){
+                errorOut result = new errorNode( "evaluate_model",
+                                                 "Error in the computation of the previous plastic velocity gradient" );
+                result->addNext( error );
+                result->print();           //Print the error message
+                output_message = rd.str(); //Save the output to enable message passing
+                return 2;
+            }
+
+            //Update the current plastic deformation measures
+            variableVector currentPlasticMacroVelocityGradient( dim * dim, 0 );
+            variableVector currentPlasticMicroVelocityGradient( dim * dim, 0 );
+            variableVector currentPlasticMicroGradientVelocityGradient( dim * dim * dim, 0 );
+
+            error = evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient, currentPlasticMicroVelocityGradient,
+                                              currentPlasticMicroGradientVelocityGradient, previousPlasticDeformationGradient,
+                                              previousPlasticMicroDeformation, previousPlasticMicroGradient,
+                                              previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
+                                              previousPlasticMicroGradientVelocityGradient,
+                                              currentPlasticPlasticDeformationGradient, currentPlasticMicroDeformation,
+                                              currentPlasticMicroGradient );
+
+            if ( error ){
+                errorOut result = new errorNode( "evaluate_model",
+                                                 "Error in the computation of the current plastic deformation" );
+                result->addNext( error );
+                result->print();           //Print the error message
+                output_message = rd.str(); //Save the output to enable message passing
+                return 2;
+            }
+        }
+
+        //Update the elastic deformation
+        variableVector currentElasticDeformationGradient, currentElasticMicroDeformation, currentElasticMicroGradient;
+
+        error = computeElasticPartOfDeformation( currentDeformationGradient, currentMicroDeformation, currentGradientMicroDeformation,
+                                                 currentPlasticDeformationGradient, currentPlasticMicroDeformation,
+                                                 currentPlasticMicroGradient, currentElasticDeformationGradient,
+                                                 currentElasticMicroDeformation, currentElasticMicroGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model",
+                                             "Error in the computation of the current elastic deformation" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message passing
+            return 2;
+        }
+
+        //Compute the new stress values
+        variableVector currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress;
+
+        error = micromorphicLinearElasticity::linearElasticityReference( currentElasticDeformationGradient,
+                                                                         currentElasticMicroDeformation,
+                                                                         currentElasticMicroGradient,
+                                                                         Amatrix, Bmatrix, Cmatrix, Dmatrix,
+                                                                         currentPK2Stress, currentReferenceMicroStress,
+                                                                         currentReferenceHigherOrderStress );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model",
+                                             "Error in the computation of the current stress measures" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message passing
+            return 2;
+        }
+
+        //Evaluate the yield functions
+        variableVector currentYieldFunctionValues;
+        error = evaluateYieldFunctions( currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress,
+                                        currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion,
+                                        macroYieldParameters, microYieldParameters, microGradientYieldParameters,
+                                        currentYieldFunctionValues );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model",
+                                             "Error in the computation of the current yield function values" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message passing
+            return 2;
+        }
+
+        //Check if any of the surfaces are yielding and begin the non-linear solver if they are
+        solverTools::floatVector solutionVector;
+        constantVector ses( currentYieldFunctionValues.size(), 0 );
+        constantVector ls( currentYieldFunctionValues.size(), 0 );
+        bool convergenceFlag = true;
+
+        for ( unsigned int i = 0; i < currentYieldFunctionValues[ i ]; i++ ){
+            if ( currentYieldFunctionValues[ i ] > absoluteTolerance ){
+
+                convergenceFlag = false;
+
+                ses[ i ] = 0;
+                ls[ i ] = 1;
+            }
+            else{
+                ses[ i ] = std::sqrt( fabs( currentYieldFunctionValues[ i ] ) );
+            }
+        }
+
+        if ( !convergenceFlag ){
+            solverTools::floatMatrix floatArgs =
+                {
+                    { Dt },
+                    currentDeformationGradient,
+                    currentMicroDeformation,
+                    currentGradientMicroDeformation,
+                    previousPlasticDeformationGradient,
+                    previousPlasticMicroDeformation,
+                    previousPlasticMicroGradient,
+                    previousPlasticMacroVelocityGradient,
+                    previousPlasticMicroVelocityGradient,
+                    previousPlasticMicroGradientVelocityGradient,
+                    { previousMacroStrainISV },
+                    { previousMicroStrainISV },
+                    previousMicroGradientStrainISV,
+                    { previousMacroGamma },
+                    { previousMicroGamma },
+                    previousMicroGradientGamma,
+                    { previousdMacroGdMacroCohesion },
+                    { previousdMicroGdMicroCohesion },
+                    previousdMicroGradientGdMicroGradientCohesion,
+                    macroHardeningParameters,
+                    microHardeningParameters,
+                    microGradientHardeningParameters,
+                    macroFlowParameters,
+                    microFlowParameters,
+                    microGradientFlowParameters,
+                    macroYieldParameters,
+                    microYieldParameters,
+                    microGradientYieldParameters,
+                    Amatrix,
+                    Bmatrix,
+                    Cmatrix,
+                    Dmatrix,
+                    { alphaMacro },
+                    { alphaMicro },
+                    { alphaMicroGradient }
+                };
+        
+            solverTools::floatMatrix floatOuts =
+                {
+                    currentElasticDeformationGradient,
+                    currentElasticMicroDeformation,
+                    currentElasticMicroGradient,
+                    currentPlasticDeformationGradient,
+                    currentPlasticMicroDeformation,
+                    currentPlasticMicroGradient,
+                    currentPK2Stress,
+                    currentReferenceMicroStress,
+                    currentReferenceHigherOrderStress,
+                    { currentMacroStrainISV },
+                    { currentMicroStrainISV },
+                    currentMicroGradientStrainISV,
+                };
+
+            func = static_cast< solverTools::NonLinearFunctionWithJacobian >( computeResidual );
+            solverTools::floatVector = { currentMacroGamma, currentMicroGamma, 
+                                         currentMicroGradientGamma[ 0 ],
+                                         currentMicroGradientGamma[ 1 ],
+                                         currentMicroGradientGamma[ 2 ],
+                                         ses[ 0 ],
+                                         ses[ 1 ],
+                                         ses[ 2 ],
+                                         ses[ 3 ],
+                                         ses[ 4 ],
+                                         ls[ 0 ],
+                                         ls[ 1 ],
+                                         ls[ 2 ],
+                                         ls[ 3 ],
+                                         ls[ 4 ] };
+
+            solverTools::floatVector solutionVector;
+            
+            error = solverTools::newtonRaphson( computeResidual, x0, solutionVector, convergedFlag, floatOuts, {}, floatArgs, {} );
+
+            if ( ( error ) && !convergeFlag ){ //Solution didn't converge
+                output_message = "Solution failed to converge. Requesting timestep cutback";
+                return 1;
+            }
+            else if ( ( error ) && convergeFlag ){ //Fatal error
+                errorOut result = new errorNode( "evaluate_model",
+                                                 "Error in nonlinear solve" );
+                result->addNext( error );
+                result->print();           //Print the error message
+                output_message = rd.str(); //Save the output to enable message passing
+                return 2;
+            }
+
+            //Extract the outputs
+            currentMacroGamma = solutionVector[ 0 ];
+            currentMicroGamma = solutionVector[ 1 ];
+            currentMicroGradientGamma = { solutionVector[ 2 ], solutionVector[ 3 ], solutionVector[ 4 ] };
+
+            currentElasticDeformationGradient = floatOuts[  0 ];
+            currentElasticMicroDeformation    = floatOuts[  1 ];
+            currentElasticMicroGradient       = floatOuts[  2 ];
+            currentPlasticDeformationGradient = floatOuts[  3 ];
+            currentPlasticMicroDeformation    = floatOuts[  4 ];
+            currentPlasticMicroGradient       = floatOuts[  5 ];
+            currentPK2Stress                  = floatOuts[  6 ];
+            currentReferenceMicroStress       = floatOuts[  7 ];
+            currentReferenceHigherOrderStress = floatOuts[  8 ];
+            currentMacroStrainISV             = floatOuts[  9 ][ 0 ];
+            currentMicroStrainISV             = floatOuts[ 10 ][ 0 ];
+            currentMicroGradientStrainISV     = floatOuts[ 11 ];
+        }
+
+        //Assemble the output vectors
+        
+        //Assemble the SDV vector
+        currentStrainISVS = { currentMacroStrainISV, currentMicroStrainISV };
+        currentStrainISVS = vectorTools::appendVectors( { currentStrainISVS, currentMicroGradientGamma } );
+
+        currentGammas = { currentMacroGamma, currentMicroGamma };
+        currentGammas = vectorTools::appendVectors( { currentGammas, currentMicroGradientGamma } );
+
+        SDVS = vectorTools::appendVectors( { currentStrainISVS, currentGammas, currentPlasticDeformationGradient - eye,
+                                             currentPlasticMicroDeformation - eye, currentPlasticMicroGradient } );
+
+        //Output the stresses mapped to the true reference configuration
+        error = micromorphicTools::pullBackPK2Stress( currentPK2Stress, currentPlasticDeformationGradient, PK2 );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model"
+                                             "Error in pullback operation on the PK2 stress" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message passing
+            return 2;
+        }
+
+        error = micromorphicTools::pullBackReferenceMicroStress( currentReferenceMicroStress, currentPlasticDeformationGradient, SIGMA );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model"
+                                             "Error in pullback operation on the reference symmetric micro-stress" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message passing
+            return 2;
+        }
+
+        error = micromorphicTools::pullBackReferenceHigherOrderStress( currentReferenceHigherOrderStress, 
+                                                                       currentPlasticDeformationGradient, 
+                                                                       currentPlasticMicroDeformation, M );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model"
+                                             "Error in pullback operation on the reference higher order stress" );
+            result->addNext( error );
+            result->print();           //Print the error message
+            output_message = rd.str(); //Save the output to enable message passing
+            return 2;
+        }
+
+        //Model evaluation successful. Return.
+        return 0;
     }
 }
