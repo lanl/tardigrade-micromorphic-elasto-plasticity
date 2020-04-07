@@ -4949,7 +4949,7 @@ namespace micromorphicElastoPlasticity{
                                     variableVector &previousMicroGradientGamma,
                                     variableVector &previousPlasticDeformationGradient,
                                     variableVector &previousPlasticMicroDeformation,
-                                    variableVector &previousPlasticMicroGradient ){
+                                    variableVector &previousPlasticGradientMicroDeformation ){
         /*!
          * Extract the state variables from the state variable vector.
          *
@@ -4966,6 +4966,28 @@ namespace micromorphicElastoPlasticity{
          * :param variableVector &previousPlasticGradientMicroDeformation: The previous value of the plastic gradient of 
          *     the micro deformation.
          */
+
+        //Assume 3D
+        unsigned int dim = 3;
+        constantVector eye( dim * dim );
+        vectorTools::eye( eye );
+
+        if ( SDVS.size() != 55 ){
+            std::string outstr = "The SDVS vector must have 55 elements ( has " + std::to_string( SDVS.size() ) + " )";
+            return new errorNode( "extractStateVariables", outstr.c_str() );
+        }
+
+        previousMacroStrainISV = SDVS[ 0 ];
+        previousMicroStrainISV = SDVS[ 1 ];
+        previousMicroGradientStrainISV = { SDVS[ 2 ], SDVS[ 3 ], SDVS[ 4 ] };
+
+        previousMacroGamma = SDVS[ 5 ];
+        previousMicroGamma = SDVS[ 6 ];
+        previousMicroGradientGamma = { SDVS[ 7 ], SDVS[ 8 ], SDVS[ 9 ] };
+
+        previousPlasticDeformationGradient = eye + variableVector( SDVS.begin() + 10, SDVS.begin() + 19 );
+        previousPlasticMicroDeformation    = eye + variableVector( SDVS.begin() + 19, SDVS.begin() + 28 );
+        previousPlasticGradientMicroDeformation = variableVector( SDVS.begin() + 28, SDVS.begin() + 55 );
 
         return NULL;
     }

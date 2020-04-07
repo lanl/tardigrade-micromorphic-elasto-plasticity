@@ -7109,6 +7109,106 @@ int test_extractMaterialParameters( std::ofstream &results ){
     return 0;
 }
 
+int test_extractStateVariables( std::ofstream &results ){
+    /*!
+     * Test the extraction of the state variables.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    std::vector< double > SDVS( 55 );
+    for ( unsigned int i = 0; i < SDVS.size(); i++ ){
+        SDVS[ i ] = i + 1;
+    }
+
+    variableType   answerPreviousMacroStrainISV                    = 1;
+    variableType   answerPreviousMicroStrainISV                    = 2;
+    variableVector answerPreviousMicroGradientStrainISV            = { 3, 4, 5 };
+    variableType   answerPreviousMacroGamma                        = 6;
+    variableType   answerPreviousMicroGamma                        = 7;
+    variableVector answerPreviousMicroGradientGamma                = { 8, 9, 10 };
+    variableVector answerPreviousPlasticDeformationGradient        = { 12, 12, 13, 14, 16, 16, 17, 18, 20 };
+    variableVector answerPreviousPlasticMicroDeformation           = { 21, 21, 22, 23, 25, 25, 26, 27, 29 };
+    variableVector answerPreviousPlasticGradientMicroDeformation   = { 29, 30, 31, 32, 33, 34, 35, 36, 37,
+                                                                       38, 39, 40, 41, 42, 43, 44, 45, 46,
+                                                                       47, 48, 49, 50, 51, 52, 53, 54, 55 };
+
+    variableType   previousMacroStrainISV;
+    variableType   previousMicroStrainISV;
+    variableVector previousMicroGradientStrainISV;
+    variableType   previousMacroGamma;
+    variableType   previousMicroGamma;
+    variableVector previousMicroGradientGamma;
+    variableVector previousPlasticDeformationGradient;
+    variableVector previousPlasticMicroDeformation;
+    variableVector previousPlasticGradientMicroDeformation;
+
+    errorOut error = micromorphicElastoPlasticity::extractStateVariables( SDVS,
+                         previousMacroStrainISV, previousMicroStrainISV,
+                         previousMicroGradientStrainISV,
+                         previousMacroGamma, previousMicroGamma,
+                         previousMicroGradientGamma,
+                         previousPlasticDeformationGradient,
+                         previousPlasticMicroDeformation,
+                         previousPlasticGradientMicroDeformation );
+
+    if ( error ){
+        error->print();
+        results << "test_extractStateVariables & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerPreviousMacroStrainISV, previousMacroStrainISV ) ){
+        results << "test_extractStateVariables (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerPreviousMicroStrainISV, previousMicroStrainISV ) ){
+        results << "test_extractStateVariables (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerPreviousMicroGradientStrainISV, previousMicroGradientStrainISV ) ){
+        results << "test_extractStateVariables (test 3) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerPreviousMacroGamma, previousMacroGamma ) ){
+        results << "test_extractStateVariables (test 4) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerPreviousMicroGamma, previousMicroGamma ) ){
+        results << "test_extractStateVariables (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerPreviousMicroGradientGamma, previousMicroGradientGamma ) ){
+        results << "test_extractStateVariables (test 6) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerPreviousPlasticDeformationGradient, previousPlasticDeformationGradient ) ){
+        vectorTools::print( answerPreviousPlasticDeformationGradient );
+        vectorTools::print( previousPlasticDeformationGradient );
+        results << "test_extractStateVariables (test 7) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerPreviousPlasticMicroDeformation, previousPlasticMicroDeformation ) ){
+        results << "test_extractStateVariables (test 8) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerPreviousPlasticGradientMicroDeformation, previousPlasticGradientMicroDeformation ) ){
+        results << "test_extractStateVariables (test 9) & False\n";
+        return 1;
+    }
+
+    results << "test_extractStateVariables & True\n";
+    return 0;
+}
+
 int test_cout_redirect( std::ofstream &results ){
     /*!
      * Test the utility function which redirects cout to a string buffer.
@@ -7182,6 +7282,7 @@ int main(){
     test_computeFlowDirections( results );
     test_computeResidual( results );
     test_extractMaterialParameters( results );
+    test_extractStateVariables( results );
     test_cout_redirect( results );
     test_cerr_redirect( results );
 

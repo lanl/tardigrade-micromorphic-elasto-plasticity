@@ -483,7 +483,7 @@ namespace micromorphicElastoPlasticity{
                                     variableVector &previousMicroGradientGamma,
                                     variableVector &previousPlasticDeformationGradient,
                                     variableVector &previousPlasticMicroDeformation,
-                                    variableVector &previousPlasticMicroGradient );
+                                    variableVector &previousPlasticGradientMicroDeformation );
 
     int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
                         const double ( &current_grad_u )[ 3 ][ 3 ],   const double ( &current_phi )[ 9 ],
