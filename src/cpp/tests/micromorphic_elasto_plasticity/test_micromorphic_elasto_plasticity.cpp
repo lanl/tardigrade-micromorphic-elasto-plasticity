@@ -4316,9 +4316,9 @@ int test_computeFlowDirections( std::ofstream &results ){
                                                3.44800453, 3.74960315, 0.52781964,
                                                0.77606303, 0.52781964, 1.93499034 };
 
-    parameterVector macroFlowParameters = { 0.69418171, 0.48920844, 0.37059555 };
-    parameterVector microFlowParameters = { 0.92593374, 0.07788052, 0.70255635 };
-    parameterVector microGradientFlowParameters = { 0.75106525, 0.45320165, 0.02355991, 0.68213594, 0.26385375 };
+    parameterVector macroFlowParameters = { 0.69418171, 0.48920844 };
+    parameterVector microFlowParameters = { 0.92593374, 0.07788052 };
+    parameterVector microGradientFlowParameters = { 0.75106525, 0.45320165 };
 
     variableVector answerMacroFlowDirection = { 3.38898459, 3.21365446, 0.74954484,
                                                 3.24601877, 2.52116441, 0.6615649 ,
@@ -5199,17 +5199,17 @@ int test_computeResidual( std::ofstream &results ){
 
     solverTools::floatVector microGradientHardeningParameters = { 0.53186824, 0.75454313 };
 
-    solverTools::floatVector macroFlowParameters = { 0.95338442, 0.74042148, 0.09916127 };
+    solverTools::floatVector macroFlowParameters = { 0.95338442, 0.74042148 };
 
-    solverTools::floatVector microFlowParameters = { 0.38093104, 0.49241325, 0.46187452 };
+    solverTools::floatVector microFlowParameters = { 0.38093104, 0.49241325 };
 
-    solverTools::floatVector microGradientFlowParameters = { 0.82121039, 0.90566759, 0.50466975, 0.04830311, 0.85951495 };
+    solverTools::floatVector microGradientFlowParameters = { 0.82121039, 0.90566759 };
 
-    solverTools::floatVector macroYieldParameters = { 0.01166325, 0.05331896, 0.28081774 };
+    solverTools::floatVector macroYieldParameters = { 0.01166325, 0.05331896 };
 
-    solverTools::floatVector microYieldParameters = { 0.32982199, 0.60161431, 0.33157768 };
+    solverTools::floatVector microYieldParameters = { 0.32982199, 0.60161431 };
 
-    solverTools::floatVector microGradientYieldParameters = { 0.58881096, 0.11473813, 0.58001078, 0.83382529, 0.3260217 };
+    solverTools::floatVector microGradientYieldParameters = { 0.58881096, 0.11473813 };
 
     solverTools::floatVector Amatrix = { 0.5101772 , 0.74331815, 0.54170405, 0.66738607, 0.35637472,
                                          0.64655396, 0.91069292, 0.95300466, 0.82022059, 0.55783418,
@@ -7548,6 +7548,85 @@ int test_assembleFundamentalDeformationMeasures( std::ofstream &results ){
     return 0;
 }
 
+int test_evaluateYieldFunctions( std::ofstream &results ){
+    /*!
+     * Test the evaluation of the yield functions
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    variableVector PK2Stress = { 0.65888653,  0.28604558, -0.44426912,
+                                -0.89889651,  0.56484547, -0.49370633,
+                                -0.72307938, -0.43117725, -0.90089686 };
+
+    variableVector SigmaStress = { -0.7631354 , -0.94148632,  0.31898031,
+                                    0.89228848,  0.84753794,  0.99573296,
+                                    0.0069115 ,  0.28727492,  0.82575735 };
+
+    variableVector M = { -0.56449022, -0.15407578, -0.06806782, -0.48688421, -0.76199393,
+                         -0.0703529 ,  0.36092558, -0.30212673,  0.81992342, -0.13140498,
+                          0.25451202, -0.11514735, -0.75631506,  0.49592347, -0.31198427,
+                          0.43412034, -0.03285418,  0.49030702,  0.76019333,  0.95293589,
+                          0.23643603, -0.1391037 , -0.6446606 ,  0.17408786, -0.41085493,
+                         -0.60240843,  0.70821091 };
+
+    variableVector elasticC = { 1.13538358, 0.11776884, 0.13734646,
+                                0.11776884, 1.00826486, 0.0787335 ,
+                                0.13734646, 0.0787335 , 1.02987928 };
+
+    variableType   macroCohesion = 0.8860253435105722;
+    variableType   microCohesion = 0.18795616072213417;
+    variableVector microGradientCohesion = { 0.23149834, 0.43664147, 0.30363429 };
+
+    variableType macroPhi = 0.6598820660198553;
+    variableType microPhi = 0.140325385292413;
+    variableType microGradientPhi = 0.3194920699960573;
+
+    variableType macroBeta = 0.1366298928020886;
+    variableType microBeta = 0.7392551172586164;
+    variableType microGradientBeta = 0.5515550713283653;
+
+    variableVector macroYieldParameters = { macroPhi, macroBeta };
+    variableVector microYieldParameters = { microPhi, microBeta };
+    variableVector microGradientYieldParameters = { microGradientPhi, microGradientBeta };
+
+    constantType answerMacroYield = 0.8067218309832007;
+    constantType answerMicroYield = 1.9183045092031357;
+    constantVector answerMicroGradientYield = { 0.45351001, 0.94557435, 0.91947682 }; 
+
+    variableVector answer = { answerMacroYield, answerMicroYield, answerMicroGradientYield[ 0 ],
+                              answerMicroGradientYield[ 1 ], answerMicroGradientYield[ 2 ] };
+
+    variableVector result;
+
+    #ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG;
+    errorOut error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion, microCohesion,
+                                                                           microGradientCohesion, elasticC, macroYieldParameters,
+                                                                           microYieldParameters, microGradientYieldParameters,
+                                                                           result, DEBUG );
+    #else
+    errorOut error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion, microCohesion,
+                                                                           microGradientCohesion, elasticC, macroYieldParameters,
+                                                                           microYieldParameters, microGradientYieldParameters,
+                                                                           result );
+    #endif
+
+    if ( error ){
+        error->print();
+        results << "test_evaluateYieldFunctions & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( result, answer ) ){
+        results << "test_evaluateYieldFunctions (test 1) & False\n";
+        return 1;
+    }
+
+    results << "test_evaluateYieldFunctions & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -7577,6 +7656,7 @@ int main(){
     test_extractMaterialParameters( results );
     test_extractStateVariables( results );
     test_assembleFundamentalDeformationMeasures( results );
+    test_evaluateYieldFunctions( results );
     test_cout_redirect( results );
     test_cerr_redirect( results );
 

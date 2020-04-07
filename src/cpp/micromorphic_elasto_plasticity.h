@@ -419,6 +419,7 @@ namespace micromorphicElastoPlasticity{
     errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                      const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
                                      const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                     const variableVector &elasticRightCauchyGreen,
                                      const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
                                      const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues,
                                      std::map< std::string, solverTools::floatVector > &DEBUG );
@@ -426,6 +427,7 @@ namespace micromorphicElastoPlasticity{
     errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                      const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
                                      const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                     const variableVector &elasticRightCauchyGreen,
                                      const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
                                      const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues );
     #endif
