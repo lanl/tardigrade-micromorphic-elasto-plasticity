@@ -20,7 +20,7 @@ typedef micromorphicTools::variableMatrix variableMatrix;
 typedef micromorphicTools::errorNode errorNode;
 typedef micromorphicTools::errorOut errorOut;
 
-struct cout_redirect{
+/*struct cout_redirect{
     cout_redirect( std::streambuf * new_buffer)
         : old( std::cout.rdbuf( new_buffer ) )
     { }
@@ -45,6 +45,7 @@ struct cerr_redirect{
     private:
         std::streambuf * old;
 };
+*/
 
 int test_computeSecondOrderDruckerPragerYieldEquation( std::ofstream &results ){
     /*!
@@ -6976,6 +6977,52 @@ int test_extractMaterialParameters( std::ofstream &results ){
     return 0;
 }
 
+int test_cout_redirect( std::ofstream &results ){
+    /*!
+     * Test the utility function which redirects cout to a string buffer.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    std::stringbuf buffer;
+    micromorphicElastoPlasticity::cout_redirect rd( &buffer );
+    
+    std::string answer = "hello world\n";
+
+    std::cout << answer;
+
+    if ( answer.compare( buffer.str() ) != 0 ){
+        results << "test_cout_redirect (test 1) & False\n";
+        return 1;
+    }
+
+    results << "test_cout_redirect & True\n";
+    return 0;
+}
+
+int test_cerr_redirect( std::ofstream &results ){
+    /*!
+     * Test the utility function which redirects cerr to a string buffer.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    std::stringbuf buffer;
+    micromorphicElastoPlasticity::cerr_redirect rd( &buffer );
+    
+    std::string answer = "hello world\n";
+
+    std::cerr << answer;
+
+    if ( answer.compare( buffer.str() ) != 0 ){
+        results << "test_cerr_redirect (test 1) & False\n";
+        return 1;
+    }
+
+    results << "test_cerr_redirect & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -7003,6 +7050,8 @@ int main(){
     test_computeFlowDirections( results );
     test_computeResidual( results );
     test_extractMaterialParameters( results );
+    test_cout_redirect( results );
+    test_cerr_redirect( results );
 
     //Close the results file
     results.close();
