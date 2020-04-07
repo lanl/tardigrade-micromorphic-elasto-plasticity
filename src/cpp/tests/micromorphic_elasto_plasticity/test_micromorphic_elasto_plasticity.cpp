@@ -6911,6 +6911,71 @@ int test_computeResidual( std::ofstream &results ){
     return 0;
 }
 
+int test_extractMaterialParameters( std::ofstream &results ){
+    /*!
+     * Test the extraction of the material parameters.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    std::vector< double > fparams = {};
+
+    parameterVector macroHardeningParameters;
+    parameterVector microHardeningParameters;
+    parameterVector microGradientHardeningParameters;
+    parameterVector macroFlowParameters;
+    parameterVector microFlowParameters;
+    parameterVector microGradientFlowParameters;
+    parameterVector macroYieldParameters;
+    parameterVector microYieldParameters;
+    parameterVector microGradientYieldParameters;
+    parameterVector Amatrix;
+    parameterVector Bmatrix;
+    parameterVector Cmatrix;
+    parameterVector Dmatrix;
+    constantType alphaMacro;
+    constantType alphaMicro;
+    constantType alphaMicroGradient;
+    constantType relativeTolerance;
+    constantType absoluteTolerance;
+
+    parameterVector answerMacroHardeningParameters;
+    parameterVector answerMicroHardeningParameters;
+    parameterVector answerMicroGradientHardeningParameters;
+    parameterVector answerMacroFlowParameters;
+    parameterVector answerMicroFlowParameters;
+    parameterVector answerMicroGradientFlowParameters;
+    parameterVector answerMacroYieldParameters;
+    parameterVector answerMicroYieldParameters;
+    parameterVector answerMicroGradientYieldParameters;
+    parameterVector answerAmatrix;
+    parameterVector answerBmatrix;
+    parameterVector answerCmatrix;
+    parameterVector answerDmatrix;
+
+    constantType answerAlphaMacro;
+    constantType answerAlphaMicro;
+    constantType answerAlphaMicroGradient;
+    constantType answerRelativeTolerance;
+    constantType answerAbsoluteTolerance;
+
+    errorOut error = micromorphicElastoPlasticity::extractMaterialParameters( fparams,
+                         macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
+                         macroFlowParameters, microFlowParameters, microGradientFlowParameters,
+                         macroYieldParameters, microYieldParameters, microGradientYieldParameters,
+                         Amatrix, Bmatrix, Cmatrix, Dmatrix, alphaMacro, alphaMicro, alphaMicroGradient,
+                         relativeTolerance, absoluteTolerance );
+
+    if ( error ){
+        error->print();
+        results << "test_extractMaterialParameters & False\n";
+        return 1;
+    }
+
+    results << "test_extractMaterialParameters & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -6937,6 +7002,7 @@ int main(){
     test_evolveStrainStateVariables( results );
     test_computeFlowDirections( results );
     test_computeResidual( results );
+    test_extractMaterialParameters( results );
 
     //Close the results file
     results.close();

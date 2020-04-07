@@ -439,14 +439,14 @@ namespace micromorphicElastoPlasticity{
                                                      variableMatrix &dGradChidGradPhi );
 
     errorOut extractMaterialParameters( const std::vector< double > &fparams,
-                                        variableVector &macroHardeningParameters, variableVector &microHardeningParameters,
-                                        variableVector &microGradientHardeningParameters,
-                                        variableVector &macroFlowParameters, variableVector &microFlowParameters,
-                                        variableVector &microGradientFlowParameters,
-                                        variableVector &macroYieldParameters, variableVector &microYieldParameters,
-                                        variableVector &microGradientYieldParameters,
-                                        variableVector &Amatrix, variableVector &Bmatrix,
-                                        variableVector &Cmatrix, variableVector &Dmatrix,
+                                        parameterVector &macroHardeningParameters, parameterVector &microHardeningParameters,
+                                        parameterVector &microGradientHardeningParameters,
+                                        parameterVector &macroFlowParameters, parameterVector &microFlowParameters,
+                                        parameterVector &microGradientFlowParameters,
+                                        parameterVector &macroYieldParameters, parameterVector &microYieldParameters,
+                                        parameterVector &microGradientYieldParameters,
+                                        parameterVector &Amatrix, parameterVector &Bmatrix,
+                                        parameterVector &Cmatrix, parameterVector &Dmatrix,
                                         constantType &alphaMacro, constantType &alphaMicro, constantType &alphaMicroGradient,
                                         constantType &relativeTolerance, constantType &absoluteTolerance );
 

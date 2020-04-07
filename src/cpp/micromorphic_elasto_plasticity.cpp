@@ -4318,7 +4318,6 @@ namespace micromorphicElastoPlasticity{
             return 2;
         }
 
-        constantType T  = time[ 0 ];
         constantType Dt = time[ 1 ];
 
         //Extract the parameters
@@ -4729,7 +4728,8 @@ namespace micromorphicElastoPlasticity{
            
             solverTools::intMatrix intArgs, intOuts; 
             error = solverTools::newtonRaphson( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
-                                                floatOuts, intOuts, floatArgs, intArgs );
+                                                floatOuts, intOuts, floatArgs, intArgs,
+                                                20, relativeTolerance, absoluteTolerance );
 
             if ( ( error ) && fatalErrorFlag ){ //Fatal error
                 errorOut result = new errorNode( "evaluate_model",
@@ -4813,5 +4813,178 @@ namespace micromorphicElastoPlasticity{
 
         //Model evaluation successful. Return.
         return 0;
+    }
+
+    errorOut extractMaterialParameters( const std::vector< double > &fparams,
+                                        parameterVector &macroHardeningParameters, parameterVector &microHardeningParameters,
+                                        parameterVector &microGradientHardeningParameters,
+                                        parameterVector &macroFlowParameters, parameterVector &microFlowParameters,
+                                        parameterVector &microGradientFlowParameters,
+                                        parameterVector &macroYieldParameters, parameterVector &microYieldParameters,
+                                        parameterVector &microGradientYieldParameters,
+                                        parameterVector &Amatrix, parameterVector &Bmatrix,
+                                        parameterVector &Cmatrix, parameterVector &Dmatrix,
+                                        constantType &alphaMacro, constantType &alphaMicro, constantType &alphaMicroGradient,
+                                        constantType &relativeTolerance, constantType &absoluteTolerance ){
+        /*!
+         * Extract the parameters from the parameter vector
+         *
+         * :param const std::vector< double > &fparams: The incoming parameter vector
+         * :param parameterVector &macroHardeningParameters: The parameters used in the hardening of the macro Strain ISV
+         * :param parameterVector &microHardeningParameters: The parameters used in the hardening of the micro Strain ISV
+         * :param parameterVector &microGradientHardeningParameters: The parameters used in the hardening of the micro Gradient Strain ISV
+         * :param parameterVector &macroFlowParameters: The parameters used in the macro flow direction computation.
+         * :param parameterVector &microFlowParameters: The parameters used in the micro flow direction computation
+         * :param parameterVector &microGradientFlowParameters: The parameters used in the micro Gradient flow direction computation.
+         * :param parameterVector &macroYieldParameters: The parameters used in the macro yielding computation.
+         * :param parameterVector &microYieldParameters: The parameters used in the micro yielding computation
+         * :param parameterVector &microGradientYieldParameters: The parameters used in the micro Gradient yielding computation.
+         * :param parameterVector &Amatrix: The A stiffness matrix.
+         * :param parameterVector &Bmatrix: The B stiffness matrix.
+         * :param parameterVector &Cmatrix: The C stiffness matrix.
+         * :param parameterVector &Dmatrix: The D stiffness matrix.
+         * :param parameterVector &alphaMacro: The integration parameter for the macro plasticity.
+         * :param parameterVector &alphaMicro: The integration parameter for the micro plasticity.
+         * :param parameterVector &alphaMicroGradient: The integration parameter for the micro gradient plasticity.
+         * :param constantType &relativeTolerance: The relative tolerance for the solver.
+         * :param constantType &absoluteTolerance: The absolute tolerance for the solver.
+         */
+
+        if ( fparams.size() == 0 ){
+            return new errorNode( "extractMaterialParameters",
+                                  "The material parameters vector has a length of 0" );
+        }
+
+        unsigned int start = 0;
+        unsigned int span;
+
+        std::vector< parameterVector > outputs( 13 );
+
+        //Extract the material parameters
+        for ( unsigned int i = 0; i < outputs.size(); i++ ){
+            span = ( unsigned int )std::floor( fparams[ start ]  + 0.5 ); //Extract the span of the parameter set
+
+            if ( fparams.size() < start + 1 + span ){
+                std::string outstr = "fparams is not long enough to contain all of the required parameters:\n";
+                outstr +=            "    filling variable " + std::to_string( i ) + "\n";
+                outstr +=            "    size =          "  + std::to_string( fparams.size() ) + "\n";
+                outstr +=            "    required size = "  + std::to_string( start + 1 + span );
+
+                return new errorNode( "extractMaterialParameters",
+                                      outstr.c_str() );
+            }
+
+            outputs[ i ] = parameterVector( fparams.begin() + start + 1, fparams.begin() + start + 1 + span );
+
+            start = start + 1 + span + 1;
+        }
+
+        //Set the output values
+        macroHardeningParameters         = outputs[  0 ];
+        microHardeningParameters         = outputs[  1 ];
+        microGradientHardeningParameters = outputs[  2 ];
+        macroFlowParameters              = outputs[  3 ];
+        microFlowParameters              = outputs[  4 ];
+        microGradientFlowParameters      = outputs[  5 ];
+        macroYieldParameters             = outputs[  6 ];
+        microYieldParameters             = outputs[  7 ];
+        microGradientYieldParameters     = outputs[  8 ];
+        Amatrix                          = outputs[  9 ];
+        Bmatrix                          = outputs[ 10 ];
+        Cmatrix                          = outputs[ 11 ];
+        Dmatrix                          = outputs[ 12 ];
+
+        //Extract the integration and tolerance parameters
+        if ( fparams.size() < start + 5 ){
+            return new errorNode( "extractMaterialParameters",
+                                  "fparams does not store the integration parameters." );
+        }
+
+        alphaMacro         = fparams[ start + 0 ];
+        alphaMicro         = fparams[ start + 1 ];
+        alphaMicroGradient = fparams[ start + 2 ];
+        relativeTolerance  = fparams[ start + 3 ];
+        absoluteTolerance  = fparams[ start + 4 ];
+
+        return NULL;
+    }
+
+    errorOut extractStateVariables( std::vector< double > &SDVS,
+                                    variableType &previousMacroStrainISV, variableType &previousMicroStrainISV,
+                                    variableVector &previousMicroGradientStrainISV,
+                                    variableType &previousMacroGamma, variableType &previousMicroGamma,
+                                    variableVector &previousMicroGradientGamma,
+                                    variableVector &previousPlasticDeformationGradient,
+                                    variableVector &previousPlasticMicroDeformation,
+                                    variableVector &previousPlasticMicroGradient ){
+        /*!
+         * Extract the state variables from the state variable vector.
+         *
+         * :param std::vector< double > &SDVS: The state variable vector.
+         * :param variableType &previousMacroStrainISV: The previous value of the macro Strain ISV
+         * :param variableType &previousMicroStrainISV: The previous value of the micro Strain ISV
+         * :param variableVector &previousMicroGradientStrainISV: The previous value of the micro gradient Strain ISV
+         * :param variableType &previousMacroGamma: The previous value of the macro gamma
+         * :param variableType &previousMicroGamma: The previous value of the micro gamma
+         * :param variableVector &previousMicroGradientGamma: The previous value of the micro gradient gammas
+         * :param variableVector &previousPlasticDeformationGradient: The previous value of the plastic deformation 
+         *     gradient.
+         * :param variableVector &previousPlasticMicroDeformation: The previous value of the plastic micro deformation.
+         * :param variableVector &previousPlasticGradientMicroDeformation: The previous value of the plastic gradient of 
+         *     the micro deformation.
+         */
+
+        return NULL;
+    }
+
+    errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
+                                                     const double ( &grad_phi )[ 9 ][ 3 ],
+                                                     variableVector &deformationGradient, variableVector &microDeformation,
+                                                     variableVector &gradientMicroDeformation ){
+        /*!
+         * Assemble the fundamental deformation meaures from the degrees of freedom.
+         *
+         * :param const double ( &grad_u )[ 3 ][ 3 ]: The macro displacement gradient w.r.t. the reference configuration.
+         * :param const double ( &phi )[ 9 ]: The micro displacement.
+         * :param const double ( &grad_phi )[ 9 ][ 3 ]: The gradient of the micro displacement w.r.t. the reference configuration.
+         * :param variableVector &deformationGradient: The deformation gradient
+         * :param variableVector &microDeformation: The micro deformation
+         * :param variableVector &gradientMicroDeformation: The gradient of the micro deformation.
+         */
+
+        return NULL;
+    }
+
+    #ifdef DEBUG_MODE
+    errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                     const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
+                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues,
+                                     std::map< std::string, solverTools::floatVector > &DEBUG ){
+    #else
+    errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                     const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
+                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues ){
+    #endif
+        /*!
+         * Evaluate all of the yield functions.
+         *
+         * :param const variableVector &PK2Stress: The second Piola Kirchhoff stress
+         * :param const variableVector &referenceMicroStress: The micro stress in the reference configuration.
+         * :param const variableVector &referenceHigherOrderStress: The higher order stress in the reference configuration.
+         * :param const variableType &macroCohesion: The macro cohesion value.
+         * :param const variableType &microCohesion: The micro cohesion value.
+         * :param const variableVector &microGradientCohesion: The micro gradient cohesion value.
+         * :param const parameterVector &macroYieldParameters: The macro yield parameters.
+         * :param const parameterVector &microYieldParameters: The micro yield parameters.
+         * :param const parameterVector &microGradientYieldParameters: The micro gradient yield parameters.
+         * :param variableVector &yieldFunctionValues: The current values of the yield functions.
+         * :param std::map< std::string, solverTools::floatVector > &DEBUG: The debug map. Only output when in debug mode.
+         */
+
+        return NULL;
     }
 }
