@@ -5007,6 +5007,124 @@ namespace micromorphicElastoPlasticity{
          * :param variableVector &gradientMicroDeformation: The gradient of the micro deformation.
          */
 
+
+        //Extract the degrees of freedom
+        variableMatrix displacementGradient = { { grad_u[ 0 ][ 0 ], grad_u[ 0 ][ 1 ], grad_u[ 0 ][ 2 ] },
+                                                { grad_u[ 1 ][ 0 ], grad_u[ 1 ][ 1 ], grad_u[ 1 ][ 2 ] },
+                                                { grad_u[ 2 ][ 0 ], grad_u[ 2 ][ 1 ], grad_u[ 2 ][ 2 ] } };
+
+        variableVector microDisplacement = { phi[ 0 ], phi[ 1 ], phi[ 2 ],
+                                             phi[ 3 ], phi[ 4 ], phi[ 5 ],
+                                             phi[ 6 ], phi[ 7 ], phi[ 8 ] };
+
+        variableMatrix gradientMicroDisplacement = { { grad_phi[ 0 ][ 0 ], grad_phi[ 0 ][ 1 ], grad_phi[ 0 ][ 2 ] },
+                                                     { grad_phi[ 1 ][ 0 ], grad_phi[ 1 ][ 1 ], grad_phi[ 1 ][ 2 ] },
+                                                     { grad_phi[ 2 ][ 0 ], grad_phi[ 2 ][ 1 ], grad_phi[ 2 ][ 2 ] },
+                                                     { grad_phi[ 3 ][ 0 ], grad_phi[ 3 ][ 1 ], grad_phi[ 3 ][ 2 ] },
+                                                     { grad_phi[ 4 ][ 0 ], grad_phi[ 4 ][ 1 ], grad_phi[ 4 ][ 2 ] },
+                                                     { grad_phi[ 5 ][ 0 ], grad_phi[ 5 ][ 1 ], grad_phi[ 5 ][ 2 ] },
+                                                     { grad_phi[ 6 ][ 0 ], grad_phi[ 6 ][ 1 ], grad_phi[ 6 ][ 2 ] },
+                                                     { grad_phi[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ] },
+                                                     { grad_phi[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] } };
+
+        errorOut error = micromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
+                                             "Error in assembly of the deformation gradient" );
+            result->addNext( error );
+            return result;
+        }
+
+        error = micromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation );
+
+        if ( error ){
+            errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
+                                             "Error in assembly of the micro deformation" );
+            result->addNext( error );
+            return result;
+        }
+
+        error = micromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation );
+
+        if ( error ){
+            errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
+                                             "Error in assembly of the gradient of the micro deformation" );
+            result->addNext( error );
+            return result;
+        }
+
+        return NULL;
+    }
+
+    errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
+                                                     const double ( &grad_phi )[ 9 ][ 3 ],
+                                                     variableVector &deformationGradient, variableVector &microDeformation,
+                                                     variableVector &gradientMicroDeformation, variableMatrix &dFdGradU,
+                                                     variableMatrix &dChidPhi, variableMatrix &dGradChidGradPhi ){
+        /*!
+         * Assemble the fundamental deformation meaures from the degrees of freedom.
+         *
+         * :param const double ( &grad_u )[ 3 ][ 3 ]: The macro displacement gradient w.r.t. the reference configuration.
+         * :param const double ( &phi )[ 9 ]: The micro displacement.
+         * :param const double ( &grad_phi )[ 9 ][ 3 ]: The gradient of the micro displacement w.r.t. the reference configuration.
+         * :param variableVector &deformationGradient: The deformation gradient
+         * :param variableVector &microDeformation: The micro deformation
+         * :param variableVector &gradientMicroDeformation: The gradient of the micro deformation.
+         * :param variableMatrix &dFdGradU: The Jacobian of the deformation gradient w.r.t. the gradient of the displacement
+         * :param variableMatrix &dChidPhi: The Jacobian of the micro deformation w.r.t. the micro displacement
+         * :param variableMatrix &dGradChidGradPhi: The Jacobian of the gradient of the micro deformation w.r.t.
+         *      the gradient of the micro displacement
+         */
+
+
+        //Extract the degrees of freedom
+        variableMatrix displacementGradient = { { grad_u[ 0 ][ 0 ], grad_u[ 0 ][ 1 ], grad_u[ 0 ][ 2 ] },
+                                                { grad_u[ 1 ][ 0 ], grad_u[ 1 ][ 1 ], grad_u[ 1 ][ 2 ] },
+                                                { grad_u[ 2 ][ 0 ], grad_u[ 2 ][ 1 ], grad_u[ 2 ][ 2 ] } };
+
+        variableVector microDisplacement = { phi[ 0 ], phi[ 1 ], phi[ 2 ],
+                                             phi[ 3 ], phi[ 4 ], phi[ 5 ],
+                                             phi[ 6 ], phi[ 7 ], phi[ 8 ] };
+
+        variableMatrix gradientMicroDisplacement = { { grad_phi[ 0 ][ 0 ], grad_phi[ 0 ][ 1 ], grad_phi[ 0 ][ 2 ] },
+                                                     { grad_phi[ 1 ][ 0 ], grad_phi[ 1 ][ 1 ], grad_phi[ 1 ][ 2 ] },
+                                                     { grad_phi[ 2 ][ 0 ], grad_phi[ 2 ][ 1 ], grad_phi[ 2 ][ 2 ] },
+                                                     { grad_phi[ 3 ][ 0 ], grad_phi[ 3 ][ 1 ], grad_phi[ 3 ][ 2 ] },
+                                                     { grad_phi[ 4 ][ 0 ], grad_phi[ 4 ][ 1 ], grad_phi[ 4 ][ 2 ] },
+                                                     { grad_phi[ 5 ][ 0 ], grad_phi[ 5 ][ 1 ], grad_phi[ 5 ][ 2 ] },
+                                                     { grad_phi[ 6 ][ 0 ], grad_phi[ 6 ][ 1 ], grad_phi[ 6 ][ 2 ] },
+                                                     { grad_phi[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ] },
+                                                     { grad_phi[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] } };
+
+        errorOut error = micromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient, dFdGradU );
+
+        if ( error ){
+            errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
+                                             "Error in assembly of the deformation gradient" );
+            result->addNext( error );
+            return result;
+        }
+
+        error = micromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation, dChidPhi );
+
+        if ( error ){
+            errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
+                                             "Error in assembly of the micro deformation" );
+            result->addNext( error );
+            return result;
+        }
+
+        error = micromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation,
+                                                                     dGradChidGradPhi );
+
+        if ( error ){
+            errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
+                                             "Error in assembly of the gradient of the micro deformation" );
+            result->addNext( error );
+            return result;
+        }
+
         return NULL;
     }
 

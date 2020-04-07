@@ -7255,6 +7255,299 @@ int test_cerr_redirect( std::ofstream &results ){
     return 0;
 }
 
+int test_assembleFundamentalDeformationMeasures( std::ofstream &results ){
+    /*!
+     * Assemble the fundamental deformation measures from the degrees of freedom.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    double grad_u[ 3 ][ 3 ] = { { 1, 2, 3 },
+                                { 4, 5, 6 },
+                                { 7, 8, 9 } };
+
+    double phi[ 9 ] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    double grad_phi[ 9 ][ 3 ] = { {  1,  2,  3 },
+                                  {  4,  5,  6 },
+                                  {  7,  8,  9 },
+                                  { 10, 11, 12 },
+                                  { 13, 14, 15 },
+                                  { 16, 17, 18 },
+                                  { 19, 20, 21 },
+                                  { 22, 23, 24 },
+                                  { 25, 26, 27 } };
+
+    variableVector answerDeformationGradient = { 2, 2, 3, 4, 6, 6, 7, 8, 10 };
+
+    variableVector answerMicroDeformation = { 2, 2, 3, 4, 6, 6, 7, 8, 10 };
+
+    variableVector answerGradientMicroDeformation = { 1,  2,  3,  4,  5,  6,  7,  8,  9,
+                                                     10, 11, 12, 13, 14, 15, 16, 17, 18,
+                                                     19, 20, 21, 22, 23, 24, 25, 26, 27 };
+
+    variableVector resultF, resultChi, resultGradChi;
+
+    errorOut error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( grad_u, phi, grad_phi,
+                                                                                           resultF, resultChi, resultGradChi );
+
+    if ( error ){
+        results << "test_assembleFundamentalDeformationMeasures & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultF, answerDeformationGradient ) ){
+        results << "test_assembleFundamentalDeformationMeasures (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultChi, answerMicroDeformation ) ){
+        results << "test_assembleFundamentalDeformationMeasures (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultGradChi, answerGradientMicroDeformation ) ){
+        results << "test_assembleFundamentalDeformationMeasures (test 3) & False\n";
+        return 1;
+    }
+
+    //Test the Jacobians
+    variableVector resultFJ, resultChiJ, resultGradChiJ;
+    variableMatrix dFdGradU, dChidPhi, dGradChidGradPhi;
+
+    error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( grad_u, phi, grad_phi,
+                                                                                  resultFJ, resultChiJ, resultGradChiJ,
+                                                                                  dFdGradU, dChidPhi, dGradChidGradPhi );
+
+    if ( error ){
+        results << "test_assembleFundamentalDeformationMeasures & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultFJ, answerDeformationGradient ) ){
+        results << "test_assembleFundamentalDeformationMeasures (test 4) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultChiJ, answerMicroDeformation ) ){
+        results << "test_assembleFundamentalDeformationMeasures (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultGradChiJ, answerGradientMicroDeformation ) ){
+        results << "test_assembleFundamentalDeformationMeasures (test 6) & False\n";
+        return 1;
+    }
+
+    //Test the jacobians w.r.t. the gradient of the displacement
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < 9; i++ ){
+        constantMatrix delta( 3, constantVector( 3, 0 ) );
+        unsigned int ii, ij;
+        ii = ( int )( i / 3 );
+        ij = i % 3;
+        delta[ ii ][ ij ] = eps * fabs( grad_u[ ii ][ ij ] ) + eps;
+
+        variableVector FP, chiP, gradChiP;
+        variableVector FM, chiM, gradChiM;
+
+        double positive_perturb[ 3 ][ 3 ] =
+        { 
+                { grad_u[ 0 ][ 0 ] + delta[ 0 ][ 0 ], grad_u[ 0 ][ 1 ] + delta[ 0 ][ 1 ], grad_u[ 0 ][ 2 ] + delta[ 0 ][ 2 ] },
+                { grad_u[ 1 ][ 0 ] + delta[ 1 ][ 0 ], grad_u[ 1 ][ 1 ] + delta[ 1 ][ 1 ], grad_u[ 1 ][ 2 ] + delta[ 1 ][ 2 ] },
+                { grad_u[ 2 ][ 0 ] + delta[ 2 ][ 0 ], grad_u[ 2 ][ 1 ] + delta[ 2 ][ 1 ], grad_u[ 2 ][ 2 ] + delta[ 2 ][ 2 ] }
+        };
+
+        double negative_perturb[ 3 ][ 3 ] =
+        { 
+                { grad_u[ 0 ][ 0 ] - delta[ 0 ][ 0 ], grad_u[ 0 ][ 1 ] - delta[ 0 ][ 1 ], grad_u[ 0 ][ 2 ] - delta[ 0 ][ 2 ] },
+                { grad_u[ 1 ][ 0 ] - delta[ 1 ][ 0 ], grad_u[ 1 ][ 1 ] - delta[ 1 ][ 1 ], grad_u[ 1 ][ 2 ] - delta[ 1 ][ 2 ] },
+                { grad_u[ 2 ][ 0 ] - delta[ 2 ][ 0 ], grad_u[ 2 ][ 1 ] - delta[ 2 ][ 1 ], grad_u[ 2 ][ 2 ] - delta[ 2 ][ 2 ] }
+        };
+
+        error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( positive_perturb, phi, grad_phi,
+                                                                                      FP, chiP, gradChiP );
+
+        if ( error ){
+            results << "test_assembleFundamentalDeformationMeasures & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( negative_perturb, phi, grad_phi,
+                                                                                      FM, chiM, gradChiM );
+
+        if ( error ){
+            results << "test_assembleFundamentalDeformationMeasures & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( FP - FM ) / ( 2 * delta[ ii ][ ij ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dFdGradU[ j ][ i ] ) ){
+                results << "test_assembleFundamentalDeformationMeasures (test 7) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( chiP - chiM ) / ( 2 * delta[ ii ][ ij ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_assembleFundamentalDeformationMeasures (test 8) & False\n";
+            }
+        }
+
+        gradCol = ( gradChiP - gradChiM ) / ( 2 * delta[ ii ][ ij ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_assembleFundamentalDeformationMeasures (test 9) & False\n";
+            }
+        }
+    }
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+        constantVector delta( 9, 0 );
+
+        delta[ i ] = eps * fabs( phi[ i ] ) + eps;
+
+        variableVector FP, chiP, gradChiP;
+        variableVector FM, chiM, gradChiM;
+
+        double positive_perturb[ 9 ] = { phi[ 0 ] + delta[ 0 ], phi[ 1 ] + delta[ 1 ], phi[ 2 ] + delta[ 2 ],
+                                         phi[ 3 ] + delta[ 3 ], phi[ 4 ] + delta[ 4 ], phi[ 5 ] + delta[ 5 ],
+                                         phi[ 6 ] + delta[ 6 ], phi[ 7 ] + delta[ 7 ], phi[ 8 ] + delta[ 8 ] };
+
+        double negative_perturb[ 9 ] = { phi[ 0 ] - delta[ 0 ], phi[ 1 ] - delta[ 1 ], phi[ 2 ] - delta[ 2 ],
+                                         phi[ 3 ] - delta[ 3 ], phi[ 4 ] - delta[ 4 ], phi[ 5 ] - delta[ 5 ],
+                                         phi[ 6 ] - delta[ 6 ], phi[ 7 ] - delta[ 7 ], phi[ 8 ] - delta[ 8 ] };
+
+        error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( grad_u, positive_perturb, grad_phi,
+                                                                                      FP, chiP, gradChiP );
+
+        if ( error ){
+            results << "test_assembleFundamentalDeformationMeasures & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( grad_u, negative_perturb, grad_phi,
+                                                                                      FM, chiM, gradChiM );
+
+        if ( error ){
+            results << "test_assembleFundamentalDeformationMeasures & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( FP - FM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_assembleFundamentalDeformationMeasures (test 10) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( chiP - chiM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dChidPhi[ j ][ i ] ) ){
+                results << "test_assembleFundamentalDeformationMeasures (test 11) & False\n";
+            }
+        }
+
+        gradCol = ( gradChiP - gradChiM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_assembleFundamentalDeformationMeasures (test 12) & False\n";
+            }
+        }
+    }
+
+    for ( unsigned int i = 0; i < 27; i++ ){
+        constantMatrix delta( 9, constantVector( 3, 0 ) );
+        unsigned int ii, ij;
+        ii = ( int )( i / 3 );
+        ij = i % 3;
+        delta[ ii ][ ij ] = eps * fabs( grad_u[ ii ][ ij ] ) + eps;
+
+        variableVector FP, chiP, gradChiP;
+        variableVector FM, chiM, gradChiM;
+
+        double positive_perturb[ 9 ][ 3 ] =
+        { 
+                { grad_phi[ 0 ][ 0 ] + delta[ 0 ][ 0 ], grad_phi[ 0 ][ 1 ] + delta[ 0 ][ 1 ], grad_phi[ 0 ][ 2 ] + delta[ 0 ][ 2 ] },
+                { grad_phi[ 1 ][ 0 ] + delta[ 1 ][ 0 ], grad_phi[ 1 ][ 1 ] + delta[ 1 ][ 1 ], grad_phi[ 1 ][ 2 ] + delta[ 1 ][ 2 ] },
+                { grad_phi[ 2 ][ 0 ] + delta[ 2 ][ 0 ], grad_phi[ 2 ][ 1 ] + delta[ 2 ][ 1 ], grad_phi[ 2 ][ 2 ] + delta[ 2 ][ 2 ] },
+                { grad_phi[ 3 ][ 0 ] + delta[ 3 ][ 0 ], grad_phi[ 3 ][ 1 ] + delta[ 3 ][ 1 ], grad_phi[ 3 ][ 2 ] + delta[ 3 ][ 2 ] },
+                { grad_phi[ 4 ][ 0 ] + delta[ 4 ][ 0 ], grad_phi[ 4 ][ 1 ] + delta[ 4 ][ 1 ], grad_phi[ 4 ][ 2 ] + delta[ 4 ][ 2 ] },
+                { grad_phi[ 5 ][ 0 ] + delta[ 5 ][ 0 ], grad_phi[ 5 ][ 1 ] + delta[ 5 ][ 1 ], grad_phi[ 5 ][ 2 ] + delta[ 5 ][ 2 ] },
+                { grad_phi[ 6 ][ 0 ] + delta[ 6 ][ 0 ], grad_phi[ 6 ][ 1 ] + delta[ 6 ][ 1 ], grad_phi[ 6 ][ 2 ] + delta[ 6 ][ 2 ] },
+                { grad_phi[ 7 ][ 0 ] + delta[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ] + delta[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ] + delta[ 7 ][ 2 ] },
+                { grad_phi[ 8 ][ 0 ] + delta[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ] + delta[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] + delta[ 8 ][ 2 ] }
+        };
+
+        double negative_perturb[ 9 ][ 3 ] =
+        { 
+                { grad_phi[ 0 ][ 0 ] - delta[ 0 ][ 0 ], grad_phi[ 0 ][ 1 ] - delta[ 0 ][ 1 ], grad_phi[ 0 ][ 2 ] - delta[ 0 ][ 2 ] },
+                { grad_phi[ 1 ][ 0 ] - delta[ 1 ][ 0 ], grad_phi[ 1 ][ 1 ] - delta[ 1 ][ 1 ], grad_phi[ 1 ][ 2 ] - delta[ 1 ][ 2 ] },
+                { grad_phi[ 2 ][ 0 ] - delta[ 2 ][ 0 ], grad_phi[ 2 ][ 1 ] - delta[ 2 ][ 1 ], grad_phi[ 2 ][ 2 ] - delta[ 2 ][ 2 ] },
+                { grad_phi[ 3 ][ 0 ] - delta[ 3 ][ 0 ], grad_phi[ 3 ][ 1 ] - delta[ 3 ][ 1 ], grad_phi[ 3 ][ 2 ] - delta[ 3 ][ 2 ] },
+                { grad_phi[ 4 ][ 0 ] - delta[ 4 ][ 0 ], grad_phi[ 4 ][ 1 ] - delta[ 4 ][ 1 ], grad_phi[ 4 ][ 2 ] - delta[ 4 ][ 2 ] },
+                { grad_phi[ 5 ][ 0 ] - delta[ 5 ][ 0 ], grad_phi[ 5 ][ 1 ] - delta[ 5 ][ 1 ], grad_phi[ 5 ][ 2 ] - delta[ 5 ][ 2 ] },
+                { grad_phi[ 6 ][ 0 ] - delta[ 6 ][ 0 ], grad_phi[ 6 ][ 1 ] - delta[ 6 ][ 1 ], grad_phi[ 6 ][ 2 ] - delta[ 6 ][ 2 ] },
+                { grad_phi[ 7 ][ 0 ] - delta[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ] - delta[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ] - delta[ 7 ][ 2 ] },
+                { grad_phi[ 8 ][ 0 ] - delta[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ] - delta[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] - delta[ 8 ][ 2 ] }
+        };
+
+
+        error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( grad_u, phi, positive_perturb,
+                                                                                      FP, chiP, gradChiP );
+
+        if ( error ){
+            results << "test_assembleFundamentalDeformationMeasures & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( grad_u, phi, negative_perturb,
+                                                                                      FM, chiM, gradChiM );
+
+        if ( error ){
+            results << "test_assembleFundamentalDeformationMeasures & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( FP - FM ) / ( 2 * delta[ ii ][ ij ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_assembleFundamentalDeformationMeasures (test 13) & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( chiP - chiM ) / ( 2 * delta[ ii ][ ij ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_assembleFundamentalDeformationMeasures (test 14) & False\n";
+            }
+        }
+
+        gradCol = ( gradChiP - gradChiM ) / ( 2 * delta[ ii ][ ij ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dGradChidGradPhi[ j ][ i ] ) ){
+                results << "test_assembleFundamentalDeformationMeasures (test 15) & False\n";
+            }
+        }
+    }
+
+    results << "test_assembleFundamentalDeformationMeasures & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -7283,6 +7576,7 @@ int main(){
     test_computeResidual( results );
     test_extractMaterialParameters( results );
     test_extractStateVariables( results );
+    test_assembleFundamentalDeformationMeasures( results );
     test_cout_redirect( results );
     test_cerr_redirect( results );
 
