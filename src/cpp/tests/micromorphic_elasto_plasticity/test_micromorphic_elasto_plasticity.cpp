@@ -6919,7 +6919,20 @@ int test_extractMaterialParameters( std::ofstream &results ){
      * :param std::ofstream &results: The output file.
      */
 
-    std::vector< double > fparams = {};
+    std::vector< double > fparams = { 2, 0.53895133, 0.37172145,
+                                      2, 0.37773052, 0.92739145,
+                                      2, 0.53186824, 0.75454313,
+                                      3, 0.95338442, 0.74042148, 0.09916127,
+                                      3, 0.38093104, 0.49241325, 0.46187452,
+                                      5, 0.82121039, 0.90566759, 0.50466975, 0.04830311, 0.85951495,
+                                      3, 0.01166325, 0.05331896, 0.28081774,
+                                      3, 0.32982199, 0.60161431, 0.33157768,
+                                      5, 0.58881096, 0.11473813, 0.58001078, 0.83382529, 0.3260217,
+                                      2, 1.7, 1.8,
+                                      5, 2.8, .76, .15, 9.8, 5.4,
+                                      11, 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.,
+                                      2, .76, 5.4,
+                                      0.1, 0.2, 0.3, 1.1, 2.2 };
 
     parameterVector macroHardeningParameters;
     parameterVector microHardeningParameters;
@@ -6940,37 +6953,156 @@ int test_extractMaterialParameters( std::ofstream &results ){
     constantType relativeTolerance;
     constantType absoluteTolerance;
 
-    parameterVector answerMacroHardeningParameters;
-    parameterVector answerMicroHardeningParameters;
-    parameterVector answerMicroGradientHardeningParameters;
-    parameterVector answerMacroFlowParameters;
-    parameterVector answerMicroFlowParameters;
-    parameterVector answerMicroGradientFlowParameters;
-    parameterVector answerMacroYieldParameters;
-    parameterVector answerMicroYieldParameters;
-    parameterVector answerMicroGradientYieldParameters;
+    parameterVector answerMacroHardeningParameters = { 0.53895133, 0.37172145 };
+    parameterVector answerMicroHardeningParameters = { 0.37773052, 0.92739145 };
+    parameterVector answerMicroGradientHardeningParameters = { 0.53186824, 0.75454313 };
+    parameterVector answerMacroFlowParameters = { 0.95338442, 0.74042148, 0.09916127 };
+    parameterVector answerMicroFlowParameters = { 0.38093104, 0.49241325, 0.46187452 };
+    parameterVector answerMicroGradientFlowParameters = { 0.82121039, 0.90566759, 0.50466975, 0.04830311, 0.85951495 };
+    parameterVector answerMacroYieldParameters = { 0.01166325, 0.05331896, 0.28081774 };
+    parameterVector answerMicroYieldParameters = { 0.32982199, 0.60161431, 0.33157768 };
+    parameterVector answerMicroGradientYieldParameters = { 0.58881096, 0.11473813, 0.58001078, 0.83382529, 0.3260217 };
+
+
     parameterVector answerAmatrix;
     parameterVector answerBmatrix;
     parameterVector answerCmatrix;
     parameterVector answerDmatrix;
 
-    constantType answerAlphaMacro;
-    constantType answerAlphaMicro;
-    constantType answerAlphaMicroGradient;
-    constantType answerRelativeTolerance;
-    constantType answerAbsoluteTolerance;
+    errorOut error = micromorphicLinearElasticity::formIsotropicA( 1.7, 1.8, answerAmatrix );
+    if ( error ){
+        error->print();
+        results << "test_extractMaterialParameters & False\n";
+        return 1;
+    }
 
-    errorOut error = micromorphicElastoPlasticity::extractMaterialParameters( fparams,
-                         macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
-                         macroFlowParameters, microFlowParameters, microGradientFlowParameters,
-                         macroYieldParameters, microYieldParameters, microGradientYieldParameters,
-                         Amatrix, Bmatrix, Cmatrix, Dmatrix, alphaMacro, alphaMicro, alphaMicroGradient,
-                         relativeTolerance, absoluteTolerance );
+    error = micromorphicLinearElasticity::formIsotropicB( 2.8, 0.76, 0.15, 9.8, 5.4, answerBmatrix );
+    if ( error ){
+        error->print();
+        results << "test_extractMaterialParameters & False\n";
+        return 1;
+    }
+
+    error = micromorphicLinearElasticity::formIsotropicC( { 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.}, answerCmatrix );
+    if ( error ){
+        error->print();
+        results << "test_extractMaterialParameters & False\n";
+        return 1;
+    }
+
+    error = micromorphicLinearElasticity::formIsotropicD( 0.76, 5.4, answerDmatrix );
+    if ( error ){
+        error->print();
+        results << "test_extractMaterialParameters & False\n";
+        return 1;
+    }
+
+    constantType answerAlphaMacro = 0.1;
+    constantType answerAlphaMicro = 0.2;
+    constantType answerAlphaMicroGradient = 0.3;
+    constantType answerRelativeTolerance = 1.1;
+    constantType answerAbsoluteTolerance = 2.2;
+
+    error = micromorphicElastoPlasticity::extractMaterialParameters( fparams,
+                macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
+                macroFlowParameters, microFlowParameters, microGradientFlowParameters,
+                macroYieldParameters, microYieldParameters, microGradientYieldParameters,
+                Amatrix, Bmatrix, Cmatrix, Dmatrix, alphaMacro, alphaMicro, alphaMicroGradient,
+                relativeTolerance, absoluteTolerance );
 
     if ( error ){
         error->print();
         results << "test_extractMaterialParameters & False\n";
         return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( macroHardeningParameters, answerMacroHardeningParameters ) ){
+        results << "test_extractMaterialParameters (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( microHardeningParameters, answerMicroHardeningParameters ) ){
+        results << "test_extractMaterialParameters (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( microGradientHardeningParameters, answerMicroGradientHardeningParameters ) ){
+        results << "test_extractMaterialParameters (test 3) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( macroFlowParameters, answerMacroFlowParameters ) ){
+        results << "test_extractMaterialParameters (test 4) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( microFlowParameters, answerMicroFlowParameters ) ){
+        results << "test_extractMaterialParameters (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( microGradientFlowParameters, answerMicroGradientFlowParameters ) ){
+        results << "test_extractMaterialParameters (test 6) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( macroYieldParameters, answerMacroYieldParameters ) ){
+        results << "test_extractMaterialParameters (test 7) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( microYieldParameters, answerMicroYieldParameters ) ){
+        results << "test_extractMaterialParameters (test 8) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( microGradientYieldParameters, answerMicroGradientYieldParameters ) ){
+        results << "test_extractMaterialParameters (test 9) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( Amatrix, answerAmatrix ) ){
+        results << "test_extractMaterialParameters (test 10) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( Bmatrix, answerBmatrix ) ){
+        results << "test_extractMaterialParameters (test 11) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( Cmatrix, answerCmatrix ) ){
+        results << "test_extractMaterialParameters (test 12) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( Dmatrix, answerDmatrix ) ){
+        results << "test_extractMaterialParameters (test 13) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( alphaMacro, answerAlphaMacro ) ){
+        results << "test_extractMaterialParameters (test 14) & False\n";
+    }
+
+    if ( !vectorTools::fuzzyEquals( alphaMicro, answerAlphaMicro ) ){
+        results << "test_extractMaterialParameters (test 15) & False\n";
+    }
+
+    if ( !vectorTools::fuzzyEquals( alphaMicroGradient, answerAlphaMicroGradient ) ){
+        results << "test_extractMaterialParameters (test 16) & False\n";
+    }
+
+    if ( !vectorTools::fuzzyEquals( alphaMicro, answerAlphaMicro ) ){
+        results << "test_extractMaterialParameters (test 16) & False\n";
+    }
+
+    if ( !vectorTools::fuzzyEquals( relativeTolerance, answerRelativeTolerance ) ){
+        results << "test_extractMaterialParameters (test 17) & False\n";
+    }
+
+    if ( !vectorTools::fuzzyEquals( absoluteTolerance, answerAbsoluteTolerance ) ){
+        results << "test_extractMaterialParameters (test 18) & False\n";
     }
 
     results << "test_extractMaterialParameters & True\n";

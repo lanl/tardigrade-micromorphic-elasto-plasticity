@@ -4850,7 +4850,7 @@ namespace micromorphicElastoPlasticity{
 
             outputs[ i ] = parameterVector( fparams.begin() + start + 1, fparams.begin() + start + 1 + span );
 
-            start = start + 1 + span + 1;
+            start = start + 1 + span;
         }
 
         //Set the output values
@@ -4863,10 +4863,69 @@ namespace micromorphicElastoPlasticity{
         macroYieldParameters             = outputs[  6 ];
         microYieldParameters             = outputs[  7 ];
         microGradientYieldParameters     = outputs[  8 ];
-        Amatrix                          = outputs[  9 ];
-        Bmatrix                          = outputs[ 10 ];
-        Cmatrix                          = outputs[ 11 ];
-        Dmatrix                          = outputs[ 12 ];
+
+        //Form the stiffness tensors
+        errorOut error;
+        if ( outputs[ 9 ].size() == 2 ){
+            error = micromorphicLinearElasticity::formIsotropicA( outputs[ 9 ][ 0 ], outputs[ 9 ][ 1 ], Amatrix );
+        }
+        else{
+            std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 9 ].size() ) + " ) for the A stiffness tensor";
+            return new errorNode( "extractMaterialParameters",
+                                  outstr.c_str() );
+        }
+        
+        if ( error ){
+            errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the A stiffness tensor" );
+            result->addNext( error );
+            return result;
+        }
+
+        if ( outputs[ 10 ].size() == 5 ){
+            error = micromorphicLinearElasticity::formIsotropicB( outputs[ 10 ][ 0 ], outputs[ 10 ][ 1 ], outputs[ 10 ][ 2 ],
+                                                                 outputs[ 10 ][ 3 ], outputs[ 10 ][ 4 ], Bmatrix );
+        }
+        else{
+            std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 10 ].size() ) + " ) for the B stiffness tensor";
+            return new errorNode( "extractMaterialParameters",
+                                  outstr.c_str() );
+        }
+
+        if ( error ){
+            errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the B stiffness tensor" );
+            result->addNext( error );
+            return result;
+        }
+
+        if ( outputs[ 11 ].size() == 11 ){
+            error = micromorphicLinearElasticity::formIsotropicC( outputs[ 11 ], Cmatrix );
+        }
+        else{
+            std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 11 ].size() ) + " ) for the C stiffness tensor";
+            return new errorNode( "extractMaterialParameters",
+                                  outstr.c_str() );
+        }
+
+        if ( error ){
+            errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the C stiffness tensor" );
+            result->addNext( error );
+            return result;
+        }
+
+        if ( outputs[ 12 ].size() == 2 ){
+            error = micromorphicLinearElasticity::formIsotropicD( outputs[ 12 ][ 0 ], outputs[ 12 ][ 1 ], Dmatrix );
+        }
+        else{
+            std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 12 ].size() ) + " ) for the D stiffness tensor";
+            return new errorNode( "extractMaterialParameters",
+                                  outstr.c_str() );
+        }
+
+        if ( error ){
+            errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the D stiffness tensor" );
+            result->addNext( error );
+            return result;
+        }
 
         //Extract the integration and tolerance parameters
         if ( fparams.size() < start + 5 ){
