@@ -7623,6 +7623,251 @@ int test_evaluateYieldFunctions( std::ofstream &results ){
         return 1;
     }
 
+    //Test the jacobians
+    variableVector resultJ;
+
+    variableVector dMacroFdPK2;
+    variableType   dMacroFdMacroC;
+    variableVector dMacroFdElasticRCG;
+    variableVector dMicroFdSigma;
+    variableType   dMicroFdMicroC;
+    variableVector dMicroFdElasticRCG;
+    variableMatrix dMicroGradientFdM;
+    variableMatrix dMicroGradientFdMicroGradientC;
+    variableMatrix dMicroGradientFdElasticRCG;
+
+    #ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG_JACOBIAN;
+    error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion, microCohesion,
+                                                                  microGradientCohesion, elasticC, macroYieldParameters,
+                                                                  microYieldParameters, microGradientYieldParameters,
+                                                                  resultJ,
+                                                                  dMacroFdPK2, dMacroFdMacroC, dMacroFdElasticRCG,
+                                                                  dMicroFdSigma, dMicroFdMicroC, dMicroFdElasticRCG,
+                                                                  dMicroGradientFdM, dMicroGradientFdMicroGradientC,
+                                                                  dMicroGradientFdElasticRCG,
+                                                                  DEBUG_JACOBIAN );
+    #else
+    error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion, microCohesion,
+                                                                  microGradientCohesion, elasticC, macroYieldParameters,
+                                                                  microYieldParameters, microGradientYieldParameters,
+                                                                  resultJ,
+                                                                  dMacroFdPK2, dMacroFdMacroC, dMacroFdElasticRCG,
+                                                                  dMicroFdSigma, dMicroFdMicroC, dMicroFdElasticRCG,
+                                                                  dMicroGradientFdM, dMicroGradientFdMicroGradientC,
+                                                                  dMicroGradientFdElasticRCG );
+    #endif
+
+    if ( error ){
+        error->print();
+        results << "test_evaluateYieldFunctions & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( resultJ, answer ) ){
+        results << "test_evaluateYieldFunctions (test 2) & False\n";
+        return 1;
+    }
+
+    //Test Jacobians w.r.t. the PK2 stress
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < PK2Stress.size(); i++ ){
+        constantVector delta( PK2Stress.size(), 0 );
+        delta[ i ] = eps * fabs( PK2Stress[ i ] ) + eps;
+
+        variableVector resultP;
+        variableVector resultM;
+
+        #ifdef DEBUG_MODE
+        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress + delta, SigmaStress, M, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultP, DEBUGP );
+        #else
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress + delta, SigmaStress, M, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultP );
+        #endif
+
+        if ( error ){
+            error->print();
+            results << "test_evaluateYieldFunctions & False\n";
+            return 1;
+        }
+
+        #ifdef DEBUG_MODE
+        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress - delta, SigmaStress, M, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultM, DEBUGM );
+        #else
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress - delta, SigmaStress, M, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultM );
+        #endif
+
+        if ( error ){
+            error->print();
+            results << "test_evaluateYieldFunctions & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol[ 0 ], dMacroFdPK2[ i ] ) ){
+            results << "test_evaluateYieldFunctions (test 3) & False\n";
+            return 1;
+        }
+
+        if ( !vectorTools::fuzzyEquals( gradCol[ 1 ], 0. ) ){
+            results << "test_evaluateYieldFunctions (test 4) & False\n";
+            return 1;
+        }
+
+        for ( unsigned int j = 2; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_evaluateYieldFunctions (test 5) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test Jacobians w.r.t. the reference micro stress
+    for ( unsigned int i = 0; i < SigmaStress.size(); i++ ){
+        constantVector delta( SigmaStress.size(), 0 );
+        delta[ i ] = eps * fabs( SigmaStress[ i ] ) + eps;
+
+        variableVector resultP;
+        variableVector resultM;
+
+        #ifdef DEBUG_MODE
+        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress + delta, M, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultP, DEBUGP );
+        #else
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress + delta, M, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultP );
+        #endif
+
+        if ( error ){
+            error->print();
+            results << "test_evaluateYieldFunctions & False\n";
+            return 1;
+        }
+
+        #ifdef DEBUG_MODE
+        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress - delta, M, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultM, DEBUGM );
+        #else
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress - delta, M, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultM );
+        #endif
+
+        if ( error ){
+            error->print();
+            results << "test_evaluateYieldFunctions & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol[ 0 ], 0. ) ){
+            results << "test_evaluateYieldFunctions (test 6) & False\n";
+            return 1;
+        }
+
+        if ( !vectorTools::fuzzyEquals( gradCol[ 1 ], dMicroFdSigma[ i ] ) ){
+            results << "test_evaluateYieldFunctions (test 7) & False\n";
+            return 1;
+        }
+
+        for ( unsigned int j = 2; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_evaluateYieldFunctions (test 8) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test Jacobians w.r.t. the higher order stress
+    for ( unsigned int i = 0; i < M.size(); i++ ){
+        constantVector delta( M.size(), 0 );
+        delta[ i ] = eps * fabs( M[ i ] ) + eps;
+
+        variableVector resultP;
+        variableVector resultM;
+
+        #ifdef DEBUG_MODE
+        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M + delta, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultP, DEBUGP );
+        #else
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M + delta, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultP );
+        #endif
+
+        if ( error ){
+            error->print();
+            results << "test_evaluateYieldFunctions & False\n";
+            return 1;
+        }
+
+        #ifdef DEBUG_MODE
+        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M - delta, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultM, DEBUGM );
+        #else
+        error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M - delta, macroCohesion, microCohesion,
+                                                                      microGradientCohesion, elasticC, macroYieldParameters,
+                                                                      microYieldParameters, microGradientYieldParameters,
+                                                                      resultM );
+        #endif
+
+        if ( error ){
+            error->print();
+            results << "test_evaluateYieldFunctions & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        if ( !vectorTools::fuzzyEquals( gradCol[ 0 ], 0. ) ){
+            results << "test_evaluateYieldFunctions (test 9) & False\n";
+            return 1;
+        }
+
+        if ( !vectorTools::fuzzyEquals( gradCol[ 1 ], 0. ) ){
+            results << "test_evaluateYieldFunctions (test 10) & False\n";
+            return 1;
+        }
+
+        for ( unsigned int j = 2; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFdM[ j - 2 ][ i ] ) ){
+                results << "test_evaluateYieldFunctions (test 11) & False\n";
+                return 1;
+            }
+        }
+    }
+
     results << "test_evaluateYieldFunctions & True\n";
     return 0;
 }

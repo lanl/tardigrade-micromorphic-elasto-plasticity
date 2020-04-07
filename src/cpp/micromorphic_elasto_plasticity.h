@@ -423,6 +423,19 @@ namespace micromorphicElastoPlasticity{
                                      const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
                                      const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues,
                                      std::map< std::string, solverTools::floatVector > &DEBUG );
+
+    errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                     const variableVector &elasticRightCauchyGreen,
+                                     const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
+                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues,
+                                     variableVector &dMacroFdPK2, variableType &dMacroFdMacroC, variableVector &dMacroFdElasticRCG,
+                                     variableVector &dMicroFdSigma, variableType &dMicroFdMicroC, variableVector &dMicroFdElasticRCG,
+                                     variableMatrix &dMicroGradientFdM, variableMatrix &dMicroGradientFdMicroGradientC,
+                                     variableMatrix &dMicroGradientFdElasticRCG,
+                                     std::map< std::string, solverTools::floatVector > &DEBUG );
+
     #else
     errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                      const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
@@ -430,6 +443,17 @@ namespace micromorphicElastoPlasticity{
                                      const variableVector &elasticRightCauchyGreen,
                                      const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
                                      const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues );
+
+    errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                     const variableVector &elasticRightCauchyGreen,
+                                     const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
+                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues,
+                                     variableVector &dMacroFdPK2, variableType &dMacroFdMacroC, variableVector &dMacroFdElasticRCG,
+                                     variableVector &dMicroFdSigma, variableType &dMicroFdMicroC, variableVector &dMicroFdElasticRCG,
+                                     variableMatrix &dMicroGradientFdM, variableMatrix &dMicroGradientFdMicroGradientC,
+                                     variableMatrix &dMicroGradientFdElasticRCG );
     #endif
 
     #ifdef DEBUG_MODE

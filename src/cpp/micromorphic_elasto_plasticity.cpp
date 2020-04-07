@@ -2856,11 +2856,11 @@ namespace micromorphicElastoPlasticity{
          * :param const variableVector &microGradientCohesion: The micro gradient cohesion value.
          * :param const variableVector &elasticRightCauchyGreen: The elastic right cauchy green deformation.
          * :param const parameterVector &macroFlowParameters: The macro plastic parameters.
-         *     [ friction angle, beta, yield value ]
+         *     [ friction angle, beta ]
          * :param const parameterVector &microFlowParameters: The micro plastic parameters.
-         *     [ friction angle, beta, yield value ]
+         *     [ friction angle, beta ]
          * :param const parameterVector &microGradientFlowParameters: The micro gradient plastic parameters.
-         *     [ friction angle, beta, yield value ]
+         *     [ friction angle, beta ]
          * :param variableVector &macroFlowDirection: The flow direction for the macro scale plasticity.
          * :param variableVector &microFlowDirection: The flow direction for the micro scale plasticity.
          * :param variableVector &microGradientFlowDirection: The flow direction for the micro gradient 
@@ -2975,11 +2975,11 @@ namespace micromorphicElastoPlasticity{
          * :param const variableVector &microGradientCohesion: The micro gradient cohesion value.
          * :param const variableVector &elasticRightCauchyGreen: The elastic right cauchy green deformation.
          * :param const parameterVector &macroFlowParameters: The macro plastic parameters.
-         *     [ friction angle, beta, yield value ]
+         *     [ friction angle, beta ]
          * :param const parameterVector &microFlowParameters: The micro plastic parameters.
-         *     [ friction angle, beta, yield value, nHardeningCurveParameters ]
+         *     [ friction angle, beta ]
          * :param const parameterVector &microGradientFlowParameters: The micro gradient plastic parameters.
-         *     [ friction angle, beta, yield value, nHardeningCurveParameters ]
+         *     [ friction angle, beta ]
          * :param variableVector &macroFlowDirection: The flow direction for the macro scale plasticity.
          * :param variableVector &microFlowDirection: The flow direction for the micro scale plasticity.
          * :param variableVector &microGradientFlowDirection: The flow direction for the micro gradient 
@@ -5197,6 +5197,136 @@ namespace micromorphicElastoPlasticity{
                                                               microGradientYieldParameters[ 0 ],
                                                               microGradientYieldParameters[ 1 ],
                                                               yftmp );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluateYieldFunctions",
+                                             "Error in the computation of the micro yield equation" );
+            result->addNext( error );
+            return result;
+        }
+
+        yieldFunctionValues[ 2 ] = yftmp[ 0 ];
+        yieldFunctionValues[ 3 ] = yftmp[ 1 ];
+        yieldFunctionValues[ 4 ] = yftmp[ 2 ];
+
+        return NULL;
+    }
+
+    #ifdef DEBUG_MODE
+    errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                     const variableVector &elasticRightCauchyGreen,
+                                     const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
+                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues,
+                                     variableVector &dMacroFdPK2, variableType &dMacroFdMacroC, variableVector &dMacroFdElasticRCG,
+                                     variableVector &dMicroFdSigma, variableType &dMicroFdMicroC, variableVector &dMicroFdElasticRCG,
+                                     variableMatrix &dMicroGradientFdM, variableMatrix &dMicroGradientFdMicroGradientC,
+                                     variableMatrix &dMicroGraientFdElasticRCG,
+                                     std::map< std::string, solverTools::floatVector > &DEBUG ){
+    #else
+    errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
+                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
+                                     const variableVector &elasticRightCauchyGreen,
+                                     const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
+                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues,
+                                     variableVector &dMacroFdPK2, variableType &dMacroFdMacroC, variableVector &dMacroFdElasticRCG,
+                                     variableVector &dMicroFdSigma, variableType &dMicroFdMicroC, variableVector &dMicroFdElasticRCG,
+                                     variableMatrix &dMicroGradientFdM, variableMatrix &dMicroGradientFdMicroGradientC,
+                                     variableMatrix &dMicroGradientFdElasticRCG ){
+    #endif
+        /*!
+         * Evaluate all of the yield functions.
+         *
+         * :param const variableVector &PK2Stress: The second Piola Kirchhoff stress
+         * :param const variableVector &referenceMicroStress: The micro stress in the reference configuration.
+         * :param const variableVector &referenceHigherOrderStress: The higher order stress in the reference configuration.
+         * :param const variableType &macroCohesion: The macro cohesion value.
+         * :param const variableType &microCohesion: The micro cohesion value.
+         * :param const variableVector &microGradientCohesion: The micro gradient cohesion value.
+         * :param const variableVector &elasticRightCauchyGreen: The elastic right Cauchy-Green deformation tensor.
+         * :param const parameterVector &macroYieldParameters: The macro yield parameters.
+         * :param const parameterVector &microYieldParameters: The micro yield parameters.
+         * :param const parameterVector &microGradientYieldParameters: The micro gradient yield parameters.
+         * :param variableVector &yieldFunctionValues: The current values of the yield functions.
+         * :param variableVector &dMacroFdPK2: The Jacobian of the macro yield function w.r.t. the PK2 stress
+         * :param variableType &dMacroFdMacroC: The Jacobian of the macro yield function w.r.t. the macro cohesion
+         * :param variableVector &dMacroFdElasticRCG: The Jacobian of the macro yield function w.r.t. the elastic 
+         *     right Cauchy-Green deformation tensor.
+         * :param variableVector &dMicroFdSigma: The Jacobian of the micro yield function w.r.t. the reference
+         *     symmetric micro stress.
+         * :param variableType &dMicroFdMicroC: The Jacobian of the micro yield function w.r.t. the micro cohesion
+         * :param variableVector &dMicroFdElasticRCG: The Jacobian of the micro yield function w.r.t. the elastic 
+         *     right Cauchy-Green deformation tensor.
+         * :param variableMatrix &dMicroGradientFdM: The Jacobian of the micro gradient yield function w.r.t. the reference
+         *     higher order stress
+         * :param variableMatrix &dMicroGradientFdMicroGradientC: The Jacobian of the micro gradient yield function w.r.t. 
+         *     the micro gradient cohesion
+         * :param variableMatrix &dMicroGradientFdElasticRCG: The Jacobian of the micro gradient yield function w.r.t. the elastic 
+         *     right Cauchy-Green deformation tensor.
+         * :param std::map< std::string, solverTools::floatVector > &DEBUG: The debug map. Only output when in debug mode.
+         */
+
+        if ( macroYieldParameters.size() != 2 ){
+            std::cout << "macroYieldParameters: "; vectorTools::print( macroYieldParameters );
+            return new errorNode( "evaluateYieldFunctions (jacobian)",
+                                  "The macro yield functions must have a length of 2" );
+        }
+
+        if ( microYieldParameters.size() != 2 ){
+            return new errorNode( "evaluateYieldFunctions (jacobian)",
+                                  "The micro yield functions must have a length of 2" );
+        }
+
+        if ( microGradientYieldParameters.size() != 2 ){
+            return new errorNode( "evaluateYieldFunctions (jacobian)",
+                                  "The micro Gradient yield functions must have a length of 2" );
+        }
+
+        yieldFunctionValues = variableVector( 5, 0 );
+        errorOut error = computeSecondOrderDruckerPragerYieldEquation( PK2Stress, macroCohesion, elasticRightCauchyGreen,
+                                                                       macroYieldParameters[ 0 ], macroYieldParameters[ 1 ],
+                                                                       yieldFunctionValues[ 0 ], dMacroFdPK2, dMacroFdMacroC,
+                                                                       dMacroFdElasticRCG );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluateYieldFunctions (jacobian)",
+                                             "Error in the computation of the macro yield equation" );
+            result->addNext( error );
+            return result;
+        }
+
+        #ifdef DEBUG_MODE
+            tmp = { yieldFunctionValues[ 0 ] };
+            DEBUG.emplace( "macroYieldFunction", tmp );
+        #endif
+
+        error = computeSecondOrderDruckerPragerYieldEquation( referenceMicroStress, microCohesion,
+                                                              elasticRightCauchyGreen,
+                                                              microYieldParameters[ 0 ], microYieldParameters[ 1 ],
+                                                              yieldFunctionValues[ 1 ], dMicroFdSigma, dMicroFdMicroC,
+                                                              dMicroFdElasticRCG );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluateYieldFunctions",
+                                             "Error in the computation of the micro yield equation" );
+            result->addNext( error );
+            return result;
+        }
+
+        #ifdef DEBUG_MODE
+            tmp = { yieldFunctionValues[ 1 ] };
+            DEBUG.emplace( "microYieldFunction", tmp );
+        #endif
+
+        variableVector yftmp;
+        error = computeHigherOrderDruckerPragerYieldEquation( referenceHigherOrderStress, microGradientCohesion,
+                                                              elasticRightCauchyGreen,
+                                                              microGradientYieldParameters[ 0 ],
+                                                              microGradientYieldParameters[ 1 ],
+                                                              yftmp, dMicroGradientFdM, dMicroGradientFdMicroGradientC,
+                                                              dMicroGradientFdElasticRCG );
 
         if ( error ){
             errorOut result = new errorNode( "evaluateYieldFunctions",
