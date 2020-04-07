@@ -426,7 +426,19 @@ namespace micromorphicElastoPlasticity{
                               solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts );
     #endif
 
-    errorOut extractMaterialParameters( std::vector< double > &fparams,
+    errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
+                                                     const double ( &grad_phi )[ 9 ][ 3 ],
+                                                     variableVector &deformationGradient, variableVector &microDeformation,
+                                                     variableVector &gradientMicroDeformation );
+
+    errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
+                                                     const double ( &grad_phi )[ 9 ][ 3 ],
+                                                     variableVector &deformationGradient, variableVector &microDeformation,
+                                                     variableVector &gradientMicroDeformation,
+                                                     variableMatrix &dFdGradU, variableMatrix &dChidPhi,
+                                                     variableMatrix &dGradChidGradPhi );
+
+    errorOut extractMaterialParameters( const std::vector< double > &fparams,
                                         variableVector &macroHardeningParameters, variableVector &microHardeningParameters,
                                         variableVector &microGradientHardeningParameters,
                                         variableVector &macroFlowParameters, variableVector &microFlowParameters,
@@ -440,7 +452,7 @@ namespace micromorphicElastoPlasticity{
 
     errorOut extractStateVariables( std::vector< double > &SDVS,
                                     variableType &previousMacroStrainISV, variableType &previousMicroStrainISV,
-                                    variableType &previousMicroGradientStrainISV,
+                                    variableVector &previousMicroGradientStrainISV,
                                     variableType &previousMacroGamma, variableType &previousMicroGamma,
                                     variableVector &previousMicroGradientGamma,
                                     variableVector &previousPlasticDeformationGradient,
