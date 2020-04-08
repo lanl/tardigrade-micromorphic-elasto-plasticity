@@ -3256,9 +3256,19 @@ namespace micromorphicElastoPlasticity{
         variableVector currentMicroGradientGamma( x.begin() + 2, x.begin() + 5 );
 
         //Compute the cohesions
-        variableType currentMacroCohesion = ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] * * currentMacroStrainISV;
-        variableType currentMicroCohesion = ( *microHardeningParameters )[ 0 ] + ( *microHardeningParameters )[ 1 ] * * currentMicroStrainISV;
-        variableVector currentMicroGradientCohesion = ( *microGradientHardeningParameters )[ 0 ] + ( *microGradientHardeningParameters )[ 1 ] * * currentMicroGradientStrainISV;
+        variableType currentMacroCohesion, currentMicroCohesion;
+        variableVector currentMicroGradientCohesion;
+
+        errorOut error = computeCohesion( *currentMacroStrainISV, *currentMicroStrainISV, *currentMicroGradientStrainISV,
+                                          *macroHardeningParameters, *microHardeningParameters, *microGradientHardeningParameters,
+                                           currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the computation of the initial cohesion" );
+            result->addNext( error );
+            return result;
+        }
 
         #ifdef DEBUG_MODE
             solverTools::floatVector tmp = { currentMacroCohesion };
@@ -3271,10 +3281,10 @@ namespace micromorphicElastoPlasticity{
         //Compute the elastic deformation measures
         variableVector currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen, currentElasticPsi, currentElasticGamma;
 
-        errorOut error = computeElasticDeformationMeasures( *currentElasticDeformationGradient, *currentElasticMicroDeformation,
-                                                            *currentElasticMicroGradient, currentElasticRightCauchyGreen,
-                                                            currentElasticMicroRightCauchyGreen, currentElasticPsi,
-                                                            currentElasticGamma );
+        error = computeElasticDeformationMeasures( *currentElasticDeformationGradient, *currentElasticMicroDeformation,
+                                                   *currentElasticMicroGradient, currentElasticRightCauchyGreen,
+                                                    currentElasticMicroRightCauchyGreen, currentElasticPsi,
+                                                    currentElasticGamma );
 
         if ( error ){
             errorOut result = new errorNode( "computeResidual",
@@ -3348,9 +3358,16 @@ namespace micromorphicElastoPlasticity{
         #endif
 
         //Compute the new cohesion values
-        currentMacroCohesion = ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] * * currentMacroStrainISV;
-        currentMicroCohesion = ( *microHardeningParameters )[ 0 ] + ( *microHardeningParameters )[ 1 ] * * currentMicroStrainISV;
-        currentMicroGradientCohesion = ( *microGradientHardeningParameters )[ 0 ] + ( *microGradientHardeningParameters )[ 1 ] * * currentMicroGradientStrainISV;
+        error = computeCohesion( *currentMacroStrainISV, *currentMicroStrainISV, *currentMicroGradientStrainISV,
+                                 *macroHardeningParameters, *microHardeningParameters, *microGradientHardeningParameters,
+                                  currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual",
+                                             "Error in the computation of the updated cohesion" );
+            result->addNext( error );
+            return result;
+        }
 
         #ifdef DEBUG_MODE
             tmp = { currentMacroCohesion };
@@ -3660,17 +3677,27 @@ namespace micromorphicElastoPlasticity{
         variableVector currentMicroGradientGamma( x.begin() + 2, x.begin() + 5 );
 
         //Compute the cohesions
-        variableType currentMacroCohesion = ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] * * currentMacroStrainISV;
-        variableType currentMicroCohesion = ( *microHardeningParameters )[ 0 ] + ( *microHardeningParameters )[ 1 ] * * currentMicroStrainISV;
-        variableVector currentMicroGradientCohesion = ( *microGradientHardeningParameters )[ 0 ] + ( *microGradientHardeningParameters )[ 1 ] * * currentMicroGradientStrainISV;
+        variableType currentMacroCohesion, currentMicroCohesion;
+        variableVector currentMicroGradientCohesion;
+
+        errorOut error = computeCohesion( *currentMacroStrainISV, *currentMicroStrainISV, *currentMicroGradientStrainISV,
+                                          *macroHardeningParameters, *microHardeningParameters, *microGradientHardeningParameters,
+                                           currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual (jacobian)",
+                                             "Error in the computation of the initial cohesions" );
+            result->addNext( error );
+            return result;
+        }
 
         //Compute the elastic deformation measures
         variableVector currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen, currentElasticPsi, currentElasticGamma;
 
-        errorOut error = computeElasticDeformationMeasures( *currentElasticDeformationGradient, *currentElasticMicroDeformation,
-                                                            *currentElasticMicroGradient, currentElasticRightCauchyGreen,
-                                                            currentElasticMicroRightCauchyGreen, currentElasticPsi,
-                                                            currentElasticGamma );
+        error = computeElasticDeformationMeasures( *currentElasticDeformationGradient, *currentElasticMicroDeformation,
+                                                   *currentElasticMicroGradient, currentElasticRightCauchyGreen,
+                                                    currentElasticMicroRightCauchyGreen, currentElasticPsi,
+                                                    currentElasticGamma );
 
         if ( error ){
             errorOut result = new errorNode( "computeResidual (jacobian)",
@@ -3736,14 +3763,32 @@ namespace micromorphicElastoPlasticity{
         #endif
 
         //Compute the new cohesion values
+        variableType dMacroCohesiondCurrentMacroStrainISV, dMicroCohesiondCurrentMicroStrainISV;
+        variableMatrix dMicroGradientCohesiondCurrentMicroGradientStrainISV;
+
+        error = computeCohesion( *currentMacroStrainISV, *currentMicroStrainISV, *currentMicroGradientStrainISV,
+                                 *macroHardeningParameters, *microHardeningParameters, *microGradientHardeningParameters,
+                                  currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion,
+                                  dMacroCohesiondCurrentMacroStrainISV, dMicroCohesiondCurrentMicroStrainISV,
+                                  dMicroGradientCohesiondCurrentMicroGradientStrainISV );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeResidual (jacobian)",
+                                             "Error in the computation of the updated cohesions" );
+            result->addNext( error );
+            return result;
+        }
+
+        //
         currentMacroCohesion = ( *macroHardeningParameters )[ 0 ] + ( *macroHardeningParameters )[ 1 ] * * currentMacroStrainISV;
         currentMicroCohesion = ( *microHardeningParameters )[ 0 ] + ( *microHardeningParameters )[ 1 ] * * currentMicroStrainISV;
         currentMicroGradientCohesion = ( *microGradientHardeningParameters )[ 0 ] + ( *microGradientHardeningParameters )[ 1 ] * * currentMicroGradientStrainISV;
 
         //Compute the jacobians so far
-        variableType dMacroCdMacroGamma = ( *macroHardeningParameters )[ 1 ] * dCurrentMacroISVdCurrentMacroGamma;
-        variableType dMicroCdMicroGamma = ( *microHardeningParameters )[ 1 ] * dCurrentMicroISVdCurrentMicroGamma;
-        variableMatrix dMicroGradientCdMicroGradientGamma = ( *microGradientHardeningParameters )[ 1 ] * dCurrentMicroGradISVdCurrentMicroGradGamma;
+        variableType dMacroCdMacroGamma = dMacroCohesiondCurrentMacroStrainISV * dCurrentMacroISVdCurrentMacroGamma;
+        variableType dMicroCdMicroGamma = dMicroCohesiondCurrentMicroStrainISV * dCurrentMicroISVdCurrentMicroGamma;
+        variableMatrix dMicroGradientCdMicroGradientGamma = vectorTools::dot( dMicroGradientCohesiondCurrentMicroGradientStrainISV,
+                                                                              dCurrentMicroGradISVdCurrentMicroGradGamma );
         #ifdef DEBUG_MODE
             tmp = { dMacroCdMacroGamma };
             DEBUG.emplace( "dMacroCdMacroGamma", tmp );
@@ -4362,10 +4407,20 @@ namespace micromorphicElastoPlasticity{
         variableMatrix previousdMicroGradientGdMicroGradientC;
 
         //Compute the previous cohesion values
-        variableType previousMacroCohesion = macroHardeningParameters[ 0 ] + macroHardeningParameters[ 1 ] * previousMacroStrainISV;
-        variableType previousMicroCohesion = microHardeningParameters[ 0 ] + microHardeningParameters[ 1 ] * previousMicroStrainISV;
-        variableVector previousMicroGradientCohesion = microGradientHardeningParameters[ 0 ]
-                                                     + microGradientHardeningParameters[ 1 ] * previousMicroGradientStrainISV;
+        variableType previousMacroCohesion, previousMicroCohesion;
+        variableVector previousMicroGradientCohesion;
+
+        error = computeCohesion( previousMacroStrainISV, previousMicroStrainISV, previousMicroGradientStrainISV,
+                                 macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
+                                 previousMacroCohesion, previousMicroCohesion, previousMicroGradientCohesion );
+
+        if ( error ){
+            errorOut result = new errorNode( "evaluate_model",
+                                             "Error in the computation of the previous cohesions" );
+            result->addNext( error );
+            result->print();               //Print the error message
+            output_message = buffer.str(); //Save the output to enable message printing
+        }
 
         //Assume that the current strain ISVs are the same as the old
         variableType currentMacroStrainISV = previousMacroStrainISV;
@@ -4490,12 +4545,28 @@ namespace micromorphicElastoPlasticity{
                                                 currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV,
                                                 alphaMacro, alphaMicro, alphaMicroGradient );
 
-            //Compute the current cohesion values
-            currentMacroCohesion = macroHardeningParameters[ 0 ] + macroHardeningParameters[ 1 ] * currentMacroStrainISV;
-            currentMicroCohesion = microHardeningParameters[ 0 ] + microHardeningParameters[ 1 ] * currentMicroStrainISV;
-            currentMicroGradientCohesion = microGradientHardeningParameters[ 0 ]
-                                         + microGradientHardeningParameters[ 1 ] * currentMicroGradientStrainISV;
+            if ( error ){
+                errorOut result = new errorNode( "evaluate_model",
+                                                 "Error in the evolution of the current strain state variables" );
+                result->addNext( error );
+                result->print();               //Print the error message
+                output_message = buffer.str(); //Save the output to enable message passing
+                return 2;
+            }
 
+            //Compute the current cohesion values
+            error = computeCohesion( currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV,
+                                     macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
+                                     currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion );
+
+            if ( error ){
+                errorOut result = new errorNode( "evaluate_model",
+                                                 "Error in the evolution of the updated cohesion" );
+                result->addNext( error );
+                result->print();               //Print the error message
+                output_message = buffer.str(); //Save the output to enable message passing
+                return 2;
+            }
         }
 
         //Update the elastic deformation
