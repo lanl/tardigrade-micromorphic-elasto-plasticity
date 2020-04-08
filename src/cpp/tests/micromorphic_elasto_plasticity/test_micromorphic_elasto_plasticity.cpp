@@ -8135,6 +8135,254 @@ int test_evaluateYieldFunctions( std::ofstream &results ){
     return 0;
 }
 
+int test_computeCohesion( std::ofstream &results ){
+    /*!
+     * Test the computation of the cohesion
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    variableType   macroStrainISV = 1.0;
+    variableType   microStrainISV = 2.0;
+    variableVector microGradientStrainISV = { 3.0, 4.0, 5.0 };
+
+    parameterVector macroHardeningParameters = { 0.1, 0.2 };
+    parameterVector microHardeningParameters = { 0.3, 0.4 };
+    parameterVector microGradientHardeningParameters = { 0.5, 0.6 };
+
+    variableType   answerMacroC = 0.1 + 0.2 * 1.0;
+    variableType   answerMicroC = 0.3 + 0.4 * 2.0;
+    variableVector answerMicroGradientC = { 0.5 + 0.6 * 3.0, 0.5 + 0.6 * 4.0, 0.5 + 0.6 * 5.0 };
+
+    variableType   macroC, microC;
+    variableVector microGradientC;
+
+    errorOut error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV, microStrainISV, microGradientStrainISV,
+                                                                    macroHardeningParameters, microHardeningParameters,
+                                                                    microGradientHardeningParameters, macroC, microC,
+                                                                    microGradientC );
+
+    if ( error ){
+        results << "test_computeCohesion & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( macroC, answerMacroC ) ){
+        results << "test_computeCohesion (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( microC, answerMicroC ) ){
+        results << "test_computeCohesion (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( microGradientC, answerMicroGradientC ) ){
+        results << "test_computeCohesion (test 3) & False\n";
+        return 1;
+    }
+
+    //Test the Jacobians
+    variableType   macroCJ, microCJ;
+    variableVector microGradientCJ;
+
+    variableType dMacroCdMacroStrainISV, dMicroCdMicroStrainISV;
+    variableMatrix dMicroGradientCdMicroStrainISV;
+
+    error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV, microStrainISV, microGradientStrainISV,
+                                                           macroHardeningParameters, microHardeningParameters,
+                                                           microGradientHardeningParameters, macroCJ, microCJ,
+                                                           microGradientCJ, dMacroCdMacroStrainISV,
+                                                           dMicroCdMicroStrainISV, dMicroGradientCdMicroStrainISV );
+
+    if ( error ){
+        results << "test_computeCohesion & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( macroCJ, answerMacroC ) ){
+        results << "test_computeCohesion (test 4) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( microCJ, answerMicroC ) ){
+        results << "test_computeCohesion (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( microGradientCJ, answerMicroGradientC ) ){
+        results << "test_computeCohesion (test 6) & False\n";
+        return 1;
+    }
+
+    //Test Jacobian w.r.t. the macro strain ISV
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < 1; i++ ){
+        constantType delta = eps * fabs( macroStrainISV ) + eps;
+
+        variableType macroCP, microCP;
+        variableType macroCM, microCM;
+
+        variableVector microGradientCP;
+        variableVector microGradientCM;
+
+        error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV + delta, microStrainISV, microGradientStrainISV,
+                                                               macroHardeningParameters, microHardeningParameters,
+                                                               microGradientHardeningParameters, macroCP, microCP,
+                                                               microGradientCP );
+
+        if ( error ){
+            results << "test_computeCohesion & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV - delta, microStrainISV, microGradientStrainISV,
+                                                               macroHardeningParameters, microHardeningParameters,
+                                                               microGradientHardeningParameters, macroCM, microCM,
+                                                               microGradientCM );
+
+        if ( error ){
+            results << "test_computeCohesion & False\n";
+            return 1;
+        }
+
+        variableType grad = ( macroCP - macroCM ) / ( 2 * delta );
+
+        if ( !vectorTools::fuzzyEquals( grad, dMacroCdMacroStrainISV ) ){
+            results << "test_computeCohesion (test 7) & False\n";
+            return 1;
+        }
+
+        grad = ( microCP - microCM ) / ( 2 * delta );
+
+        if ( !vectorTools::fuzzyEquals( grad, 0. ) ){
+            results << "test_computeCohesion (test 8) & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( microGradientCP - microGradientCM ) / ( 2 * delta );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_computeCohesion (test 9) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test Jacobian w.r.t. the micro strain ISV
+    for ( unsigned int i = 0; i < 1; i++ ){
+        constantType delta = eps * fabs( microStrainISV ) + eps;
+
+        variableType macroCP, microCP;
+        variableType macroCM, microCM;
+
+        variableVector microGradientCP;
+        variableVector microGradientCM;
+
+        error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV, microStrainISV + delta, microGradientStrainISV,
+                                                               macroHardeningParameters, microHardeningParameters,
+                                                               microGradientHardeningParameters, macroCP, microCP,
+                                                               microGradientCP );
+
+        if ( error ){
+            results << "test_computeCohesion & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV, microStrainISV - delta, microGradientStrainISV,
+                                                               macroHardeningParameters, microHardeningParameters,
+                                                               microGradientHardeningParameters, macroCM, microCM,
+                                                               microGradientCM );
+
+        if ( error ){
+            results << "test_computeCohesion & False\n";
+            return 1;
+        }
+
+        variableType grad = ( macroCP - macroCM ) / ( 2 * delta );
+
+        if ( !vectorTools::fuzzyEquals( grad, 0. ) ){
+            results << "test_computeCohesion (test 10) & False\n";
+            return 1;
+        }
+
+        grad = ( microCP - microCM ) / ( 2 * delta );
+
+        if ( !vectorTools::fuzzyEquals( grad, dMicroCdMicroStrainISV ) ){
+            results << "test_computeCohesion (test 11) & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( microGradientCP - microGradientCM ) / ( 2 * delta );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
+                results << "test_computeCohesion (test 12) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test Jacobian w.r.t. the micro gradient strain ISV
+    for ( unsigned int i = 0; i < microGradientStrainISV.size(); i++ ){
+        constantVector delta( microGradientStrainISV.size(), 0 );
+        delta[ i ] = eps * fabs( microGradientStrainISV[ i ] ) + eps;
+
+        variableType macroCP, microCP;
+        variableType macroCM, microCM;
+
+        variableVector microGradientCP;
+        variableVector microGradientCM;
+
+        error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV, microStrainISV, microGradientStrainISV + delta,
+                                                               macroHardeningParameters, microHardeningParameters,
+                                                               microGradientHardeningParameters, macroCP, microCP,
+                                                               microGradientCP );
+
+        if ( error ){
+            results << "test_computeCohesion & False\n";
+            return 1;
+        }
+
+        error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV, microStrainISV, microGradientStrainISV - delta,
+                                                               macroHardeningParameters, microHardeningParameters,
+                                                               microGradientHardeningParameters, macroCM, microCM,
+                                                               microGradientCM );
+
+        if ( error ){
+            results << "test_computeCohesion & False\n";
+            return 1;
+        }
+
+        variableType grad = ( macroCP - macroCM ) / ( 2 * delta[ i ] );
+
+        if ( !vectorTools::fuzzyEquals( grad, 0. ) ){
+            results << "test_computeCohesion (test 13) & False\n";
+            return 1;
+        }
+
+        grad = ( microCP - microCM ) / ( 2 * delta[ i ] );
+
+        if ( !vectorTools::fuzzyEquals( grad, 0. ) ){
+            results << "test_computeCohesion (test 14) & False\n";
+            return 1;
+        }
+
+        variableVector gradCol = ( microGradientCP - microGradientCM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientCdMicroStrainISV[ j ][ i ] ) ){
+                results << "test_computeCohesion (test 15) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    results << "test_computeCohesion & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -8165,6 +8413,7 @@ int main(){
     test_extractStateVariables( results );
     test_assembleFundamentalDeformationMeasures( results );
     test_evaluateYieldFunctions( results );
+    test_computeCohesion( results );
     test_cout_redirect( results );
     test_cerr_redirect( results );
 

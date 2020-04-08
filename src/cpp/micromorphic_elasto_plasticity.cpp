@@ -4352,9 +4352,6 @@ namespace micromorphicElastoPlasticity{
         variableVector previousReferenceMicroStress( dim * dim, 0 );
         variableVector previousReferenceHigherOrderStress( dim * dim * dim, 0 );
 
-        //Initialize previous elastic deformation measures. If the evolution of plastic strain was previously zero these won't matter
-        variableVector previousElasticRightCauchyGreen, previousElasticMicroRightCauchyGreen, previousElasticPsi, previousElasticGamma;
-
         //Initialize the previous elastic plastic flow directions. If the evolution of plastic strain was previously zero these won't matter.
         variableVector previousMacroFlowDirection( dim * dim, 0 );
         variableVector previousMicroFlowDirection( dim * dim, 0 );
@@ -4410,6 +4407,9 @@ namespace micromorphicElastoPlasticity{
             }
 
             //Compute the elastic deformation measures for the plastic evolution
+            variableVector previousElasticRightCauchyGreen, previousElasticMicroRightCauchyGreen,
+                           previousElasticPsi, previousElasticGamma;
+
             error = computeElasticDeformationMeasures( previousElasticDeformationGradient, previousElasticMicroDeformation,
                                                        previousElasticGradientMicroDeformation,
                                                        previousElasticRightCauchyGreen, previousElasticMicroRightCauchyGreen,
@@ -5319,6 +5319,129 @@ namespace micromorphicElastoPlasticity{
         yieldFunctionValues[ 2 ] = yftmp[ 0 ];
         yieldFunctionValues[ 3 ] = yftmp[ 1 ];
         yieldFunctionValues[ 4 ] = yftmp[ 2 ];
+
+        return NULL;
+    }
+
+    #ifdef DEBUG_MODE
+    errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
+                              const variableVector &microGradientStrainISV,
+                              const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
+                              const parameterVector &microGradientHardeningParameters,
+                              variableType &macroCohesion, variableType &microCohesion,
+                              variableVector &microGradientCohesion,
+                              std::map< std::string, solverTools::floatVector > &DEBUG ){
+    #else
+    errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
+                              const variableVector &microGradientStrainISV,
+                              const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
+                              const parameterVector &microGradientHardeningParameters,
+                              variableType &macroCohesion, variableType &microCohesion,
+                              variableVector &microGradientCohesion ){
+    #endif
+        /*!
+         * Compute the cohesion value from the strain-like ISVs
+         *
+         * :param const variableType &macroStrainISV: The macro strain-like ISV
+         * :param const variableType &microStrainISV: The micro strain-like ISV
+         * :param const variableVector &microGradientStrainISV: The micro gradient strain-like ISV
+         * :param const parameterVector &macroHardeningParameters: The hardening parameters for the macro cohesion.
+         * :param const parameterVector &microHardeningParameters: The hardening parameters for the micro cohesion.
+         * :param const parameterVector &microGradientHardeningParameters: The hardening parameters for the micro
+         *     gradient cohesion.
+         * :param variableType &macroCohesion: The macro cohesion
+         * :param variableType &microCohesion: The micro cohesion
+         * :param variableVector &microGradientCohesion: The micro gradient cohesion
+         */
+
+        if ( macroHardeningParameters.size() != 2 ){
+            return new errorNode( "computeCohesion",
+                                  "The macro hardening parameters must have a size of 2" );
+        }
+
+        if ( microHardeningParameters.size() != 2 ){
+            return new errorNode( "computeCohesion",
+                                  "The micro hardening parameters must have a size of 2" );
+        }
+
+        if ( microGradientHardeningParameters.size() != 2 ){
+            return new errorNode( "computeCohesion",
+                                  "The micro gradient hardening parameters must have a size of 2" );
+        }
+
+        macroCohesion = macroHardeningParameters[ 0 ] + macroHardeningParameters[ 1 ] * macroStrainISV;
+
+        microCohesion = microHardeningParameters[ 0 ] + microHardeningParameters[ 1 ] * microStrainISV;
+
+        microGradientCohesion = microGradientHardeningParameters[ 0 ]
+                              + microGradientHardeningParameters[ 1 ] * microGradientStrainISV;
+
+        return NULL;
+    }
+
+    #ifdef DEBUG_MODE
+    errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
+                              const variableVector &microGradientStrainISV,
+                              const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
+                              const parameterVector &microGradientHardeningParameters,
+                              variableType &macroCohesion, variableType &microCohesion,
+                              variableVector &microGradientCohesion,
+                              variableType &dMacroCdMacroStrainISV, variableType &dMicroCdMicroStrainISV,
+                              variableMatrix &dMicroGradientCdMicroGradientStrainISV,
+                              std::map< std::string, solverTools::floatVector > &DEBUG ){
+    #else
+    errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
+                              const variableVector &microGradientStrainISV,
+                              const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
+                              const parameterVector &microGradientHardeningParameters,
+                              variableType &macroCohesion, variableType &microCohesion,
+                              variableVector &microGradientCohesion,
+                              variableType &dMacroCdMacroStrainISV, variableType &dMicroCdMicroStrainISV,
+                              variableMatrix &dMicroGradientCdMicroGradientStrainISV ){
+    #endif
+        /*!
+         * Compute the cohesion value from the strain-like ISVs
+         *
+         * :param const variableType &macroStrainISV: The macro strain-like ISV
+         * :param const variableType &microStrainISV: The micro strain-like ISV
+         * :param const variableVector &microGradientStrainISV: The micro gradient strain-like ISV
+         * :param const parameterVector &macroHardeningParameters: The hardening parameters for the macro cohesion.
+         * :param const parameterVector &microHardeningParameters: The hardening parameters for the micro cohesion.
+         * :param const parameterVector &microGradientHardeningParameters: The hardening parameters for the micro
+         *     gradient cohesion.
+         * :param variableType &macroCohesion: The macro cohesion
+         * :param variableType &microCohesion: The micro cohesion
+         * :param variableVector &microGradientCohesion: The micro gradient cohesion
+         * :param variableType &dMacroCdMacroStrainISV: The Jacobian of the macro cohesion w.r.t. the macro strain ISV
+         * :param variableType &dMairoCdMicroStrainISV: The Jacobian of the micro cohesion w.r.t. the micro strain ISV
+         * :param variableMatrix &dMicroGradientCdMicroGradientStrainISV: The Jacobian of the micro gradient cohesion
+         *      w.r.t. the micro gradient strain ISV
+         */
+
+        errorOut error;
+        #ifdef DEBUG_MODE
+        error = computeCohesion( macroStrainISV, microStrainISV, microGradientStrainISV,
+                                 macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
+                                 macroCohesion, microCohesion, microGradientCohesion, DEBUG );
+        #else
+        error = computeCohesion( macroStrainISV, microStrainISV, microGradientStrainISV,
+                                 macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
+                                 macroCohesion, microCohesion, microGradientCohesion );
+        #endif
+
+        if ( error ){
+            errorOut result = new errorNode( "computeCohesion (jacobian)",
+                                             "Error in computation of the cohesion" );
+            result->addNext( error );
+            return result;
+        }
+
+        //Assemble the Jacobians
+        constantMatrix eye = vectorTools::eye< constantType >( microGradientStrainISV.size() );
+
+        dMacroCdMacroStrainISV = macroHardeningParameters[ 1 ];
+        dMicroCdMicroStrainISV = microHardeningParameters[ 1 ];
+        dMicroGradientCdMicroGradientStrainISV = microGradientHardeningParameters[ 1 ] * eye;
 
         return NULL;
     }

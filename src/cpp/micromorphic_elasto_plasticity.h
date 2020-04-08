@@ -511,6 +511,42 @@ namespace micromorphicElastoPlasticity{
                                     variableVector &previousPlasticMicroDeformation,
                                     variableVector &previousPlasticGradientMicroDeformation );
 
+    #ifdef DEBUG_MODE
+    errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
+                              const variableVector &microGradientStrainISV,
+                              const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
+                              const parameterVector &microGradientHardeningParameters,
+                              variableType &macroCohesion, variableType &microCohesion,
+                              variableVector &microGradientCohesion,
+                              std::map< std::string, solverTools::floatVector > &DEBUG );
+
+    errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
+                              const variableVector &microGradientStrainISV,
+                              const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
+                              const parameterVector &microGradientHardeningParameters,
+                              variableType &macroCohesion, variableType &microCohesion,
+                              variableVector &microGradientCohesion,
+                              variableType &dMacroCdMacroStrainISV, variableType &dMicroCdMicroStrainISV,
+                              variableMatrix &dMicroGradientCdMicroGradientStrainISV,
+                              std::map< std::string, solverTools::floatVector > &DEBUG );
+    #else
+    errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
+                              const variableVector &microGradientStrainISV,
+                              const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
+                              const parameterVector &microGradientHardeningParameters,
+                              variableType &macroCohesion, variableType &microCohesion,
+                              variableVector &microGradientCohesion );
+
+    errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
+                              const variableVector &microGradientStrainISV,
+                              const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
+                              const parameterVector &microGradientHardeningParameters,
+                              variableType &macroCohesion, variableType &microCohesion,
+                              variableVector &microGradientCohesion,
+                              variableType &dMacroCdMacroStrainISV, variableType &dMicroCdMicroStrainISV,
+                              variableMatrix &dMicroGradientCdMicroGradientStrainISV );
+    #endif
+
     int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
                         const double ( &current_grad_u )[ 3 ][ 3 ],   const double ( &current_phi )[ 9 ],
                         const double ( &current_grad_phi )[ 9 ][ 3 ], const double ( &previous_grad_u )[ 3 ][ 3 ],
