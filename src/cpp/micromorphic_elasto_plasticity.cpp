@@ -5323,22 +5323,12 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
-    #ifdef DEBUG_MODE
-    errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
-                              const variableVector &microGradientStrainISV,
-                              const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
-                              const parameterVector &microGradientHardeningParameters,
-                              variableType &macroCohesion, variableType &microCohesion,
-                              variableVector &microGradientCohesion,
-                              std::map< std::string, solverTools::floatVector > &DEBUG ){
-    #else
     errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
                               const variableVector &microGradientStrainISV,
                               const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
                               const parameterVector &microGradientHardeningParameters,
                               variableType &macroCohesion, variableType &microCohesion,
                               variableVector &microGradientCohesion ){
-    #endif
         /*!
          * Compute the cohesion value from the strain-like ISVs
          *
@@ -5379,17 +5369,6 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
-    #ifdef DEBUG_MODE
-    errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
-                              const variableVector &microGradientStrainISV,
-                              const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
-                              const parameterVector &microGradientHardeningParameters,
-                              variableType &macroCohesion, variableType &microCohesion,
-                              variableVector &microGradientCohesion,
-                              variableType &dMacroCdMacroStrainISV, variableType &dMicroCdMicroStrainISV,
-                              variableMatrix &dMicroGradientCdMicroGradientStrainISV,
-                              std::map< std::string, solverTools::floatVector > &DEBUG ){
-    #else
     errorOut computeCohesion( const variableType &macroStrainISV, const variableType &microStrainISV,
                               const variableVector &microGradientStrainISV,
                               const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
@@ -5398,7 +5377,6 @@ namespace micromorphicElastoPlasticity{
                               variableVector &microGradientCohesion,
                               variableType &dMacroCdMacroStrainISV, variableType &dMicroCdMicroStrainISV,
                               variableMatrix &dMicroGradientCdMicroGradientStrainISV ){
-    #endif
         /*!
          * Compute the cohesion value from the strain-like ISVs
          *
@@ -5418,16 +5396,9 @@ namespace micromorphicElastoPlasticity{
          *      w.r.t. the micro gradient strain ISV
          */
 
-        errorOut error;
-        #ifdef DEBUG_MODE
-        error = computeCohesion( macroStrainISV, microStrainISV, microGradientStrainISV,
-                                 macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
-                                 macroCohesion, microCohesion, microGradientCohesion, DEBUG );
-        #else
-        error = computeCohesion( macroStrainISV, microStrainISV, microGradientStrainISV,
-                                 macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
-                                 macroCohesion, microCohesion, microGradientCohesion );
-        #endif
+        errorOut error = computeCohesion( macroStrainISV, microStrainISV, microGradientStrainISV,
+                                          macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
+                                          macroCohesion, microCohesion, microGradientCohesion );
 
         if ( error ){
             errorOut result = new errorNode( "computeCohesion (jacobian)",
