@@ -3970,18 +3970,29 @@ namespace micromorphicElastoPlasticity{
         variableVector dMacroFdElasticRCG, dMicroFdElasticRCG;
         variableMatrix dMicroGradientFdElasticRCG;
 
-        error = computeSecondOrderDruckerPragerYieldEquation( *currentPK2Stress, currentMacroCohesion, currentElasticRightCauchyGreen,
-                                                              ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
-                                                              yieldFunctionValues[ 0 ], dMacroFdPK2, dMacroFdMacroC, dMacroFdElasticRCG );
+        #ifdef DEBUG_MODE
+        error = evaluateYieldFunctions( *currentPK2Stress, *currentReferenceMicroStress, *currentReferenceHigherOrderStress,
+                                        currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion,
+                                        currentElasticRightCauchyGreen,
+                                        *macroYieldParameters, *microYieldParameters, *microGradientYieldParameters,
+                                        yieldFunctionValues,
+                                        dMacroFdPK2, dMacroFdMacroC, dMacroFdElasticRCG,
+                                        dMicroFdSigma, dMicroFdMicroC, dMicroFdElasticRCG,
+                                        dMicroGradientFdM, dMicroGradientFdMicroGradientC, dMicroGradientFdElasticRCG,
+                                        DEBUG );
+        #else
+        error = evaluateYieldFunctions( *currentPK2Stress, *currentReferenceMicroStress, *currentReferenceHigherOrderStress,
+                                        currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion,
+                                        currentElasticRightCauchyGreen,
+                                        *macroYieldParameters, *microYieldParameters, *microGradientYieldParameters,
+                                        yieldFunctionValues,
+                                        dMacroFdPK2, dMacroFdMacroC, dMacroFdElasticRCG,
+                                        dMicroFdSigma, dMicroFdMicroC, dMicroFdElasticRCG,
+                                        dMicroGradientFdM, dMicroGradientFdMicroGradientC, dMicroGradientFdElasticRCG );
+        #endif
 
-        if ( error ){
-            errorOut result = new errorNode( "computeResidual (jacobian)",
-                                             "Error in the computation of the macro yield equation" );
-            result->addNext( error );
-            return result;
-        }
-
-        //Assemble the Jacobians
+        //Assemble the Jacobians so far
+        //Assemble the Jacobians of MacroF
         variableType dMacroFdMacroGamma = vectorTools::dot( dMacroFdPK2, dPK2dMacroGamma )
                                         + vectorTools::dot( dMacroFdElasticRCG, dElasticRCGdMacroGamma )
                                         + dMacroFdMacroC * dMacroCdMacroGamma;
@@ -3990,20 +4001,8 @@ namespace micromorphicElastoPlasticity{
                                         + vectorTools::dot( dMacroFdElasticRCG, dElasticRCGdMicroGamma );
 
         variableVector dMacroFdMicroGradientGamma = vectorTools::Tdot( dPK2dMicroGradientGamma, dMacroFdPK2 );
-                        
-        error = computeSecondOrderDruckerPragerYieldEquation( *currentReferenceMicroStress, currentMicroCohesion,
-                                                              currentElasticRightCauchyGreen,
-                                                              ( *microYieldParameters )[ 0 ], ( *microYieldParameters )[ 1 ],
-                                                              yieldFunctionValues[ 1 ], dMicroFdSigma, dMicroFdMicroC, dMicroFdElasticRCG );
 
-        if ( error ){
-            errorOut result = new errorNode( "computeResidual (jacobian)",
-                                             "Error in the computation of the micro yield equation" );
-            result->addNext( error );
-            return result;
-        }
-
-        //Assemble the Jacobians
+        //Assemble the Jacobians of MicroF
         variableType dMicroFdMacroGamma = vectorTools::dot( dMicroFdSigma, dSigmadMacroGamma )
                                         + vectorTools::dot( dMicroFdElasticRCG, dElasticRCGdMacroGamma );
 
@@ -4013,26 +4012,8 @@ namespace micromorphicElastoPlasticity{
 
         variableVector dMicroFdMicroGradientGamma = vectorTools::Tdot( dSigmadMicroGradientGamma, dMicroFdSigma );
         
-        variableVector yftmp;
-
-        error = computeHigherOrderDruckerPragerYieldEquation( *currentReferenceHigherOrderStress, currentMicroGradientCohesion,
-                                                              currentElasticRightCauchyGreen,
-                                                              ( *microGradientYieldParameters )[ 0 ],
-                                                              ( *microGradientYieldParameters )[ 1 ],
-                                                              yftmp, dMicroGradientFdM, dMicroGradientFdMicroGradientC, dMicroGradientFdElasticRCG );
-
-        if ( error ){
-            errorOut result = new errorNode( "computeResidual (jacobian)",
-                                             "Error in the computation of the micro yield equation" );
-            result->addNext( error );
-            return result;
-        }
-
-        yieldFunctionValues[ 2 ] = yftmp[ 0 ];
-        yieldFunctionValues[ 3 ] = yftmp[ 1 ];
-        yieldFunctionValues[ 4 ] = yftmp[ 2 ];
-
-        //Assemble the Jacobians
+        
+        //Assemble the Jacobians of MicroGradientF
         variableVector dMicroGradientFdMacroGamma = vectorTools::dot( dMicroGradientFdM, dMdMacroGamma )
                                                   + vectorTools::dot( dMicroGradientFdElasticRCG, dElasticRCGdMacroGamma );
 
