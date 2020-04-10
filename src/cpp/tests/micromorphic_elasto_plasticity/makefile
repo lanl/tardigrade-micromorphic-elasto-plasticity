@@ -40,6 +40,10 @@ ifeq ($(METHOD),oprof)
   DBG = -pg
 endif
 
+ifeq ($(DEBUG_JACOBIAN), true)
+    DBG += -DCHECK_JACOBIANS
+endif
+
 # Makefile rules
 all: $(EXECUTABLE)
 

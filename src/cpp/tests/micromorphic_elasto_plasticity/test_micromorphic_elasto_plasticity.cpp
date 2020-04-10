@@ -5505,7 +5505,62 @@ int test_computeResidual( std::ofstream &results ){
                                                              3.84291870e-03, -2.22612924e-03,  2.47510119e-03,  1.09440750e-03,
                                                              2.43493719e-03, -2.12909924e-03, -3.79114796e-03 };
 
-    solverTools::intVector activePlasticity = { 1, 1, 1, 1, 1 };
+//    //DEBUGGING
+//    std::vector< double > fparams = { 2, 1e2, 1.5e1,               //Macro hardening parameters 
+//                                      2, 2e2, 2.0e1,               //Micro hardening parameters
+//                                      2, 2.5e2, 2.7e1,             //Micro gradient hardening parameters
+//                                      2, 0.56, .79,                //Macro flow parameters
+//                                      2, 0.15, -0.40,              //Micro flow parameters
+//                                      2, 0.82, 0.90,               //Micro gradient flow parameters
+//                                      2, .7, -0.3,                 //Macro yield parameters
+//                                      2, .4, .76,                  //Micro yield parameters
+//                                      2, 0.52, -.70,                //Micro gradient yield parameters
+//                                      2, 696.47, 65.84,            //A stiffness tensor parameters
+//                                      5, -7.69, -51.92, 38.61, -27.31, 5.13,  //B stiffness tensor parameters
+//                                      11, 1.85, -0.19, -1.08, -1.57, 2.29, -0.61, 5.97, -2.02, 2.38, -0.32, -3.25, //C stiffness tensor parameters
+//                                      2, -51.92, 5.13,             //D stiffness tensor parameters
+//                                      0.4, 0.3, 0.35, 1e-9, 1e-9   //Integration parameters
+//                                    };
+//    constantType absoluteTolerance, relativeTolerance;
+//    micromorphicElastoPlasticity::extractMaterialParameters( fparams, macroHardeningParameters, microHardeningParameters,
+//                                                             microGradientHardeningParameters, macroFlowParameters, microFlowParameters,
+//                                                             microGradientFlowParameters, macroYieldParameters, microYieldParameters,
+//                                                             microGradientYieldParameters, Amatrix, Bmatrix, Cmatrix, Dmatrix,
+//                                                             alphaMacro, alphaMicro, alphaMicroGradient, relativeTolerance, absoluteTolerance );
+//
+//    Dt = 2.5;
+//    currentDeformationGradient = { 1.01, 0, 0, 0, 1, 0, 0, 0, 1 };
+//    currentMicroDeformation = { 1.0, 0, 0, 0, 0.98, 0, 0, 0, 1 };
+//    currentGradientMicroDeformation = variableVector( 27, 0 );
+//    previousPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+//    previousPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+//    previousPlasticMicroGradient = variableVector( 27, 0 );
+//    previousPlasticMacroVelocityGradient = variableVector( 9, 0 );
+//    previousPlasticMicroVelocityGradient = variableVector( 9, 0 );
+//    previousPlasticMicroGradientVelocityGradient = variableVector( 27, 0 );
+//    previousMacroStrainISV = 0.;
+//    previousMicroStrainISV = 0.;
+//    previousMicroGradientStrainISV = variableVector( 3, 0 );
+//    previousMacroGamma = 0;
+//    previousMicroGamma = 0;
+//    previousMicroGradientGamma = variableVector( 3, 0 );
+//
+//    currentElasticDeformationGradient = currentDeformationGradient;
+//    currentElasticMicroDeformation = currentMicroDeformation;
+//    currentElasticMicroGradient = currentGradientMicroDeformation;
+//    currentPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+//    currentPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+//    currentPlasticMicroGradient = variableVector( 27, 0 );
+//
+//    currentPK2Stress = { 434.22, 386.082, -531.382, 657.265, -626.479, 438.899, 54.008, 580.606, 255.122 };
+//    currentReferenceMicroStress = { 1314.38, 1161.46, -513.317, 1161.46, -1074.57, 1121.81, -513.317, 1121.81, 899.495 };
+//    currentReferenceHigherOrderStress  = { -3.13881, 21.1205, -32.2236, 61.3638, 54.4966, 80.7927, -18.3752, 10.5808, 65.8143, 46.5659, 126.087, 19.542, 125.007, 88.992, -34.8056, 10.9744, -93.0911, 15.1465, -44.2434, 71.769, 9.05663, 77.7283, -69.6531, -0.0611322, 52.8567, 32.069, -236.034 };
+//
+//    gammas = { 0., 0., 0., 0., 0. };
+//
+//    //DEBUGGING
+
+    solverTools::intVector activePlasticity = { 1, 1, 0, 0, 0 };
 
     solverTools::floatMatrix floatArgsDefault =
         {
@@ -5616,6 +5671,7 @@ int test_computeResidual( std::ofstream &results ){
     }
 
     //Test the Jacobians
+    std::cout << "\nCOMPUTE RESIDUAL WITH JACOBIAN\n";
     solverTools::floatVector resultResidualJ;
     floatArgs = floatArgsDefault;
     floatOuts = floatOutsDefault;
@@ -8387,60 +8443,95 @@ int test_evaluate_model( std::ofstream &results){
     //Initialize the time
     std::vector< double > time = { 10., 2.5 };
 
-    //Initialize the material parameters TODO: These parameters currently don't satisfy positivity of the strain energy function
-    std::vector< double > fparams = { 2, 1e1, 1.5e0,               //Macro hardening parameters 
-                                      2, 2e1, 2.0e0,               //Micro hardening parameters
-                                      2, 2.5e1, 2.7e0,             //Micro gradient hardening parameters
-                                      2, 0.56, .79,                //Macro flow parameters
-                                      2, 0.15, -0.40,              //Micro flow parameters
-                                      2, 0.82, 0.90,               //Micro gradient flow parameters
-                                      2, 0.13, -0.3,               //Macro yield parameters
-                                      2, 0.24, .76,                //Micro yield parameters
-                                      2, 0.71, -.70,               //Micro gradient yield parameters
-                                      2, 1e2, 52.0,                //A stiffness tensor parameters
-                                      5, 157.282, 29.4, 75.3, 31.36, 59.544,  //B stiffness tensor parameters
-                                      11, 59.50, 58.84, 101.46, 100.04, 63.31, 10.01, 36.39, 15.18, 7.40, 10.08, 128.96, //C stiffness tensor parameters
-                                      2, 29.40, 59.44,             //D stiffness tensor parameters
-                                      0.4, 0.3, 0.35, 1e-9, 1e-9   //Integration parameters
+    //Initialize the material parameters
+    std::vector< double > fparams = { 2, 1e2, 1.5e1,               //Macro hardening parameters 
+                                      2, 2e2, 2.0e1,               //Micro hardening parameters
+                                      2, 2.5e2, 2.7e1,             //Micro gradient hardening parameters
+                                      2, 0.56, 0.,                 //Macro flow parameters
+                                      2, 0.15, 0.,                 //Micro flow parameters
+                                      2, 0.82, 0.,                 //Micro gradient flow parameters
+                                      2, 0.70, 0.,                 //Macro yield parameters
+                                      2, 0.40, 0.,                 //Micro yield parameters
+                                      2, 0.52, 0.,                 //Micro gradient yield parameters
+                                      2, 696.47, 65.84,            //A stiffness tensor parameters
+                                      5, -7.69, -51.92, 38.61, -27.31, 5.13,  //B stiffness tensor parameters
+                                      11, 1.85, -0.19, -1.08, -1.57, 2.29, -0.61, 5.97, -2.02, 2.38, -0.32, -3.25, //C stiffness tensor parameters
+                                      2, -51.92, 5.13,             //D stiffness tensor parameters
+                                      0.4, 0.3, 0.35, 1e-8, 1e-8   //Integration parameters
                                     };
 
     //Initialize the gradient of the macro displacement
-    double current_grad_u[ 3 ][ 3 ] = { { -1.83182277, -0.66558173,  0.23458272 },
-                                        { -0.56632666, -0.21399259,  0.16367238 },
-                                        { -0.29129789, -0.22367825, -2.0632945  } };
+//    double current_grad_u[ 3 ][ 3 ] = { { -1.83182277, -0.66558173,  0.23458272 },
+//                                        { -0.56632666, -0.21399259,  0.16367238 },
+//                                        { -0.29129789, -0.22367825, -2.0632945  } };
+//
+//    double previous_grad_u[ 3 ][ 3 ] = { { -1.89906429,  0.20890208, -0.39814132 },
+//                                         {  0.31303067, -1.23910631, -0.93837662 },
+//                                         { -0.32571524, -0.95306342, -0.93025257 } };
 
-    double previous_grad_u[ 3 ][ 3 ] = { { -1.89906429,  0.20890208, -0.39814132 },
-                                         {  0.31303067, -1.23910631, -0.93837662 },
-                                         { -0.32571524, -0.95306342, -0.93025257 } };
+    double current_grad_u[ 3 ][ 3 ] = { {0.200, 0.000, 0.000 },
+                                        {0.000, 0.000, 0.000 },
+                                        {0.000, 0.000, 0.000 } };
+
+    double previous_grad_u[ 3 ][ 3 ] = { {0, 0, 0},
+                                         {0, 0, 0},
+                                         {0, 0, 0} };
     //Initialize the micro displacement
-    double current_phi[ 9 ] = { 0.84729289,  0.40617104,  0.59534561,  
-                                0.44195587,  0.34121966, -0.79098944, 
-                               -0.43965428,  0.88466225,  0.1684519 };
+//    double current_phi[ 9 ] = { 0.84729289,  0.40617104,  0.59534561,  
+//                                0.44195587,  0.34121966, -0.79098944, 
+//                               -0.43965428,  0.88466225,  0.1684519 };
+//
+//    double previous_phi[ 9 ] = { -0.99935855, -0.21425717,  0.0668254 ,
+//                                 -0.11111872, -0.07416114, -1.01048108,
+//                                  0.1804018 , -1.01116291,  0.03248007 };
 
-    double previous_phi[ 9 ] = { -0.99935855, -0.21425717,  0.0668254 ,
-                                 -0.11111872, -0.07416114, -1.01048108,
-                                  0.1804018 , -1.01116291,  0.03248007 };
+    double current_phi[ 9 ] = { 0.600, 0.000, 0.000,
+                                0.000, 0.000, 0.000,
+                                0.000, 0.000, 0.000 };
+
+    double previous_phi[ 9 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     //Initialize the gradient of the micro displacement
-    double current_grad_phi[ 9 ][ 3 ] = { {  0.13890017, -0.3598602 , -0.08048856 },
-                                          { -0.18572739,  0.06847269,  0.22931628 },
-                                          { -0.01829735, -0.48731265, -0.25277529 },
-                                          {  0.26626212,  0.4844646 , -0.31965177 },
-                                          {  0.49197846,  0.19051656, -0.0365349  },
-                                          { -0.06607774, -0.33526875, -0.15803078 },
-                                          {  0.09738707, -0.49482218, -0.39584868 },
-                                          { -0.45599864,  0.08585038, -0.09432794 },
-                                          {  0.23055539,  0.07564162,  0.24051469 } };
+//    double current_grad_phi[ 9 ][ 3 ] = { {  0.13890017, -0.3598602 , -0.08048856 },
+//                                          { -0.18572739,  0.06847269,  0.22931628 },
+//                                          { -0.01829735, -0.48731265, -0.25277529 },
+//                                          {  0.26626212,  0.4844646 , -0.31965177 },
+//                                          {  0.49197846,  0.19051656, -0.0365349  },
+//                                          { -0.06607774, -0.33526875, -0.15803078 },
+//                                          {  0.09738707, -0.49482218, -0.39584868 },
+//                                          { -0.45599864,  0.08585038, -0.09432794 },
+//                                          {  0.23055539,  0.07564162,  0.24051469 } };
+//
+//    double previous_grad_phi[ 9 ][ 3 ] = { { -0.47850242,  0.36472234,  0.37071411 },
+//                                           {  0.00294417,  0.34480654, -0.34450988 },
+//                                           {  0.21056511, -0.28113967, -0.45726839 },
+//                                           { -0.26431286, -0.09985721,  0.47322301 },
+//                                           { -0.18156887, -0.32226199, -0.37295847 },
+//                                           {  0.15062371,  0.09439471,  0.09167948 },
+//                                           { -0.46869859,  0.018301  ,  0.45013866 },
+//                                           { -0.15455446,  0.40552715, -0.4216042  },
+//                                           { -0.38930237,  0.10974753, -0.31188239 } };
 
-    double previous_grad_phi[ 9 ][ 3 ] = { { -0.47850242,  0.36472234,  0.37071411 },
-                                           {  0.00294417,  0.34480654, -0.34450988 },
-                                           {  0.21056511, -0.28113967, -0.45726839 },
-                                           { -0.26431286, -0.09985721,  0.47322301 },
-                                           { -0.18156887, -0.32226199, -0.37295847 },
-                                           {  0.15062371,  0.09439471,  0.09167948 },
-                                           { -0.46869859,  0.018301  ,  0.45013866 },
-                                           { -0.15455446,  0.40552715, -0.4216042  },
-                                           { -0.38930237,  0.10974753, -0.31188239 } };
+    double current_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+                                          {0, 0, 0},
+                                          {0, 0, 0},
+                                          {0, 0, 0},
+                                          {0, 0, 0},
+                                          {0, 0, 0},
+                                          {0, 0, 0},
+                                          {0, 0, 0},
+                                          {0, 0, 0} };
+
+    double previous_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0} };
+                                           
 
     //Initialize the state variable vector
     std::vector< double > SDVS( 55, 0 );
@@ -8481,6 +8572,8 @@ int test_evaluate_model( std::ofstream &results){
         return 1;
     }
 
+    std::cout << "SDVS:\n"; vectorTools::print( SDVS );
+
     results << "test_evaluate_model & True\n";
     return 1;
 }
@@ -8510,7 +8603,7 @@ int main(){
     test_evolvePlasticDeformation( results );
     test_evolveStrainStateVariables( results );
     test_computeFlowDirections( results );
-    test_computeResidual( results );
+//    test_computeResidual( results );
     test_extractMaterialParameters( results );
     test_extractStateVariables( results );
     test_assembleFundamentalDeformationMeasures( results );
@@ -8519,7 +8612,7 @@ int main(){
     test_cout_redirect( results );
     test_cerr_redirect( results );
 
-//    test_evaluate_model( results );
+    test_evaluate_model( results );
 
     //Close the results file
     results.close();
