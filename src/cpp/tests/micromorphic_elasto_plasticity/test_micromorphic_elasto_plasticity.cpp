@@ -5122,9 +5122,6 @@ int test_computeResidual( std::ofstream &results ){
 
     solverTools::floatVector gammas = { 8.79028423e-06, 5.52226146e-06, 5.12978173e-06, 5.67171873e-06, 6.46993099e-06 };
 
-    solverTools::floatVector ses    = { 1, 2, 3, 4, 5 };
-    solverTools::floatVector ls     = { 6, 7, 8, 9, 10 };
-
     solverTools::floatType Dt = 6.867410424824635;
 
     solverTools::floatVector currentDeformationGradient = { -0.59712837, -0.74175714,  0.12227677,
@@ -5508,6 +5505,8 @@ int test_computeResidual( std::ofstream &results ){
                                                              3.84291870e-03, -2.22612924e-03,  2.47510119e-03,  1.09440750e-03,
                                                              2.43493719e-03, -2.12909924e-03, -3.79114796e-03 };
 
+    solverTools::intVector activePlasticity = { 1, 1, 1, 1, 1 };
+
     solverTools::floatMatrix floatArgsDefault =
         {
             { Dt },
@@ -5563,15 +5562,13 @@ int test_computeResidual( std::ofstream &results ){
             currentMicroGradientStrainISV,
         };
 
-    solverTools::intMatrix intArgs, intOuts;
+    solverTools::intMatrix intArgs;
+    
+    solverTools::intMatrix intOutsDefault = { activePlasticity };
 
-    variableVector x = vectorTools::appendVectors( { gammas, ses, ls } );
+    variableVector x = gammas;
 
-    variableVector answerResidual = { 3.77092, 8.0997, 10.3146, 16.7308, 26.2027,
-                                      ls[ 0 ] * gammas[ 0 ], ls[ 1 ] * gammas[ 1 ], ls[ 2 ] * gammas[ 2 ],
-                                      ls[ 3 ] * gammas[ 3 ], ls[ 4 ] * gammas[ 4 ],
-                                      ls[ 0 ] * ses[ 0 ], ls[ 1 ] * ses[ 1 ], ls[ 2 ] * ses[ 2 ],
-                                      ls[ 3 ] * ses[ 3 ], ls[ 4 ] * ses[ 4 ] };
+    variableVector answerResidual = { 2.77092, 4.0997, 1.31455, 0.730796, 1.20269 };
 
     variableVector answerElasticMicroGradient = { 0.19740483,  0.17269619, -0.3678423 ,  0.08953459, -0.1405664 ,
                                                  -0.18935258,  0.18035407,  0.24419328,  0.39392356,  0.67019271,
@@ -5583,6 +5580,8 @@ int test_computeResidual( std::ofstream &results ){
     variableVector resultResidual;
     solverTools::floatMatrix floatArgs = floatArgsDefault;
     solverTools::floatMatrix floatOuts = floatOutsDefault;
+
+    solverTools::intMatrix intOuts = intOutsDefault;
     #ifdef DEBUG_MODE
     std::map< std::string, solverTools::floatVector > DEBUG;
     errorOut error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, resultResidual, floatOuts, intOuts, DEBUG );
@@ -5620,6 +5619,8 @@ int test_computeResidual( std::ofstream &results ){
     solverTools::floatVector resultResidualJ;
     floatArgs = floatArgsDefault;
     floatOuts = floatOutsDefault;
+    intOuts = intOutsDefault;
+
     solverTools::floatMatrix jacobian;
 
     #ifdef DEBUG_MODE
@@ -7698,7 +7699,6 @@ int test_evaluateYieldFunctions( std::ofstream &results ){
         }
 
         #ifdef DEBUG_MODE
-        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress - delta, SigmaStress, M, macroCohesion, microCohesion,
                                                                       microGradientCohesion, elasticC, macroYieldParameters,
                                                                       microYieldParameters, microGradientYieldParameters,
@@ -7764,7 +7764,6 @@ int test_evaluateYieldFunctions( std::ofstream &results ){
         }
 
         #ifdef DEBUG_MODE
-        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress - delta, M, macroCohesion, microCohesion,
                                                                       microGradientCohesion, elasticC, macroYieldParameters,
                                                                       microYieldParameters, microGradientYieldParameters,
@@ -7830,7 +7829,6 @@ int test_evaluateYieldFunctions( std::ofstream &results ){
         }
 
         #ifdef DEBUG_MODE
-        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M - delta, macroCohesion, microCohesion,
                                                                       microGradientCohesion, elasticC, macroYieldParameters,
                                                                       microYieldParameters, microGradientYieldParameters,
@@ -7896,7 +7894,6 @@ int test_evaluateYieldFunctions( std::ofstream &results ){
         }
 
         #ifdef DEBUG_MODE
-        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion - delta, microCohesion,
                                                                       microGradientCohesion, elasticC, macroYieldParameters,
                                                                       microYieldParameters, microGradientYieldParameters,
@@ -7962,7 +7959,6 @@ int test_evaluateYieldFunctions( std::ofstream &results ){
         }
 
         #ifdef DEBUG_MODE
-        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion, microCohesion - delta,
                                                                       microGradientCohesion, elasticC, macroYieldParameters,
                                                                       microYieldParameters, microGradientYieldParameters,
@@ -8028,7 +8024,6 @@ int test_evaluateYieldFunctions( std::ofstream &results ){
         }
 
         #ifdef DEBUG_MODE
-        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion, microCohesion,
                                                                       microGradientCohesion - delta, elasticC, macroYieldParameters,
                                                                       microYieldParameters, microGradientYieldParameters,
@@ -8093,7 +8088,6 @@ int test_evaluateYieldFunctions( std::ofstream &results ){
         }
 
         #ifdef DEBUG_MODE
-        std::map< std::string, solverTools::floatVector > DEBUGP, DEBUGM;
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion, microCohesion,
                                                                       microGradientCohesion, elasticC - delta, macroYieldParameters,
                                                                       microYieldParameters, microGradientYieldParameters,
@@ -8383,6 +8377,114 @@ int test_computeCohesion( std::ofstream &results ){
     return 0;
 }
 
+int test_evaluate_model( std::ofstream &results){
+    /*!
+     * Test the evaluation of the constitutive model.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    //Initialize the time
+    std::vector< double > time = { 10., 2.5 };
+
+    //Initialize the material parameters TODO: These parameters currently don't satisfy positivity of the strain energy function
+    std::vector< double > fparams = { 2, 1e1, 1.5e0,               //Macro hardening parameters 
+                                      2, 2e1, 2.0e0,               //Micro hardening parameters
+                                      2, 2.5e1, 2.7e0,             //Micro gradient hardening parameters
+                                      2, 0.56, .79,                //Macro flow parameters
+                                      2, 0.15, -0.40,              //Micro flow parameters
+                                      2, 0.82, 0.90,               //Micro gradient flow parameters
+                                      2, 0.13, -0.3,               //Macro yield parameters
+                                      2, 0.24, .76,                //Micro yield parameters
+                                      2, 0.71, -.70,               //Micro gradient yield parameters
+                                      2, 1e2, 52.0,                //A stiffness tensor parameters
+                                      5, 157.282, 29.4, 75.3, 31.36, 59.544,  //B stiffness tensor parameters
+                                      11, 59.50, 58.84, 101.46, 100.04, 63.31, 10.01, 36.39, 15.18, 7.40, 10.08, 128.96, //C stiffness tensor parameters
+                                      2, 29.40, 59.44,             //D stiffness tensor parameters
+                                      0.4, 0.3, 0.35, 1e-9, 1e-9   //Integration parameters
+                                    };
+
+    //Initialize the gradient of the macro displacement
+    double current_grad_u[ 3 ][ 3 ] = { { -1.83182277, -0.66558173,  0.23458272 },
+                                        { -0.56632666, -0.21399259,  0.16367238 },
+                                        { -0.29129789, -0.22367825, -2.0632945  } };
+
+    double previous_grad_u[ 3 ][ 3 ] = { { -1.89906429,  0.20890208, -0.39814132 },
+                                         {  0.31303067, -1.23910631, -0.93837662 },
+                                         { -0.32571524, -0.95306342, -0.93025257 } };
+    //Initialize the micro displacement
+    double current_phi[ 9 ] = { 0.84729289,  0.40617104,  0.59534561,  
+                                0.44195587,  0.34121966, -0.79098944, 
+                               -0.43965428,  0.88466225,  0.1684519 };
+
+    double previous_phi[ 9 ] = { -0.99935855, -0.21425717,  0.0668254 ,
+                                 -0.11111872, -0.07416114, -1.01048108,
+                                  0.1804018 , -1.01116291,  0.03248007 };
+
+    //Initialize the gradient of the micro displacement
+    double current_grad_phi[ 9 ][ 3 ] = { {  0.13890017, -0.3598602 , -0.08048856 },
+                                          { -0.18572739,  0.06847269,  0.22931628 },
+                                          { -0.01829735, -0.48731265, -0.25277529 },
+                                          {  0.26626212,  0.4844646 , -0.31965177 },
+                                          {  0.49197846,  0.19051656, -0.0365349  },
+                                          { -0.06607774, -0.33526875, -0.15803078 },
+                                          {  0.09738707, -0.49482218, -0.39584868 },
+                                          { -0.45599864,  0.08585038, -0.09432794 },
+                                          {  0.23055539,  0.07564162,  0.24051469 } };
+
+    double previous_grad_phi[ 9 ][ 3 ] = { { -0.47850242,  0.36472234,  0.37071411 },
+                                           {  0.00294417,  0.34480654, -0.34450988 },
+                                           {  0.21056511, -0.28113967, -0.45726839 },
+                                           { -0.26431286, -0.09985721,  0.47322301 },
+                                           { -0.18156887, -0.32226199, -0.37295847 },
+                                           {  0.15062371,  0.09439471,  0.09167948 },
+                                           { -0.46869859,  0.018301  ,  0.45013866 },
+                                           { -0.15455446,  0.40552715, -0.4216042  },
+                                           { -0.38930237,  0.10974753, -0.31188239 } };
+
+    //Initialize the state variable vector
+    std::vector< double > SDVS( 55, 0 );
+
+    //Initialize the additional degree of freedom vectors
+    std::vector< double > current_ADD_DOF;
+    std::vector< std::vector< double > > current_ADD_grad_DOF;
+
+    std::vector< double > previous_ADD_DOF;
+    std::vector< std::vector< double > > previous_ADD_grad_DOF;
+
+    //Initialize the stress measures
+    std::vector< double > current_PK2( 9, 0 );
+
+    std::vector< double > current_SIGMA( 9, 0 );
+
+    std::vector< double > current_M( 27, 0 );
+
+    //Initialize the additional terms vector
+    std::vector< std::vector< double > > ADD_TERMS;
+
+    //Initialize the output message string
+    std::string output_message;
+
+    int errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                                  current_grad_u,  current_phi,  current_grad_phi,
+                                                                  previous_grad_u, previous_phi, previous_grad_phi,
+                                                                  SDVS,
+                                                                  current_ADD_DOF,  current_ADD_grad_DOF,
+                                                                  previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                                  current_PK2, current_SIGMA, current_M,
+                                                                  ADD_TERMS,
+                                                                  output_message );
+
+    if ( errorCode != 0 ){
+        std::cout << output_message;
+        results << "test_evaluate_model & False\n";
+        return 1;
+    }
+
+    results << "test_evaluate_model & True\n";
+    return 1;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -8416,6 +8518,8 @@ int main(){
     test_computeCohesion( results );
     test_cout_redirect( results );
     test_cerr_redirect( results );
+
+//    test_evaluate_model( results );
 
     //Close the results file
     results.close();
