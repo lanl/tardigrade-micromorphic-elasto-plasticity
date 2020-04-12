@@ -8715,6 +8715,208 @@ int test_computeStrainISVResidual( std::ofstream &results ){
     return 0;
 }
 
+int test_solveForStrainISV( std::ofstream &results ){
+    /*!
+     * Test the solve for the strain-like ISV
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    constantType Dt = 2.5;
+
+    variableType currentMacroGamma = 1.;
+    variableType currentMicroGamma = 1.;
+    variableVector currentMicroGradientGamma = { 1., 1., 1. };
+
+    variableVector currentElasticRightCauchyGreen = { 9.92430424e-01,  3.70411571e-03,  2.00684100e-04,
+                                                      3.70411571e-03,  9.96861203e-01, -1.45757049e-04,
+                                                      2.00684100e-04, -1.45757049e-04,  1.00752325e+00 };
+
+    variableVector currentPK2Stress = { 1.66749433,  0.35416765, -0.939809  ,  
+                                        1.13282152,  1.67200425,  1.30942005,
+                                        0.91180593, -0.9580783 ,  1.6470536 };
+
+    variableVector currentReferenceMicroStress = { -0.95697378,  1.06550409, -0.95387546,
+                                                   -1.51083453, -0.45597786,  1.36032498,
+                                                   -0.88728256, -1.72034523,  0.53243859 };
+
+    variableVector currentReferenceHigherOrderStress = {  0.16953206,  0.16246387,  0.35441079,  0.3743102 , -0.12214526,
+                                                         -0.35814699,  0.14110444, -0.04030276,  0.72214869,  0.66960948,
+                                                         -0.78846779, -0.87918393,  0.19376438,  0.58478994, -0.54728853, 
+                                                          0.0704016 , -0.72786767, -0.2555111 , -0.69604652, -0.1403563 ,
+                                                          0.58541244, -0.18608698, -0.64430013,  0.81850409,  0.090662  ,
+                                                         -0.79900641,  0.43744119 };
+
+    variableType   previousMacroGamma = 0.280;
+    variableType   previousMicroGamma = 0.927;
+    variableVector previousMicroGradientGamma = { .162, .01782, .772 };
+    variableType   previousMacroStrainISV = 0.272;
+    variableType   previousMicroStrainISV = 0.8761;
+    variableVector previousMicroGradientStrainISV = { 0.281, 0.982, 1.271 };
+    variableType   previousdMacroGdMacroCohesion = 0.171;
+    variableType   previousdMicroGdMicroCohesion = 1.720;
+    variableMatrix previousdMicroGradientGdMicroGradientCohesion = { { 1.272, 0.000, 0.000 },
+                                                                     { 0.000, 1.272, 0.000 },
+                                                                     { 0.000, 0.000, 1.272 } };
+    variableType   currentMacroStrainISV = 9.271;
+    variableType   currentMicroStrainISV = 4.176;
+    variableVector currentMicroGradientStrainISV = { .271, .981, 1.32 };
+
+    variableMatrix dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRCG;
+    variableMatrix dMicroFlowDirectiondReferenceMicroStress, dMicroFlowDirectiondElasticRCG;
+    variableMatrix dMicroGradientFlowDirectiondReferenceHigherOrderStress, dMicroGradientFlowDirectiondElasticRCG;
+
+    bool convergeFlag = false;
+    bool fatalErrorFlag = false;
+
+    parameterVector macroHardeningParameters = { 0.272, 0.80 };
+    parameterVector microHardeningParameters = { 0.372, 0.15 };
+    parameterVector microGradientHardeningParameters = { 0.072, 0.60 };
+    
+    parameterVector macroFlowParameters = { 0.272, 0.80 };
+    parameterVector microFlowParameters = { 0.372, 0.15 };
+    parameterVector microGradientFlowParameters = { 0.072, 0.60 };
+
+    parameterType alphaMacro = 0.262;
+    parameterType alphaMicro = 0.620;
+    parameterType alphaMicroGradient = 0.480;
+
+    variableType currentMacroCohesion, currentMicroCohesion;
+    variableVector currentMicroGradientCohesion;
+
+    variableVector currentMacroFlowDirection, currentMicroFlowDirection, currentMicroGradientFlowDirection;
+
+    variableType answerMacroISV = 2.94873;
+    variableType answerMicroISV = -0.175844;
+    variableVector answerMicroGradientISV = { 2.12108, 3.04216, 2.17998 };
+
+    errorOut error = micromorphicElastoPlasticity::solveForStrainISV(
+                                        Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
+                                        currentElasticRightCauchyGreen,
+                                        currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress,
+                                        previousMacroGamma, previousMicroGamma, previousMicroGradientGamma,
+                                        previousMacroStrainISV, previousMicroStrainISV, previousMicroGradientStrainISV,
+                                        previousdMacroGdMacroCohesion, previousdMicroGdMicroCohesion,
+                                        previousdMicroGradientGdMicroGradientCohesion,
+                                        currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV,
+                                        currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion,
+                                        currentMacroFlowDirection, currentMicroFlowDirection, currentMicroGradientFlowDirection,
+                                        dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRCG,
+                                        dMicroFlowDirectiondReferenceMicroStress, dMicroFlowDirectiondElasticRCG,
+                                        dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                        dMicroGradientFlowDirectiondElasticRCG,
+                                        convergeFlag, fatalErrorFlag,
+                                        macroHardeningParameters, microHardeningParameters,
+                                        microGradientHardeningParameters,
+                                        macroFlowParameters, microFlowParameters,
+                                        microGradientFlowParameters,
+                                        alphaMacro, alphaMicro, alphaMicroGradient );
+
+    if ( error ){
+        error->print();
+        results << "test_solveForStrainISV & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMacroISV, currentMacroStrainISV ) ){
+        results << "test_solveForStrainISV (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMicroISV, currentMicroStrainISV ) ){
+        results << "test_solveForStrainISV (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answerMicroGradientISV, currentMicroGradientStrainISV ) ){
+        results << "test_solveForStrainISV (test 3) & False\n";
+        return 1;
+    }
+
+    const solverTools::floatMatrix strainISVResidualFloatArgs =
+        {
+            { Dt },
+            { currentMacroGamma },
+            { currentMicroGamma },
+            currentMicroGradientGamma,
+            currentElasticRightCauchyGreen,
+            currentPK2Stress,
+            currentReferenceMicroStress,
+            currentReferenceHigherOrderStress,
+            { previousMacroGamma },
+            { previousMicroGamma },
+            previousMicroGradientGamma,
+            { previousMacroStrainISV },
+            { previousMicroStrainISV },
+            previousMicroGradientStrainISV,
+            { previousdMacroGdMacroCohesion },
+            { previousdMicroGdMicroCohesion },
+            vectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ),
+            macroHardeningParameters,
+            microHardeningParameters,
+            microGradientHardeningParameters,
+            macroFlowParameters,
+            microFlowParameters,
+            microGradientFlowParameters,
+            { alphaMacro },
+            { alphaMicro },
+            { alphaMicroGradient }
+        };
+
+    solverTools::floatVector vec_dMacroFlowDirectiondPK2Stress( 81, 0 );
+    solverTools::floatVector vec_dMacroFlowDirectiondElasticRCG( 81, 0 );
+    solverTools::floatVector vec_dMicroFlowDirectiondReferenceMicroStress( 81, 0 );
+    solverTools::floatVector vec_dMicroFlowDirectiondElasticRCG( 81, 0 );
+    solverTools::floatVector vec_dMicroGradientFlowDirectiondReferenceHigherOrderStress( 81 * 27, 0 );
+    solverTools::floatVector vec_dMicroGradientFlowDirectiondElasticRCG( 81 * 9, 0 );
+
+    solverTools::floatMatrix strainISVResidualFloatOuts =
+    {
+        { currentMacroCohesion },
+        { currentMicroCohesion },
+        currentMicroGradientCohesion,
+        currentMacroFlowDirection,
+        currentMicroFlowDirection,
+        currentMicroGradientFlowDirection,
+        vec_dMacroFlowDirectiondPK2Stress,
+        vec_dMacroFlowDirectiondElasticRCG,
+        vec_dMicroFlowDirectiondReferenceMicroStress,
+        vec_dMicroFlowDirectiondElasticRCG,
+        vec_dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+        vec_dMicroGradientFlowDirectiondElasticRCG
+    };
+
+    solverTools::floatVector x = { currentMacroStrainISV, currentMicroStrainISV,
+                                   currentMicroGradientStrainISV[ 0 ],
+                                   currentMicroGradientStrainISV[ 1 ],
+                                   currentMicroGradientStrainISV[ 2 ] };
+
+    solverTools::floatMatrix floatOuts = strainISVResidualFloatOuts;
+
+    solverTools::floatVector residual( 5, 0 );
+    solverTools::floatMatrix jacobian( 5, solverTools::floatVector( 5, 0 ) );
+
+    solverTools::intMatrix intOuts, intArgs;
+
+    error = micromorphicElastoPlasticity::computeStrainISVResidual( x, strainISVResidualFloatArgs, intArgs, residual, jacobian,
+                                                                    floatOuts, intOuts );
+
+    if ( error ){
+        error->print();
+        results << "test_solveForStrainISV & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( residual, solverTools::floatVector( x.size(), 0 ) ) ){
+        results << "test_solveForStrainISV (test 4) & False\n";
+        return 1;
+    }
+
+
+    results << "test_solveForStrainISV & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -8740,7 +8942,7 @@ int main(){
     test_evolvePlasticDeformation( results );
     test_evolveStrainStateVariables( results );
     test_computeFlowDirections( results );
-//    test_computeResidual( results );
+    test_computeResidual( results );
     test_extractMaterialParameters( results );
     test_extractStateVariables( results );
     test_assembleFundamentalDeformationMeasures( results );
@@ -8749,8 +8951,9 @@ int main(){
     test_cout_redirect( results );
     test_cerr_redirect( results );
     test_computeStrainISVResidual( results );
+    test_solveForStrainISV( results );
 
-    test_evaluate_model( results );
+//    test_evaluate_model( results );
 
     //Close the results file
     results.close();
