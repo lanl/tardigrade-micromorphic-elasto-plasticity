@@ -3142,6 +3142,302 @@ namespace micromorphicElastoPlasticity{
     }
 
     #ifdef DEBUG_MODE
+    errorOut computeStainISVResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                                      const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                                      solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
+                                      solverTools::intMatrix &intOuts,
+                                      std::map< std::string, solverTools::floatVector > &DEBUG ){
+    #else
+    errorOut computeStrainISVResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                                       const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                                       solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
+                                       solverTools::intMatrix &intOuts ){
+    #endif
+        /*!
+         * Compute the residual for use in the nonlinear strain-like ISV solve.
+         * It is worth noting that because of the current formulation of the hardening curve, this is 
+         * linear however this is more general and will allow for the state variables to be non-linear
+         * in the hardening curve.
+         *
+         * :param const solverTools::floatVector &x: The vector of strain like ISVs.
+         *     where it is [ currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV ]
+         * :param const solverTools::floatMatrix &floatArgs: The constant floating point arguments.
+         * :param const solverTools::intMatrix &intArgs: The constant integer arguments.
+         * :param solverTools::floatVector &residual: The residual values ( the change in the strain-like ISVs )
+         * :param solverTools::floatVector &jacobian: The jacobian matrix
+         * :param solverTools::floatMatrix &floatOuts: The floating point values which can change and are
+         *     to be returned.
+         * :param solverTools::intMatrix &intOuts: The integer values which can change and are to be returned.
+         *
+         * The ordering of floatArgs is
+         * floatArgs[  0 ] = Dt: The change in time
+         * floatArgs[  1 ] = currentMacroGamma: The current macro plastic multiplier
+         * floatArgs[  2 ] = currentMicroGamma: The current micro plastic multiplier
+         * floatArgs[  3 ] = currentMicroGradientGamma: The current micro gradient plastic multiplier
+         * floatArgs[  4 ] = currentElasticRightCauchyGreen: The current elastic right Cauchy-Green
+         *     deformation tensor.
+         * floatArgs[  5 ] = currentPK2Stress: The current value of the PK2 stress
+         * floatArgs[  6 ] = currentReferenceMicroStress: The current reference micro stress
+         * floatArgs[  7 ] = currentReferenceHigherOrderStress: The current reference higher order stress
+         * floatArgs[  8 ] = previousMacroGamma: The previous macro plastic multiplier
+         * floatArgs[  9 ] = previousMicroGamma: The previous micro plastic multiplier
+         * floatArgs[ 10 ] = previousMicroGradientGamma: The previous value of the micro gradient plastic
+         *     multiplier.
+         * floatArgs[ 11 ] = previousMacroStrainISV: The previous value of the macro strain-like ISV
+         * floatArgs[ 12 ] = previousMicroStrainISV: The previous value of the micro strain-like ISV
+         * floatArgs[ 13 ] = previousMicroStrainISV: The previous value of the micro gradient strain-like
+         *     ISV.
+         * floatArgs[ 14 ] = previousdMacroGdMacroCohesion: The previous Jacobian of the macro plastic
+         *     flow direction w.r.t. the macro cohesion
+         * floatArgs[ 15 ] = previousdMicroGdMicroCohesion: The previous Jacobian of the micro plastic
+         *     flow direction w.r.t. the micro cohesion
+         * floatArgs[ 16 ] = previousdMicroGradientGdMicroGradientCohesion: The previous Jacobian of the 
+         *     micro gradient plastic flow direction w.r.t. the micro gradient cohesion.
+         * floatArgs[ 17 ] = macroHardeningParameters: The macro hardening parameters.
+         * floatArgs[ 18 ] = microHardeningParameters: The micro hardening parameters.
+         * floatArgs[ 19 ] = microGradientHardeningParameters: The micro gradient hardening parameters.
+         * floatArgs[ 20 ] = macroFlowParameters: The macro flow parameters.
+         * floatArgs[ 21 ] = microFlowParameters: The micro flow parameters.
+         * floatArgs[ 22 ] = microGradientFlowParameters: The micro gradient flow parameters.
+         * floatArgs[ 23 ] = alphaMacro: The macro integration parameter.
+         * floatArgs[ 24 ] = alphaMicro: The micro integration parameter.
+         * floatArgs[ 25 ] = alphaMicroGradient: The micro gradient integration parameter.
+         * 
+         * The ordering of floatOuts
+         * floatOuts[  0 ] = currentMacroCohesion: The current value of the macro cohesion
+         * floatOuts[  1 ] = currentMicroCohesion: The current value of the micro cohesion
+         * floatOuts[  2 ] = currentMicroGradientCohesion: The current value of the micro
+         *     gradient cohesion
+         * floatOuts[  3 ] = currentMacroFlowDirection: The current macro plasticity flow
+         *     flow direction.
+         * floatOuts[  4 ] = currentMicroFlowDirection: The current micro plasticity flow
+         *     flow direction.
+         * floatOuts[  5 ] = currentMicroGradientFlowDirection: The current micro gradient
+         *     plasticity flow direction.
+         * floatOuts[  6 ] = vec_dMacroFlowDirectiondPK2Stress: The Jacobian of the macro 
+         *     flow direction w.r.t. the second Piola Kirchhoff stress in vector form.
+         * floatOuts[  7 ] = vec_dMacroFlowDirectiondElasticRCG: The Jacobian of the micro
+         *     flow direction w.r.t. the elastic right Cauchy-Green deformation tensor.
+         * floatOuts[  8 ] = vec_dMicroFlowDirectiondReferenceMicroStress: The Jacobian of the micro
+         *     flow direction w.r.t. the reference micro stress.
+         * floatOuts[  9 ] = vec_dMicroFlowDirectiondElasticRCG: The Jacobian of the micro flow
+         *     direction w.r.t.the elastic right Cauchy-Green deformation tensor.
+         * floatOuts[ 10 ] = vec_dMicroGradientFlowDirectiondReferenceHigherOrderStress: The Jacobian
+         *     of the micro gradient flow direction w.r.t. the reference higher order stress.
+         * floatOuts[ 11 ] = vec_dMicroGradientFlowDirectiondElasticRCG: The Jacobian of the micro
+         *     gradient flow direction w.r.t the elastic right Cauchy-Green deformation tensor.
+         */
+
+        //Error handling
+        if ( x.size() != 5 ){
+            return new errorNode( "computeStrainISVResidual",
+                                  "The variable vector must have a length of 5" );
+        }
+
+        if ( floatArgs.size() != 26 ){
+            return new errorNode( "computeStrainISVResidual",
+                                  "The constant floating argument matrix must have a length of 26" );
+        }
+
+        if ( floatOuts.size() != 12 ){
+            return new errorNode( "computeStrainISVResidual",
+                                  "The floating output matrix must have a length of 12" );
+        }
+
+        //Extract the strain-like ISVs from the x vector
+        const variableType currentMacroStrainISV = x[ 0 ];
+        const variableType currentMicroStrainISV = x[ 1 ];
+        const variableVector currentMicroGradientStrainISV = { x[ 2 ], x[ 3 ], x[ 4 ] };
+
+        //Extract the values of floatArgs
+        unsigned int ii = 0;
+        const constantType   *Dt                                            = &floatArgs[ ii++ ][ 0 ];
+        const variableType   *currentMacroGamma                             = &floatArgs[ ii++ ][ 0 ];
+        const variableType   *currentMicroGamma                             = &floatArgs[ ii++ ][ 0 ];
+        const variableVector *currentMicroGradientGamma                     = &floatArgs[ ii++ ];
+        const variableVector *currentElasticRightCauchyGreen                = &floatArgs[ ii++ ];
+        const variableVector *currentPK2Stress                              = &floatArgs[ ii++ ];
+        const variableVector *currentReferenceMicroStress                   = &floatArgs[ ii++ ];
+        const variableVector *currentReferenceHigherOrderStress             = &floatArgs[ ii++ ];
+        const variableType   *previousMacroGamma                            = &floatArgs[ ii++ ][ 0 ];
+        const variableType   *previousMicroGamma                            = &floatArgs[ ii++ ][ 0 ];
+        const variableVector *previousMicroGradientGamma                    = &floatArgs[ ii++ ];
+        const variableType   *previousMacroStrainISV                        = &floatArgs[ ii++ ][ 0 ];
+        const variableType   *previousMicroStrainISV                        = &floatArgs[ ii++ ][ 0 ];
+        const variableVector *previousMicroGradientStrainISV                = &floatArgs[ ii++ ];
+        const variableType   *previousdMacroGdMacroCohesion                 = &floatArgs[ ii++ ][ 0 ];
+        const variableType   *previousdMicroGdMicroCohesion                 = &floatArgs[ ii++ ][ 0 ];
+        const variableMatrix  previousdMicroGradientGdMicroGradientCohesion = vectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
+        const variableVector *macroHardeningParameters                      = &floatArgs[ ii++ ];
+        const variableVector *microHardeningParameters                      = &floatArgs[ ii++ ];
+        const variableVector *microGradientHardeningParameters              = &floatArgs[ ii++ ];
+        const variableVector *macroFlowParameters                           = &floatArgs[ ii++ ];
+        const variableVector *microFlowParameters                           = &floatArgs[ ii++ ];
+        const variableVector *microGradientFlowParameters                   = &floatArgs[ ii++ ];
+        const variableType   *alphaMacro                                    = &floatArgs[ ii++ ][ 0 ];
+        const variableType   *alphaMicro                                    = &floatArgs[ ii++ ][ 0 ];
+        const variableType   *alphaMicroGradient                            = &floatArgs[ ii++ ][ 0 ];
+
+        //Extract the values of floatOuts
+        ii = 0;
+        variableType   *currentMacroCohesion                                       = &floatOuts[ ii++ ][ 0 ];
+        variableType   *currentMicroCohesion                                       = &floatOuts[ ii++ ][ 0 ];
+        variableVector *currentMicroGradientCohesion                               = &floatOuts[ ii++ ];
+        variableVector *currentMacroFlowDirection                                  = &floatOuts[ ii++ ];
+        variableVector *currentMicroFlowDirection                                  = &floatOuts[ ii++ ];
+        variableVector *currentMicroGradientFlowDirection                          = &floatOuts[ ii++ ];
+        variableVector *vec_dMacroFlowDirectiondPK2Stress                          = &floatOuts[ ii++ ];
+        variableVector *vec_dMacroFlowDirectiondElasticRCG                         = &floatOuts[ ii++ ];
+        variableVector *vec_dMicroFlowDirectiondReferenceMicroStress               = &floatOuts[ ii++ ];
+        variableVector *vec_dMicroFlowDirectiondElasticRCG                         = &floatOuts[ ii++ ];
+        variableVector *vec_dMicroGradientFlowDirectiondReferenceHigherOrderStress = &floatOuts[ ii++ ];
+        variableVector *vec_dMicroGradientFlowDirectiondElasticRCG                 = &floatOuts[ ii++ ];
+
+        //Compute the value of the cohesions
+        variableType dMacroCdMacroStrainISV, dMicroCdMicroStrainISV;
+        variableMatrix dMicroGradientCdMicroGradientStrainISV;
+
+        errorOut error = computeCohesion( currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV,
+                                          *macroHardeningParameters, *microHardeningParameters, *microGradientHardeningParameters,
+                                          *currentMacroCohesion, *currentMicroCohesion, *currentMicroGradientCohesion,
+                                          dMacroCdMacroStrainISV, dMicroCdMicroStrainISV, dMicroGradientCdMicroGradientStrainISV );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeStrainISVResidual",
+                                             "Error in the computation of the cohesion" );
+            result->addNext( error );
+            return result;
+        }
+
+        #ifdef DEBUG_MODE
+            solverTools::floatVector tmp = { *currentMacroCohesion };
+            DEBUG.emplace( "currentMacroCohesion", tmp );
+            tmp = { *currentMicroCohesion };
+            DEBUG.emplace( "currentMicroCohesion", tmp );
+            DEBUG.emplace( "currentMicroGradientCohesion", *currentMicroGradientCohesion );
+        #endif
+
+        //Compute the Flow directions
+        variableType currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion;
+        variableMatrix currentdMicroGradientGdMicroGradientCohesion;
+
+        variableMatrix dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRCG;
+        variableMatrix dMicroFlowDirectiondReferenceMicroStress, dMicroFlowDirectiondElasticRCG;
+        variableMatrix dMicroGradientFlowDirectiondReferenceHigherOrderStress, dMicroGradientFlowDirectiondElasticRCG;
+
+        error = computeFlowDirections( *currentPK2Stress, *currentReferenceMicroStress, *currentReferenceHigherOrderStress,
+                                       *currentMacroCohesion, *currentMicroCohesion, *currentMicroGradientCohesion,
+                                       *currentElasticRightCauchyGreen,
+                                       *macroFlowParameters, *microFlowParameters, *microGradientFlowParameters,
+                                       *currentMacroFlowDirection, *currentMicroFlowDirection, *currentMicroGradientFlowDirection,
+                                       currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion,
+                                       currentdMicroGradientGdMicroGradientCohesion,
+                                       dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRCG,
+                                       dMicroFlowDirectiondReferenceMicroStress, dMicroFlowDirectiondElasticRCG,
+                                       dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                       dMicroGradientFlowDirectiondElasticRCG );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeStrainISV",
+                                             "Error in the computation of the flow directions" );
+            result->addNext( error );
+            return result;
+        }
+
+        //If the stresses are very small, set the flow directions to zero
+        if ( vectorTools::dot( *currentPK2Stress, *currentPK2Stress ) < 1e-9 ){
+            *currentMacroFlowDirection = variableVector( currentMacroFlowDirection->size(), 0 );
+        }
+
+        if ( vectorTools::dot( *currentReferenceMicroStress, *currentReferenceMicroStress ) < 1e-9 ){
+            *currentMicroFlowDirection = variableVector( currentMicroFlowDirection->size(), 0 );
+        }
+
+        if ( vectorTools::dot( *currentReferenceHigherOrderStress, *currentReferenceHigherOrderStress ) < 1e-9 ){
+            *currentMicroGradientFlowDirection = variableVector( currentMicroGradientFlowDirection->size(), 0 );
+        }
+
+        #ifdef DEBUG_MODE
+            DEBUG.emplace( "currentMacroFlowDirection", *currentMacroFlowDirection );
+            DEBUG.emplace( "currentMicroFlowDirection", *currentMicroFlowDirection );
+            DEBUG.emplace( "currentMicroGradientFlowDirection", *currentMicroGradientFlowDirection );
+            tmp = { currentdMacroGdMacroCohesion };
+            DEBUG.emplace( "currentdMacroGdMacroCohesion", tmp );
+            tmp = { currentdMicroGdMicroCohesion };
+            DEBUG.emplace( "currentdMicroGdMicroCohesion", tmp );
+            DEBUG.emplace( "currentdMicroGradientGdMicroGradientCohesion",
+                           vectorTools::appendVectors( currentdMicroGradientGdMicroGradientCohesion ) );
+        #endif
+
+        //Set the output jacobian values
+        *vec_dMacroFlowDirectiondPK2Stress  = vectorTools::appendVectors( dMacroFlowDirectiondPK2Stress );
+        *vec_dMacroFlowDirectiondElasticRCG = vectorTools::appendVectors( dMacroFlowDirectiondElasticRCG );
+
+        *vec_dMicroFlowDirectiondReferenceMicroStress = vectorTools::appendVectors( dMicroFlowDirectiondReferenceMicroStress );
+        *vec_dMicroFlowDirectiondElasticRCG           = vectorTools::appendVectors( dMicroFlowDirectiondElasticRCG );
+
+        *vec_dMicroGradientFlowDirectiondReferenceHigherOrderStress
+            = vectorTools::appendVectors( dMicroGradientFlowDirectiondReferenceHigherOrderStress );
+        *vec_dMicroGradientFlowDirectiondElasticRCG
+            = vectorTools::appendVectors( dMicroGradientFlowDirectiondElasticRCG );
+
+        //Evolve the strain-like ISVs
+        variableType newMacroStrainISV, newMicroStrainISV;
+        variableVector newMicroGradientStrainISV;
+
+        variableType dNewMacroISVdCurrentMacroGamma, dNewMacroISVddMacroGdMacroC;
+        variableType dNewMicroISVdCurrentMicroGamma, dNewMicroISVddMicroGdMicroC;
+        variableMatrix dNewMicroGradientISVdCurrentMicroGradientGamma, dNewMicroGradientISVddMicroGradientGdMicroGradientC;
+
+        error = evolveStrainStateVariables( *Dt, *currentMacroGamma, *currentMicroGamma, *currentMicroGradientGamma,
+                                            currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion,
+                                            currentdMicroGradientGdMicroGradientCohesion, *previousMacroStrainISV,
+                                            *previousMicroStrainISV, *previousMicroGradientStrainISV,
+                                            *previousMacroGamma, *previousMicroGamma, *previousMicroGradientGamma,
+                                            *previousdMacroGdMacroCohesion, *previousdMicroGdMicroCohesion,
+                                            previousdMicroGradientGdMicroGradientCohesion,
+                                            newMacroStrainISV, newMicroStrainISV, newMicroGradientStrainISV,
+                                            dNewMacroISVdCurrentMacroGamma, dNewMacroISVddMacroGdMacroC,
+                                            dNewMicroISVdCurrentMicroGamma, dNewMicroISVddMicroGdMicroC,
+                                            dNewMicroGradientISVdCurrentMicroGradientGamma,
+                                            dNewMicroGradientISVddMicroGradientGdMicroGradientC,
+                                            *alphaMacro, *alphaMicro, *alphaMicroGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeStrainISVResidual",
+                                             "Error in the evolution of the strain-like ISVs" );
+            result->addNext( error );
+            return result;
+        }
+
+        #ifdef DEBUG_MODE
+            tmp = { *currentMacroStrainISV };
+            DEBUG.emplace( "currentMacroStrainISV", tmp );
+            tmp = { *currentMicroStrainISV };
+            DEBUG.emplace( "currentMicroStrainISV", tmp );
+            DEBUG.emplace( "currentMicroGradientStrainISV", *currentMicroGradientStrainISV );
+        #endif
+
+        //Assemble the residual
+        residual = { newMacroStrainISV - currentMacroStrainISV,
+                     newMicroStrainISV - currentMicroStrainISV,
+                     newMicroGradientStrainISV[ 0 ] - currentMicroGradientStrainISV[ 0 ],
+                     newMicroGradientStrainISV[ 1 ] - currentMicroGradientStrainISV[ 1 ],
+                     newMicroGradientStrainISV[ 2 ] - currentMicroGradientStrainISV[ 2 ] };
+
+        //Assemble the Jacobian
+        jacobian = solverTools::floatMatrix( 5, solverTools::floatVector( 5, 0 ) );
+        jacobian[ 0 ][ 0 ] = -1.;
+        jacobian[ 1 ][ 1 ] = -1.;
+        jacobian[ 2 ][ 2 ] = -1.;
+        jacobian[ 3 ][ 3 ] = -1.;
+        jacobian[ 3 ][ 3 ] = -1.;
+
+        return NULL;
+    }
+
+
+    #ifdef DEBUG_MODE
     errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                               solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts,
@@ -3298,9 +3594,9 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Extract the Gammas
-        variableType currentMacroGamma = x[0];
-        variableType currentMicroGamma = x[1];
-        variableVector currentMicroGradientGamma( x.begin() + 2, x.begin() + 5 );
+        const variableType currentMacroGamma = x[0];
+        const variableType currentMicroGamma = x[1];
+        const variableVector currentMicroGradientGamma( x.begin() + 2, x.begin() + 5 );
 
 //        std::cout << "currentMacroGamma: " << currentMacroGamma << "\n";
 //        std::cout << "currentMicroGamma: " << currentMicroGamma << "\n";
@@ -3817,9 +4113,9 @@ namespace micromorphicElastoPlasticity{
 //        std::cout << "\nINSIDE OF RESIDUAL\n";
 
         //Extract the Gammas
-        variableType currentMacroGamma = x[0];
-        variableType currentMicroGamma = x[1];
-        variableVector currentMicroGradientGamma( x.begin() + 2, x.begin() + 5 );
+        const variableType currentMacroGamma = x[0];
+        const variableType currentMicroGamma = x[1];
+        const variableVector currentMicroGradientGamma( x.begin() + 2, x.begin() + 5 );
 
         //Compute the cohesions
         variableType currentMacroCohesion, currentMicroCohesion;
