@@ -3185,8 +3185,8 @@ namespace micromorphicElastoPlasticity{
          *     multiplier.
          * floatArgs[ 11 ] = previousMacroStrainISV: The previous value of the macro strain-like ISV
          * floatArgs[ 12 ] = previousMicroStrainISV: The previous value of the micro strain-like ISV
-         * floatArgs[ 13 ] = previousMicroStrainISV: The previous value of the micro gradient strain-like
-         *     ISV.
+         * floatArgs[ 13 ] = previousMicroGradientStrainISV: The previous value of the micro gradient
+         *     strain-like ISV.
          * floatArgs[ 14 ] = previousdMacroGdMacroCohesion: The previous Jacobian of the macro plastic
          *     flow direction w.r.t. the macro cohesion
          * floatArgs[ 15 ] = previousdMicroGdMicroCohesion: The previous Jacobian of the micro plastic
@@ -3240,6 +3240,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         if ( floatOuts.size() != 12 ){
+            std::cout << "floatOuts.size() " << floatOuts.size() << "\n";
             return new errorNode( "computeStrainISVResidual",
                                   "The floating output matrix must have a length of 12" );
         }
@@ -3431,7 +3432,7 @@ namespace micromorphicElastoPlasticity{
         jacobian[ 1 ][ 1 ] = -1.;
         jacobian[ 2 ][ 2 ] = -1.;
         jacobian[ 3 ][ 3 ] = -1.;
-        jacobian[ 3 ][ 3 ] = -1.;
+        jacobian[ 4 ][ 4 ] = -1.;
 
         return NULL;
     }

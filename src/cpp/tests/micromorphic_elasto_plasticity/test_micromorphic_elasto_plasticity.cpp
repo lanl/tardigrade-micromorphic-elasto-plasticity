@@ -8578,6 +8578,143 @@ int test_evaluate_model( std::ofstream &results){
     return 1;
 }
 
+int test_computeStrainISVResidual( std::ofstream &results ){
+    /*!
+     * Test the computation of the strain ISV residual.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    solverTools::floatVector x = { 1, 1, 1, 1, 1 };
+
+    solverTools::floatMatrix floatArgsDefault =
+    {
+        { 2.5 },
+        { 1.7 },
+        { 2.7 },
+        { 0.31, 0.162, 0.991 },
+        { 9.92430424e-01,  3.70411571e-03,  2.00684100e-04,
+          3.70411571e-03,  9.96861203e-01, -1.45757049e-04,
+          2.00684100e-04, -1.45757049e-04,  1.00752325e+00 },
+        {  1.66749433,  0.35416765, -0.939809  ,  
+           1.13282152,  1.67200425,  1.30942005,
+           0.91180593, -0.9580783 ,  1.6470536 },
+        { -0.95697378,  1.06550409, -0.95387546,
+          -1.51083453, -0.45597786,  1.36032498,
+          -0.88728256, -1.72034523,  0.53243859 },
+        {  0.16953206,  0.16246387,  0.35441079,  0.3743102 , -0.12214526,
+          -0.35814699,  0.14110444, -0.04030276,  0.72214869,  0.66960948,
+          -0.78846779, -0.87918393,  0.19376438,  0.58478994, -0.54728853,
+           0.0704016 , -0.72786767, -0.2555111 , -0.69604652, -0.1403563 ,
+           0.58541244, -0.18608698, -0.64430013,  0.81850409,  0.090662  ,
+          -0.79900641,  0.43744119 },
+        { .28 },
+        { .927 },
+        { .162, .01782, .772 },
+        { .272 },
+        { .8761 },
+        { .281, .982, 1.271 },
+        { .171 },
+        { 1.72 },
+        { 1.272, 0, 0, 0, 1.272, 0, 0, 0, 1.272 },
+        { .272,  0.80 },
+        { .272,  0.15 },
+        { .272,  0.60 },
+        { .272, -0.20 },
+        { .272, -0.30 },
+        { .272,  0.92 },
+        { .262 },
+        { .620 },
+        { .480 }
+    };
+
+    solverTools::floatMatrix floatOutsDefault =
+    {             
+        { 9.271 },
+        { 4.176 },
+        { .271, .981, 1.32 },
+        variableVector(  9, 0 ),
+        variableVector(  9, 0 ),
+        variableVector( 27, 0 ),
+        variableVector( 81, 0 ),
+        variableVector( 81, 0 ),
+        variableVector( 81, 0 ),
+        variableVector( 81, 0 ),
+        variableVector( 27 * 27, 0 ),
+        variableVector( 27 * 9, 0 )
+    };
+
+    solverTools::floatVector residual( 5, 0 );
+    solverTools::floatMatrix jacobian( 5, solverTools::floatVector( 5, 0 ) );
+
+    solverTools::floatMatrix floatArgs = floatArgsDefault;
+    solverTools::floatMatrix floatOuts = floatOutsDefault;
+
+    solverTools::intMatrix intArgs, intOuts;
+
+    solverTools::floatVector answer = { 4.26419, 1.55074, -0.380626, 0.260849, 0.964812 };
+
+    errorOut error = micromorphicElastoPlasticity::computeStrainISVResidual( x, floatArgs, intArgs, residual,
+                                                                             jacobian, floatOuts, intOuts );
+
+    if ( error ){
+        error->print();
+        results << "test_computeStrainISVResidual & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( answer, residual ) ){
+        results << "test_computeStrainISVResidual (test 1) & False\n";
+        return 1;
+    }
+
+    //Test the jacobians
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < x.size(); i++ ){
+        constantVector delta( x.size(), 0 );
+        delta[ i ] = eps * fabs( x[ i ] ) + eps;
+
+        solverTools::floatVector P, M;
+        solverTools::floatMatrix J;
+        
+        solverTools::floatMatrix fO = floatOutsDefault;
+        solverTools::intMatrix iO;
+
+        error = micromorphicElastoPlasticity::computeStrainISVResidual( x + delta, floatArgs, intArgs, P,
+                                                                        J, fO, iO );
+
+        if ( error ){
+            error->print();
+            results << "test_computeStrainISVResidual & False\n";
+            return 1;
+        }
+
+        fO = floatOutsDefault;
+        iO = solverTools::intMatrix( 0 );
+        error = micromorphicElastoPlasticity::computeStrainISVResidual( x - delta, floatArgs, intArgs, M,
+                                                                        J, fO, iO );
+
+        if ( error ){
+            error->print();
+            results << "test_computeStrainISVResidual & False\n";
+            return 1;
+        }
+
+        solverTools::floatVector gradCol = ( P - M ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ] ) ){
+                results << "test_computeStrainISVResidual (test 2 ) & False\n";
+                return 1;
+            }
+        }
+
+    }
+
+    results << "test_computeStrainISVResidual & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -8611,6 +8748,7 @@ int main(){
     test_computeCohesion( results );
     test_cout_redirect( results );
     test_cerr_redirect( results );
+    test_computeStrainISVResidual( results );
 
     test_evaluate_model( results );
 

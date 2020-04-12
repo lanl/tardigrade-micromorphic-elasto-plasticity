@@ -528,16 +528,16 @@ namespace micromorphicElastoPlasticity{
                               variableMatrix &dMicroGradientCdMicroGradientStrainISV );
 
     #ifdef DEBUG_MODE
-    errorOut nonlinearStrainISVResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                         const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                                         solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                         solverTools::intMatrix &intOuts,
-                                         std::map< std::string, solverTools::floatVector > &DEBUG );
+    errorOut computeStrainISVResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                                       const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                                       solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
+                                       solverTools::intMatrix &intOuts,
+                                       std::map< std::string, solverTools::floatVector > &DEBUG );
     #else
-    errorOut nonlinearStrainISVResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                         const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                                         solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                         solverTools::intMatrix &intOuts );
+    errorOut computeStrainISVResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                                       const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                                       solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
+                                       solverTools::intMatrix &intOuts );
     #endif
 
     int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
