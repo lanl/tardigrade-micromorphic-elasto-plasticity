@@ -8556,6 +8556,10 @@ int test_evaluate_model( std::ofstream &results){
     //Initialize the output message string
     std::string output_message;
 
+    #ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG;
+    #endif
+
     int errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
                                                                   current_grad_u,  current_phi,  current_grad_phi,
                                                                   previous_grad_u, previous_phi, previous_grad_phi,
@@ -8564,7 +8568,11 @@ int test_evaluate_model( std::ofstream &results){
                                                                   previous_ADD_DOF, previous_ADD_grad_DOF,
                                                                   current_PK2, current_SIGMA, current_M,
                                                                   ADD_TERMS,
-                                                                  output_message );
+                                                                  output_message
+                                                                  #ifdef DEBUG_MODE
+                                                                  , DEBUG
+                                                                  #endif
+                                                                  );
 
     if ( errorCode != 0 ){
         std::cout << output_message;
@@ -8654,8 +8662,14 @@ int test_computeStrainISVResidual( std::ofstream &results ){
 
     solverTools::floatVector answer = { 4.26419, 1.55074, -0.380626, 0.260849, 0.964812 };
 
+    #ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG;
+    errorOut error = micromorphicElastoPlasticity::computeStrainISVResidual( x, floatArgs, intArgs, residual,
+                                                                             jacobian, floatOuts, intOuts, DEBUG );
+    #else
     errorOut error = micromorphicElastoPlasticity::computeStrainISVResidual( x, floatArgs, intArgs, residual,
                                                                              jacobian, floatOuts, intOuts );
+    #endif
 
     if ( error ){
         error->print();
@@ -8680,8 +8694,14 @@ int test_computeStrainISVResidual( std::ofstream &results ){
         solverTools::floatMatrix fO = floatOutsDefault;
         solverTools::intMatrix iO;
 
+        #ifdef DEBUG_MODE
+        std::map< std::string, solverTools::floatVector> DEBUG_P, DEBUG_M;
+        error = micromorphicElastoPlasticity::computeStrainISVResidual( x + delta, floatArgs, intArgs, P,
+                                                                        J, fO, iO, DEBUG_P );
+        #else
         error = micromorphicElastoPlasticity::computeStrainISVResidual( x + delta, floatArgs, intArgs, P,
                                                                         J, fO, iO );
+        #endif
 
         if ( error ){
             error->print();
@@ -8691,8 +8711,14 @@ int test_computeStrainISVResidual( std::ofstream &results ){
 
         fO = floatOutsDefault;
         iO = solverTools::intMatrix( 0 );
+
+        #ifdef DEBUG_MODE
+        error = micromorphicElastoPlasticity::computeStrainISVResidual( x - delta, floatArgs, intArgs, M,
+                                                                        J, fO, iO, DEBUG_M );
+        #else
         error = micromorphicElastoPlasticity::computeStrainISVResidual( x - delta, floatArgs, intArgs, M,
                                                                         J, fO, iO );
+        #endif
 
         if ( error ){
             error->print();
@@ -8790,6 +8816,30 @@ int test_solveForStrainISV( std::ofstream &results ){
     variableType answerMicroISV = -0.175844;
     variableVector answerMicroGradientISV = { 2.12108, 3.04216, 2.17998 };
 
+    #ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG;
+    errorOut error = micromorphicElastoPlasticity::solveForStrainISV(
+                                        Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
+                                        currentElasticRightCauchyGreen,
+                                        currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress,
+                                        previousMacroGamma, previousMicroGamma, previousMicroGradientGamma,
+                                        previousMacroStrainISV, previousMicroStrainISV, previousMicroGradientStrainISV,
+                                        previousdMacroGdMacroCohesion, previousdMicroGdMicroCohesion,
+                                        previousdMicroGradientGdMicroGradientCohesion,
+                                        currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV,
+                                        currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion,
+                                        currentMacroFlowDirection, currentMicroFlowDirection, currentMicroGradientFlowDirection,
+                                        dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRCG,
+                                        dMicroFlowDirectiondReferenceMicroStress, dMicroFlowDirectiondElasticRCG,
+                                        dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                        dMicroGradientFlowDirectiondElasticRCG,
+                                        convergeFlag, fatalErrorFlag,
+                                        macroHardeningParameters, microHardeningParameters,
+                                        microGradientHardeningParameters,
+                                        macroFlowParameters, microFlowParameters,
+                                        microGradientFlowParameters,
+                                        alphaMacro, alphaMicro, alphaMicroGradient, DEBUG );
+    #else
     errorOut error = micromorphicElastoPlasticity::solveForStrainISV(
                                         Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
                                         currentElasticRightCauchyGreen,
@@ -8811,6 +8861,7 @@ int test_solveForStrainISV( std::ofstream &results ){
                                         macroFlowParameters, microFlowParameters,
                                         microGradientFlowParameters,
                                         alphaMacro, alphaMicro, alphaMicroGradient );
+    #endif
 
     if ( error ){
         error->print();
@@ -8898,8 +8949,14 @@ int test_solveForStrainISV( std::ofstream &results ){
 
     solverTools::intMatrix intOuts, intArgs;
 
+    #ifdef DEBUG_MODE
+    DEBUG.clear();
+    error = micromorphicElastoPlasticity::computeStrainISVResidual( x, strainISVResidualFloatArgs, intArgs, residual, jacobian,
+                                                                    floatOuts, intOuts, DEBUG );
+    #else
     error = micromorphicElastoPlasticity::computeStrainISVResidual( x, strainISVResidualFloatArgs, intArgs, residual, jacobian,
                                                                     floatOuts, intOuts );
+    #endif
 
     if ( error ){
         error->print();
@@ -8914,6 +8971,488 @@ int test_solveForStrainISV( std::ofstream &results ){
 
 
     results << "test_solveForStrainISV & True\n";
+    return 0;
+}
+
+int test_convergence_of_computeResidual( std::ofstream &results ){
+    /*!
+     * Test the convergence of computeResidual. This test may be removed at a later date.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    std::vector< double > fparams = { 2, 1e2, 1.5e1,               //Macro hardening parameters
+                                      2, 2e2, 2.0e1,               //Micro hardening parameters
+                                      2, 2.5e2, 2.7e1,             //Micro gradient hardening parameters
+                                      2, 0.56, 0.,                 //Macro flow parameters
+                                      2, 0.15, 0.,                 //Micro flow parameters
+                                      2, 0.82, 0.,                 //Micro gradient flow parameters
+                                      2, 0.70, 0.,                 //Macro yield parameters
+                                      2, 0.40, 0.,                 //Micro yield parameters
+                                      2, 0.52, 0.,                 //Micro gradient yield parameters
+                                      2, 696.47, 65.84,            //A stiffness tensor parameters
+                                      5, -7.69, -51.92, 38.61, -27.31, 5.13,  //B stiffness tensor parameters
+                                      11, 1.85, -0.19, -1.08, -1.57, 2.29, -0.61, 5.97, -2.02, 2.38, -0.32, -3.25, //C stiffness tensor parameters
+                                      2, -51.92, 5.13,             //D stiffness tensor parameters
+                                      0.4, 0.3, 0.35, 1e-8, 1e-8   //Integration parameters
+                                    };
+
+    parameterVector macroHardeningParameters;
+    parameterVector microHardeningParameters;
+    parameterVector microGradientHardeningParameters;
+
+    parameterVector macroFlowParameters;
+    parameterVector microFlowParameters;
+    parameterVector microGradientFlowParameters;
+
+    parameterVector macroYieldParameters;
+    parameterVector microYieldParameters;
+    parameterVector microGradientYieldParameters;
+
+    parameterVector Amatrix, Bmatrix, Cmatrix, Dmatrix;
+    parameterType alphaMacro, alphaMicro, alphaMicroGradient;
+    parameterType relativeTolerance, absoluteTolerance;
+
+    errorOut error = micromorphicElastoPlasticity::extractMaterialParameters( fparams,
+                                                                              macroHardeningParameters, microHardeningParameters,
+                                                                              microGradientHardeningParameters,
+                                                                              macroFlowParameters, microFlowParameters,
+                                                                              microGradientFlowParameters,
+                                                                              macroYieldParameters, microYieldParameters,
+                                                                              microGradientYieldParameters,
+                                                                              Amatrix, Bmatrix, Cmatrix, Dmatrix,
+                                                                              alphaMacro, alphaMicro, alphaMicroGradient,
+                                                                              relativeTolerance, absoluteTolerance );
+
+    if ( error ){
+        error->print();
+        results << "test_convergence_of_computeResidual & False\n";
+        return 1;
+    }
+
+    constantType Dt = 2.5;
+    variableType   currentMacroStrainISV = 0.;
+    variableType   currentMicroStrainISV = 0.;
+    variableVector currentMicroGradientStrainISV( 3., 0. );
+    variableVector currentDeformationGradient = { 1.2, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector currentMicroDeformation = { 1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0 };
+    variableVector currentGradientMicroDeformation = variableVector( 27, 0 );
+    variableVector previousPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector previousPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector previousPlasticMicroGradient = variableVector( 27, 0 );
+    variableVector previousPlasticMacroVelocityGradient = variableVector( 9, 0 );
+    variableVector previousPlasticMicroVelocityGradient = variableVector( 9, 0 );
+    variableVector previousPlasticMicroGradientVelocityGradient = variableVector( 27, 0 );
+    variableType   previousdMacroGdMacroCohesion = 0.;
+    variableType   previousdMicroGdMicroCohesion = 0.;
+    variableVector previousdMicroGradientGdMicroGradientCohesion( 9., 0. );
+    variableType   previousMacroStrainISV = 0.;
+    variableType   previousMicroStrainISV = 0.;
+    variableVector previousMicroGradientStrainISV = variableVector( 3, 0 );
+    variableType   previousMacroGamma = 0;
+    variableType   previousMicroGamma = 0;
+    variableVector previousMicroGradientGamma = variableVector( 3, 0 );
+
+    variableVector currentElasticDeformationGradient = currentDeformationGradient;
+    variableVector currentElasticMicroDeformation = currentMicroDeformation;
+    variableVector currentElasticMicroGradient = currentGradientMicroDeformation;
+    variableVector currentPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector currentPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector currentPlasticMicroGradient = variableVector( 27, 0 );
+
+    variableVector currentPK2Stress = { 434.22, 386.082, -531.382, 657.265, -626.479, 438.899, 54.008, 580.606, 255.122 };
+    variableVector currentReferenceMicroStress = { 1314.38, 1161.46, -513.317, 1161.46, -1074.57, 1121.81, -513.317, 1121.81, 899.495 };
+    variableVector currentReferenceHigherOrderStress  = { -3.13881, 21.1205, -32.2236, 61.3638, 54.4966, 80.7927, -18.3752, 10.5808, 65.8143, 46.5659, 126.087, 19.542, 125.007, 88.992, -34.8056, 10.9744, -93.0911, 15.1465, -44.2434, 71.769, 9.05663, 77.7283, -69.6531, -0.0611322, 52.8567, 32.069, -236.034 };
+
+    variableVector gammas = { 0., 0., 0., 0., 0. };
+
+    solverTools::intVector activePlasticity = { 1, 0, 0, 0, 0 };
+
+    solverTools::floatMatrix floatArgsDefault =
+        {
+            { Dt },
+            currentDeformationGradient,
+            currentMicroDeformation,
+            currentGradientMicroDeformation,
+            previousPlasticDeformationGradient,
+            previousPlasticMicroDeformation,
+            previousPlasticMicroGradient,
+            previousPlasticMacroVelocityGradient,
+            previousPlasticMicroVelocityGradient,
+            previousPlasticMicroGradientVelocityGradient,
+            { previousMacroStrainISV },
+            { previousMicroStrainISV },
+            previousMicroGradientStrainISV,
+            { previousMacroGamma },
+            { previousMicroGamma },
+            previousMicroGradientGamma,
+            { previousdMacroGdMacroCohesion },
+            { previousdMicroGdMicroCohesion },
+            previousdMicroGradientGdMicroGradientCohesion,
+            macroHardeningParameters,
+            microHardeningParameters,
+            microGradientHardeningParameters,
+            macroFlowParameters,
+            microFlowParameters,
+            microGradientFlowParameters,
+            macroYieldParameters,
+            microYieldParameters,
+            microGradientYieldParameters,
+            Amatrix,
+            Bmatrix,
+            Cmatrix,
+            Dmatrix,
+            { alphaMacro },
+            { alphaMicro },
+            { alphaMicroGradient }
+        };
+
+    solverTools::floatMatrix floatOutsDefault = 
+        {
+            currentElasticDeformationGradient,
+            currentElasticMicroDeformation,
+            currentElasticMicroGradient,
+            currentPlasticDeformationGradient,
+            currentPlasticMicroDeformation,
+            currentPlasticMicroGradient,
+            currentPK2Stress,
+            currentReferenceMicroStress,
+            currentReferenceHigherOrderStress,
+            { currentMacroStrainISV },
+            { currentMicroStrainISV },
+            currentMicroGradientStrainISV,
+        };
+
+    solverTools::intMatrix intArgs;
+    
+    solverTools::intMatrix intOutsDefault = { activePlasticity };
+
+    variableVector x = gammas;
+
+    variableVector answerResidual = { 2.77092, 4.0997, 1.31455, 0.730796, 1.20269 };
+
+    variableVector answerElasticMicroGradient = { 0.19740483,  0.17269619, -0.3678423 ,  0.08953459, -0.1405664 ,
+                                                 -0.18935258,  0.18035407,  0.24419328,  0.39392356,  0.67019271,
+                                                 -0.26558889, -0.08769537,  0.46701901,  0.07696557,  0.09980104,
+                                                  0.2731155 , -0.10287654,  0.1019402 , -0.47220379, -0.09295431,
+                                                  0.33946221, -0.3351329 ,  0.35476669, -0.6010457 ,  0.30065071,
+                                                 -0.03147447, -0.00606308 };
+
+    solverTools::floatVector residual, tol;
+    solverTools::floatMatrix jacobian;
+
+    solverTools::floatMatrix floatArgs = floatArgsDefault;
+    solverTools::floatMatrix floatOuts = floatOutsDefault;
+
+    solverTools::intMatrix intOuts = intOutsDefault;
+    #ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG;
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, floatOuts, intOuts, DEBUG );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, floatOuts, intOuts );
+    #endif
+
+    std::cout << "residual: "; vectorTools::print( residual );
+    tol = relativeTolerance * residual + absoluteTolerance;
+    std::cout << "tolerance: "; vectorTools::print( tol );
+    std::cout << "floatOuts:\n"; vectorTools::print( floatOuts );
+    std::cout << "intOuts:\n"; vectorTools::print( intOuts );
+
+    std::cout << "\n\nInitial Iteration\n\n";
+    std::cout << "gammas: "; vectorTools::print( gammas );
+    floatOuts = floatOutsDefault;
+    intOuts = intOutsDefault;
+    #ifdef DEBUG_MODE
+    DEBUG.clear();
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts, DEBUG );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts );
+    #endif
+    
+    std::cout << "residual: "; vectorTools::print( residual );
+    std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+    std::cout << "floatOuts:\n"; vectorTools::print( floatOuts );
+    std::cout << "intOuts:\n"; vectorTools::print( intOuts );
+
+    unsigned int rank;
+    solverTools::floatVector dGamma = -vectorTools::solveLinearSystem( jacobian, residual, rank );
+    std::cout << "dGamma: "; vectorTools::print( dGamma );
+
+    gammas += dGamma;
+    std::cout << "\n\nFirst Iteration\n\n";
+    std::cout << "gamma: "; vectorTools::print( gammas );
+    x = gammas;
+    #ifdef DEBUG_MODE
+    DEBUG.clear();
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts, DEBUG );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts );
+    #endif
+
+    std::cout << "residual: "; vectorTools::print( residual );
+    std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+    std::cout << "floatOuts:\n"; vectorTools::print( floatOuts );
+    std::cout << "intOuts:\n"; vectorTools::print( intOuts );
+
+    dGamma = -vectorTools::solveLinearSystem( jacobian, residual, rank );
+    std::cout << "dGamma: "; vectorTools::print( dGamma );
+
+    gammas += dGamma;
+    std::cout << "\n\nSecond Iteration\n\n";
+    std::cout << "gamma: "; vectorTools::print( gammas );
+    x = gammas;
+
+    #ifdef DEBUG_MODE
+    DEBUG.clear();
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts, DEBUG );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts );
+    #endif
+
+    std::cout << "residual: "; vectorTools::print( residual );
+    std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+    std::cout << "floatOuts:\n"; vectorTools::print( floatOuts );
+    std::cout << "intOuts:\n"; vectorTools::print( intOuts );
+
+    dGamma = -vectorTools::solveLinearSystem( jacobian, residual, rank );
+    std::cout << "dGamma: "; vectorTools::print( dGamma );
+
+    gammas += dGamma;
+    std::cout << "\n\nThird Iteration\n\n";
+    std::cout << "gamma: "; vectorTools::print( gammas );
+    x = gammas;
+
+    #ifdef DEBUG_MODE
+    DEBUG.clear();
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts, DEBUG );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts );
+    #endif
+
+    std::cout << "residual: "; vectorTools::print( residual );
+    std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+    std::cout << "floatOuts:\n"; vectorTools::print( floatOuts );
+    std::cout << "intOuts:\n"; vectorTools::print( intOuts );
+
+    dGamma = -vectorTools::solveLinearSystem( jacobian, residual, rank );
+    std::cout << "dGamma: "; vectorTools::print( dGamma );
+
+    gammas += dGamma;
+    std::cout << "\n\nFourth Iteration\n\n";
+    std::cout << "gamma: "; vectorTools::print( gammas );
+    x = gammas;
+
+    #ifdef DEBUG_MODE
+    DEBUG.clear();
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts, DEBUG );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts );
+    #endif
+
+    std::cout << "residual: "; vectorTools::print( residual );
+    std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+    std::cout << "floatOuts:\n"; vectorTools::print( floatOuts );
+    std::cout << "intOuts:\n"; vectorTools::print( intOuts );
+
+    dGamma = -vectorTools::solveLinearSystem( jacobian, residual, rank );
+    std::cout << "dGamma: "; vectorTools::print( dGamma );
+
+    gammas += dGamma;
+    std::cout << "\n\nFifth Iteration\n\n";
+    std::cout << "gamma: "; vectorTools::print( gammas );
+    x = gammas;
+
+    #ifdef DEBUG_MODE
+    DEBUG.clear();
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts, DEBUG );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts );
+    #endif
+
+    std::cout << "residual: "; vectorTools::print( residual );
+    std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+    std::cout << "floatOuts:\n"; vectorTools::print( floatOuts );
+    std::cout << "intOuts:\n"; vectorTools::print( intOuts );
+
+    dGamma = -vectorTools::solveLinearSystem( jacobian, residual, rank );
+    std::cout << "dGamma: "; vectorTools::print( dGamma );
+
+    gammas += dGamma;
+    std::cout << "\n\nSixth Iteration\n\n";
+    std::cout << "gamma: "; vectorTools::print( gammas );
+    x = gammas;
+
+    #ifdef DEBUG_MODE
+    DEBUG.clear();
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts, DEBUG );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts );
+    #endif
+
+    std::cout << "residual: "; vectorTools::print( residual );
+    std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+    std::cout << "floatOuts:\n"; vectorTools::print( floatOuts );
+    std::cout << "intOuts:\n"; vectorTools::print( intOuts );
+
+    dGamma = -vectorTools::solveLinearSystem( jacobian, residual, rank );
+    std::cout << "dGamma: "; vectorTools::print( dGamma );
+
+    gammas += dGamma;
+    std::cout << "\n\nSeventh Iteration\n\n";
+    std::cout << "gamma: "; vectorTools::print( gammas );
+    x = gammas;
+
+    #ifdef DEBUG_MODE
+    DEBUG.clear();
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts, DEBUG );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residual, jacobian, floatOuts, intOuts );
+    #endif
+
+    std::cout << "residual: "; vectorTools::print( residual );
+    std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+    std::cout << "floatOuts:\n"; vectorTools::print( floatOuts );
+    std::cout << "intOuts:\n"; vectorTools::print( intOuts );
+
+    dGamma = -vectorTools::solveLinearSystem( jacobian, residual, rank );
+    std::cout << "dGamma: "; vectorTools::print( dGamma );
+
+    //Check for sub variation
+    solverTools::floatMatrix f0 = floatOuts;
+    solverTools::intMatrix i0 = intOuts;
+
+    solverTools::floatVector gammasA = gammas + dGamma;
+    solverTools::floatVector residualA;
+    solverTools::floatMatrix jacobianA;
+    std::cout << "\n\nEigth Iteration A\n\n";
+    std::cout << "gamma: "; vectorTools::print( gammasA );
+    x = gammasA;
+
+    #ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG_A;
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residualA, f0, i0, DEBUG_A );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residualA, f0, i0 );
+    #endif
+
+    std::cout << "residual: "; vectorTools::print( residualA );
+    std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+    std::cout << "floatOuts:\n"; vectorTools::print( f0 );
+    std::cout << "intOuts:\n"; vectorTools::print( i0 );
+
+    f0 = floatOuts;
+    i0 = intOuts;
+
+    solverTools::floatVector gammasB = gammas + 0.5 * dGamma;
+    solverTools::floatVector residualB;
+    solverTools::floatMatrix jacobianB;
+    std::cout << "\n\nEigth Iteration B\n\n";
+    std::cout << "gamma: "; vectorTools::print( gammasB );
+    x = gammasB;
+
+    #ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG_B;
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residualB, f0, i0, DEBUG_B );
+    #else
+    error = micromorphicElastoPlasticity::computeResidual( x, floatArgs, intArgs, residualB, f0, i0 );
+    #endif
+
+    std::cout << "residual: "; vectorTools::print( residualB );
+    std::cout << "jacobian:\n"; vectorTools::print( jacobianB );
+    std::cout << "floatOuts:\n"; vectorTools::print( f0 );
+    std::cout << "intOuts:\n"; vectorTools::print( i0 );
+
+    std::cout << "\nCHANGE IN VALUES\n";
+
+    for ( auto it_A = DEBUG_A.begin(); it_A != DEBUG_A.end(); it_A++ ){
+
+        auto it_B = DEBUG_B.find( it_A->first );
+
+        if ( it_B == DEBUG_B.end() ){
+            std::cout << "WRONG\n";
+            assert( 1 == 0 );
+        }
+
+        std::cout << it_A->first << ":\n";
+        std::cout.precision( 17 );
+        std::cout << "    A    : "; vectorTools::print( it_A->second );
+        std::cout << "    B    : "; vectorTools::print( it_B->second );
+        std::cout << "    Delta: "; vectorTools::print( it_A->second - it_B->second );
+        std::cout << "\n";
+        
+    }
+
+    std::cout << "change in residual: "; vectorTools::print( residualB - residualA );
+
+    assert( 1 == 0 );
+
+    dGamma = -vectorTools::solveLinearSystem( jacobian, residual, rank );
+    std::cout << "dGamma: "; vectorTools::print( dGamma );
+
+    f0 = floatOuts;
+    i0 = intOuts;
+
+    variableType dg = 0.001;
+    variableType g0 = gammas[ 0 ] - 0.01;
+    variableType gf = gammas[ 0 ] + 0.01;
+    variableType g = g0;
+
+    //Check the jacobian of Gamma
+    solverTools::floatType eps = 1e-6;
+
+    std::cout << "\n\nBEGIN NUMERIC JACOBIAN\n\n";
+    for ( unsigned int i = 0; i < gammas.size(); i++ ){
+        solverTools::floatVector delta( gammas.size(), 0 );
+        delta[ i ] = eps * fabs( gammas[ i ] ) + eps;
+
+        f0 = floatOuts;
+        i0 = intOuts;
+
+        solverTools::floatVector residual_P, residual_M;
+
+        solverTools::debugMap DEBUG_P, DEBUG_M;
+        error = micromorphicElastoPlasticity::computeResidual( x + delta, floatArgs, intArgs, residual_P, f0, i0, DEBUG_P );
+
+        if ( error ){
+            error->print();
+            assert( 1 == 0 );
+        }
+
+//        std::cout << "f0:\n"; vectorTools::print( f0 );
+//        std::cout << "i0:\n"; vectorTools::print( i0 );
+
+        f0 = floatOuts;
+        i0 = intOuts;
+
+        error = micromorphicElastoPlasticity::computeResidual( x - delta, floatArgs, intArgs, residual_M, f0, i0, DEBUG_M );
+
+        if ( error ){
+            error->print();
+            assert( 1 == 0 );
+        }
+
+        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
+
+        std::cout << "gradCol:\n"; vectorTools::print( gradCol );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ] ) ){
+                results << "test_convergence_of_computeResidual & False\n";
+                return 1;
+            }
+        }
+
+        gradCol = ( DEBUG_P[ "currentMacroCohesion_2" ] - DEBUG_M[ "currentMacroCohesion_2" ] ) / ( 2 * delta[ i ] );
+
+        std::cout << "numeric dMCdGamma: "; vectorTools::print( gradCol );
+        std::cout << "analytic : "; vectorTools::print( DEBUG[ "dMacroCdMacroGamma" ] );
+
+        gradCol = ( DEBUG_P[ "currentPK2Stress" ] - DEBUG_M[ "currentPK2Stress" ] ) / ( 2 * delta[ i ] );
+
+        std::cout << "numeric dPK2dGamma: "; vectorTools::print( gradCol );
+        std::cout << "analytic : "; vectorTools::print( DEBUG[ "dMacroCdMacroGamma" ] );
+    }
+
     return 0;
 }
 
@@ -8942,7 +9481,8 @@ int main(){
     test_evolvePlasticDeformation( results );
     test_evolveStrainStateVariables( results );
     test_computeFlowDirections( results );
-    test_computeResidual( results );
+//    test_computeResidual( results );
+    test_convergence_of_computeResidual( results );
     test_extractMaterialParameters( results );
     test_extractStateVariables( results );
     test_assembleFundamentalDeformationMeasures( results );

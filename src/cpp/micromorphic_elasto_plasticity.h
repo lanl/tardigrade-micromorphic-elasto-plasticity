@@ -541,6 +541,20 @@ namespace micromorphicElastoPlasticity{
     #endif
 
     #ifdef DEBUG_MODE
+    errorOut computeStressResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                                    const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                                    solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
+                                    solverTools::intMatrix &intOuts,
+                                    std::map< std::string, solverTools::floatVector > &DEBUG );
+    #else
+    errorOut computeStressResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                                    const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                                    solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
+                                    solverTools::intMatrix &intOuts,
+                                    std::map< std::string, solverTools::floatVector > &DEBUG );
+    #endif
+
+    #ifdef DEBUG_MODE
     errorOut solveForStrainISV( const constantType &Dt,
                                 const variableType &currentMacroGamma, const variableType &currentMicroGamma,
                                 const variableVector &currentMicroGradientGamma,
@@ -622,7 +636,11 @@ namespace micromorphicElastoPlasticity{
                         const std::vector< std::vector< double > > &previous_ADD_grad_DOF,
                         std::vector< double > &PK2, std::vector< double > &SIGMA, std::vector< double > &M,
                         std::vector< std::vector< double > > &ADD_TERMS,
-                        std::string &output_message );
+                        std::string &output_message
+                        #ifdef DEBUG_MODE
+                        , std::map< std::string, solverTools::floatVector > &DEBUG
+                        #endif
+                    );
 
     int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
                         const double ( &current_grad_u )[ 3 ][ 3 ],   const double ( &current_phi )[ 9 ],
@@ -642,7 +660,11 @@ namespace micromorphicElastoPlasticity{
                         std::vector< std::vector< double > > &DMDgrad_phi,
                         std::vector< std::vector< double > > &ADD_TERMS,
                         std::vector< std::vector< std::vector< double > > > &ADD_JACOBIANS,
-                        std::string &output_message );
+                        std::string &output_message
+                        #ifdef DEBUG_MODE
+                        , std::map< std::string, solverTools::floatVector > &DEBUG
+                        #endif
+                    );
 }
 
 #endif
