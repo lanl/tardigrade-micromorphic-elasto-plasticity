@@ -3472,6 +3472,10 @@ namespace micromorphicElastoPlasticity{
         const variableVector currentReferenceMicroStress = variableVector( x.begin() + 9, x.begin() + 18 );
         const variableVector currentReferenceHigherOrderStress = variableVector( x.begin() + 18, x.begin() + 45 );
 
+        std::cout << "currentPK2Stress:\n"; vectorTools::print( currentPK2Stress );
+        std::cout << "currentReferenceMicroStress:\n"; vectorTools::print( currentReferenceMicroStress );
+        std::cout << "currentReferenceHigherOrderStress:\n"; vectorTools::print( currentReferenceHigherOrderStress );
+
         unsigned int ii = 0;
         const constantType    *Dt                                           = &floatArgs[ ii++ ][ 0 ];
         const variableType   *currentMacroGamma                             = &floatArgs[ ii++ ][ 0 ];
@@ -3621,7 +3625,7 @@ namespace micromorphicElastoPlasticity{
                            vectorTools::appendVectors( dMacroFlowDirectiondPK2Stress ) );
             DEBUG.emplace( "dMicroFlowDirectiondReferenceMicroStress",
                            vectorTools::appendVectors( dMicroFlowDirectiondReferenceMicroStress ) );
-            DEBUG.emplace( "dMicroGradientFlowDirectiondHigherOrderStress",
+            DEBUG.emplace( "dMicroGradientFlowDirectiondReferenceHigherOrderStress",
                            vectorTools::appendVectors( dMicroGradientFlowDirectiondReferenceHigherOrderStress ) );
 
         #endif
@@ -3965,13 +3969,13 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-//        std::cout << "\nnew stress measures\n";
-//        std::cout << "newPK2Stress:\n";
-//        vectorTools::print( newPK2Stress );
-//        std::cout << "newReferenceMicroStress:\n";
-//        vectorTools::print( newReferenceMicroStress );
-//        std::cout << "newReferenceHigherOrderStress:\n";
-//        vectorTools::print( newReferenceHigherOrderStress );
+        std::cout << "\nnew stress measures\n";
+        std::cout << "newPK2Stress:\n";
+        vectorTools::print( newPK2Stress );
+        std::cout << "newReferenceMicroStress:\n";
+        vectorTools::print( newReferenceMicroStress );
+        std::cout << "newReferenceHigherOrderStress:\n";
+        vectorTools::print( newReferenceHigherOrderStress );
 
         //Assemble the Jacobians
         variableMatrix dNewPK2StressdPK2Stress = vectorTools::dot( dPK2StressdElasticF, dElasticFdPK2Stress )
@@ -4050,9 +4054,9 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ i ][ j + 9 ] -= dNewPK2StressdReferenceMicroStress[ i ][ j ];
             }
 
-//            for ( unsigned int j = 0; j < currentReferenceHigherOrderStress.size(); j++ ){
-//                jacobian[ i ][ j + 18 ] -= dNewPK2StressdReferenceHigherOrderStress[ i ][ j ];
-//            }
+            for ( unsigned int j = 0; j < currentReferenceHigherOrderStress.size(); j++ ){
+                jacobian[ i ][ j + 18 ] -= dNewPK2StressdReferenceHigherOrderStress[ i ][ j ];
+            }
         }
 
 //        std::cout << "adding the reference symmetric micro-stress parts\n";
@@ -4073,23 +4077,35 @@ namespace micromorphicElastoPlasticity{
             }
         }
 
-////        std::cout << "adding the higher order stress parts\n";
-//        //Add the reference higher order stress parts
-//        for ( unsigned int i = 0; i < newReferenceHigherOrderStress.size(); i++ ){
-//            residual[ i + 18 ] = currentReferenceHigherOrderStress[ i ] - newReferenceHigherOrderStress[ i ];
-//
-//            for ( unsigned int j = 0; j < currentPK2Stress.size(); j++ ){
-//                jacobian[ i + 18 ][ j ] -= dNewReferenceHigherOrderStressdPK2Stress[ i ][ j ];
-//            }
-//
-//            for ( unsigned int j = 0; j < currentReferenceMicroStress.size(); j++ ){
-//                jacobian[ i + 18 ][ j +  9 ] -= dNewReferenceHigherOrderStressdReferenceMicroStress[ i ][ j ];
-//            }
-//
-//            for ( unsigned int j = 0; j < currentReferenceHigherOrderStress.size(); j++ ){
-//                jacobian[ i + 18 ][ j + 18 ] -= dNewReferenceHigherOrderStressdReferenceHigherOrderStress[ i ][ j ];
-//            }
-//        }
+//        std::cout << "adding the higher order stress parts\n";
+        //Add the reference higher order stress parts
+        for ( unsigned int i = 0; i < newReferenceHigherOrderStress.size(); i++ ){
+            residual[ i + 18 ] = currentReferenceHigherOrderStress[ i ] - newReferenceHigherOrderStress[ i ];
+
+            for ( unsigned int j = 0; j < currentPK2Stress.size(); j++ ){
+                jacobian[ i + 18 ][ j ] -= dNewReferenceHigherOrderStressdPK2Stress[ i ][ j ];
+            }
+
+            for ( unsigned int j = 0; j < currentReferenceMicroStress.size(); j++ ){
+                jacobian[ i + 18 ][ j +  9 ] -= dNewReferenceHigherOrderStressdReferenceMicroStress[ i ][ j ];
+            }
+
+            for ( unsigned int j = 0; j < currentReferenceHigherOrderStress.size(); j++ ){
+                jacobian[ i + 18 ][ j + 18 ] -= dNewReferenceHigherOrderStressdReferenceHigherOrderStress[ i ][ j ];
+            }
+        }
+
+        //Save the floatOuts
+        ii = 0;
+        floatOuts[ ii++ ] = currentElasticDeformationGradient;
+        floatOuts[ ii++ ] = currentElasticMicroDeformation;
+        floatOuts[ ii++ ] = currentElasticMicroGradient;
+        floatOuts[ ii++ ] = currentPlasticDeformationGradient;
+        floatOuts[ ii++ ] = currentPlasticMicroDeformation;
+        floatOuts[ ii++ ] = currentPlasticMicroGradient;
+        floatOuts[ ii++ ] = { currentMacroStrainISV };
+        floatOuts[ ii++ ] = { currentMicroStrainISV };
+        floatOuts[ ii++ ] = currentMicroGradientStrainISV;
 
         return NULL;
     }
