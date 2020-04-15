@@ -4141,13 +4141,64 @@ namespace micromorphicElastoPlasticity{
                                   "The x vector must have a length of 45" );
         }
 
+        /*=============================
+        | Extract the incoming values |
+        =============================*/
+
+        const variableVector currentPlasticDeformationGradient( x.begin(), x.begin() + 9 );
+        const variableVector currentPlasticMicroDeformation( x.begin() + 9, x.begin() + 18 );
+        const variableVector currentPlasticGradientMicroDeformation( x.begin() + 18, x.begin() + 45 );
+
+        unsigned int ii = 0;
+        const constantType    *Dt                                           = &floatArgs[ ii++ ][ 0 ];
+        const variableType    *currentMacroGamma                            = &floatArgs[ ii++ ][ 0 ];
+        const variableType    *currentMicroGamma                            = &floatArgs[ ii++ ][ 0 ];
+        const variableVector  *currentMicroGradientGamma                    = &floatArgs[ ii++ ];
+        const variableType    *currentMacroCohesion                         = &floatArgs[ ii++ ][ 0 ];
+        const variableType    *currentMicroCohesion                         = &floatArgs[ ii++ ][ 0 ];
+        const variableVector  *currentMicroGradientCohesion                 = &floatArgs[ ii++ ];
+        const variableVector  *currentDeformationGradient                   = &floatArgs[ ii++ ];
+        const variableVector  *currentMicroDeformation                      = &floatArgs[ ii++ ];
+        const variableVector  *currentGradientMicroDeformation              = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticDeformationGradient           = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticMicroDeformation              = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticMicroGradient                 = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticMacroVelocityGradient         = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticMicroVelocityGradient         = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticMicroGradientVelocityGradient = &floatArgs[ ii++ ];
+//        const variableType    *previousMacroStrainISV                       = &floatArgs[ ii++ ][ 0 ];
+//        const variableType    *previousMicroStrainISV                       = &floatArgs[ ii++ ][ 0 ];
+//        const variableVector  *previousMicroGradientStrainISV               = &floatArgs[ ii++ ];
+//        const variableType    *previousMacroGamma                           = &floatArgs[ ii++ ][ 0 ];
+//        const variableType    *previousMicroGamma                           = &floatArgs[ ii++ ][ 0 ];
+//        const variableVector  *previousMicroGradientGamma                   = &floatArgs[ ii++ ];
+//        const variableType    *previousdMacroGdMacroCohesion                = &floatArgs[ ii++ ][ 0 ];
+//        const variableType    *previousdMicroGdMicroCohesion                = &floatArgs[ ii++ ][ 0 ];
+//        const variableMatrix  previousdMicroGradientGdMicroGradientCohesion = vectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
+//        const parameterVector *macroHardeningParameters                     = &floatArgs[ ii++ ];
+//        const parameterVector *microHardeningParameters                     = &floatArgs[ ii++ ];
+//        const parameterVector *microGradientHardeningParameters             = &floatArgs[ ii++ ];
+        const parameterVector *macroFlowParameters                          = &floatArgs[ ii++ ];
+        const parameterVector *microFlowParameters                          = &floatArgs[ ii++ ];
+        const parameterVector *microGradientFlowParameters                  = &floatArgs[ ii++ ];
+//        const parameterVector *macroYieldParameters                         = &floatArgs[ ii++ ];
+//        const parameterVector *microYieldParameters                         = &floatArgs[ ii++ ];
+//        const parameterVector *microGradientYieldParameters                 = &floatArgs[ ii++ ];
+        const parameterVector *Amatrix                                      = &floatArgs[ ii++ ];
+        const parameterVector *Bmatrix                                      = &floatArgs[ ii++ ];
+        const parameterVector *Cmatrix                                      = &floatArgs[ ii++ ];
+        const parameterVector *Dmatrix                                      = &floatArgs[ ii++ ];
+        const parameterType   *alphaMacro                                   = &floatArgs[ ii++ ][ 0 ];
+        const parameterType   *alphaMicro                                   = &floatArgs[ ii++ ][ 0 ];
+        const parameterType   *alphaMicroGradient                           = &floatArgs[ ii++ ][ 0 ];
+
         /*=================================
         | Compute the Elastic Deformation |
         =================================*/
 
         variableVector currentElasticDeformationGradient, currentElasticMicroDeformation, currentElasticGradientMicroDeformation;
 
-        variableMatrix dElasticDeformationGradientdDeformationGradient, dElasticDeformationGradientdPlasticDeformationGradient;
+        variableMatrix dElasticDeformationGradientdDeformationGradient, dElasticDeformationGradientdPlasticDeformationGradient,
                        dElasticMicroDeformationdMicroDeformation, dElasticMicroDeformationdPlasticMicroDeformation,
                        dElasticGradientMicroDeformationdGradientMicroDeformation,
                        dElasticGradientMicroDeformationdPlasticGradientMicroDeformation,
@@ -4156,7 +4207,7 @@ namespace micromorphicElastoPlasticity{
                        dElasticGradientMicroDeformationdPlasticMicroDeformation;
 
         errorOut error = computeElasticPartOfDeformation( *currentDeformationGradient, *currentMicroDeformation,
-                                                          *gradientMicroDeformation,
+                                                          *currentGradientMicroDeformation,
                                                            currentPlasticDeformationGradient, currentPlasticMicroDeformation,
                                                            currentPlasticGradientMicroDeformation,
                                                            currentElasticDeformationGradient, currentElasticMicroDeformation,
@@ -4183,22 +4234,23 @@ namespace micromorphicElastoPlasticity{
         ==================================================*/
 
         variableVector currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen, currentElasticPsi, currentElasticGamma;
-        variableMatrix dCurrentElasticRightCauchyGreendElasticDeformationGradient,
-                       dCurrentElasticMicroRightCauchyGreendElasticMicroDeformation,
-                       dCurrentElasticPsidElasticDeformationGradient,
-                       dCurrentElasticPsidElasticMicroDeformation,
-                       dCurrentElasticGammadElasticDeformationGradient,
-                       dCurrentElasticGammadElasticGradientMicroDeformation;
+        variableMatrix dElasticRightCauchyGreendElasticDeformationGradient,
+                       dElasticMicroRightCauchyGreendElasticMicroDeformation,
+                       dElasticPsidElasticDeformationGradient,
+                       dElasticPsidElasticMicroDeformation,
+                       dElasticGammadElasticDeformationGradient,
+                       dElasticGammadElasticGradientMicroDeformation;
 
-        error = computeElasticDeformationMeasures( elasticDeformationGradient, elasticMicroDeformation, elasticGradientMicroDeformation,
+        error = computeElasticDeformationMeasures( currentElasticDeformationGradient, currentElasticMicroDeformation,
+                                                   currentElasticGradientMicroDeformation,
                                                    currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen,
                                                    currentElasticPsi, currentElasticGamma,
-                                                   dCurrentElasticRightCauchyGreendElasticDeformationGradient,
-                                                   dCurrentElasticMicroRightCauchyGreendElasticMicroDeformation,
-                                                   dCurrentElasticPsidElasticDeformationGradient,
-                                                   dCurrentElasticPsidElasticMicroDeformation,
-                                                   dCurrentElasticGammadElasticDeformationGradient,
-                                                   dCurrentElasticGammadElasticGradientMicroDeformation );
+                                                   dElasticRightCauchyGreendElasticDeformationGradient,
+                                                   dElasticMicroRightCauchyGreendElasticMicroDeformation,
+                                                   dElasticPsidElasticDeformationGradient,
+                                                   dElasticPsidElasticMicroDeformation,
+                                                   dElasticGammadElasticDeformationGradient,
+                                                   dElasticGammadElasticGradientMicroDeformation );
 
         if ( error ){
             errorOut result = new errorNode( "computePlasticDeformationResidual",
@@ -4211,41 +4263,48 @@ namespace micromorphicElastoPlasticity{
         | Assemble the Jacobian of the elastic derived deformation measures |
         ===================================================================*/
 
-        variableMatrix dCurrentElasticRightCauchyGreendPlasticDeformationGradient
-            = vectorTools::dot( dCurrentElasticRightCauchyGreendElasticDeformationGradient,
+        variableMatrix dElasticRightCauchyGreendPlasticDeformationGradient
+            = vectorTools::dot( dElasticRightCauchyGreendElasticDeformationGradient,
                                 dElasticDeformationGradientdPlasticDeformationGradient );
 
-        variableMatrix dCurrentElasticMicroRightCauchyGreendPlasticMicroDeformation
-            = vectorTools::dot( dCurrentElasticMicroRightCauchyGreendElasticMicroDeformation,
+        variableMatrix dElasticMicroRightCauchyGreendPlasticMicroDeformation
+            = vectorTools::dot( dElasticMicroRightCauchyGreendElasticMicroDeformation,
                                 dElasticMicroDeformationdPlasticMicroDeformation );
 
-        variableMatrix dCurrentElasticPsidPlasticDeformationGradient
-            = vectorTools::dot( dCurrentElasticPsidElasticDeformationGradient,
+        variableMatrix dElasticPsidPlasticDeformationGradient
+            = vectorTools::dot( dElasticPsidElasticDeformationGradient,
                                 dElasticDeformationGradientdPlasticDeformationGradient );
 
-        variableMatrix dCurrentElasticPsidPlasticMicroDeformation
-            = vectorTools::dot( dCurrentElasticPsidElasticMicroDeformation,
+        variableMatrix dElasticPsidPlasticMicroDeformation
+            = vectorTools::dot( dElasticPsidElasticMicroDeformation,
                                 dElasticMicroDeformationdPlasticMicroDeformation );
 
-        variableMatrix dCurrentElasticGammadPlasticDeformationGradient
-            = vectorTools::dot( dCurrentElasticGammadElasticDeformationGradient,
-                                dElasticDeformationGradientdPlasticDeformationGradient );
+        variableMatrix dElasticGammadPlasticDeformationGradient
+            = vectorTools::dot( dElasticGammadElasticDeformationGradient,
+                                dElasticDeformationGradientdPlasticDeformationGradient )
+            + vectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticDeformationGradient );
 
-        variableMatrix dCurrentElasticGammadPlasticDeformationGradient
-            = vectorTools::dot( dCurrentElasticGammadElasticGradientMicroDeformation,
+        variableMatrix dElasticGammadPlasticMicroDeformation
+            = vectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticMicroDeformation );
 
-        variableMatrix dCurrentElasticGammadPlasticMicroDeformation
-            = vectorTools::dot( dCurrentElasticGammadElasticGradientMicroDeformation,
-                                dElasticGradientMicroDeformationdPlasticMicroDeformation );
-
-        variableMatrix dCurrentElasticGammadPlasticGradientMicroDeformation
-            = vectorTools::dot( dCurrentElasticGammadElasticGradientMicroDeformation,
+        variableMatrix dElasticGammadPlasticGradientMicroDeformation
+            = vectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
 
         /*===========================
         | Compute the Stress values |
         ===========================*/
+
+        variableVector currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress;
+
+        variableMatrix dPK2StressdElasticDeformationGradient, dPK2StressdElasticMicroDeformation,
+                       dPK2StressdElasticGradientMicroDeformation,
+                       dReferenceMicroStressdElasticDeformationGradient, dReferenceMicroStressdElasticMicroDeformation,
+                       dReferenceMicroStressdElasticGradientMicroDeformation,
+                       dReferenceHigherOrderStressdElasticDeformationGradient,
+                       dReferenceHigherOrderStressdElasticGradientMicroDeformation;
 
         error = micromorphicLinearElasticity::linearElasticityReference(  currentElasticDeformationGradient,
                                                                           currentElasticMicroDeformation,
@@ -4310,12 +4369,6 @@ namespace micromorphicElastoPlasticity{
                                 dElasticDeformationGradientdPlasticDeformationGradient )
             + vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticDeformationGradient );
-
-        variableMatrix dReferenceHigherOrderStressdPlasticMicroDeformation
-            = vectorTools::dot( dReferenceHigherOrderStressdElasticMicroDeformation,
-                                dElasticMicroDeformationdPlasticMicroDeformation )
-            + vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
-                                dElasticGradientMicroDeformationdPlasticMicroDeformation );
 
         variableMatrix dReferenceHigherOrderStressdPlasticGradientMicroDeformation
             = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
@@ -4382,10 +4435,6 @@ namespace micromorphicElastoPlasticity{
             + vectorTools::dot( dMicroGradientFlowDirectiondElasticRightCauchyGreen,
                                 dElasticRightCauchyGreendPlasticDeformationGradient );
 
-        variableMatrix dMicroGradientFlowDirectiondPlasticMicroDeformation
-            = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
-                                dReferenceHigherOrderStressdPlasticMicroDeformation );
-
         variableMatrix dMicroGradientFlowDirectiondPlasticGradientMicroDeformation
             = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                 dReferenceMicroStressdPlasticGradientMicroDeformation );
@@ -4402,7 +4451,7 @@ namespace micromorphicElastoPlasticity{
 
         variableMatrix dPlasticMicroGradientVelocityGradientdMicroGradientGamma,
                        dPlasticMacroVelocityGradientdElasticRightCauchyGreen,
-                       dPlasticMacroVelocityGradientdMacroFlowDirection
+                       dPlasticMacroVelocityGradientdMacroFlowDirection,
                        dPlasticMacroVelocityGradientdMicroFlowDirection,
                        dPlasticMicroVelocityGradientdElasticMicroRightCauchyGreen,
                        dPlasticMicroVelocityGradientdElasticPsi,
@@ -4413,7 +4462,7 @@ namespace micromorphicElastoPlasticity{
                        dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
                        dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection;
 
-        error = computePlasticVelocityGradients( *macroGamma, *microGamma, *microGradientGamma, 
+        error = computePlasticVelocityGradients( *currentMacroGamma, *currentMicroGamma, *currentMicroGradientGamma, 
                                                   currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen,
                                                   currentElasticPsi, currentElasticGamma, currentMacroFlowDirection,
                                                   currentMicroFlowDirection, currentMicroGradientFlowDirection,
@@ -4425,7 +4474,7 @@ namespace micromorphicElastoPlasticity{
                                                   dPlasticMicroGradientVelocityGradientdMicroGamma,
                                                   dPlasticMicroGradientVelocityGradientdMicroGradientGamma,
                                                   dPlasticMacroVelocityGradientdElasticRightCauchyGreen,
-                                                  dPlasticMacroVelocityGradientdMacroFlowDirection
+                                                  dPlasticMacroVelocityGradientdMacroFlowDirection,
                                                   dPlasticMacroVelocityGradientdMicroFlowDirection,
                                                   dPlasticMicroVelocityGradientdElasticMicroRightCauchyGreen,
                                                   dPlasticMicroVelocityGradientdElasticPsi,
@@ -4480,7 +4529,7 @@ namespace micromorphicElastoPlasticity{
             + vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticMicroDeformation );
 
-        variableMatrix dPlasticMicroVelocityGraientdPlasticGradientMicroDeformation
+        variableMatrix dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation
             = vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticGradientMicroDeformation );
 
@@ -4502,9 +4551,7 @@ namespace micromorphicElastoPlasticity{
             + vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
                                 dElasticGammadPlasticMicroDeformation )
             + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
-                                dMicroFlowDirectiondPlasticMicroDeformation )
-            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
-                                dMicroGradientFlowDirectiondPlasticMicroDeformation );
+                                dMicroFlowDirectiondPlasticMicroDeformation );
 
         variableMatrix dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation
             = vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
@@ -4536,14 +4583,14 @@ namespace micromorphicElastoPlasticity{
                                           *previousPlasticMacroVelocityGradient,
                                           *previousPlasticMicroVelocityGradient,
                                           *previousPlasticMicroGradientVelocityGradient,
-                                           expectedCurrentPlasticDeformationGradient,
-                                           expectedCurrentPlasticMicroDeformation,
-                                           expectedCurrentPlasticMicroGradient,
+                                           expectedPlasticDeformationGradient,
+                                           expectedPlasticMicroDeformation,
+                                           expectedPlasticGradientMicroDeformation,
                                            dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
                                            dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                            dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
                                            dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
-                                           dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient
+                                           dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                           *alphaMacro, *alphaMicro, *alphaMicroGradient );
 
         if ( error ){
@@ -4570,15 +4617,15 @@ namespace micromorphicElastoPlasticity{
                                 dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation );
 
         variableMatrix dExpectedPlasticMicroDeformationdPlasticDeformationGradient
-            = vectorTools::dot( dExpectedPlasticMicroDeformationdMicroVelocityGradient,
+            = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdPlasticDeformationGradient );
 
         variableMatrix dExpectedPlasticMicroDeformationdPlasticMicroDeformation
-            = vectorTools::dot( dExpectedPlasticMicroDeformationdMicroVelocityGradient,
+            = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdPlasticMicroDeformation );
 
         variableMatrix dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation
-            = vectorTools::dot( dExpectedPlasticMicroDeformationdMicroVelocityGradient,
+            = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation );
 
         variableMatrix dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient
@@ -4588,14 +4635,6 @@ namespace micromorphicElastoPlasticity{
                                 dPlasticMicroVelocityGradientdPlasticDeformationGradient )
             + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                 dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient );
-
-        variableMatrix dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation
-            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
-                                dPlasticMacroVelocityGradientdPlasticMicroDeformation )
-            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
-                                dPlasticMicroVelocityGradientdPlasticMicroDeformation )
-            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
-                                dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation );
 
         variableMatrix dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation
             = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
