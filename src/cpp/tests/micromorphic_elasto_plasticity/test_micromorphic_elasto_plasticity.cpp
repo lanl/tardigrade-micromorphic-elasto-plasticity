@@ -9456,6 +9456,613 @@ int test_convergence_of_computeResidual( std::ofstream &results ){
     return 0;
 }
 
+int test_computeStressResidual( std::ofstream &results ){
+    /*!
+     * Test the computation of the stress Jacobian
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    std::vector< double > fparams = { 2, 1e2, 1.5e1,               //Macro hardening parameters
+                                      2, 2e2, 2.0e1,               //Micro hardening parameters
+                                      2, 2.5e2, 2.7e1,             //Micro gradient hardening parameters
+                                      2, 0.56, 0.,                 //Macro flow parameters
+                                      2, 0.15, 0.,                 //Micro flow parameters
+                                      2, 0.82, 0.,                 //Micro gradient flow parameters
+                                      2, 0.70, 0.,                 //Macro yield parameters
+                                      2, 0.40, 0.,                 //Micro yield parameters
+                                      2, 0.52, 0.,                 //Micro gradient yield parameters
+                                      2, 696.47, 65.84,            //A stiffness tensor parameters
+                                      5, -7.69, -51.92, 38.61, -27.31, 5.13,  //B stiffness tensor parameters
+                                      11, 1.85, -0.19, -1.08, -1.57, 2.29, -0.61, 5.97, -2.02, 2.38, -0.32, -3.25, //C stiffness tensor parameters
+                                      2, -51.92, 5.13,             //D stiffness tensor parameters
+                                      0.4, 0.3, 0.35, 1e-8, 1e-8   //Integration parameters
+                                    };
+
+    parameterVector macroHardeningParameters;
+    parameterVector microHardeningParameters;
+    parameterVector microGradientHardeningParameters;
+
+    parameterVector macroFlowParameters;
+    parameterVector microFlowParameters;
+    parameterVector microGradientFlowParameters;
+
+    parameterVector macroYieldParameters;
+    parameterVector microYieldParameters;
+    parameterVector microGradientYieldParameters;
+
+    parameterVector Amatrix, Bmatrix, Cmatrix, Dmatrix;
+    parameterType alphaMacro, alphaMicro, alphaMicroGradient;
+    parameterType relativeTolerance, absoluteTolerance;
+
+    errorOut error = micromorphicElastoPlasticity::extractMaterialParameters( fparams,
+                                                                              macroHardeningParameters, microHardeningParameters,
+                                                                              microGradientHardeningParameters,
+                                                                              macroFlowParameters, microFlowParameters,
+                                                                              microGradientFlowParameters,
+                                                                              macroYieldParameters, microYieldParameters,
+                                                                              microGradientYieldParameters,
+                                                                              Amatrix, Bmatrix, Cmatrix, Dmatrix,
+                                                                              alphaMacro, alphaMicro, alphaMicroGradient,
+                                                                              relativeTolerance, absoluteTolerance );
+
+    constantType Dt = 2.5;
+    variableType   macroGamma = 0.271;
+    variableType   microGamma = 0.132;
+    variableVector microGradientGamma = { 0.082, 0.091, 0.021 };
+    variableType   currentMacroStrainISV = 0.;
+    variableType   currentMicroStrainISV = 0.;
+    variableVector currentMicroGradientStrainISV( 3., 0. );
+    variableVector currentDeformationGradient = { 1.2, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector currentMicroDeformation = { 1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0 };
+    variableVector currentGradientMicroDeformation = variableVector( 27, 0 );
+    variableVector previousPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector previousPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector previousPlasticMicroGradient = variableVector( 27, 0 );
+    variableVector previousPlasticMacroVelocityGradient = variableVector( 9, 0 );
+    variableVector previousPlasticMicroVelocityGradient = variableVector( 9, 0 );
+    variableVector previousPlasticMicroGradientVelocityGradient = variableVector( 27, 0 );
+    variableType   previousdMacroGdMacroCohesion = 0.;
+    variableType   previousdMicroGdMicroCohesion = 0.;
+    variableVector previousdMicroGradientGdMicroGradientCohesion( 9., 0. );
+    variableType   previousMacroStrainISV = 0.;
+    variableType   previousMicroStrainISV = 0.;
+    variableVector previousMicroGradientStrainISV = variableVector( 3, 0 );
+    variableType   previousMacroGamma = 0;
+    variableType   previousMicroGamma = 0;
+    variableVector previousMicroGradientGamma = variableVector( 3, 0 );
+
+    variableVector currentElasticDeformationGradient = currentDeformationGradient;
+    variableVector currentElasticMicroDeformation = currentMicroDeformation;
+    variableVector currentElasticMicroGradient = currentGradientMicroDeformation;
+    variableVector currentPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector currentPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector currentPlasticMicroGradient = variableVector( 27, 0 );
+
+    variableVector currentPK2Stress = { 434.22,   386.082, -531.382,
+                                        657.265, -626.479,  438.899,
+                                         54.008,  580.606,  255.122 };
+
+    variableVector currentReferenceMicroStress = { 1314.38,  1161.46, -513.317,
+                                                   1161.46, -1074.57, 1121.81,
+                                                   -513.317, 1121.81,  899.495 };
+
+    variableVector currentReferenceHigherOrderStress  = { -3.13881, 21.1205, -32.2236, 61.3638,
+                                                          54.4966,  80.7927, -18.3752, 10.5808,
+                                                          65.8143,  46.5659, 126.087,  19.542,
+                                                         125.007,   88.992,  -34.8056, 10.9744,
+                                                         -93.0911,  15.1465, -44.2434, 71.769, 
+                                                           9.05663, 77.7283, -69.6531, -0.0611322,
+                                                          52.8567,  32.069, -236.034 };
+
+    solverTools::intVector activePlasticity = { 1, 0, 0, 0, 0 };
+
+    solverTools::floatMatrix floatArgsDefault =
+        {
+            { Dt },
+            { macroGamma },
+            { microGamma },
+            microGradientGamma,
+            currentDeformationGradient,
+            currentMicroDeformation,
+            currentGradientMicroDeformation,
+            previousPlasticDeformationGradient,
+            previousPlasticMicroDeformation,
+            previousPlasticMicroGradient,
+            previousPlasticMacroVelocityGradient,
+            previousPlasticMicroVelocityGradient,
+            previousPlasticMicroGradientVelocityGradient,
+            { previousMacroStrainISV },
+            { previousMicroStrainISV },
+            previousMicroGradientStrainISV,
+            { previousMacroGamma },
+            { previousMicroGamma },
+            previousMicroGradientGamma,
+            { previousdMacroGdMacroCohesion },
+            { previousdMicroGdMicroCohesion },
+            previousdMicroGradientGdMicroGradientCohesion,
+            macroHardeningParameters,
+            microHardeningParameters,
+            microGradientHardeningParameters,
+            macroFlowParameters,
+            microFlowParameters,
+            microGradientFlowParameters,
+            Amatrix,
+            Bmatrix,
+            Cmatrix,
+            Dmatrix,
+            { alphaMacro },
+            { alphaMicro },
+            { alphaMicroGradient }
+        };
+
+    solverTools::floatMatrix floatOutsDefault = 
+        {
+            currentElasticDeformationGradient,
+            currentElasticMicroDeformation,
+            currentElasticMicroGradient,
+            currentPlasticDeformationGradient,
+            currentPlasticMicroDeformation,
+            currentPlasticMicroGradient,
+            { currentMacroStrainISV },
+            { currentMicroStrainISV },
+            currentMicroGradientStrainISV,
+        };
+
+    solverTools::floatMatrix floatArgs = floatArgsDefault;
+    solverTools::floatMatrix floatOuts = floatOutsDefault;
+
+    solverTools::intMatrix intArgs, intOuts;
+
+    #ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG;
+    #endif
+
+    solverTools::floatVector x( 45, 0 );
+    for ( unsigned int i = 0; i < currentPK2Stress.size(); i++ ){
+        x[ i + 0 ] = currentPK2Stress[ i ];
+        x[ i + 9 ] = currentReferenceMicroStress[ i ];
+    }
+    for ( unsigned int i = 0; i < currentReferenceHigherOrderStress.size(); i++ ){
+        x[ i + 18 ] = currentReferenceHigherOrderStress[ i ];
+    }
+
+    solverTools::floatVector residual;
+    solverTools::floatMatrix jacobian;
+
+    error = micromorphicElastoPlasticity::computeStressResidual( x, floatArgs, intArgs, residual, jacobian,
+                                                                 floatOuts, intOuts
+                                                                 #ifdef DEBUG_MODE
+                                                                 , DEBUG
+                                                                 #endif
+                                                               );
+
+    if ( error ){
+        error->print();
+        results << "test_computeStressResidual & False\n";
+        return 1;
+    }
+
+    //Test the Jacobians
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < x.size(); i++ ){
+        constantVector delta( 45, 0 );
+        delta[ i ] = eps * fabs( x[ i ] ) + eps;
+
+        solverTools::floatVector residual_P, residual_M;
+        solverTools::floatMatrix jacobian_P, jacobian_M;
+
+        solverTools::floatMatrix fO = floatOutsDefault;
+        solverTools::intMatrix   iO = {};
+
+        #ifdef DEBUG_MODE
+        std::map< std::string, solverTools::floatVector > DEBUG_P, DEBUG_M;
+        #endif
+
+        error = micromorphicElastoPlasticity::computeStressResidual( x + delta, floatArgs, intArgs, 
+                                                                     residual_P, jacobian_P, fO, iO
+                                                                     #ifdef DEBUG_MODE
+                                                                     , DEBUG_P
+                                                                     #endif
+                                                                   );
+        if ( error ){
+            error->print();
+            results << "test_computeStressResidual & False\n";
+            return 1;
+        }
+
+        fO = floatOutsDefault;
+        iO = {};
+        error = micromorphicElastoPlasticity::computeStressResidual( x - delta, floatArgs, intArgs, 
+                                                                     residual_M, jacobian_M, fO, iO 
+                                                                     #ifdef DEBUG_MODE
+                                                                     , DEBUG_M
+                                                                     #endif
+                                                                   );
+        if ( error ){
+            error->print();
+            results << "test_computeStressResidual & False\n";
+            return 1;
+        }
+
+        #ifdef DEBUG_MODE
+        //Construct the numeric jacobians of the debug terms
+
+        std::map< std::string, solverTools::floatVector > numericGradients;
+
+        for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
+            auto it_M = DEBUG_M.find( it_P->first );
+            if ( it_M == DEBUG_M.end() ){
+                std::cout << "test coding error\n";
+                assert ( 1 == 0 );
+            }
+
+            numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i ] ) );
+        }
+
+        //Check the Jacobians w.r.t. the PK2 stress
+        if ( i < 9 ){
+            std::cout << "\n\nJACOBIAN W.R.T PK2 " << i << "\n\n";
+
+            //Flow directions
+            std::cout << "numericGrad (macro dir): "; vectorTools::print( numericGradients[ "currentMacroFlowDirection" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
+                                                DEBUG[ "dMacroFlowDirectiondPK2Stress" ][ 9 * j + i ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentMacroFlowDirection" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dMacroFlowDirectiondPK2Stress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of the macro flow direction\n";
+                }
+            }
+
+            std::cout << "numericGrad (micro dir): "; vectorTools::print( numericGradients[ "currentMicroFlowDirection" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ], 0. ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric:  "; vectorTools::print( numericGradients[ "currentMicroFlowDirection" ] );
+                    std::cout << "analytic: "; vectorTools::print( variableVector( 9, 0 ) );
+                    std::cout << "ERROR in jacobian of the micro flow direction\n";
+                }
+            }
+
+            std::cout << "numericGrad (micro grad dir): "; vectorTools::print( numericGradients[ "currentMicroGradientFlowDirection" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ], 0. ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric:  "; vectorTools::print( numericGradients[ "currentMicroGradientFlowDirection" ] );
+                    std::cout << "analytic: "; vectorTools::print( variableVector( 27, 0 ) );
+                    std::cout << "ERROR in jacobian of the micro gradient flow direction\n";
+                }
+            }
+
+            //Plastic velocity gradients
+            std::cout << "numericGrad (Lp): "; vectorTools::print( numericGradients[ "currentPlasticMacroVelocityGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
+                                                DEBUG[ "dPlasticMacroLdPK2Stress" ][ 9 * j + i ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMacroVelocityGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dPlasticMacroLdPK2Stress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of plastic macro velocity gradient\n";
+                }
+            }
+
+            std::cout << "numericGrad (micro Lp): "; vectorTools::print( numericGradients[ "currentPlasticMicroVelocityGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ], 0. ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMicroVelocityGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( variableVector( 9, 0 ) );
+                    std::cout << "ERROR in jacobian of plastic micro velocity gradient\n";
+                }
+            }
+
+            std::cout << "numericGrad (grad micro Lp): "; vectorTools::print( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ], 0. ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( variableVector( 27, 0 ) );
+                    std::cout << "ERROR in jacobian of plastic micro gradient velocity gradient\n";
+                }
+            }
+
+            //Plastic deformation measures
+            std::cout << "numericGrad (Fp): "; vectorTools::print( numericGradients[ "currentPlasticDeformationGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticDeformationGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticDeformationGradient" ][ j ],
+                                                DEBUG[ "dPlasticFdPK2Stress" ][ 9 * j + i ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticDeformationGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dPlasticFdPK2Stress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of plastic deformation gradient\n";
+                }
+            }
+
+            std::cout << "numericGrad (chi p): "; vectorTools::print( numericGradients[ "currentPlasticMicroDeformation" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroDeformation" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroDeformation" ][ j ], 0. ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMicroDeformation" ] );
+                    std::cout << "analytic: "; vectorTools::print( variableVector( 9, 0 ) );
+                    std::cout << "ERROR in jacobian of plastic micro deformation\n";
+                }
+            }
+
+            std::cout << "numericGrad (grad chi p): "; vectorTools::print( numericGradients[ "currentPlasticMicroGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradient" ][ j ],
+                                                DEBUG[ "dPlasticMicroGradientdPK2Stress" ][ 9 * j + i ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMicroGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dPlasticMicroGradientdPK2Stress" ], 27, 9 ) );
+                    std::cout << "ERROR in jacobian of plastic micro gradient\n";
+                }
+            }
+
+            //Elastic deformation measures
+            std::cout << "numericGrad (Fe): "; vectorTools::print ( numericGradients[ "currentElasticDeformationGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
+                                                DEBUG[ "dElasticFdPK2Stress" ][ 9 * j + i ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentElasticDeformationGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dElasticFdPK2Stress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of elastic deformation gradient\n";
+                }
+            }
+
+            std::cout << "numericGrad (chi e): "; vectorTools::print( numericGradients[ "currentElasticMicroDeformation" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ], 0. ) ){
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentElasticMicroDeformation" ] );
+                    std::cout << "analytic: "; vectorTools::print( variableVector( 9, 0 ) );
+                    std::cout << "ERROR in jacobian of elastic micro deformation\n";
+                }
+            }
+
+            std::cout << "numericGrad (grad chi e): "; vectorTools::print( numericGradients[ "currentElasticMicroGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroGradient" ][ j ],
+                                                DEBUG[ "dElasticGradChidPK2Stress" ][ 9 * j + i ], 1e-6, 1e-9 ) ){
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentElasticMicroGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dElasticGradChidPK2Stress" ], 27, 9 ) );
+                    std::cout << "ERROR in jacobian of elastic micro gradient\n";
+                }
+            }
+
+            //Jacobian of the stress measures
+            std::cout << "numericGrad (PK2): "; vectorTools::print( numericGradients[ "newPK2Stress" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "newPK2Stress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "newPK2Stress" ][ j ],
+                                                DEBUG[ "dNewPK2StressdPK2Stress" ][ 9 * j + i ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "newPK2Stress " ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dNewPK2StressdPK2Stress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of new PK2 stress\n";
+                }
+            }
+
+            std::cout << "numericGrad (Sigma): "; vectorTools::print( numericGradients[ "newReferenceMicroStress" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "newReferenceMicroStress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "newReferenceMicroStress" ][ j ],
+                                                DEBUG[ "dNewReferenceMicroStressdPK2Stress" ][ 9 * j + i ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print(  numericGradients[ "newReferenceMicroStress" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dNewReferenceMicroStressdPK2Stress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of new Reference micro stress\n";
+                }
+            }
+
+            std::cout << "numericGrad (M): "; vectorTools::print( numericGradients[ "newReferenceHigherOrderStress" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "newReferenceHigherOrderStress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "newReferenceHigherOrderStress" ][ j ],
+                                                DEBUG[ "dNewReferenceHigherOrderStressdPK2Stress" ][ 9 * j + i ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "newReferenceHigherOrderStress" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dNewReferenceHigherOrderStressdPK2Stress" ], 27, 9 ) );
+                    std::cout << "ERROR in jacobian of new Reference higher order stress\n";
+                }
+            }
+
+        }
+
+        if ( ( i >= 9 ) && ( i < 18 ) ){
+            std::cout << "\n\nJACOBIAN W.R.T SIGMA " << i - 9 << "\n\n";
+
+            //Flow directions
+            std::cout << "numericGrad (macro dir): "; vectorTools::print( numericGradients[ "currentMacroFlowDirection" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ], 0. ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentMacroFlowDirection" ] );
+                    std::cout << "analytic: "; vectorTools::print( variableVector( 9, 0 ) );
+                    std::cout << "ERROR in jacobian of the macro flow direction\n";
+                }
+            }
+
+            std::cout << "numericGrad (micro dir): "; vectorTools::print( numericGradients[ "currentMicroFlowDirection" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
+                                                 DEBUG[ "dMicroFlowDirectiondReferenceMicroStress" ][ 9 * j + i - 9 ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric:  "; vectorTools::print( numericGradients[ "currentMicroFlowDirection" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dMicroFlowDirectiondReferenceMicroStress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of the micro flow direction\n";
+                }
+            }
+
+            std::cout << "numericGrad (micro grad dir): "; vectorTools::print( numericGradients[ "currentMicroGradientFlowDirection" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ], 0. ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric:  "; vectorTools::print( numericGradients[ "currentMicroGradientFlowDirection" ] );
+                    std::cout << "analytic: "; vectorTools::print( variableVector( 27, 0 ) );
+                    std::cout << "ERROR in jacobian of the micro gradient flow direction\n";
+                }
+            }
+
+            //Plastic velocity gradients
+            std::cout << "numericGrad (Lp): "; vectorTools::print( numericGradients[ "currentPlasticMacroVelocityGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
+                                                DEBUG[ "dPlasticMacroLdReferenceMicroStress" ][ 9 * j + i - 9 ], 1e-6, 1e-9 ) ) {
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMacroVelocityGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( variableVector( 9, 0. ) );
+                    std::cout << "ERROR in jacobian of plastic macro velocity gradient\n";
+                }
+            }
+
+            std::cout << "numericGrad (micro Lp): "; vectorTools::print( numericGradients[ "currentPlasticMicroVelocityGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
+                                                DEBUG[ "dPlasticMicroLdReferenceMicroStress" ][ 9 * j + i - 9 ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMicroVelocityGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dPlasticMicroLdReferenceMicroStress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of plastic micro velocity gradient\n";
+                }
+            }
+
+            std::cout << "numericGrad (grad micro Lp): "; vectorTools::print( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ], 0. ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( variableVector( 27, 0 ) );
+                    std::cout << "ERROR in jacobian of plastic micro gradient velocity gradient\n";
+                }
+            }
+
+            //Plastic deformation measures
+            std::cout << "numericGrad (Fp): "; vectorTools::print( numericGradients[ "currentPlasticDeformationGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticDeformationGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticDeformationGradient" ][ j ],
+                                                DEBUG[ "dPlasticFdReferenceMicroStress" ][ 9 * j + i - 9 ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticDeformationGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dPlasticFdReferenceMicroStress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of plastic deformation gradient\n";
+                }
+            }
+
+            std::cout << "numericGrad (chi p): "; vectorTools::print( numericGradients[ "currentPlasticMicroDeformation" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroDeformation" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroDeformation" ][ j ],
+                                                DEBUG[ "dPlasticMicroDeformationdReferenceMicroStress" ][ 9 * j + i - 9 ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMicroDeformation" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dPlasticMicroDeformationdReferenceMicroStress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of plastic micro deformation\n";
+                }
+            }
+
+            std::cout << "numericGrad (grad chi p): "; vectorTools::print( numericGradients[ "currentPlasticMicroGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradient" ][ j ],
+                                                DEBUG[ "dPlasticMicroGradientdReferenceMicroStress" ][ 9 * j + i - 9 ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMicroGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dPlasticMicroGradientdReferenceMicroStress" ], 27, 9 ) );
+                    std::cout << "ERROR in jacobian of plastic micro gradient\n";
+                }
+            }
+
+            //Elastic deformation measures
+            std::cout << "numericGrad (Fe): "; vectorTools::print ( numericGradients[ "currentElasticDeformationGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
+                                                DEBUG[ "dElasticFdReferenceMicroStress" ][ 9 * j + i - 9 ], 1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentElasticDeformationGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dElasticFdReferenceMicroStress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of elastic deformation gradient\n";
+                }
+            }
+
+            std::cout << "numericGrad (chi e): "; vectorTools::print( numericGradients[ "currentElasticMicroDeformation" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
+                                                DEBUG[ "dElasticChidReferenceMicroStress" ][ 9 * j + i - 9 ], 1e-6, 1e-9 ) ){
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentElasticMicroDeformation" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dElasticChidReferenceMicroStress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of elastic micro deformation\n";
+                }
+            }
+
+            std::cout << "numericGrad (grad chi e): "; vectorTools::print( numericGradients[ "currentElasticMicroGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroGradient" ][ j ],
+                                                DEBUG[ "dElasticGradChidReferenceMicroStress" ][ 9 * j + i - 9 ], 1e-6, 1e-9 ) ){
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentElasticMicroGradient" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dElasticGradChidReferenceMicroStress" ], 27, 9 ) );
+                    std::cout << "ERROR in jacobian of elastic micro gradient\n";
+                }
+            }
+
+            //Jacobian of the stress measures
+            std::cout << "numericGrad (PK2): "; vectorTools::print( numericGradients[ "newPK2Stress" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "newPK2Stress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "newPK2Stress" ][ j ],
+                                                DEBUG[ "dNewPK2StressdReferenceMicroStress" ][ 9 * j + i - 9 ] ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "newPK2Stress " ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dNewPK2StressdReferenceMicroStress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of new PK2 stress\n";
+                }
+            }
+
+            std::cout << "numericGrad (Sigma): "; vectorTools::print( numericGradients[ "newReferenceMicroStress" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "newReferenceMicroStress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "newReferenceMicroStress" ][ j ],
+                                                DEBUG[ "dNewReferenceMicroStressdReferenceMicroStress" ][ 9 * j + i - 9 ] ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print(  numericGradients[ "newReferenceMicroStress" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dNewReferenceMicroStressdReferenceMicroStress" ], 9, 9 ) );
+                    std::cout << "ERROR in jacobian of new Reference micro stress\n";
+                }
+            }
+
+            std::cout << "numericGrad (M): "; vectorTools::print( numericGradients[ "newReferenceHigherOrderStress" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "newReferenceHigherOrderStress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "newReferenceHigherOrderStress" ][ j ],
+                                                DEBUG[ "dNewReferenceHigherOrderStressdReferenceMicroStress" ][ 9 * j + i - 9 ] ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "newReferenceHigherOrderStress" ] );
+                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dNewReferenceHigherOrderStressdReferenceMicroStress" ], 27, 9 ) );
+                    std::cout << "ERROR in jacobian of new Reference higher order stress\n";
+                }
+            }
+        }
+        #endif
+
+        //Check the residual jacobian
+        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
+
+        std::cout << "gradCol: "; vectorTools::print( gradCol );
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ], 1e-6, 1e-9 ) ){
+                std::cout << "i, j: " << i << ", " << j << "\n";
+                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
+                std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+                results << "test_computeStressResidual (test 1) & False\n";
+                return 1;
+            }
+        }
+
+        if ( i >= 17 ){
+            assert( 1 == 0 );
+        }
+    }
+
+    assert( 1 == 0 );
+
+    results << "test_computeStressResidual & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -9482,7 +10089,7 @@ int main(){
     test_evolveStrainStateVariables( results );
     test_computeFlowDirections( results );
 //    test_computeResidual( results );
-    test_convergence_of_computeResidual( results );
+//    test_convergence_of_computeResidual( results );
     test_extractMaterialParameters( results );
     test_extractStateVariables( results );
     test_assembleFundamentalDeformationMeasures( results );
@@ -9491,6 +10098,7 @@ int main(){
     test_cout_redirect( results );
     test_cerr_redirect( results );
     test_computeStrainISVResidual( results );
+    test_computeStressResidual( results );
     test_solveForStrainISV( results );
 
 //    test_evaluate_model( results );

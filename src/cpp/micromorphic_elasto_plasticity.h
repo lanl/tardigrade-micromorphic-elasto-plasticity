@@ -527,32 +527,23 @@ namespace micromorphicElastoPlasticity{
                               variableType &dMacroCdMacroStrainISV, variableType &dMicroCdMicroStrainISV,
                               variableMatrix &dMicroGradientCdMicroGradientStrainISV );
 
-    #ifdef DEBUG_MODE
     errorOut computeStrainISVResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                                        const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                                        solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                       solverTools::intMatrix &intOuts,
-                                       std::map< std::string, solverTools::floatVector > &DEBUG );
-    #else
-    errorOut computeStrainISVResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                       const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                                       solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                       solverTools::intMatrix &intOuts );
-    #endif
+                                       solverTools::intMatrix &intOuts
+                                       #ifdef DEBUG_MODE
+                                       , std::map< std::string, solverTools::floatVector > &DEBUG
+                                       #endif
+                                     );
 
-    #ifdef DEBUG_MODE
     errorOut computeStressResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                                     const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                                     solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                    solverTools::intMatrix &intOuts,
-                                    std::map< std::string, solverTools::floatVector > &DEBUG );
-    #else
-    errorOut computeStressResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                    const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                                    solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                    solverTools::intMatrix &intOuts,
-                                    std::map< std::string, solverTools::floatVector > &DEBUG );
-    #endif
+                                    solverTools::intMatrix &intOuts
+                                    #ifdef DEBUG_MODE
+                                    , std::map< std::string, solverTools::floatVector > &DEBUG
+                                    #endif
+                                  );
 
     #ifdef DEBUG_MODE
     errorOut solveForStrainISV( const constantType &Dt,
