@@ -545,6 +545,15 @@ namespace micromorphicElastoPlasticity{
                                     #endif
                                   );
 
+    errorOut computePlasticDeformationResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                                                const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                                                solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
+                                                solverTools::intMatrix &intOuts
+                                                #ifdef DEBUG_MODE
+                                                , std::map< std::string, solverTools::floatVector > &DEBUG
+                                                #endif
+                                              );
+
     #ifdef DEBUG_MODE
     errorOut solveForStrainISV( const constantType &Dt,
                                 const variableType &currentMacroGamma, const variableType &currentMicroGamma,

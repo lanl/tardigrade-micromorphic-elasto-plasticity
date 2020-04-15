@@ -4110,6 +4110,566 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
+    errorOut computePlasticDeformationResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                                                const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                                                solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
+                                                solverTools::intMatrix &intOuts
+                                                #ifdef DEBUG_MODE
+                                                , std::map< std::string, solverTools::floatVector > &DEBUG
+                                                #endif
+                                              ){
+        /*!
+         * Compute the residual on the amount of plastic deformation.
+         * 
+         * :param solverTools::floatVector &x: The unknown vector. Organized as
+         *     [ plasticDeformationGradient, plasticMicroDeformation, plasticGradientMicroDeformation ]
+         * :param const solverTools::floatMatrix &floatArgs: The floating point arguments which do not vary
+         *     during the solve.
+         * :param const solverTools::intMatrix &intArgs: The integer arguments which do not vary during 
+         *     the solve.
+         * :param solverTools::floatVector &residual: The value of the residual. This will be the 
+         *     the values in the x vector - the estimated amount of plastic deformation
+         * :param solverTools::floatMatrix &jacobian: The jacobian matrix
+         * :param solverTools::floatMatrix &floatOuts: The floating point values that do change during the solve.
+         * :param solverTools::intMatrix &intOuts: The integer values that do change during the solve.
+         * :param std::map< std::string, solverTools::floatVector > &DEBUG: The debug map. Only available if
+         *     DEBUG_MODE is defined.
+         */
+
+        if ( x.size() != 45 ){
+            return new errorNode( "computePlasticDeformationResidual",
+                                  "The x vector must have a length of 45" );
+        }
+
+        /*=================================
+        | Compute the Elastic Deformation |
+        =================================*/
+
+        variableVector currentElasticDeformationGradient, currentElasticMicroDeformation, currentElasticGradientMicroDeformation;
+
+        variableMatrix dElasticDeformationGradientdDeformationGradient, dElasticDeformationGradientdPlasticDeformationGradient;
+                       dElasticMicroDeformationdMicroDeformation, dElasticMicroDeformationdPlasticMicroDeformation,
+                       dElasticGradientMicroDeformationdGradientMicroDeformation,
+                       dElasticGradientMicroDeformationdPlasticGradientMicroDeformation,
+                       dElasticGradientMicroDeformationdPlasticDeformationGradient,
+                       dElasticGradientMicroDeformationdMicroDeformation,
+                       dElasticGradientMicroDeformationdPlasticMicroDeformation;
+
+        errorOut error = computeElasticPartOfDeformation( *currentDeformationGradient, *currentMicroDeformation,
+                                                          *gradientMicroDeformation,
+                                                           currentPlasticDeformationGradient, currentPlasticMicroDeformation,
+                                                           currentPlasticGradientMicroDeformation,
+                                                           currentElasticDeformationGradient, currentElasticMicroDeformation,
+                                                           currentElasticGradientMicroDeformation,
+                                                           dElasticDeformationGradientdDeformationGradient,
+                                                           dElasticDeformationGradientdPlasticDeformationGradient,
+                                                           dElasticMicroDeformationdMicroDeformation,
+                                                           dElasticMicroDeformationdPlasticMicroDeformation,
+                                                           dElasticGradientMicroDeformationdGradientMicroDeformation,
+                                                           dElasticGradientMicroDeformationdPlasticGradientMicroDeformation,
+                                                           dElasticGradientMicroDeformationdPlasticDeformationGradient,
+                                                           dElasticGradientMicroDeformationdMicroDeformation,
+                                                           dElasticGradientMicroDeformationdPlasticMicroDeformation );
+
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticDeformationResidual"
+                                             "Error in the computation of the elastic part of the deformation" );
+            result->addNext( error );
+            return result;
+        }
+
+        /*!=================================================
+        | Compute the elastic derived deformation measures |
+        ==================================================*/
+
+        variableVector currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen, currentElasticPsi, currentElasticGamma;
+        variableMatrix dCurrentElasticRightCauchyGreendElasticDeformationGradient,
+                       dCurrentElasticMicroRightCauchyGreendElasticMicroDeformation,
+                       dCurrentElasticPsidElasticDeformationGradient,
+                       dCurrentElasticPsidElasticMicroDeformation,
+                       dCurrentElasticGammadElasticDeformationGradient,
+                       dCurrentElasticGammadElasticGradientMicroDeformation;
+
+        error = computeElasticDeformationMeasures( elasticDeformationGradient, elasticMicroDeformation, elasticGradientMicroDeformation,
+                                                   currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen,
+                                                   currentElasticPsi, currentElasticGamma,
+                                                   dCurrentElasticRightCauchyGreendElasticDeformationGradient,
+                                                   dCurrentElasticMicroRightCauchyGreendElasticMicroDeformation,
+                                                   dCurrentElasticPsidElasticDeformationGradient,
+                                                   dCurrentElasticPsidElasticMicroDeformation,
+                                                   dCurrentElasticGammadElasticDeformationGradient,
+                                                   dCurrentElasticGammadElasticGradientMicroDeformation );
+
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticDeformationResidual",
+                                             "Error in the computation of the derived elastic deformation measures" );
+            result->addNext( error );
+            return result;
+        }
+
+        /*!==================================================================
+        | Assemble the Jacobian of the elastic derived deformation measures |
+        ===================================================================*/
+
+        variableMatrix dCurrentElasticRightCauchyGreendPlasticDeformationGradient
+            = vectorTools::dot( dCurrentElasticRightCauchyGreendElasticDeformationGradient,
+                                dElasticDeformationGradientdPlasticDeformationGradient );
+
+        variableMatrix dCurrentElasticMicroRightCauchyGreendPlasticMicroDeformation
+            = vectorTools::dot( dCurrentElasticMicroRightCauchyGreendElasticMicroDeformation,
+                                dElasticMicroDeformationdPlasticMicroDeformation );
+
+        variableMatrix dCurrentElasticPsidPlasticDeformationGradient
+            = vectorTools::dot( dCurrentElasticPsidElasticDeformationGradient,
+                                dElasticDeformationGradientdPlasticDeformationGradient );
+
+        variableMatrix dCurrentElasticPsidPlasticMicroDeformation
+            = vectorTools::dot( dCurrentElasticPsidElasticMicroDeformation,
+                                dElasticMicroDeformationdPlasticMicroDeformation );
+
+        variableMatrix dCurrentElasticGammadPlasticDeformationGradient
+            = vectorTools::dot( dCurrentElasticGammadElasticDeformationGradient,
+                                dElasticDeformationGradientdPlasticDeformationGradient );
+
+        variableMatrix dCurrentElasticGammadPlasticDeformationGradient
+            = vectorTools::dot( dCurrentElasticGammadElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticMicroDeformation );
+
+        variableMatrix dCurrentElasticGammadPlasticMicroDeformation
+            = vectorTools::dot( dCurrentElasticGammadElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticMicroDeformation );
+
+        variableMatrix dCurrentElasticGammadPlasticGradientMicroDeformation
+            = vectorTools::dot( dCurrentElasticGammadElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
+
+        /*===========================
+        | Compute the Stress values |
+        ===========================*/
+
+        error = micromorphicLinearElasticity::linearElasticityReference(  currentElasticDeformationGradient,
+                                                                          currentElasticMicroDeformation,
+                                                                          currentElasticGradientMicroDeformation,
+                                                                         *Amatrix, *Bmatrix, *Cmatrix, *Dmatrix,
+                                                                          currentPK2Stress, currentReferenceMicroStress,
+                                                                          currentReferenceHigherOrderStress,
+                                                                          dPK2StressdElasticDeformationGradient,
+                                                                          dPK2StressdElasticMicroDeformation,
+                                                                          dPK2StressdElasticGradientMicroDeformation,
+                                                                          dReferenceMicroStressdElasticDeformationGradient,
+                                                                          dReferenceMicroStressdElasticMicroDeformation,
+                                                                          dReferenceMicroStressdElasticGradientMicroDeformation,
+                                                                          dReferenceHigherOrderStressdElasticDeformationGradient,
+                                                                          dReferenceHigherOrderStressdElasticGradientMicroDeformation );
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticDeformationResidual"
+                                             "Error in the computation of the stresses" );
+            result->addNext( error );
+            return result;
+        }
+
+        /*===============================
+        | Assemble the stress Jacobians |
+        ===============================*/
+
+        //Jacobians w.r.t. the plastic deformation
+        variableMatrix dPK2StressdPlasticDeformationGradient
+            = vectorTools::dot( dPK2StressdElasticDeformationGradient,
+                                dElasticDeformationGradientdPlasticDeformationGradient )
+            + vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticDeformationGradient );
+
+        variableMatrix dPK2StressdPlasticMicroDeformation
+            = vectorTools::dot( dPK2StressdElasticMicroDeformation,
+                                dElasticMicroDeformationdPlasticMicroDeformation )
+            + vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticMicroDeformation );
+
+        variableMatrix dPK2StressdPlasticGradientMicroDeformation
+            = vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
+
+        variableMatrix dReferenceMicroStressdPlasticDeformationGradient
+            = vectorTools::dot( dReferenceMicroStressdElasticDeformationGradient,
+                                dElasticDeformationGradientdPlasticDeformationGradient )
+            + vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticDeformationGradient );
+
+        variableMatrix dReferenceMicroStressdPlasticMicroDeformation
+            = vectorTools::dot( dReferenceMicroStressdElasticMicroDeformation,
+                                dElasticMicroDeformationdPlasticMicroDeformation )
+            + vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticMicroDeformation );
+
+        variableMatrix dReferenceMicroStressdPlasticGradientMicroDeformation
+            = vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
+
+        variableMatrix dReferenceHigherOrderStressdPlasticDeformationGradient
+            = vectorTools::dot( dReferenceHigherOrderStressdElasticDeformationGradient,
+                                dElasticDeformationGradientdPlasticDeformationGradient )
+            + vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticDeformationGradient );
+
+        variableMatrix dReferenceHigherOrderStressdPlasticMicroDeformation
+            = vectorTools::dot( dReferenceHigherOrderStressdElasticMicroDeformation,
+                                dElasticMicroDeformationdPlasticMicroDeformation )
+            + vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticMicroDeformation );
+
+        variableMatrix dReferenceHigherOrderStressdPlasticGradientMicroDeformation
+            = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+                                dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
+
+        /*!============================
+        | Compute the Flow Directions |
+        =============================*/
+
+        variableVector currentMacroFlowDirection, currentMicroFlowDirection, currentMicroGradientFlowDirection;
+        variableType dGdMacroCohesion, dGdMicroCohesion;
+        variableMatrix dGdMicroGradientCohesion;
+
+        variableMatrix dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRightCauchyGreen,
+                       dMicroFlowDirectiondReferenceMicroStress, dMicroFlowDirectiondElasticRightCauchyGreen,
+                       dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                       dMicroGradientFlowDirectiondElasticRightCauchyGreen;
+
+        error = computeFlowDirections(  currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress,
+                                       *currentMacroCohesion, *currentMicroCohesion, *currentMicroGradientCohesion,
+                                        currentElasticRightCauchyGreen,
+                                       *macroFlowParameters, *microFlowParameters, *microGradientFlowParameters,
+                                        currentMacroFlowDirection, currentMicroFlowDirection, currentMicroGradientFlowDirection,
+                                        dGdMacroCohesion, dGdMicroCohesion, dGdMicroGradientCohesion,
+                                        dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRightCauchyGreen,
+                                        dMicroFlowDirectiondReferenceMicroStress, dMicroFlowDirectiondElasticRightCauchyGreen,
+                                        dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                        dMicroGradientFlowDirectiondElasticRightCauchyGreen );
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticDeformationResidual"
+                                             "Error in the computation of the flow directions" );
+            result->addNext( error );
+            return result;
+        }
+
+        /*!============================
+        | Assemble the flow Jacobians |
+        =============================*/
+
+        //Assemble the Jacobians w.r.t. the plastic deformation
+        variableMatrix dMacroFlowDirectiondPlasticDeformationGradient
+            = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdPlasticDeformationGradient )
+            + vectorTools::dot( dMacroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendPlasticDeformationGradient );
+
+        variableMatrix dMacroFlowDirectiondPlasticMicroDeformation
+            = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdPlasticMicroDeformation );
+
+        variableMatrix dMacroFlowDirectiondPlasticGradientMicroDeformation
+            = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdPlasticGradientMicroDeformation );
+
+        variableMatrix dMicroFlowDirectiondPlasticDeformationGradient
+            = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdPlasticDeformationGradient )
+            + vectorTools::dot( dMicroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendPlasticDeformationGradient );
+
+        variableMatrix dMicroFlowDirectiondPlasticMicroDeformation
+            = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdPlasticMicroDeformation );
+
+        variableMatrix dMicroFlowDirectiondPlasticGradientMicroDeformation
+            = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdPlasticGradientMicroDeformation );
+
+        variableMatrix dMicroGradientFlowDirectiondPlasticDeformationGradient
+            = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                dReferenceHigherOrderStressdPlasticDeformationGradient )
+            + vectorTools::dot( dMicroGradientFlowDirectiondElasticRightCauchyGreen,
+                                dElasticRightCauchyGreendPlasticDeformationGradient );
+
+        variableMatrix dMicroGradientFlowDirectiondPlasticMicroDeformation
+            = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                dReferenceHigherOrderStressdPlasticMicroDeformation );
+
+        variableMatrix dMicroGradientFlowDirectiondPlasticGradientMicroDeformation
+            = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                dReferenceMicroStressdPlasticGradientMicroDeformation );
+
+        /*!=======================================
+        | Compute the plastic velocity gradients |
+        ========================================*/
+
+        variableVector currentPlasticMacroVelocityGradient, currentPlasticMicroVelocityGradient,
+                       currentPlasticMicroGradientVelocityGradient;
+
+        variableVector dPlasticMacroVelocityGradientdMacroGamma, dPlasticMacroVelocityGradientdMicroGamma,
+                       dPlasticMicroVelocityGradientdMicroGamma, dPlasticMicroGradientVelocityGradientdMicroGamma;
+
+        variableMatrix dPlasticMicroGradientVelocityGradientdMicroGradientGamma,
+                       dPlasticMacroVelocityGradientdElasticRightCauchyGreen,
+                       dPlasticMacroVelocityGradientdMacroFlowDirection
+                       dPlasticMacroVelocityGradientdMicroFlowDirection,
+                       dPlasticMicroVelocityGradientdElasticMicroRightCauchyGreen,
+                       dPlasticMicroVelocityGradientdElasticPsi,
+                       dPlasticMicroVelocityGradientdMicroFlowDirection,
+                       dPlasticMicroGradientVelocityGradientdElasticMicroRightCauchyGreen,
+                       dPlasticMicroGradientVelocityGradientdElasticPsi,
+                       dPlasticMicroGradientVelocityGradientdElasticGamma,
+                       dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+                       dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection;
+
+        error = computePlasticVelocityGradients( *macroGamma, *microGamma, *microGradientGamma, 
+                                                  currentElasticRightCauchyGreen, currentElasticMicroRightCauchyGreen,
+                                                  currentElasticPsi, currentElasticGamma, currentMacroFlowDirection,
+                                                  currentMicroFlowDirection, currentMicroGradientFlowDirection,
+                                                  currentPlasticMacroVelocityGradient, currentPlasticMicroVelocityGradient,
+                                                  currentPlasticMicroGradientVelocityGradient,
+                                                  dPlasticMacroVelocityGradientdMacroGamma,
+                                                  dPlasticMacroVelocityGradientdMicroGamma,
+                                                  dPlasticMicroVelocityGradientdMicroGamma,
+                                                  dPlasticMicroGradientVelocityGradientdMicroGamma,
+                                                  dPlasticMicroGradientVelocityGradientdMicroGradientGamma,
+                                                  dPlasticMacroVelocityGradientdElasticRightCauchyGreen,
+                                                  dPlasticMacroVelocityGradientdMacroFlowDirection
+                                                  dPlasticMacroVelocityGradientdMicroFlowDirection,
+                                                  dPlasticMicroVelocityGradientdElasticMicroRightCauchyGreen,
+                                                  dPlasticMicroVelocityGradientdElasticPsi,
+                                                  dPlasticMicroVelocityGradientdMicroFlowDirection,
+                                                  dPlasticMicroGradientVelocityGradientdElasticMicroRightCauchyGreen,
+                                                  dPlasticMicroGradientVelocityGradientdElasticPsi,
+                                                  dPlasticMicroGradientVelocityGradientdElasticGamma,
+                                                  dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+                                                  dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection );
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticDeformationResidual"
+                                             "Error in the computation of the plastic velocity gradients" );
+            result->addNext( error );
+            return result;
+        }
+
+        /*!=========================================================
+        | Assemble the jacobians of the plastic velocity gradients |
+        ==========================================================*/
+
+        variableMatrix dPlasticMacroVelocityGradientdPlasticDeformationGradient
+            = vectorTools::dot( dPlasticMacroVelocityGradientdElasticRightCauchyGreen,
+                                dElasticRightCauchyGreendPlasticDeformationGradient )
+            + vectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
+                                dMacroFlowDirectiondPlasticDeformationGradient )
+            + vectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
+                                dMicroFlowDirectiondPlasticDeformationGradient );
+
+        variableMatrix dPlasticMacroVelocityGradientdPlasticMicroDeformation
+            = vectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
+                                dMacroFlowDirectiondPlasticMicroDeformation )
+            + vectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
+                                dMicroFlowDirectiondPlasticMicroDeformation );
+
+        variableMatrix dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation
+            = vectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
+                                dMacroFlowDirectiondPlasticGradientMicroDeformation )
+            + vectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
+                                dMicroFlowDirectiondPlasticGradientMicroDeformation );
+
+        variableMatrix dPlasticMicroVelocityGradientdPlasticDeformationGradient
+            = vectorTools::dot( dPlasticMicroVelocityGradientdElasticPsi,
+                                dElasticPsidPlasticDeformationGradient )
+            + vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
+                                dMicroFlowDirectiondPlasticDeformationGradient );
+
+        variableMatrix dPlasticMicroVelocityGradientdPlasticMicroDeformation
+            = vectorTools::dot( dPlasticMicroVelocityGradientdElasticMicroRightCauchyGreen,
+                                dElasticMicroRightCauchyGreendPlasticMicroDeformation )
+            + vectorTools::dot( dPlasticMicroVelocityGradientdElasticPsi,
+                                dElasticPsidPlasticMicroDeformation )
+            + vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
+                                dMicroFlowDirectiondPlasticMicroDeformation );
+
+        variableMatrix dPlasticMicroVelocityGraientdPlasticGradientMicroDeformation
+            = vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
+                                dMicroFlowDirectiondPlasticGradientMicroDeformation );
+
+        variableMatrix dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient
+            = vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticPsi,
+                                dElasticPsidPlasticDeformationGradient )
+            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
+                                dElasticGammadPlasticDeformationGradient )
+            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+                                dMicroFlowDirectiondPlasticDeformationGradient )
+            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
+                                dMicroGradientFlowDirectiondPlasticDeformationGradient );
+
+        variableMatrix dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation
+            = vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticMicroRightCauchyGreen,
+                                dElasticMicroRightCauchyGreendPlasticMicroDeformation )
+            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticPsi,
+                                dElasticPsidPlasticMicroDeformation )
+            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
+                                dElasticGammadPlasticMicroDeformation )
+            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+                                dMicroFlowDirectiondPlasticMicroDeformation )
+            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
+                                dMicroGradientFlowDirectiondPlasticMicroDeformation );
+
+        variableMatrix dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation
+            = vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
+                                dElasticGammadPlasticGradientMicroDeformation )
+            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+                                dMicroFlowDirectiondPlasticGradientMicroDeformation )
+            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
+                                dMicroGradientFlowDirectiondPlasticGradientMicroDeformation );
+
+        /*!===============================
+        | Evolve the plastic deformation |
+        ================================*/
+
+        variableVector expectedPlasticDeformationGradient, expectedPlasticMicroDeformation, expectedPlasticGradientMicroDeformation;
+
+        variableMatrix dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                       dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+                       dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                       dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                       dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient;
+
+        error = evolvePlasticDeformation( *Dt,
+                                           currentPlasticMacroVelocityGradient,
+                                           currentPlasticMicroVelocityGradient,
+                                           currentPlasticMicroGradientVelocityGradient,
+                                          *previousPlasticDeformationGradient,
+                                          *previousPlasticMicroDeformation,
+                                          *previousPlasticMicroGradient,
+                                          *previousPlasticMacroVelocityGradient,
+                                          *previousPlasticMicroVelocityGradient,
+                                          *previousPlasticMicroGradientVelocityGradient,
+                                           expectedCurrentPlasticDeformationGradient,
+                                           expectedCurrentPlasticMicroDeformation,
+                                           expectedCurrentPlasticMicroGradient,
+                                           dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                                           dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+                                           dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                                           dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                                           dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient
+                                          *alphaMacro, *alphaMicro, *alphaMicroGradient );
+
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticDeformationResidual"
+                                             "Error in the computation of the plastic deformation" );
+            result->addNext( error );
+            return result;
+        }
+
+        /*!==========================================
+        | Assemble the plastic deformation Jacobian |
+        ===========================================*/
+
+        variableMatrix dExpectedPlasticDeformationGradientdPlasticDeformationGradient
+            = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdPlasticDeformationGradient );
+
+        variableMatrix dExpectedPlasticDeformationGradientdPlasticMicroDeformation
+            = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdPlasticMicroDeformation );
+
+        variableMatrix dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation
+            = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation );
+
+        variableMatrix dExpectedPlasticMicroDeformationdPlasticDeformationGradient
+            = vectorTools::dot( dExpectedPlasticMicroDeformationdMicroVelocityGradient,
+                                dPlasticMicroVelocityGradientdPlasticDeformationGradient );
+
+        variableMatrix dExpectedPlasticMicroDeformationdPlasticMicroDeformation
+            = vectorTools::dot( dExpectedPlasticMicroDeformationdMicroVelocityGradient,
+                                dPlasticMicroVelocityGradientdPlasticMicroDeformation );
+
+        variableMatrix dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation
+            = vectorTools::dot( dExpectedPlasticMicroDeformationdMicroVelocityGradient,
+                                dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation );
+
+        variableMatrix dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient
+            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdPlasticDeformationGradient )
+            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                                dPlasticMicroVelocityGradientdPlasticDeformationGradient )
+            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                                dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient );
+
+        variableMatrix dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation
+            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdPlasticMicroDeformation )
+            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                                dPlasticMicroVelocityGradientdPlasticMicroDeformation )
+            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                                dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation );
+
+        variableMatrix dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation
+            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdPlasticMicroDeformation )
+            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                                dPlasticMicroVelocityGradientdPlasticMicroDeformation )
+            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                                dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation );
+
+        variableMatrix dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation
+            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation )
+            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                                dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation )
+            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                                dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation );
+
+        /*!===============================================
+        | Compute the residual equation and the Jacobian |
+        ================================================*/
+
+        residual = solverTools::floatVector( 45, 0 );
+        jacobian = vectorTools::eye< solverTools::floatType >( 45 );
+
+        for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
+            residual[ i ] = currentPlasticDeformationGradient[ i ] - expectedPlasticDeformationGradient[ i ];
+
+            for ( unsigned int j = 0; j < currentPlasticDeformationGradient.size(); j++ ){
+                jacobian[ i ][ j ] -= dExpectedPlasticDeformationGradientdPlasticDeformationGradient[ i ][ j ];
+            }
+
+            for ( unsigned int j = 0; j < currentPlasticMicroDeformation.size(); j++ ){
+                jacobian[ i ][ j + 9 ] -= dExpectedPlasticDeformationGradientdPlasticMicroDeformation[ i ][ j ];
+            }
+
+            for ( unsigned int j = 0; j < currentPlasticGradientMicroDeformation.size(); j++ ){
+                jacobian[ i ][ j + 18 ] -= dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation[ i ][ j ];
+            }
+        }
+
+        for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
+            residual[ i + 9 ] = currentPlasticMicroDeformation[ i ] - expectedPlasticMicroDeformation[ i ];
+
+            for ( unsigned int j = 0; j < currentPlasticDeformationGradient.size(); j++ ){
+                jacobian[ i + 9 ][ j ] -= dExpectedPlasticMicroDeformationdPlasticDeformationGradient[ i ][ j ];
+            }
+
+            for ( unsigned int j = 0; j < currentPlasticMicroDeformation.size(); j++ ){
+                jacobian[ i + 9 ][ j + 9 ] -= dExpectedPlasticMicroDeformationdPlasticMicroDeformation[ i ][ j ];
+            }
+
+            for ( unsigned int j = 0; j < currentPlasticGradientMicroDeformation.size(); j++ ){
+                jacobian[ i + 9 ][ j + 18 ] -= dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation[ i ][ j ];
+            }
+        }
+
+        for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
+            residual[ i + 18 ] = currentPlasticGradientMicroDeformation[ i ] - expectedPlasticGradientMicroDeformation[ i ];
+
+            for ( unsigned int j = 0; j < currentPlasticDeformationGradient.size(); j++ ){
+                jacobian[ i + 18 ][ j ] -= dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient[ i ][ j ];
+            }
+
+            for ( unsigned int j = 0; j < currentPlasticMicroDeformation.size(); j++ ){
+                jacobian[ i + 18 ][ j + 9 ] -= dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation[ i ][ j ];
+            }
+
+            for ( unsigned int j = 0; j < currentPlasticGradientMicroDeformation.size(); j++ ){
+                jacobian[ i + 18 ][ j + 18 ] -= dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation[ i ][ j ];
+            }
+        }
+
+        return NULL;
+    }
 
     #ifdef DEBUG_MODE
     errorOut solveForStrainISV( const constantType &Dt,
