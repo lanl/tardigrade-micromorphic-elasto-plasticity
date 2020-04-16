@@ -1530,7 +1530,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         if ( microGradientFlowDirection.size() != dim * dim * dim * dim ){
-            return new errorNode( "computePlasticVelocityGradients",
+            return new errorNode( "computePlasticMacroGradientVelocityGradient",
                                   "The micro gradient flow direction must be 3D" );
         }
 
@@ -2637,7 +2637,7 @@ namespace micromorphicElastoPlasticity{
                                            dPlasticMicroGradientdPlasticMicroGradientL, alphaMicroGradient );
 
         if ( error ){
-            errorOut result = new errorNode( "evolvePlasticDeformation",
+            errorOut result = new errorNode( "evolvePlasticDeformation (jacobian)",
                                              "Error in computation of the plastic micro gradient" );
             result->addNext( error );
             return result;
@@ -4218,7 +4218,7 @@ namespace micromorphicElastoPlasticity{
                                                            dElasticGradientMicroDeformationdPlasticMicroDeformation );
 
         if ( error ){
-            errorOut result = new errorNode( "computePlasticDeformationResidual"
+            errorOut result = new errorNode( "computePlasticDeformationResidual",
                                              "Error in the computation of the elastic part of the deformation" );
             result->addNext( error );
             return result;
@@ -4371,7 +4371,7 @@ namespace micromorphicElastoPlasticity{
                                                                           dReferenceHigherOrderStressdElasticDeformationGradient,
                                                                           dReferenceHigherOrderStressdElasticGradientMicroDeformation );
         if ( error ){
-            errorOut result = new errorNode( "computePlasticDeformationResidual"
+            errorOut result = new errorNode( "computePlasticDeformationResidual",
                                              "Error in the computation of the stresses" );
             result->addNext( error );
             return result;
@@ -4481,7 +4481,7 @@ namespace micromorphicElastoPlasticity{
                                         dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                         dMicroGradientFlowDirectiondElasticRightCauchyGreen );
         if ( error ){
-            errorOut result = new errorNode( "computePlasticDeformationResidual"
+            errorOut result = new errorNode( "computePlasticDeformationResidual",
                                              "Error in the computation of the flow directions" );
             result->addNext( error );
             return result;
@@ -4620,7 +4620,7 @@ namespace micromorphicElastoPlasticity{
                                                   dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
                                                   dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection );
         if ( error ){
-            errorOut result = new errorNode( "computePlasticDeformationResidual"
+            errorOut result = new errorNode( "computePlasticDeformationResidual",
                                              "Error in the computation of the plastic velocity gradients" );
             result->addNext( error );
             return result;
@@ -4760,7 +4760,7 @@ namespace micromorphicElastoPlasticity{
                                           *alphaMacro, *alphaMicro, *alphaMicroGradient );
 
         if ( error ){
-            errorOut result = new errorNode( "computePlasticDeformationResidual"
+            errorOut result = new errorNode( "computePlasticDeformationResidual",
                                              "Error in the computation of the plastic deformation" );
             result->addNext( error );
             return result;
@@ -5279,7 +5279,7 @@ namespace micromorphicElastoPlasticity{
         solverTools::intVector activePlasticity = intOuts[ ii++ ];
 
         if ( activePlasticity.size() != 5 ){
-            return new errorNode( "computeResidual (jacobian)",
+            return new errorNode( "computeResidual",
                                   "The activePlasticity variable must have a length of 5" );
         }
 
@@ -5974,13 +5974,13 @@ namespace micromorphicElastoPlasticity{
                                                                                     dMicroGradientLpdMicroGradientGamma );
 
 #ifdef DEBUG_MODE
-            DEBUG.emplace( "dPlasticFpdMacroGamma", dPlasticFpdMacroGamma );
-            DEBUG.emplace( "dPlasticFpdMicroGamma", dPlasticFpdMicroGamma );
-            DEBUG.emplace( "dPlasticMicroDeformationdMicroGamma", dPlasticMicroDeformationdMicroGamma );
-            DEBUG.emplace( "dPlasticMicroGradientdMacroGamma", dPlasticMicroGradientdMacroGamma );
-            DEBUG.emplace( "dPlasticMicroGradientdMicroGamma", dPlasticMicroGradientdMicroGamma );
-            DEBUG.emplace( "dPlasticMicroGradientdMicroGradientGamma",
-                           vectorTools::appendVectors( dPlasticMicroGradientdMicroGradientGamma ) );
+        DEBUG.emplace( "dPlasticFpdMacroGamma", dPlasticFpdMacroGamma );
+        DEBUG.emplace( "dPlasticFpdMicroGamma", dPlasticFpdMicroGamma );
+        DEBUG.emplace( "dPlasticMicroDeformationdMicroGamma", dPlasticMicroDeformationdMicroGamma );
+        DEBUG.emplace( "dPlasticMicroGradientdMacroGamma", dPlasticMicroGradientdMacroGamma );
+        DEBUG.emplace( "dPlasticMicroGradientdMicroGamma", dPlasticMicroGradientdMicroGamma );
+        DEBUG.emplace( "dPlasticMicroGradientdMicroGradientGamma",
+                       vectorTools::appendVectors( dPlasticMicroGradientdMicroGradientGamma ) );
 #endif
 
         //Compute the new elastic deformation
@@ -6025,13 +6025,13 @@ namespace micromorphicElastoPlasticity{
                                                                               dPlasticMicroGradientdMicroGradientGamma );
 
 #ifdef DEBUG_MODE
-            DEBUG.emplace( "dElasticFdMacroGamma", dElasticFdMacroGamma );
-            DEBUG.emplace( "dElasticFdMicroGamma", dElasticFdMicroGamma );
-            DEBUG.emplace( "dElasticChidMicroGamma", dElasticChidMicroGamma );
-            DEBUG.emplace( "dElasticGradChidMacroGamma", dElasticGradChidMacroGamma );
-            DEBUG.emplace( "dElasticGradChidMicroGamma", dElasticGradChidMicroGamma );
-            DEBUG.emplace( "dElasticGradChidMicroGradientGamma",
-                           vectorTools::appendVectors( dElasticGradChidMicroGradientGamma ) );
+        DEBUG.emplace( "dElasticFdMacroGamma", dElasticFdMacroGamma );
+        DEBUG.emplace( "dElasticFdMicroGamma", dElasticFdMicroGamma );
+        DEBUG.emplace( "dElasticChidMicroGamma", dElasticChidMicroGamma );
+        DEBUG.emplace( "dElasticGradChidMacroGamma", dElasticGradChidMacroGamma );
+        DEBUG.emplace( "dElasticGradChidMicroGamma", dElasticGradChidMicroGamma );
+        DEBUG.emplace( "dElasticGradChidMicroGradientGamma",
+                       vectorTools::appendVectors( dElasticGradChidMicroGradientGamma ) );
 #endif
 
         //Compute the new elastic right Cauchy-Green deformation tesnor
@@ -6055,8 +6055,8 @@ namespace micromorphicElastoPlasticity{
         variableVector dElasticRCGdMicroGamma = vectorTools::dot( dElasticRCGdElasticF, dElasticFdMicroGamma );
 
 #ifdef DEBUG_MODE
-            DEBUG.emplace( "dElasticRCGdMacroGamma", dElasticRCGdMacroGamma );
-            DEBUG.emplace( "dElasticRCGdMicroGamma", dElasticRCGdMicroGamma );
+        DEBUG.emplace( "dElasticRCGdMacroGamma", dElasticRCGdMacroGamma );
+        DEBUG.emplace( "dElasticRCGdMicroGamma", dElasticRCGdMicroGamma );
 #endif
 
         //Compute the new stress
@@ -6110,17 +6110,17 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dMdMicroGradientGamma = vectorTools::dot( dMdElasticGradChi, dElasticGradChidMicroGradientGamma );
 
 #ifdef DEBUG_MODE
-            DEBUG.emplace( "dPK2dMacroGamma", dPK2dMacroGamma );
-            DEBUG.emplace( "dPK2dMicroGamma", dPK2dMicroGamma );
-            DEBUG.emplace( "dPK2dMicroGradientGamma", vectorTools::appendVectors( dPK2dMicroGradientGamma ) );
+        DEBUG.emplace( "dPK2dMacroGamma", dPK2dMacroGamma );
+        DEBUG.emplace( "dPK2dMicroGamma", dPK2dMicroGamma );
+        DEBUG.emplace( "dPK2dMicroGradientGamma", vectorTools::appendVectors( dPK2dMicroGradientGamma ) );
 
-            DEBUG.emplace( "dSigmadMacroGamma", dSigmadMacroGamma );
-            DEBUG.emplace( "dSigmadMicroGamma", dSigmadMicroGamma );
-            DEBUG.emplace( "dSigmadMicroGradientGamma", vectorTools::appendVectors( dSigmadMicroGradientGamma ) );
+        DEBUG.emplace( "dSigmadMacroGamma", dSigmadMacroGamma );
+        DEBUG.emplace( "dSigmadMicroGamma", dSigmadMicroGamma );
+        DEBUG.emplace( "dSigmadMicroGradientGamma", vectorTools::appendVectors( dSigmadMicroGradientGamma ) );
 
-            DEBUG.emplace( "dMdMacroGamma", dMdMacroGamma );
-            DEBUG.emplace( "dMdMicroGamma", dMdMicroGamma );
-            DEBUG.emplace( "dMdMicroGradientGamma", vectorTools::appendVectors( dMdMicroGradientGamma ) );
+        DEBUG.emplace( "dMdMacroGamma", dMdMacroGamma );
+        DEBUG.emplace( "dMdMicroGamma", dMdMicroGamma );
+        DEBUG.emplace( "dMdMicroGradientGamma", vectorTools::appendVectors( dMdMicroGradientGamma ) );
 #endif
 
         //Compute the yield functions
@@ -6184,23 +6184,23 @@ namespace micromorphicElastoPlasticity{
                                                                               dMicroGradientCdMicroGradientGamma );
 
 #ifdef DEBUG_MODE
-            tmp = { dMacroFdMacroGamma };
-            DEBUG.emplace( "dMacroFdMacroGamma", tmp );
-            tmp = { dMacroFdMicroGamma };
-            DEBUG.emplace( "dMacroFdMicroGamma", tmp );
-            DEBUG.emplace( "dMacroFdMicroGradientGamma", dMacroFdMicroGradientGamma );
+        tmp = { dMacroFdMacroGamma };
+        DEBUG.emplace( "dMacroFdMacroGamma", tmp );
+        tmp = { dMacroFdMicroGamma };
+        DEBUG.emplace( "dMacroFdMicroGamma", tmp );
+        DEBUG.emplace( "dMacroFdMicroGradientGamma", dMacroFdMicroGradientGamma );
 
-            tmp = { dMicroFdMacroGamma };
-            DEBUG.emplace( "dMicroFdMacroGamma", tmp );
-            tmp = { dMicroFdMicroGamma };
-            DEBUG.emplace( "dMicroFdMicroGamma", tmp );
-            DEBUG.emplace( "dMicroFdMicroGradientGamma", dMicroFdMicroGradientGamma );
+        tmp = { dMicroFdMacroGamma };
+        DEBUG.emplace( "dMicroFdMacroGamma", tmp );
+        tmp = { dMicroFdMicroGamma };
+        DEBUG.emplace( "dMicroFdMicroGamma", tmp );
+        DEBUG.emplace( "dMicroFdMicroGradientGamma", dMicroFdMicroGradientGamma );
 
 
-            DEBUG.emplace( "dMicroGradientFdMacroGamma", dMicroGradientFdMacroGamma );
-            DEBUG.emplace( "dMicroGradientFdMicroGamma", dMicroGradientFdMicroGamma );
-            DEBUG.emplace( "dMicroGradientFdMicroGradientGamma",
-                           vectorTools::appendVectors( dMicroGradientFdMicroGradientGamma ) );
+        DEBUG.emplace( "dMicroGradientFdMacroGamma", dMicroGradientFdMacroGamma );
+        DEBUG.emplace( "dMicroGradientFdMicroGamma", dMicroGradientFdMicroGamma );
+        DEBUG.emplace( "dMicroGradientFdMicroGradientGamma",
+                       vectorTools::appendVectors( dMicroGradientFdMicroGradientGamma ) );
 #endif
 
         //Assemble the residual
@@ -6961,7 +6961,7 @@ namespace micromorphicElastoPlasticity{
         error = micromorphicTools::pullBackCauchyStress( currentPK2Stress, currentPlasticDeformationGradient, current_PK2 );
 
         if ( error ){
-            errorOut result = new errorNode( "evaluate_model"
+            errorOut result = new errorNode( "evaluate_model",
                                              "Error in pullback operation on the PK2 stress" );
             result->addNext( error );
             result->print();           //Print the error message
@@ -6972,7 +6972,7 @@ namespace micromorphicElastoPlasticity{
         error = micromorphicTools::pullBackMicroStress( currentReferenceMicroStress, currentPlasticDeformationGradient, current_SIGMA );
 
         if ( error ){
-            errorOut result = new errorNode( "evaluate_model"
+            errorOut result = new errorNode( "evaluate_model",
                                              "Error in pullback operation on the reference symmetric micro-stress" );
             result->addNext( error );
             result->print();           //Print the error message
@@ -6985,7 +6985,7 @@ namespace micromorphicElastoPlasticity{
                                                               currentPlasticMicroDeformation, current_M );
 
         if ( error ){
-            errorOut result = new errorNode( "evaluate_model"
+            errorOut result = new errorNode( "evaluate_model",
                                              "Error in pullback operation on the reference higher order stress" );
             result->addNext( error );
             result->print();           //Print the error message
@@ -7392,8 +7392,8 @@ namespace micromorphicElastoPlasticity{
         }
 
 #ifdef DEBUG_MODE
-            solverTools::floatVector tmp = { yieldFunctionValues[ 0 ] };
-            DEBUG.emplace( "macroYieldFunction", tmp );
+        solverTools::floatVector tmp = { yieldFunctionValues[ 0 ] };
+        DEBUG.emplace( "macroYieldFunction", tmp );
 #endif
 
         error = computeSecondOrderDruckerPragerYieldEquation( referenceMicroStress, microCohesion,
@@ -7409,8 +7409,8 @@ namespace micromorphicElastoPlasticity{
         }
 
 #ifdef DEBUG_MODE
-            tmp = { yieldFunctionValues[ 1 ] };
-            DEBUG.emplace( "microYieldFunction", tmp );
+        tmp = { yieldFunctionValues[ 1 ] };
+        DEBUG.emplace( "microYieldFunction", tmp );
 #endif
 
         variableVector yftmp;
