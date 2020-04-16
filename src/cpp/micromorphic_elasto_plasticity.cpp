@@ -4141,6 +4141,16 @@ namespace micromorphicElastoPlasticity{
                                   "The x vector must have a length of 45" );
         }
 
+        if ( floatArgs.size() != 26 ){
+            return new errorNode( "computePlasticDeformationResidual",
+                                  "The floating point argument vector floatArgs must have a length of 26" );
+        }
+
+        if ( floatOuts.size() != 3 ){
+            return new errorNode( "computePlasticDeformationResidual",
+                                  "The floating point output vector floatOuts must have a length of 3" );
+        }
+
         /*=============================
         | Extract the incoming values |
         =============================*/
@@ -4166,24 +4176,9 @@ namespace micromorphicElastoPlasticity{
         const variableVector  *previousPlasticMacroVelocityGradient         = &floatArgs[ ii++ ];
         const variableVector  *previousPlasticMicroVelocityGradient         = &floatArgs[ ii++ ];
         const variableVector  *previousPlasticMicroGradientVelocityGradient = &floatArgs[ ii++ ];
-//        const variableType    *previousMacroStrainISV                       = &floatArgs[ ii++ ][ 0 ];
-//        const variableType    *previousMicroStrainISV                       = &floatArgs[ ii++ ][ 0 ];
-//        const variableVector  *previousMicroGradientStrainISV               = &floatArgs[ ii++ ];
-//        const variableType    *previousMacroGamma                           = &floatArgs[ ii++ ][ 0 ];
-//        const variableType    *previousMicroGamma                           = &floatArgs[ ii++ ][ 0 ];
-//        const variableVector  *previousMicroGradientGamma                   = &floatArgs[ ii++ ];
-//        const variableType    *previousdMacroGdMacroCohesion                = &floatArgs[ ii++ ][ 0 ];
-//        const variableType    *previousdMicroGdMicroCohesion                = &floatArgs[ ii++ ][ 0 ];
-//        const variableMatrix  previousdMicroGradientGdMicroGradientCohesion = vectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
-//        const parameterVector *macroHardeningParameters                     = &floatArgs[ ii++ ];
-//        const parameterVector *microHardeningParameters                     = &floatArgs[ ii++ ];
-//        const parameterVector *microGradientHardeningParameters             = &floatArgs[ ii++ ];
         const parameterVector *macroFlowParameters                          = &floatArgs[ ii++ ];
         const parameterVector *microFlowParameters                          = &floatArgs[ ii++ ];
         const parameterVector *microGradientFlowParameters                  = &floatArgs[ ii++ ];
-//        const parameterVector *macroYieldParameters                         = &floatArgs[ ii++ ];
-//        const parameterVector *microYieldParameters                         = &floatArgs[ ii++ ];
-//        const parameterVector *microGradientYieldParameters                 = &floatArgs[ ii++ ];
         const parameterVector *Amatrix                                      = &floatArgs[ ii++ ];
         const parameterVector *Bmatrix                                      = &floatArgs[ ii++ ];
         const parameterVector *Cmatrix                                      = &floatArgs[ ii++ ];
@@ -4517,7 +4512,7 @@ namespace micromorphicElastoPlasticity{
 
         variableMatrix dMicroGradientFlowDirectiondPlasticGradientMicroDeformation
             = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
-                                dReferenceMicroStressdPlasticGradientMicroDeformation );
+                                dReferenceHigherOrderStressdPlasticGradientMicroDeformation );
 
 #ifdef DEBUG_MODE
 
