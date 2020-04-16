@@ -415,34 +415,16 @@ namespace micromorphicElastoPlasticity{
                                     variableMatrix &dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                     variableMatrix &dMicroGradientFlowDirectiondElasticRCG );
 
-    #ifdef DEBUG_MODE
     errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                      const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
                                      const variableType &microCohesion, const variableVector &microGradientCohesion,
                                      const variableVector &elasticRightCauchyGreen,
                                      const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
-                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues,
-                                     std::map< std::string, solverTools::floatVector > &DEBUG );
-
-    errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
-                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
-                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
-                                     const variableVector &elasticRightCauchyGreen,
-                                     const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
-                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues,
-                                     variableVector &dMacroFdPK2, variableType &dMacroFdMacroC, variableVector &dMacroFdElasticRCG,
-                                     variableVector &dMicroFdSigma, variableType &dMicroFdMicroC, variableVector &dMicroFdElasticRCG,
-                                     variableMatrix &dMicroGradientFdM, variableMatrix &dMicroGradientFdMicroGradientC,
-                                     variableMatrix &dMicroGradientFdElasticRCG,
-                                     std::map< std::string, solverTools::floatVector > &DEBUG );
-
-    #else
-    errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
-                                     const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
-                                     const variableType &microCohesion, const variableVector &microGradientCohesion,
-                                     const variableVector &elasticRightCauchyGreen,
-                                     const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
-                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues );
+                                     const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues
+#ifdef DEBUG_MODE
+                                     , solverTools::debugMap &DEBUG
+#endif
+                                   );
 
     errorOut evaluateYieldFunctions( const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                      const variableVector &referenceHigherOrderStress, const variableType &macroCohesion,
@@ -453,30 +435,28 @@ namespace micromorphicElastoPlasticity{
                                      variableVector &dMacroFdPK2, variableType &dMacroFdMacroC, variableVector &dMacroFdElasticRCG,
                                      variableVector &dMicroFdSigma, variableType &dMicroFdMicroC, variableVector &dMicroFdElasticRCG,
                                      variableMatrix &dMicroGradientFdM, variableMatrix &dMicroGradientFdMicroGradientC,
-                                     variableMatrix &dMicroGradientFdElasticRCG );
-    #endif
-
-    #ifdef DEBUG_MODE
-    errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                              const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts,
-                              std::map< std::string, solverTools::floatVector > &DEBUG );
+                                     variableMatrix &dMicroGradientFdElasticRCG
+#ifdef DEBUG_MODE
+                                     , solverTools::debugMap &DEBUG
+#endif
+                                    );
 
     errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                              solverTools::floatMatrix &jacobian,
-                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts,
-                              std::map< std::string, solverTools::floatVector > &DEBUG );
-    #else
-    errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                              const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts );
+                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts
+#ifdef DEBUG_MODE
+                              , solverTools::debugMap &DEBUG
+#endif
+                             );
 
     errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                               solverTools::floatMatrix &jacobian,
-                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts );
-    #endif
+                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts
+#ifdef DEBUG_MODE
+                              , solverTools::debugMap &DEBUG
+#endif
+                            );
 
     errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
                                                      const double ( &grad_phi )[ 9 ][ 3 ],
@@ -531,30 +511,29 @@ namespace micromorphicElastoPlasticity{
                                        const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                                        solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
                                        solverTools::intMatrix &intOuts
-                                       #ifdef DEBUG_MODE
-                                       , std::map< std::string, solverTools::floatVector > &DEBUG
-                                       #endif
+#ifdef DEBUG_MODE
+                                       , solverTools::debugMap &DEBUG
+#endif
                                      );
 
     errorOut computeStressResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                                     const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                                     solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
                                     solverTools::intMatrix &intOuts
-                                    #ifdef DEBUG_MODE
-                                    , std::map< std::string, solverTools::floatVector > &DEBUG
-                                    #endif
+#ifdef DEBUG_MODE
+                                    , solverTools::debugMap &DEBUG
+#endif
                                   );
 
     errorOut computePlasticDeformationResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                                                 const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                                                 solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
                                                 solverTools::intMatrix &intOuts
-                                                #ifdef DEBUG_MODE
-                                                , std::map< std::string, solverTools::floatVector > &DEBUG
-                                                #endif
+#ifdef DEBUG_MODE
+                                                , solverTools::debugMap &DEBUG
+#endif
                                               );
 
-    #ifdef DEBUG_MODE
     errorOut solveForStrainISV( const constantType &Dt,
                                 const variableType &currentMacroGamma, const variableType &currentMicroGamma,
                                 const variableVector &currentMicroGradientGamma,
@@ -587,43 +566,11 @@ namespace micromorphicElastoPlasticity{
                                 const parameterVector &macroFlowParameters, const parameterVector &microFlowParameters,
                                 const parameterVector &microGradientFlowParameters,
                                 const parameterType &alphaMacro, const parameterType &alphaMicro,
-                                const parameterType &alphaMicroGradient,
-                                std::map< std::string, solverTools::floatVector > &DEBUG );
-    #else
-    errorOut solveForStrainISV( const constantType &Dt,
-                                const variableType &currentMacroGamma, const variableType &currentMicroGamma,
-                                const variableVector &currentMicroGradientGamma,
-                                const variableVector &currentElasticRightCauchyGreen,
-                                const variableVector &currentPK2Stress,
-                                const variableVector &currentReferenceMicroStress,
-                                const variableVector &currentReferenceHigherOrderStress,
-                                const variableType &previousMacroGamma, const variableType &previousMicroGamma,
-                                const variableVector &previousMicroGradientGamma,
-                                const variableType &previousMacroStrainISV, const variableType &previousMicroStrainISV,
-                                const variableVector &previousMicroGradientStrainISV,
-                                const variableType &previousdMacroGdMacroCohesion,
-                                const variableType &previousdMicroGdMicroCohesion,
-                                const variableMatrix &previousdMicroGradientGdMicroGradientCohesion,
-                                variableType &currentMacroStrainISV, variableType &currentMicroStrainISV,
-                                variableVector &currentMicroGradientStrainISV,
-                                variableType &currentMacroCohesion, variableType &currentMicroCohesion,
-                                variableVector &currentMicroGradientCohesion,
-                                variableVector &currentMacroFlowDirection, variableVector &currentMicroFlowDirection,
-                                variableVector &currentMicroGradientFlowDirection,
-                                variableMatrix &dMacroFlowDirectiondPK2Stress,
-                                variableMatrix &dMacroFlowDirectiondElasticRCG,
-                                variableMatrix &dMicroFlowDirectiondReferenceMicroStress,
-                                variableMatrix &dMicroFlowDirectiondElasticRCG,
-                                variableMatrix &dMicroGradientFlowDirectiondReferenceHigherOrderStress,
-                                variableMatrix &dMicroGradientFlowDirectiondElasticRCG,
-                                bool convergeFlag, bool fatalErrorFlag,
-                                const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
-                                const parameterVector &microGradientHardeningParameters,
-                                const parameterVector &macroFlowParameters, const parameterVector &microFlowParameters,
-                                const parameterVector &microGradientFlowParameters,
-                                const parameterType &alphaMacro, const parameterType &alphaMicro,
-                                const parameterType &alphaMicroGradient );
-    #endif
+                                const parameterType &alphaMicroGradient
+#ifdef DEBUG_MODE
+                                , solverTools::debugMap &DEBUG
+#endif
+                              );
 
     int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
                         const double ( &current_grad_u )[ 3 ][ 3 ],   const double ( &current_phi )[ 9 ],
@@ -637,9 +584,9 @@ namespace micromorphicElastoPlasticity{
                         std::vector< double > &PK2, std::vector< double > &SIGMA, std::vector< double > &M,
                         std::vector< std::vector< double > > &ADD_TERMS,
                         std::string &output_message
-                        #ifdef DEBUG_MODE
-                        , std::map< std::string, solverTools::floatVector > &DEBUG
-                        #endif
+#ifdef DEBUG_MODE
+                        , solverTools::debugMap &DEBUG
+#endif
                     );
 
     int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
@@ -661,9 +608,9 @@ namespace micromorphicElastoPlasticity{
                         std::vector< std::vector< double > > &ADD_TERMS,
                         std::vector< std::vector< std::vector< double > > > &ADD_JACOBIANS,
                         std::string &output_message
-                        #ifdef DEBUG_MODE
-                        , std::map< std::string, solverTools::floatVector > &DEBUG
-                        #endif
+#ifdef DEBUG_MODE
+                        , solverTools::debugMap &DEBUG
+#endif
                     );
 }
 

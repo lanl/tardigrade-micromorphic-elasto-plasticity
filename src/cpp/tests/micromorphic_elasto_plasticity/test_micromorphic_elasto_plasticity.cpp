@@ -8569,9 +8569,9 @@ int test_evaluate_model( std::ofstream &results){
                                                                   current_PK2, current_SIGMA, current_M,
                                                                   ADD_TERMS,
                                                                   output_message
-                                                                  #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                   , DEBUG
-                                                                  #endif
+#endif
                                                                   );
 
     if ( errorCode != 0 ){
@@ -8816,7 +8816,6 @@ int test_solveForStrainISV( std::ofstream &results ){
     variableType answerMicroISV = -0.175844;
     variableVector answerMicroGradientISV = { 2.12108, 3.04216, 2.17998 };
 
-#ifdef DEBUG_MODE
     std::map< std::string, solverTools::floatVector > DEBUG;
     errorOut error = micromorphicElastoPlasticity::solveForStrainISV(
                                         Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
@@ -8838,30 +8837,11 @@ int test_solveForStrainISV( std::ofstream &results ){
                                         microGradientHardeningParameters,
                                         macroFlowParameters, microFlowParameters,
                                         microGradientFlowParameters,
-                                        alphaMacro, alphaMicro, alphaMicroGradient, DEBUG );
-#else
-    errorOut error = micromorphicElastoPlasticity::solveForStrainISV(
-                                        Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
-                                        currentElasticRightCauchyGreen,
-                                        currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress,
-                                        previousMacroGamma, previousMicroGamma, previousMicroGradientGamma,
-                                        previousMacroStrainISV, previousMicroStrainISV, previousMicroGradientStrainISV,
-                                        previousdMacroGdMacroCohesion, previousdMicroGdMicroCohesion,
-                                        previousdMicroGradientGdMicroGradientCohesion,
-                                        currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV,
-                                        currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion,
-                                        currentMacroFlowDirection, currentMicroFlowDirection, currentMicroGradientFlowDirection,
-                                        dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRCG,
-                                        dMicroFlowDirectiondReferenceMicroStress, dMicroFlowDirectiondElasticRCG,
-                                        dMicroGradientFlowDirectiondReferenceHigherOrderStress,
-                                        dMicroGradientFlowDirectiondElasticRCG,
-                                        convergeFlag, fatalErrorFlag,
-                                        macroHardeningParameters, microHardeningParameters,
-                                        microGradientHardeningParameters,
-                                        macroFlowParameters, microFlowParameters,
-                                        microGradientFlowParameters,
-                                        alphaMacro, alphaMicro, alphaMicroGradient );
+                                        alphaMacro, alphaMicro, alphaMicroGradient
+#ifdef DEBUG_MODE
+                                        , DEBUG
 #endif
+                                        );
 
     if ( error ){
         error->print();
@@ -9640,9 +9620,9 @@ int test_computeStressResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computeStressResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                  floatOuts, intOuts
-                                                                 #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                  , DEBUG
-                                                                 #endif
+#endif
                                                                );
 
     if ( error ){
@@ -9669,9 +9649,9 @@ int test_computeStressResidual( std::ofstream &results ){
 
         error = micromorphicElastoPlasticity::computeStressResidual( x + delta, floatArgs, intArgs, 
                                                                      residual_P, jacobian_P, fO, iO
-                                                                     #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                      , DEBUG_P
-                                                                     #endif
+#endif
                                                                    );
         if ( error ){
             error->print();
@@ -9683,9 +9663,9 @@ int test_computeStressResidual( std::ofstream &results ){
         iO = {};
         error = micromorphicElastoPlasticity::computeStressResidual( x - delta, floatArgs, intArgs, 
                                                                      residual_M, jacobian_M, fO, iO 
-                                                                     #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                      , DEBUG_M
-                                                                     #endif
+#endif
                                                                    );
         if ( error ){
             error->print();
@@ -10265,9 +10245,9 @@ int test_computeStressResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computeStressResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                  floatOuts, intOuts
-                                                                 #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                  , DEBUG
-                                                                 #endif
+#endif
                                                                );
 
     if ( error ){
@@ -10310,9 +10290,9 @@ int test_computeStressResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computeStressResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                  floatOuts, intOuts
-                                                                 #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                  , DEBUG
-                                                                 #endif
+#endif
                                                                );
 
     if ( error ){
@@ -10332,9 +10312,9 @@ int test_computeStressResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computeStressResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                  floatOuts, intOuts
-                                                                 #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                  , DEBUG
-                                                                 #endif
+#endif
                                                                );
 
     if ( error ){
@@ -10354,9 +10334,9 @@ int test_computeStressResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computeStressResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                  floatOuts, intOuts
-                                                                 #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                  , DEBUG
-                                                                 #endif
+#endif
                                                                );
 
     if ( error ){
@@ -10551,9 +10531,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                              floatOuts, intOuts
-                                                                             #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                              , DEBUG
-                                                                             #endif
+#endif
                                                                              );
 
     vectorTools::print( residual );
@@ -10594,9 +10574,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x + delta, fA, iA, residual_P, jacobian_P,
                                                                                  fO, iO
-                                                                                 #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                                  , DEBUG_P
-                                                                                 #endif
+#endif
                                                                                );
 
         if ( error ){
@@ -10610,9 +10590,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, fA, iA, residual_M, jacobian_M,
                                                                                  fO, iO
-                                                                                 #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                                  , DEBUG_M
-                                                                                 #endif
+#endif
                                                                                );
 
         if ( error ){
@@ -11283,9 +11263,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                              floatOuts, intOuts
-                                                                             #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                              , DEBUG
-                                                                             #endif
+#endif
                                                                              );
 
     std::cout << "residual:\n"; vectorTools::print( residual );
@@ -11311,9 +11291,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                              floatOuts, intOuts
-                                                                             #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                              , DEBUG
-                                                                             #endif
+#endif
                                                                              );
 
     std::cout << "residual:\n"; vectorTools::print( residual );
@@ -11339,9 +11319,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                              floatOuts, intOuts
-                                                                             #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                              , DEBUG
-                                                                             #endif
+#endif
                                                                              );
 
     std::cout << "residual:\n"; vectorTools::print( residual );
@@ -11367,9 +11347,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                              floatOuts, intOuts
-                                                                             #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                              , DEBUG
-                                                                             #endif
+#endif
                                                                              );
 
     std::cout << "residual:\n"; vectorTools::print( residual );
@@ -11395,9 +11375,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                              floatOuts, intOuts
-                                                                             #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                              , DEBUG
-                                                                             #endif
+#endif
                                                                              );
 
     std::cout << "residual:\n"; vectorTools::print( residual );
@@ -11423,9 +11403,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 
     error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                              floatOuts, intOuts
-                                                                             #ifdef DEBUG_MODE
+#ifdef DEBUG_MODE
                                                                              , DEBUG
-                                                                             #endif
+#endif
                                                                              );
 
     std::cout << "residual:\n"; vectorTools::print( residual );
