@@ -10411,12 +10411,18 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     }
 
     constantType   Dt = 2.5;
-    variableType   macroGamma = 0.01;//0.271;
-    variableType   microGamma = 0.02;//0.132;
-    variableVector microGradientGamma = {0.011, 0.021, 0.031};//{ 0.082, 0.091, 0.021 };
+    variableType   currentMacroGamma = 0.01;
+    variableType   currentMicroGamma = 0.02;
+    variableVector currentMicroGradientGamma = {0.011, 0.021, 0.031};
+    variableType   previousMacroGamma = 0.;
+    variableType   previousMicroGamma = 0.;
+    variableVector previousMicroGradientGamma( 3, 0 );
     variableType   currentMacroStrainISV = 0.;
     variableType   currentMicroStrainISV = 0.;
     variableVector currentMicroGradientStrainISV( 3., 0. );
+    variableType   previousMacroStrainISV = 0.;
+    variableType   previousMicroStrainISV = 0.;
+    variableVector previousMicroGradientStrainISV( 3., 0. );
     variableVector currentDeformationGradient = { 0.04482969,  0.88562312, -0.38710144,
                                                  -0.93722716,  0.19666568,  0.41677155,
                                                   0.46929057,  0.33779672,  0.81392228 };
@@ -10443,6 +10449,10 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     variableVector currentPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
     variableVector currentPlasticGradientMicroDeformation = variableVector( 27, 0 );
 
+    variableType   previousdMacroGdMacroCohesion = 0;
+    variableType   previousdMicroGdMicroCohesion = 0;
+    variableMatrix previousdMicroGradientGdMicroGradientCohesion( 3, variableVector( 3, 0 ) );
+
     //Compute the current values of the cohesion
     variableType currentMacroCohesion, currentMicroCohesion;
     variableVector currentMicroGradientCohesion;
@@ -10463,24 +10473,33 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     solverTools::floatMatrix floatArgsDefault =
         {
             { Dt },
-            { macroGamma },
-            { microGamma },
-            microGradientGamma,
-            { currentMacroCohesion },
-            { currentMicroCohesion },
-            currentMicroGradientCohesion,
+            { currentMacroGamma },
+            { currentMicroGamma },
+            currentMicroGradientGamma,
             currentDeformationGradient,
             currentMicroDeformation,
             currentGradientMicroDeformation,
+            { previousMacroGamma },
+            { previousMicroGamma },
+            previousMicroGradientGamma,
             previousPlasticDeformationGradient,
             previousPlasticMicroDeformation,
             previousPlasticGradientMicroDeformation,
+            { previousMacroStrainISV },
+            { previousMicroStrainISV },
+            previousMicroGradientStrainISV,
+            { previousdMacroGdMacroCohesion },
+            { previousdMicroGdMicroCohesion },
+            vectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ),
             previousPlasticMacroVelocityGradient,
             previousPlasticMicroVelocityGradient,
             previousPlasticMicroGradientVelocityGradient,
             macroFlowParameters,
             microFlowParameters,
             microGradientFlowParameters,
+            macroHardeningParameters,
+            microHardeningParameters,
+            microGradientHardeningParameters,
             Amatrix,
             Bmatrix,
             Cmatrix,
@@ -10508,13 +10527,18 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     std::map< std::string, solverTools::floatVector > DEBUG;
 #endif
 
-    solverTools::floatVector x( 45, 0 );
+    solverTools::floatVector x( 50, 0 );
     for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
         x[ i + 0 ] = currentPlasticDeformationGradient[ i ];
         x[ i + 9 ] = currentPlasticMicroDeformation[ i ];
     }
     for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
         x[ i + 18 ] = currentPlasticGradientMicroDeformation[ i ];
+    }
+    x[ 45 ] = currentMacroStrainISV;
+    x[ 46 ] = currentMicroStrainISV;
+    for ( unsigned int i = 0; i < currentMicroGradientStrainISV.size(); i++ ){
+        x[ 47 + i ] = currentMicroGradientStrainISV[ i ];
     }
 
     solverTools::floatVector residual;
@@ -10527,7 +10551,8 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                                                  0.0135875 ,  0.0163387 , -0.0081507 , -0.00139605 ,  0.00236115,
                                                 -0.00995776, -0.0165701 ,  0.00528275, -0.0165329  ,  0.0268835 ,
                                                  0.0190322 ,  0.0086526 ,  0.00124595,  0.0116393  , -0.0142127 ,
-                                                 0.0247605 ,  0.00274634,  0.0313886 ,  0.0178578  ,  0.00317604 };
+                                                 0.0247605 ,  0.00274634,  0.0313886 ,  0.0178578  ,  0.00317604,
+                                                -0.0207534 , -0.056513  , -0.0199139 , -0.0380174  , -0.0561209 };
 
     error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                              floatOuts, intOuts
@@ -10550,7 +10575,7 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
         return 1;
     }
 
-    //Test the jacobians
+    //Test the plastic deformation jacobians
     constantType eps = 1e-6;
     for ( unsigned int i = 0; i < x.size(); i++ ){
         constantVector delta( x.size(), 0 );
@@ -11023,7 +11048,7 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
             }
         }
 
-        if ( i >= 18 ){
+        if ( ( i >= 18 ) && ( i < 45 ) ){
             
             /*==============================
             | Elastic Deformation Measures |
@@ -11222,6 +11247,15 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                     return 1;
                 }
             }
+        }
+
+        if ( ( i >= 45 ) && ( i < 50 ) ){
+            std::cout << "testing strain isv jacobians\n";
+        }
+
+        if ( i >= 50 ){
+            std::cout << "ERROR in the test!\n";
+            assert( 1 == 0 );
         }
 
 #endif
