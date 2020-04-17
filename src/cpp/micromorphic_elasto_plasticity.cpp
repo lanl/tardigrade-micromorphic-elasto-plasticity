@@ -4287,6 +4287,7 @@ namespace micromorphicElastoPlasticity{
         | Assemble the Jacobian of the elastic derived deformation measures |
         ===================================================================*/
 
+        //Compute the Jacobians w.r.t. the plastic deformation
         variableMatrix dElasticRightCauchyGreendPlasticDeformationGradient
             = vectorTools::dot( dElasticRightCauchyGreendElasticDeformationGradient,
                                 dElasticDeformationGradientdPlasticDeformationGradient );
@@ -4630,6 +4631,7 @@ namespace micromorphicElastoPlasticity{
         | Assemble the jacobians of the plastic velocity gradients |
         ==========================================================*/
 
+        //Compute the Jacobians w.r.t. the plastic deformation
         variableMatrix dPlasticMacroVelocityGradientdPlasticDeformationGradient
             = vectorTools::dot( dPlasticMacroVelocityGradientdElasticRightCauchyGreen,
                                 dElasticRightCauchyGreendPlasticDeformationGradient )
@@ -4705,6 +4707,18 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "currentPlasticMicroVelocityGradient", currentPlasticMicroVelocityGradient );
         DEBUG.emplace( "currentPlasticMicroGradientVelocityGradient", currentPlasticMicroGradientVelocityGradient );
 
+        //Save the Jacobians w.r.t. the plastic multipliers
+        DEBUG.emplace( "dPlasticMacroVelocityGradientdMacroGamma",
+                       dPlasticMacroVelocityGradientdMacroGamma );
+        DEBUG.emplace( "dPlasticMacroVelocityGradientdMicroGamma",
+                       dPlasticMacroVelocityGradientdMicroGamma );
+        DEBUG.emplace( "dPlasticMicroVelocityGradientdMicroGamma",
+                       dPlasticMicroVelocityGradientdMicroGamma );
+        DEBUG.emplace( "dPlasticMicroGradientVelocityGradientdMicroGamma",
+                       dPlasticMicroGradientVelocityGradientdMicroGamma );
+        DEBUG.emplace( "dPlasticMicroGradientVelocityGradientdMicroGradientGamma",
+                       vectorTools::appendVectors( dPlasticMicroGradientVelocityGradientdMicroGradientGamma ) );
+
         //Save the Jacobians of the velocity gradients
         DEBUG.emplace( "dPlasticMacroVelocityGradientdPlasticDeformationGradient",
                        vectorTools::appendVectors( dPlasticMacroVelocityGradientdPlasticDeformationGradient ) );
@@ -4770,6 +4784,34 @@ namespace micromorphicElastoPlasticity{
         | Assemble the plastic deformation Jacobian |
         ===========================================*/
 
+        //Compute the Jacobians w.r.t. the plastic multipliers
+        variableVector dExpectedPlasticDeformationGradientdMacroGamma
+            = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdMacroGamma );
+
+        variableVector dExpectedPlasticDeformationGradientdMicroGamma
+            = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdMicroGamma );
+
+        variableVector dExpectedPlasticMicroDeformationdMicroGamma
+            = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+                                dPlasticMicroVelocityGradientdMicroGamma );
+
+        variableVector dExpectedPlasticGradientMicroDeformationdMacroGamma
+            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdMacroGamma );
+
+        variableVector dExpectedPlasticGradientMicroDeformationdMicroGamma
+            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                                dPlasticMacroVelocityGradientdMicroGamma )
+            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                                dPlasticMicroVelocityGradientdMicroGamma );
+
+        variableMatrix dExpectedPlasticGradientMicroDeformationdMicroGradientGamma
+            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                                dPlasticMicroGradientVelocityGradientdMicroGradientGamma );
+
+        //Compute the Jacobians w.r.t. the plastic deformation
         variableMatrix dExpectedPlasticDeformationGradientdPlasticDeformationGradient
             = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdPlasticDeformationGradient );
@@ -4824,6 +4866,8 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "expectedPlasticDeformationGradient", expectedPlasticDeformationGradient );
         DEBUG.emplace( "expectedPlasticMicroDeformation", expectedPlasticMicroDeformation );
         DEBUG.emplace( "expectedPlasticGradientMicroDeformation", expectedPlasticGradientMicroDeformation );
+
+        //Save the Jacobians w.r.t. the plastic multipliers
 
         //Save the Jacobians of the velocity gradients
         DEBUG.emplace( "dExpectedPlasticDeformationGradientdPlasticDeformationGradient",
