@@ -10473,9 +10473,6 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     solverTools::floatMatrix floatArgsDefault =
         {
             { Dt },
-            { currentMacroGamma },
-            { currentMicroGamma },
-            currentMicroGradientGamma,
             currentDeformationGradient,
             currentMicroDeformation,
             currentGradientMicroDeformation,
@@ -10500,6 +10497,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
             macroHardeningParameters,
             microHardeningParameters,
             microGradientHardeningParameters,
+            macroYieldParameters,
+            microYieldParameters,
+            microGradientYieldParameters,
             Amatrix,
             Bmatrix,
             Cmatrix,
@@ -10539,6 +10539,11 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     x[ 46 ] = currentMicroStrainISV;
     for ( unsigned int i = 0; i < currentMicroGradientStrainISV.size(); i++ ){
         x[ 47 + i ] = currentMicroGradientStrainISV[ i ];
+    }
+    x[ 50 ] = currentMacroGamma;
+    x[ 51 ] = currentMicroGamma;
+    for ( unsigned int i = 0; i < currentMicroGradientGamma.size(); i++ ){
+        x[ 52 + i ] = currentMicroGradientGamma[ i ];
     }
 
     solverTools::floatVector residual;
