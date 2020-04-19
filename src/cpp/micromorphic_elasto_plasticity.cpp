@@ -5238,9 +5238,17 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the residuals and the Jacobians for the plastic strain-like ISVs
         residual[ 45 ] = currentMacroStrainISV - expectedMacroStrainISV;
+        jacobian[ 45 ][ 50 ] = -dExpectedMacroISVdMacroGamma;
+
         residual[ 46 ] = currentMicroStrainISV - expectedMicroStrainISV;
+        jacobian[ 46 ][ 51 ] = -dExpectedMicroISVdMicroGamma;
+
         for ( unsigned int i = 0; i < currentMicroGradientStrainISV.size(); i++ ){
             residual[ 47 + i ] = currentMicroGradientStrainISV[ i ] - expectedMicroGradientStrainISV[ i ];
+            
+            for ( unsigned int j = 0; j < currentMicroGradientGamma.size(); j++ ){
+                jacobian[ 47 + i ][ 52 + j ] = -dExpectedMicroGradientISVdMicroGradientGamma[ i ][ j ];
+            }
         }
 
         //Compute the residuals and the Jacobians for the plastic multipliers
@@ -5269,6 +5277,8 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ 50 ][ i + 18 ] = dMacroYielddPlasticGradientMicroDeformation[ i ];
             }
 
+            //The Jacobian terms w.r.t. the strain-like ISVs
+            jacobian[ 50 ][ 45 ] = dMacroYielddMacroStrainISV;
         }
         else{
             residual[ 50 ] = currentMacroGamma;
@@ -5290,6 +5300,8 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ 51 ][ i + 18 ] = dMicroYielddPlasticGradientMicroDeformation[ i ];
             }
 
+            //The Jacobian terms w.r.t. the strain-like ISVs
+            jacobian[ 51 ][ 46 ] = dMicroYielddMicroStrainISV;
         }
         else{
              residual[ 51 ] = currentMicroGamma;
@@ -5310,6 +5322,11 @@ namespace micromorphicElastoPlasticity{
 
                 for ( unsigned int j = 0; j < currentPlasticGradientMicroDeformation.size(); j++ ){
                     jacobian[ 52 + i ][ j + 18 ] = dMicroGradientYielddPlasticGradientMicroDeformation[ i ][ j ];
+                }
+
+                //The Jacobian terms w.r.t. the strain-like ISVs
+                for ( unsigned int j = 0; j < currentMicroGradientStrainISV.size(); j++ ){
+                    jacobian[ 52 + i ][ 47 + j ] = dMicroGradientYielddMicroGradientStrainISV[ i ][ j ];
                 }
             }
             else{
