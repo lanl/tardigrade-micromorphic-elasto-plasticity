@@ -4,6 +4,7 @@
 #include<sstream>
 #include<fstream>
 #include<iostream>
+#include<iomanip>
 
 typedef micromorphicTools::constantType constantType;
 typedef micromorphicTools::constantVector constantVector;
@@ -10521,13 +10522,16 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     solverTools::floatMatrix floatArgs = floatArgsDefault;
     solverTools::floatMatrix floatOuts = floatOutsDefault;
 
-    solverTools::intMatrix intArgs, intOuts;
+    solverTools::intMatrix intArgs;
+    solverTools::intMatrix intOutsDefault = { { 1, 1, 1, 1, 1 } };
+    
+    solverTools::intMatrix intOuts = intOutsDefault;
 
 #ifdef DEBUG_MODE
     std::map< std::string, solverTools::floatVector > DEBUG;
 #endif
 
-    solverTools::floatVector x( 50, 0 );
+    solverTools::floatVector x( 55, 0 );
     for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
         x[ i + 0 ] = currentPlasticDeformationGradient[ i ];
         x[ i + 9 ] = currentPlasticMicroDeformation[ i ];
@@ -10557,7 +10561,8 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                                                 -0.00995776, -0.0165701 ,  0.00528275, -0.0165329  ,  0.0268835 ,
                                                  0.0190322 ,  0.0086526 ,  0.00124595,  0.0116393  , -0.0142127 ,
                                                  0.0247605 ,  0.00274634,  0.0313886 ,  0.0178578  ,  0.00317604,
-                                                -0.0207534 , -0.056513  , -0.0199139 , -0.0380174  , -0.0561209 };
+                                                -0.0207534 , -0.056513  , -0.0199139 , -0.0380174  , -0.0561209 ,
+                                                 388.29788 , 390.878005 , -353.58377 , -353.632457 , -353.779864 };
 
     error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                              floatOuts, intOuts
@@ -10593,14 +10598,14 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
         solverTools::intMatrix iA, iO;
 
         fA = floatArgsDefault;
-        iA = {};
+        iA = { };
 
 #ifdef DEBUG_MODE
         solverTools::debugMap DEBUG_P, DEBUG_M;
 #endif
 
         fO = floatOutsDefault;
-        iO = {};
+        iO = intOutsDefault;
 
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x + delta, fA, iA, residual_P, jacobian_P,
                                                                                  fO, iO
@@ -10616,7 +10621,7 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
         }
 
         fO = floatOutsDefault;
-        iO = {};
+        iO = intOutsDefault;
 
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, fA, iA, residual_M, jacobian_M,
                                                                                  fO, iO
@@ -10754,6 +10759,31 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                 }
             }
 
+            /*!================
+            | Cohesion values |
+            =================*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondPlasticDeformationGradient) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondPlasticDeformationGradient) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
+                                            variableVector( 3, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondPlasticDeformationGradient) & False\n";
+                return 1;
+            }
+
             /*=================
             | Flow Directions |
             =================*/
@@ -10783,6 +10813,31 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                     results << "test_computePlasticDeformationResidual (dMicroGradientFlowDirectiondPlasticDeformationGradient) & False\n";
                     return 1;
                 }
+            }
+
+            /*!==========================
+            | Expected strain-like ISVs |
+            ===========================*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "expectedMacroStrainISV" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dExpectedMacroStrainISVdPlasticDeformationGradient) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "expectedMicroStrainISV" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dExpectedMicroStrainISVdPlasticDeformationGradient) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "expectedMicroGradientStrainISV" ],
+                                            variableVector( 3, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dExpectedMicroGradientStrainISVdPlasticDeformationGradient) & False\n";
+                return 1;
             }
 
             /*!===========================
@@ -10843,6 +10898,33 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient" ][ 9 * j + i ],
                                                 1e-9, 1e-9 ) ){
                     results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient ) & False\n";
+                    return 1;
+                }
+            }
+
+            /*!====================
+            | The yield equations |
+            =====================*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ 0 ],
+                                            DEBUG[ "dMacroYielddPlasticDeformationGradient" ][ i ],
+                                            1e-5, 1e-8 ) ){
+                results << "test_computePlasticDeformationResidual (dMacroYielddPlasticDeformationGradient) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ 0 ],
+                                            DEBUG[ "dMicroYielddPlasticDeformationGradient" ][ i ],
+                                            1e-5, 1e-8 ) ){
+                results << "test_computePlasticDeformationResidual (dMicroYielddPlasticDeformationGradient) & False\n";
+                return 1;
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
+                                                DEBUG[ "dMicroGradientYielddPlasticDeformationGradient" ][ 9 * j + i ],
+                                                1e-5, 1e-8 ) ){
+                    results << "test_computePlasticDeformationResidual (dMacroGradientYielddPlasticDeformationGradient ) & False\n";
                     return 1;
                 }
             }
@@ -11258,7 +11340,11 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
             std::cout << "testing strain isv jacobians\n";
         }
 
-        if ( i >= 50 ){
+        if ( ( i >= 50 ) && ( i < 55 ) ){
+            std::cout << "testing gamma jacobians\n";
+        }
+
+        if ( i >= 55 ){
             std::cout << "ERROR in the test!\n";
             assert( 1 == 0 );
         }
@@ -11266,21 +11352,23 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 #endif
 
 
-        //Jacobian test
-
-        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
-
-        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ], 1e-9, 1e-9 ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
-                std::cout << "jacobian:\n"; vectorTools::print( jacobian );
-                results << "test_computePlasticDeformationResidual (test 2) & False\n";
-                return 1;
-            }
-        }
+//        //Jacobian test
+//
+//        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
+//
+//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ], 1e-9, 1e-9 ) ){
+//                std::cout << "i, j: " << i << ", " << j << "\n";
+//                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
+//                std::cout << "jacobian:\n"; vectorTools::print( jacobian );
+//                results << "test_computePlasticDeformationResidual (test 2) & False\n";
+//                return 1;
+//            }
+//        }
 
     }
+
+    assert( 1 == 0 );
 
     //Check to make sure the solver converges
     std::cout << "\nIN SOLVE\n";

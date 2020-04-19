@@ -4143,9 +4143,9 @@ namespace micromorphicElastoPlasticity{
                                   "The x vector must have a length of 55" );
         }
 
-        if ( floatArgs.size() != 32 ){
+        if ( floatArgs.size() != 35 ){
             return new errorNode( "computePlasticDeformationResidual",
-                                  "The floating point argument matrix floatArgs must have a length of 32" );
+                                  "The floating point argument matrix floatArgs must have a length of 35" );
         }
 
         if ( floatOuts.size() != 3 ){
@@ -4155,7 +4155,7 @@ namespace micromorphicElastoPlasticity{
 
         if ( intOuts.size() != 1 ){
             return new errorNode( "computePlasticDeformationResidual",
-                                  "The integer ouput matrix intOuts must hav a length of 1" );
+                                  "The integer ouput matrix intOuts must have a length of 1" );
         }
 
         /*=============================
@@ -4211,6 +4211,11 @@ namespace micromorphicElastoPlasticity{
 
         ii = 0;
         solverTools::intVector isYielding                              = intOuts[ ii++ ];
+
+        if ( isYielding.size() != 5 ){
+            return new errorNode( "computePlasticDeformationResidual",
+                                  "The yielding flags vector (isYielding) must have a size of 5" );
+        }
 
         /*=================================
         | Compute the Elastic Deformation |
@@ -4685,6 +4690,39 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+#ifdef DEBUG_MODE
+
+        //Save the expected macro-strain values
+        temp = { expectedMacroStrainISV };
+        DEBUG.emplace( "expectedMacroStrainISV", temp );
+
+        temp = { expectedMicroStrainISV };
+        DEBUG.emplace( "expectedMicroStrainISV", temp );
+
+        DEBUG.emplace( "expectedMicroGradientStrainISV", expectedMicroGradientStrainISV );
+
+        //Save the Jacobians w.r.t. the Gammas
+        temp = { dExpectedMacroISVdMacroGamma };
+        DEBUG.emplace( "dExpectedMacroISVdMacroGamma", temp );
+
+        temp = { dExpectedMicroISVdMicroGamma };
+        DEBUG.emplace( "dExpectedMicroISVdMicroGamma", temp );
+
+        DEBUG.emplace( "dExpectedMicroGradientISVdMicroGradientGamma",
+                        vectorTools::appendVectors( dExpectedMicroGradientISVdMicroGradientGamma ) );
+
+        //Save the Jacobians w.r.t. the derivative of the flow direction w.r.t. the cohesion
+        temp = { dExpectedMacroISVddMacroGdMacroCohesion };
+        DEBUG.emplace( "dExpectedMacroISVddMacroGdMacroCohesion", temp );
+
+        temp = { dExpectedMicroISVddMicroGdMicroCohesion };
+        DEBUG.emplace( "dExpectedMicroISVddMicroGdMicroCohesion", temp );
+
+        DEBUG.emplace( "dExpectedMicroGradientISVddMicroGradientGdMicroGradientCohesion",
+                        vectorTools::appendVectors( dExpectedMicroGradientISVddMicroGradientGdMicroGradientCohesion ) );
+
+#endif
+
         /*!=======================================
         | Compute the plastic velocity gradients |
         ========================================*/
@@ -5041,6 +5079,13 @@ namespace micromorphicElastoPlasticity{
 #endif
                                     );
 
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticDeformationResidual",
+                                             "Error in the computation of the yield functions\n" );
+            result->addNext( error );
+            return result;
+        }
+
         /*!===============================================
         | Construct the Jacobians of the yield equations |
         ================================================*/
@@ -5085,40 +5130,43 @@ namespace micromorphicElastoPlasticity{
 
 #ifdef DEBUG_MODE
 
-       //Save the values to the debug map
-       temp = { yieldFunctionValues[ 0 ] };
-       DEBUG.emplace( "macroYieldFunction", temp );
-
-       temp = { yieldFunctionValues[ 1 ] };
-       DEBUG.emplace( "microYieldFunction", temp );
-
-       DEBUG.emplace( "microGradientYieldFunction",
-                       variableVector( yieldFunctionValues.begin()+2, yieldFunctionValues.begin()+5 ) );
-
-       //Save the jacobians w.r.t. the plastic deformation
-       DEBUG.emplace( "dMacroYielddPlasticDeformationGradient", dMacroYielddPlasticDeformationGradient );
-       DEBUG.emplace( "dMacroYielddPlasticMicroDeformation", dMacroYielddPlasticMicroDeformation );
-       DEBUG.emplace( "dMacroYielddPlasticGradientMicroDeformation", dMacroYielddPlasticGradientMicroDeformation );
-
-       DEBUG.emplace( "dMicroYielddPlasticDeformationGradient", dMicroYielddPlasticDeformationGradient );
-       DEBUG.emplace( "dMicroYielddPlasticMicroDeformation", dMicroYielddPlasticMicroDeformation );
-       DEBUG.emplace( "dMicroYielddPlasticGradientMicroDeformation", dMicroYielddPlasticGradientMicroDeformation );
-
-       DEBUG.emplace( "dMicroGradientYielddPlasticDeformationGradient",
-                       vectorTools::appendVectors( dMicroGradientYielddPlasticDeformationGradient ) );
-       DEBUG.emplace( "dMicroGradientYielddPlasticMicroDeformation",
-                       vectorTools::appendVectors( dMicroGradientYielddPlasticMicroDeformation ) );
-       DEBUG.emplace( "dMicroGradientYielddPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dMicroGradientYielddPlasticMicroDeformation ) );
-
-       //Save the Jacobians w.r.t. the strain-like ISVs
-       DEBUG.emplace( "dMacroYielddMacroStrainISV", dMacroYielddMacroStrainISV );
-       DEBUG.emplace( "dMicroYielddMicroStrainISV", dMicroYielddMicroStrainISV );
-       DEBUG.emplace( "dMicroGradientYielddMicroGradientStrainISV",
-                       vectorTools::appendVectors( dMicroGradientYielddMicroGradientStrainISV ) );
+        //Save the values to the debug map
+        temp = { yieldFunctionValues[ 0 ] };
+        DEBUG.emplace( "macroYieldFunction", temp );
+ 
+        temp = { yieldFunctionValues[ 1 ] };
+        DEBUG.emplace( "microYieldFunction", temp );
+ 
+        DEBUG.emplace( "microGradientYieldFunction",
+                        variableVector( yieldFunctionValues.begin() + 2, yieldFunctionValues.begin() + 5 ) );
+ 
+        //Save the jacobians w.r.t. the plastic deformation
+        DEBUG.emplace( "dMacroYielddPlasticDeformationGradient", dMacroYielddPlasticDeformationGradient );
+        DEBUG.emplace( "dMacroYielddPlasticMicroDeformation", dMacroYielddPlasticMicroDeformation );
+        DEBUG.emplace( "dMacroYielddPlasticGradientMicroDeformation", dMacroYielddPlasticGradientMicroDeformation );
+ 
+        DEBUG.emplace( "dMicroYielddPlasticDeformationGradient", dMicroYielddPlasticDeformationGradient );
+        DEBUG.emplace( "dMicroYielddPlasticMicroDeformation", dMicroYielddPlasticMicroDeformation );
+        DEBUG.emplace( "dMicroYielddPlasticGradientMicroDeformation", dMicroYielddPlasticGradientMicroDeformation );
+ 
+        DEBUG.emplace( "dMicroGradientYielddPlasticDeformationGradient",
+                        vectorTools::appendVectors( dMicroGradientYielddPlasticDeformationGradient ) );
+        DEBUG.emplace( "dMicroGradientYielddPlasticMicroDeformation",
+                        vectorTools::appendVectors( dMicroGradientYielddPlasticMicroDeformation ) );
+        DEBUG.emplace( "dMicroGradientYielddPlasticGradientMicroDeformation",
+                        vectorTools::appendVectors( dMicroGradientYielddPlasticMicroDeformation ) );
+ 
+        //Save the Jacobians w.r.t. the strain-like ISVs
+        temp = { dMacroYielddMacroStrainISV };
+        DEBUG.emplace( "dMacroYielddMacroStrainISV", temp );
+        temp = { dMicroYielddMicroStrainISV };
+        DEBUG.emplace( "dMicroYielddMicroStrainISV", temp );
+        DEBUG.emplace( "dMicroGradientYielddMicroGradientStrainISV",
+                        vectorTools::appendVectors( dMicroGradientYielddMicroGradientStrainISV ) );
 
 #endif
 
+        
         /*!===============================================
         | Compute the residual equation and the Jacobian |
         ================================================*/
