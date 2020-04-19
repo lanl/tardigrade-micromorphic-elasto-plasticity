@@ -11039,6 +11039,31 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                 }
             }
 
+            /*!================
+            | Cohesion values |
+            =================*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondPlasticMicroDeformation) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondPlasticMicroDeformation) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
+                                            variableVector( 3, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondPlasticMicroDeformation) & False\n";
+                return 1;
+            }
+
             /*=================
             | Flow Directions |
             =================*/
@@ -11068,6 +11093,31 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                     results << "test_computePlasticDeformationResidual (dMicroGradientFlowDirectiondPlasticMicroDeformation) & False\n";
                     return 1;
                 }
+            }
+
+            /*!==========================
+            | Expected strain-like ISVs |
+            ===========================*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "expectedMacroStrainISV" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dExpectedMacroStrainISVdPlasticMicroDeformation) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "expectedMicroStrainISV" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dExpectedMicroStrainISVdPlasticMicroDeformation) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "expectedMicroGradientStrainISV" ],
+                                            variableVector( 3, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dExpectedMicroGradientStrainISVdPlasticMicroDeformation) & False\n";
+                return 1;
             }
 
             /*!===========================
@@ -11130,6 +11180,36 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
                                                 1e-9, 1e-9 ) ){
                     results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            /*!====================
+            | The yield equations |
+            =====================*/
+
+            vectorTools::print( numericGradients[ "macroYieldFunction" ] );
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ 0 ],
+                                            DEBUG[ "dMacroYielddPlasticMicroDeformation" ][ i - 9 ],
+                                            1e-5, 1e-8 ) ){
+                results << "test_computePlasticDeformationResidual (dMacroYielddPlasticMicroDeformation) & False\n";
+                return 1;
+            }
+
+            vectorTools::print( numericGradients[ "microYieldFunction" ] );
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ 0 ],
+                                            DEBUG[ "dMicroYielddPlasticMicroDeformation" ][ i - 9 ],
+                                            1e-5, 1e-8 ) ){
+                results << "test_computePlasticDeformationResidual (dMicroYielddPlasticMicroDeformation) & False\n";
+                return 1;
+            }
+
+            vectorTools::print( numericGradients[ "microGradientYieldFunction" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
+                                                DEBUG[ "dMicroGradientYielddPlasticMicroDeformation" ][ 9 * j + i - 9 ],
+                                                1e-5, 1e-8 ) ){
+                    results << "test_computePlasticDeformationResidual (dMacroGradientYielddPlasticMicroDeformation) & False\n";
                     return 1;
                 }
             }
