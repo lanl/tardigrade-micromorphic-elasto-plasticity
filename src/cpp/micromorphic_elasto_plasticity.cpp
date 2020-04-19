@@ -5154,7 +5154,7 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "dMicroGradientYielddPlasticMicroDeformation",
                         vectorTools::appendVectors( dMicroGradientYielddPlasticMicroDeformation ) );
         DEBUG.emplace( "dMicroGradientYielddPlasticGradientMicroDeformation",
-                        vectorTools::appendVectors( dMicroGradientYielddPlasticMicroDeformation ) );
+                        vectorTools::appendVectors( dMicroGradientYielddPlasticGradientMicroDeformation ) );
  
         //Save the Jacobians w.r.t. the strain-like ISVs
         temp = { dMacroYielddMacroStrainISV };
@@ -5178,6 +5178,7 @@ namespace micromorphicElastoPlasticity{
         for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
             residual[ i ] = currentPlasticDeformationGradient[ i ] - expectedPlasticDeformationGradient[ i ];
 
+            //The plastic deformation residuals
             for ( unsigned int j = 0; j < currentPlasticDeformationGradient.size(); j++ ){
                 jacobian[ i ][ j ] -= dExpectedPlasticDeformationGradientdPlasticDeformationGradient[ i ][ j ];
             }
@@ -5189,6 +5190,10 @@ namespace micromorphicElastoPlasticity{
             for ( unsigned int j = 0; j < currentPlasticGradientMicroDeformation.size(); j++ ){
                 jacobian[ i ][ j + 18 ] -= dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation[ i ][ j ];
             }
+
+            //The strain-like ISV residuals
+            
+            //The plastic multiplier residuals
         }
 
         for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
@@ -5205,6 +5210,10 @@ namespace micromorphicElastoPlasticity{
             for ( unsigned int j = 0; j < currentPlasticGradientMicroDeformation.size(); j++ ){
                 jacobian[ i + 9 ][ j + 18 ] -= dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation[ i ][ j ];
             }
+
+            //The strain-like ISV residuals
+            
+            //The plastic multiplier residuals
         }
 
         for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
@@ -5221,6 +5230,10 @@ namespace micromorphicElastoPlasticity{
             for ( unsigned int j = 0; j < currentPlasticGradientMicroDeformation.size(); j++ ){
                 jacobian[ i + 18 ][ j + 18 ] -= dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation[ i ][ j ];
             }
+
+            //The strain-like ISV residuals are all zero
+
+            //The plastic multiplier residuals
         }
 
         //Compute the residuals and the Jacobians for the plastic strain-like ISVs
@@ -5242,22 +5255,41 @@ namespace micromorphicElastoPlasticity{
         //Set the residuals and Jacobians
         if ( isYielding[ 0 ] > 0 ){
             residual[ 50 ] = yieldFunctionValues[ 0 ];
+
+            //The Jacobian terms w.r.t. the plastic deformation
+            for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
+                jacobian[ 50 ][ i ] = dMacroYielddPlasticDeformationGradient[ i ];
+            }
+
+            for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
+                jacobian[ 50 ][ i + 9 ] = dMacroYielddPlasticMicroDeformation[ i ];
+            }
+
+            for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
+                jacobian[ 50 ][ i + 18 ] = dMacroYielddPlasticGradientMicroDeformation[ i ];
+            }
+
         }
         else{
             residual[ 50 ] = currentMacroGamma;
         }
 
-//        for ( unsigned int i = 0; i < 9; i++ ){
-//            jacobian[ 50 ][ i ] = dMacroYielddPlasticDeformationGradient[ i ];
-//            jacobian[ 50 ][ i + 9 ] = dMacroYielddPlasticMicroDeformation[ i ];
-//        }
-//
-//        for ( unsigned int i = 0, i < 27; i++ ){
-//            jacobian[ 50 ][ i + 18 ] = dMacroYielddPlasticMicroGradientDeformation[ i ];
-//        }
-
         if ( isYielding[ 1 ] > 0 ){
             residual[ 51 ] = yieldFunctionValues[ 1 ];
+
+            //The Jacobian terms w.r.t. the plastic deformation
+            for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
+                jacobian[ 51 ][ i ] = dMicroYielddPlasticDeformationGradient[ i ];
+            }
+
+            for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
+                jacobian[ 51 ][ i + 9 ] = dMicroYielddPlasticMicroDeformation[ i ];
+            }
+
+            for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
+                jacobian[ 51 ][ i + 18 ] = dMicroYielddPlasticGradientMicroDeformation[ i ];
+            }
+
         }
         else{
              residual[ 51 ] = currentMicroGamma;
@@ -5266,6 +5298,19 @@ namespace micromorphicElastoPlasticity{
         for ( unsigned int i = 0; i < 3; i++ ){
             if ( isYielding[ i + 2 ] > 0 ){
                 residual[ 52 + i ] = yieldFunctionValues[ 2 + i ];
+
+                //The Jacobian terms w.r.t. the plastic deformation
+                for ( unsigned int j = 0; j < currentPlasticDeformationGradient.size(); j++ ){
+                    jacobian[ 52 + i ][ j ] = dMicroGradientYielddPlasticDeformationGradient[ i ][ j ];
+                }
+
+                for ( unsigned int j = 0; j < currentPlasticMicroDeformation.size(); j++ ){
+                    jacobian[ 52 + i ][ j + 9 ] = dMicroGradientYielddPlasticMicroDeformation[ i ][ j ];
+                }
+
+                for ( unsigned int j = 0; j < currentPlasticGradientMicroDeformation.size(); j++ ){
+                    jacobian[ 52 + i ][ j + 18 ] = dMicroGradientYielddPlasticGradientMicroDeformation[ i ][ j ];
+                }
             }
             else{
                 residual[ 52 + i ] = currentMicroGradientGamma[ i ];

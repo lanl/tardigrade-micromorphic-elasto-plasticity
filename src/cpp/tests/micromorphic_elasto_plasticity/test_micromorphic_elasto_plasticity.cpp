@@ -11188,7 +11188,6 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
             | The yield equations |
             =====================*/
 
-            vectorTools::print( numericGradients[ "macroYieldFunction" ] );
             if ( !vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ 0 ],
                                             DEBUG[ "dMacroYielddPlasticMicroDeformation" ][ i - 9 ],
                                             1e-5, 1e-8 ) ){
@@ -11196,7 +11195,6 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                 return 1;
             }
 
-            vectorTools::print( numericGradients[ "microYieldFunction" ] );
             if ( !vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ 0 ],
                                             DEBUG[ "dMicroYielddPlasticMicroDeformation" ][ i - 9 ],
                                             1e-5, 1e-8 ) ){
@@ -11204,7 +11202,6 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                 return 1;
             }
 
-            vectorTools::print( numericGradients[ "microGradientYieldFunction" ] );
             for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
                 if ( !vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
                                                 DEBUG[ "dMicroGradientYielddPlasticMicroDeformation" ][ 9 * j + i - 9 ],
@@ -11322,6 +11319,31 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                 }
             }
 
+            /*!================
+            | Cohesion values |
+            =================*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondPlasticGradientMicroDeformation) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondPlasticGradientMicroDeformation) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
+                                            variableVector( 3, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondPlasticGradientMicroDeformation) & False\n";
+                return 1;
+            }
+
             /*=================
             | Flow Directions |
             =================*/
@@ -11351,6 +11373,31 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                     results << "test_computePlasticDeformationResidual (dMicroGradientFlowDirectiondPlasticGradientMicroDeformation) & False\n";
                     return 1;
                 }
+            }
+
+            /*!==========================
+            | Expected strain-like ISVs |
+            ===========================*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "expectedMacroStrainISV" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dExpectedMacroStrainISVdPlasticGradientMicroDeformation) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "expectedMicroStrainISV" ],
+                                            variableVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dExpectedMicroStrainISVdPlasticGradientMicroDeformation) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "expectedMicroGradientStrainISV" ],
+                                            variableVector( 3, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual (dExpectedMicroGradientStrainISVdPlasticGradientMicroDeformation) & False\n";
+                return 1;
             }
 
             /*!===========================
@@ -11414,6 +11461,34 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                     return 1;
                 }
             }
+
+            /*!====================
+            | The yield equations |
+            =====================*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ 0 ],
+                                            DEBUG[ "dMacroYielddPlasticGradientMicroDeformation" ][ i - 18 ],
+                                            1e-5, 1e-8 ) ){
+                results << "test_computePlasticDeformationResidual (dMacroYielddPlasticGradientMicroDeformation) & False\n";
+                return 1;
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ 0 ],
+                                            DEBUG[ "dMicroYielddPlasticGradientMicroDeformation" ][ i - 18 ],
+                                            1e-5, 1e-8 ) ){
+                results << "test_computePlasticDeformationResidual (dMicroYielddPlasticGradientMicroDeformation) & False\n";
+                return 1;
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
+                                                DEBUG[ "dMicroGradientYielddPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
+                                                1e-5, 1e-8 ) ){
+                    vectorTools::print( vectorTools::inflate( DEBUG[ "dMicroGradientYielddPlasticGradientMicroDeformation" ], 3, 27 ) );
+                    results << "test_computePlasticDeformationResidual (dMacroGradientYielddPlasticGradientMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
         }
 
         if ( ( i >= 45 ) && ( i < 50 ) ){
@@ -11432,19 +11507,22 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 #endif
 
 
-//        //Jacobian test
-//
-//        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ], 1e-9, 1e-9 ) ){
-//                std::cout << "i, j: " << i << ", " << j << "\n";
+        //Jacobian test
+
+        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ], 1e-5, 1e-8 ) ){
+                std::cout << "i, j: " << i << ", " << j << "\n";
+                std::cout << "gradCol[ j ]: " << gradCol[ j ] << "\n";
+                std::cout << "jacobian[ j ][ i ]: " << jacobian[ j ][ i ] << "\n";
+                std::cout << "error: " << gradCol[ j ] - jacobian[ j ][ i ] << "\n";
 //                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
 //                std::cout << "jacobian:\n"; vectorTools::print( jacobian );
-//                results << "test_computePlasticDeformationResidual (test 2) & False\n";
-//                return 1;
-//            }
-//        }
+                results << "test_computePlasticDeformationResidual (test 2) & False\n";
+                return 1;
+            }
+        }
 
     }
 
