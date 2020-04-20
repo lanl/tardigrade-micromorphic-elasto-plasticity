@@ -4526,7 +4526,7 @@ namespace micromorphicElastoPlasticity{
         //Save the cohesion Jacobians
         temp = { dMacroCohesiondMacroStrainISV };
 
-        DEBUG.emplace( "dMacroCohesiondMicroStrainISV", temp );
+        DEBUG.emplace( "dMacroCohesiondMacroStrainISV", temp );
 
         temp = { dMicroCohesiondMicroStrainISV };
 
@@ -4954,7 +4954,9 @@ namespace micromorphicElastoPlasticity{
             = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdMicroGamma )
             + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
-                                dPlasticMicroVelocityGradientdMicroGamma );
+                                dPlasticMicroVelocityGradientdMicroGamma )
+            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                                dPlasticMicroGradientVelocityGradientdMicroGamma );
 
         variableMatrix dExpectedPlasticGradientMicroDeformationdMicroGradientGamma
             = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
@@ -5174,7 +5176,7 @@ namespace micromorphicElastoPlasticity{
         residual = solverTools::floatVector( x.size(), 0 );
         jacobian = vectorTools::eye< solverTools::floatType >( x.size() );
 
-        //Compute the resiudals and the jacobians for the plastic deformations
+        //Compute the residuals and the jacobians for the plastic deformations
         for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
             residual[ i ] = currentPlasticDeformationGradient[ i ] - expectedPlasticDeformationGradient[ i ];
 
@@ -5194,6 +5196,8 @@ namespace micromorphicElastoPlasticity{
             //The strain-like ISV residuals
             
             //The plastic multiplier residuals
+            jacobian[ i ][ 50 ] -= dExpectedPlasticDeformationGradientdMacroGamma[ i ];
+            jacobian[ i ][ 51 ] -= dExpectedPlasticDeformationGradientdMicroGamma[ i ];
         }
 
         for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
@@ -5214,6 +5218,7 @@ namespace micromorphicElastoPlasticity{
             //The strain-like ISV residuals
             
             //The plastic multiplier residuals
+            jacobian[ i + 9 ][ 51 ] -= dExpectedPlasticMicroDeformationdMicroGamma[ i ];
         }
 
         for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
@@ -5234,6 +5239,11 @@ namespace micromorphicElastoPlasticity{
             //The strain-like ISV residuals are all zero
 
             //The plastic multiplier residuals
+            jacobian[ i + 18 ][ 50 ] -= dExpectedPlasticGradientMicroDeformationdMacroGamma[ i ]; 
+            jacobian[ i + 18 ][ 51 ] -= dExpectedPlasticGradientMicroDeformationdMicroGamma[ i ]; 
+            for ( unsigned int j = 0; j < currentMicroGradientGamma.size(); j++ ){
+                jacobian[ i + 18 ][ 52 + j ] -= dExpectedPlasticGradientMicroDeformationdMicroGradientGamma[ i ][ j ];
+            }
         }
 
         //Compute the residuals and the Jacobians for the plastic strain-like ISVs
@@ -5279,6 +5289,9 @@ namespace micromorphicElastoPlasticity{
 
             //The Jacobian terms w.r.t. the strain-like ISVs
             jacobian[ 50 ][ 45 ] = dMacroYielddMacroStrainISV;
+
+            //The Jacobian terms w.r.t. the plastic multipliers
+            jacobian[ 50 ][ 50 ] = 0.;
         }
         else{
             residual[ 50 ] = currentMacroGamma;
@@ -5302,6 +5315,9 @@ namespace micromorphicElastoPlasticity{
 
             //The Jacobian terms w.r.t. the strain-like ISVs
             jacobian[ 51 ][ 46 ] = dMicroYielddMicroStrainISV;
+
+            //The Jacobian terms w.r.t. the plastic multipliers
+            jacobian[ 51 ][ 51 ] = 0.;
         }
         else{
              residual[ 51 ] = currentMicroGamma;
@@ -5327,6 +5343,11 @@ namespace micromorphicElastoPlasticity{
                 //The Jacobian terms w.r.t. the strain-like ISVs
                 for ( unsigned int j = 0; j < currentMicroGradientStrainISV.size(); j++ ){
                     jacobian[ 52 + i ][ 47 + j ] = dMicroGradientYielddMicroGradientStrainISV[ i ][ j ];
+                }
+
+                //The Jacobian terms w.r.t. the plastic multipliers
+                for ( unsigned int j = 0; j < currentMicroGradientGamma.size(); j++ ){
+                    jacobian[ 52 + i ][ 52 + i ] = 0.;
                 }
             }
             else{
