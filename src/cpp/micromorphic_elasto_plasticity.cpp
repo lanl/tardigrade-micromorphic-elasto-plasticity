@@ -8007,6 +8007,22 @@ namespace micromorphicElastoPlasticity{
         yieldFunctionValues[ 3 ] = yftmp[ 1 ];
         yieldFunctionValues[ 4 ] = yftmp[ 2 ];
 
+        //Handle the special case when the stresses are very small which is undefined
+        if ( vectorTools::dot( PK2Stress, PK2Stress ) < 1e-9 ){
+            dMacroFdPK2        = variableVector( PK2Stress.size(), 0 );
+            dMacroFdElasticRCG = variableVector( elasticRightCauchyGreen.size(), 0 );
+        }
+
+        if ( vectorTools::dot( referenceMicroStress, referenceMicroStress ) < 1e-9 ){
+            dMicroFdSigma      = variableVector( referenceMicroStress.size(), 0 );
+            dMicroFdElasticRCG = variableVector( elasticRightCauchyGreen.size(), 0 );
+        }
+
+        if ( vectorTools::dot( referenceHigherOrderStress, referenceHigherOrderStress ) < 1e-9 ){
+            dMicroGradientFdM          = variableMatrix( yftmp.size(), variableVector( referenceHigherOrderStress.size(), 0 ) );
+            dMicroGradientFdElasticRCG = variableMatrix( yftmp.size(), variableVector( elasticRightCauchyGreen.size(), 0 ) );
+        }
+
         return NULL;
     }
 
