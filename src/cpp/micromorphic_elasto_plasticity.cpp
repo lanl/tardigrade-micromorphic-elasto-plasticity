@@ -4158,15 +4158,15 @@ namespace micromorphicElastoPlasticity{
                                   "The deformation measure evaluation flag must have a size of 1" );
         }
 
-        bool evaluateFullDeformations = false;
+        bool evaluateFullDerivatives = false;
         if ( intOuts[ 1 ][ 0 ] > 0 ){
-            evaluateFullDeformations = true;
+            evaluateFullDerivatives = true;
         }
 
-        if ( evaluateFullDeformations ){
-            if ( floatOuts.size() != 21 ){
+        if ( evaluateFullDerivatives ){
+            if ( floatOuts.size() != 6 ){
                 return new errorNode( "computePlasticDeformationResidual",
-                                      "The floating point output matrix floatOuts must have a length of 21" );
+                                      "The floating point output matrix floatOuts must have a length of 6" );
             }
         }
         else{ 
@@ -4366,6 +4366,25 @@ namespace micromorphicElastoPlasticity{
             = vectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
 
+        //Construct the full derivatives
+        variableMatrix dElasticRightCauchyGreendDeformationGradient, dElasticMicroRightCauchyGreendMicroDeformation,
+                       dElasticPsidDeformationGradient, dElasticPsidMicroDeformation,
+                       dElasticGammadDeformationGradient, dElasticGammadGradientMicroDeformation;
+        if ( evaluateFullDerivatives ){
+            dElasticRightCauchyGreendDeformationGradient = vectorTools::dot( dElasticRightCauchyGreendElasticDeformationGradient,
+                                                                             dElasticDeformationGradientdDeformationGradient );
+            dElasticMicroRightCauchyGreendMicroDeformation = vectorTools::dot( dElasticMicroRightCauchyGreendElasticMicroDeformation,
+                                                                               dElasticMicroDeformationdMicroDeformation );
+            dElasticPsidDeformationGradient = vectorTools::dot( dElasticPsidElasticDeformationGradient,
+                                                                dElasticDeformationGradientdDeformationGradient );
+            dElasticPsidMicroDeformation = vectorTools::dot( dElasticPsidElasticMicroDeformation,
+                                                             dElasticMicroDeformationdMicroDeformation );
+            dElasticGammadDeformationGradient = vectorTools::dot( dElasticGammadElasticDeformationGradient,
+                                                                  dElasticDeformationGradientdDeformationGradient );
+            dElasticGammadGradientMicroDeformation = vectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
+                                                                       dElasticGradientMicroDeformationdGradientMicroDeformation );
+        }
+
 #ifdef DEBUG_MODE
 
         //Save the elastic derived deformation measures
@@ -4389,6 +4408,21 @@ namespace micromorphicElastoPlasticity{
                        vectorTools::appendVectors( dElasticGammadPlasticMicroDeformation ) );
         DEBUG.emplace( "dElasticGammadPlasticGradientMicroDeformation",
                        vectorTools::appendVectors( dElasticGammadPlasticGradientMicroDeformation ) );
+
+        if ( evaluateFullDerivatives ){
+            DEBUG.emplace( "dElasticRightCauchyGreendDeformationGradient",
+                            vectorTools::appendVectors( dElasticRightCauchyGreendDeformationGradient ) );
+            DEBUG.emplace( "dElasticMicroRightCauchyGreendMicroDeformation",
+                            vectorTools::appendVectors( dElasticMicroRightCauchyGreendMicroDeformation ) );
+            DEBUG.emplace( "dElasticPsidDeformationGradient",
+                            vectorTools::appendVectors( dElasticPsidDeformationGradient ) );
+            DEBUG.emplace( "dElasticPsidMicroDeformation",
+                            vectorTools::appendVectors( dElasticPsidMicroDeformation ) );
+            DEBUG.emplace( "dElasticGammadDeformationGradient",
+                            vectorTools::appendVectors( dElasticGammadDeformationGradient ) );
+            DEBUG.emplace( "dElasticGammadGradientMicroDeformation",
+                            vectorTools::appendVectors( dElasticGammadGradientMicroDeformation ) );
+        }
 
 #endif
 
