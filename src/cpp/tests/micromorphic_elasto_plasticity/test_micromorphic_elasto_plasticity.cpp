@@ -14679,6 +14679,29 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                     return 1;
                 }
             }
+
+            /*!==============
+            | The Cohesions |
+            ===============*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
+                                            solverTools::floatVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual2 (dMacroCohesiondDeformationGradient) & False\n";
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
+                                            solverTools::floatVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual2 (dMicroCohesiondDeformationGradient) & False\n";
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
+                                            solverTools::floatVector( 3, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual2 (dMicroGradientCohesiondDeformationGradient) & False\n";
+            }
+
         }
 
         if ( ( i >= 9 ) && ( i < 18 ) ){
@@ -14796,6 +14819,28 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                     return 1;
                 }
             }
+
+            /*!==============
+            | The Cohesions |
+            ===============*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
+                                            solverTools::floatVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual2 (dMacroCohesiondMicroDeformation) & False\n";
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
+                                            solverTools::floatVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual2 (dMicroCohesiondMicroDeformation) & False\n";
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
+                                            solverTools::floatVector( 3, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual2 (dMicroGradientCohesiondMicroDeformation) & False\n";
+            }
         }
 
         if ( ( i >= 18 ) && ( i < 45 ) ){
@@ -14900,6 +14945,28 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                     results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdGradientMicroDeformation) & False\n";
                     return 1;
                 }
+            }
+
+            /*!==============
+            | The Cohesions |
+            ===============*/
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
+                                            solverTools::floatVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual2 (dMacroCohesiondGradientMicroDeformation) & False\n";
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
+                                            solverTools::floatVector( 1, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual2 (dMicroCohesiondGradientMicroDeformation) & False\n";
+            }
+
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
+                                            solverTools::floatVector( 3, 0 ),
+                                            1e-9, 1e-9 ) ){
+                results << "test_computePlasticDeformationResidual2 (dMicroGradientCohesiondGradientMicroDeformation) & False\n";
             }
         }
 
