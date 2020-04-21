@@ -10526,7 +10526,7 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     solverTools::floatMatrix floatOuts = floatOutsDefault;
 
     solverTools::intMatrix intArgs;
-    solverTools::intMatrix intOutsDefault = { { 1, 1, 0, 0, 0 } };
+    solverTools::intMatrix intOutsDefault = { { 1, 1, 0, 0, 0 }, { 0 } };
     
     solverTools::intMatrix intOuts = intOutsDefault;
 

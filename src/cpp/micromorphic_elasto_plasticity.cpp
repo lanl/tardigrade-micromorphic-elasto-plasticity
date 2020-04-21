@@ -4148,14 +4148,32 @@ namespace micromorphicElastoPlasticity{
                                   "The floating point argument matrix floatArgs must have a length of 35" );
         }
 
-        if ( floatOuts.size() != 3 ){
+        if ( intOuts.size() != 2 ){
             return new errorNode( "computePlasticDeformationResidual",
-                                  "The floating point output matrix floatOuts must have a length of 3" );
+                                  "The integer ouput matrix intOuts must have a length of 2" );
         }
 
-        if ( intOuts.size() != 1 ){
+        if ( intOuts[ 1 ].size() != 1 ){
             return new errorNode( "computePlasticDeformationResidual",
-                                  "The integer ouput matrix intOuts must have a length of 1" );
+                                  "The deformation measure evaluation flag must have a size of 1" );
+        }
+
+        bool evaluateFullDeformations = false;
+        if ( intOuts[ 1 ][ 0 ] > 0 ){
+            evaluateFullDeformations = true;
+        }
+
+        if ( evaluateFullDeformations ){
+            if ( floatOuts.size() != 21 ){
+                return new errorNode( "computePlasticDeformationResidual",
+                                      "The floating point output matrix floatOuts must have a length of 21" );
+            }
+        }
+        else{ 
+            if ( floatOuts.size() != 3 ){
+                return new errorNode( "computePlasticDeformationResidual",
+                                      "The floating point output matrix floatOuts must have a length of 3" );
+            }
         }
 
         /*=============================
