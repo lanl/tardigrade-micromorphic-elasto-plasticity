@@ -14608,6 +14608,46 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                     return 1;
                 }
             }
+
+            /*!=========================================
+            | The Elastic Derived Deformation Measures |
+            ==========================================*/
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
+                                                DEBUG[ "dElasticRightCauchyGreendDeformationGradient" ][ 9 * j + i ],
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
+                                                0.,
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
+                                                DEBUG[ "dElasticPsidDeformationGradient" ][ 9 * j + i ],
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticPsidDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
+                                                DEBUG[ "dElasticGammadDeformationGradient" ][ 9 * j + i ],
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticGammadDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
         }
 
         if ( ( i >= 9 ) && ( i < 18 ) ){
@@ -14642,6 +14682,46 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                     return 1;
                 }
             }
+
+            /*!=========================================
+            | The Elastic Derived Deformation Measures |
+            ==========================================*/
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
+                                                0.,
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
+                                                DEBUG[ "dElasticMicroRightCauchyGreendMicroDeformation" ][ 9 * j + i - 9 ],
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
+                                                DEBUG[ "dElasticPsidMicroDeformation" ][ 9 * j + i - 9 ],
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticPsidMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
+                                                DEBUG[ "dElasticGammadMicroDeformation" ][ 9 * j + i - 9 ],
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticGammadMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
         }
 
         if ( ( i >= 18 ) && ( i < 45 ) ){
@@ -14673,6 +14753,46 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                                                 DEBUG[ "dElasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i - 18 ],
                                                 1e-9, 1e-9 ) ){
                     results << "test_computePlasticDeformationResidual2 (dElasticGradientMicroDeformationdGradientMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            /*!=========================================
+            | The Elastic Derived Deformation Measures |
+            ==========================================*/
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
+                                                0.,
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendGradientDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
+                                                0.,
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendGradientMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
+                                                0.,
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticPsidGradientMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
+                                                DEBUG[ "dElasticGammadGradientMicroDeformation" ][ 27 * j + i - 18 ],
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dElasticGammadGradientMicroDeformation) & False\n";
                     return 1;
                 }
             }
