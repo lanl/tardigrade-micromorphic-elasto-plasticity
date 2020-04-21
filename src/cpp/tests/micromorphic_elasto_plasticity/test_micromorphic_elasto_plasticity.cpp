@@ -10415,9 +10415,9 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     }
 
     constantType   Dt = 2.5;
-    variableType   currentMacroGamma = 0.;//0.01;
-    variableType   currentMicroGamma = 0.;//0.02;
-    variableVector currentMicroGradientGamma = {0, 0, 0};//{0.011, 0.021, 0.031};
+    variableType   currentMacroGamma = 0.01;
+    variableType   currentMicroGamma = 0.02;
+    variableVector currentMicroGradientGamma = {0.011, 0.021, 0.031};
     variableType   previousMacroGamma = 0.;
     variableType   previousMicroGamma = 0.;
     variableVector previousMicroGradientGamma( 3, 0 );
@@ -10427,20 +10427,18 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     variableType   previousMacroStrainISV = 0.;
     variableType   previousMicroStrainISV = 0.;
     variableVector previousMicroGradientStrainISV( 3., 0. );
-    variableVector currentDeformationGradient = { 1.2, 0, 0, 0, 1, 0, 0, 0, 1 };//{ 1.20, 0.01,-0.03,
-//                                                  0.01, 0.90, 0.00,
-//                                                 -0.03, 0.00, 1.10 };//{ 0.04482969,  0.88562312, -0.38710144,
-//                                                 -0.93722716,  0.19666568,  0.41677155,
-//                                                  0.46929057,  0.33779672,  0.81392228 };//{1.2, 0, 0, 0, 1, 0, 0, 0, 1 };
-    variableVector currentMicroDeformation = { 1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0 };//{  0.51930689,  0.27954023, -0.85955731,
-//                                                0.09469279, -0.99381243, -0.23218079,
-//                                               -0.82281393,  0.09643296, -0.54637704 };
-    variableVector currentGradientMicroDeformation = variableVector( 27, 1e-2 );//{ 0.04176306, -0.0151958 , -0.00090558, -0.01844751,  0.04512391,
-//                                                       0.02174263, -0.00508239, -0.01827377,  0.00541031, -0.01330239,
-//                                                      -0.02479987,  0.02914825,  0.00168841,  0.00230506,  0.00994845,
-//                                                       0.00413116,  0.04555686, -0.00431862, -0.0138286 , -0.04412473,
-//                                                       0.02016718, -0.03868735,  0.03842166, -0.0009337 ,  0.02977617,
-//                                                       0.02310445,  0.02827616 };//variableVector( 27, 0 );
+    variableVector currentDeformationGradient = { 0.04482969,  0.88562312, -0.38710144,
+                                                 -0.93722716,  0.19666568,  0.41677155,
+                                                  0.46929057,  0.33779672,  0.81392228 };
+    variableVector currentMicroDeformation = {  0.51930689,  0.27954023, -0.85955731,
+                                                0.09469279, -0.99381243, -0.23218079,
+                                               -0.82281393,  0.09643296, -0.54637704 };
+    variableVector currentGradientMicroDeformation = { 0.04176306, -0.0151958 , -0.00090558, -0.01844751,  0.04512391,
+                                                       0.02174263, -0.00508239, -0.01827377,  0.00541031, -0.01330239,
+                                                      -0.02479987,  0.02914825,  0.00168841,  0.00230506,  0.00994845,
+                                                       0.00413116,  0.04555686, -0.00431862, -0.0138286 , -0.04412473,
+                                                       0.02016718, -0.03868735,  0.03842166, -0.0009337 ,  0.02977617,
+                                                       0.02310445,  0.02827616 };
     variableVector previousPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
     variableVector previousPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
     variableVector previousPlasticGradientMicroDeformation = variableVector( 27, 0 );
@@ -10528,7 +10526,7 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     solverTools::floatMatrix floatOuts = floatOutsDefault;
 
     solverTools::intMatrix intArgs;
-    solverTools::intMatrix intOutsDefault = { { 1, 0, 0, 0, 0 } };
+    solverTools::intMatrix intOutsDefault = { { 1, 1, 0, 0, 0 } };
     
     solverTools::intMatrix intOuts = intOutsDefault;
 
@@ -10557,17 +10555,17 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 
     solverTools::floatVector residual;
     solverTools::floatMatrix jacobian;
-    solverTools::floatVector residualAnswer = { -0.0182853 ,  0.0150173 , -0.00834375,  0.0143864  ,  0.00294186,
-                                                -0.0254041 , -0.0152254 , -0.0199143 , -0.00707353 ,  0.00411031,
-                                                 0.00242625, -0.0213912 ,  0.0189382 ,  0.00764322 , -0.00288098,
-                                                 0.00276696, -0.0208726 ,  0.00600538, -0.000873628, -0.0107661 ,
-                                                 0.00695391, -0.00664462,  0.0134574 ,  0.00850104 ,  0.0198672 ,
-                                                 0.0135875 ,  0.0163387 , -0.0081507 , -0.00139605 ,  0.00236115,
-                                                -0.00995776, -0.0165701 ,  0.00528275, -0.0165329  ,  0.0268835 ,
-                                                 0.0190322 ,  0.0086526 ,  0.00124595,  0.0116393  , -0.0142127 ,
-                                                 0.0247605 ,  0.00274634,  0.0313886 ,  0.0178578  ,  0.00317604,
-                                                -0.0207534 , -0.056513  , -0.0199139 , -0.0380174  , -0.0561209 ,
-                                                 388.29788 , 390.878005 , 0.011, 0.021, 0.31 };//-353.58377 , -353.632457 , -353.779864 };
+    solverTools::floatVector residualAnswer = {   -0.018157  ,   0.0150136 , -0.00834171,  0.0143829  ,  0.00306498,
+                                                  -0.0253978 ,  -0.0152216 , -0.0199094 , -0.00694793 ,  0.00409966,
+                                                   0.00240259,  -0.0214048 ,  0.0189483 ,  0.0076235  , -0.00285891,
+                                                   0.0027911 ,  -0.0208777 ,  0.00599161, -0.000942068, -0.0107383 ,
+                                                   0.00681374,  -0.0067848 ,  0.0135221 ,  0.00821126 ,  0.0196686 ,
+                                                   0.0136814 ,   0.0159186 , -0.00800705, -0.00138683 ,  0.00228973,
+                                                  -0.00966137,  -0.0165582 ,  0.00513825, -0.0161062  ,  0.0269113 ,
+                                                   0.0188245 ,   0.008651  ,  0.00110232,  0.0116071  , -0.0142204 ,
+                                                   0.0244683 ,   0.00267681,  0.0313831 ,  0.0174318  ,  0.00307478,
+                                                  -0.0200436 ,  -0.0570817 , -0.0194401 , -0.0371129  , -0.0547857 ,
+                                                 381.101     , 464.145     ,  0.011     ,  0.021      ,  0.031 };
 
     error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
                                                                              floatOuts, intOuts
@@ -10576,19 +10574,17 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
 #endif
                                                                              );
 
-    vectorTools::print( residual );
-//    vectorTools::print( DEBUG[ "currentPlasticMicroVelocityGradient" ] );
-
     if ( error ){
         error->print();
         results << "test_computePlasticDeformationResidual & False\n";
         return 1;
     }
 
-//    if ( !vectorTools::fuzzyEquals( residualAnswer, residual ) ){
-//        results << "test_computePlasticDeformationResidual (test 1) & False\n";
-//        return 1;
-//    }
+    if ( !vectorTools::fuzzyEquals( residualAnswer, residual ) ){
+        vectorTools::print( residualAnswer - residual );
+        results << "test_computePlasticDeformationResidual (test 1) & False\n";
+        return 1;
+    }
 
     //Test the plastic deformation jacobians
     constantType eps = 1e-6;
@@ -11210,7 +11206,7 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
             for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
                 if ( !vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
                                                 DEBUG[ "dMicroGradientYielddPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-5, 1e-8 ) ){
+                                                1e-5, 1e-7 ) ){
                     results << "test_computePlasticDeformationResidual (dMacroGradientYielddPlasticMicroDeformation) & False\n";
                     return 1;
                 }
@@ -12419,525 +12415,6 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
             }
         }
     }
-
-    //Check to make sure the solver converges
-    std::cout << "\nIN SOLVE\n";
-    std::cout << "iteration 1\n";
-
-    floatOuts = floatOutsDefault;
-    intOuts   = intOutsDefault;
-    error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
-                                                                             floatOuts, intOuts
-#ifdef DEBUG_MODE
-                                                                             , DEBUG
-#endif
-                                                                             );
-
-    std::cout << "macroYieldFunction: " << DEBUG[ "macroYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microYieldFunction: " << DEBUG[ "microYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microGradientYieldFunction: "; vectorTools::print( DEBUG[ "microGradientYieldFunction" ] );
-    std::cout << "residual:\n"; vectorTools::print( residual );
-    std::cout << "residual norm: " << std::sqrt( vectorTools::dot( residual, residual ) ) << "\n";
-
-//    //Form a numeric Jacobian
-//    for ( unsigned int i = 0; i < x.size(); i++ ){
-//        constantVector delta( x.size(), 0 );
-//        delta[ i ] = eps * fabs( x[ i ] ) + eps;
-//
-//        solverTools::intMatrix   i0 = intOutsDefault;
-//        solverTools::floatMatrix f0 = floatOutsDefault;
-//
-//        solverTools::floatVector residual_P, residual_M;
-//        solverTools::floatMatrix J;
-//
-//#ifdef DEBUG_MODE
-//        solverTools::debugMap DEBUG_P, DEBUG_M;
-//#endif
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x + delta, floatArgs, intArgs, residual_P, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_P
-//#endif
-//                                                                             );
-//
-//        i0 = intOuts;
-//        f0 = floatOuts;
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, floatArgs, intArgs, residual_M, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_M
-//#endif
-//                                                                             );
-//
-//        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            jacobian[ j ][ i ] = gradCol[ j ];
-//        }
-//
-//    }
-
-    unsigned int rank;
-    solverTools::floatVector dx = -vectorTools::solveLinearSystem( jacobian, residual, rank );
-
-    std::cout << "macroYieldFunction: " << DEBUG[ "macroYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microYieldFunction: " << DEBUG[ "microYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microGradientYieldFunction: "; vectorTools::print( DEBUG[ "microGradientYieldFunction" ] );
-    std::cout << "residual:\n"; vectorTools::print( residual );
-    std::cout << "residual norm: " << std::sqrt( vectorTools::dot( residual, residual ) ) << "\n";
-
-    std::cout << "rank: " << rank << "\n";
-    std::cout << "dx: "; vectorTools::print( dx );
-
-    x += dx;
-    std::cout << "x: "; vectorTools::print( x );
-
-#ifdef DEBUG_MODE
-    DEBUG.clear();
-#endif
-
-    std::cout << "iteration 2\n";
-    error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
-                                                                             floatOuts, intOuts
-#ifdef DEBUG_MODE
-                                                                             , DEBUG
-#endif
-                                                                             );
-
-    std::cout << "macroYieldFunction: " << DEBUG[ "macroYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microYieldFunction: " << DEBUG[ "microYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microGradientYieldFunction: "; vectorTools::print( DEBUG[ "microGradientYieldFunction" ] );
-    std::cout << "residual:\n"; vectorTools::print( residual );
-    std::cout << "residual norm: " << std::sqrt( vectorTools::dot( residual, residual ) ) << "\n";
-
-//    //Form a numeric Jacobian
-//    for ( unsigned int i = 0; i < x.size(); i++ ){
-//        constantVector delta( x.size(), 0 );
-//        delta[ i ] = eps * fabs( x[ i ] ) + eps;
-//
-//        solverTools::intMatrix   i0 = intOutsDefault;
-//        solverTools::floatMatrix f0 = floatOutsDefault;
-//
-//        solverTools::floatVector residual_P, residual_M;
-//        solverTools::floatMatrix J;
-//
-//#ifdef DEBUG_MODE
-//        solverTools::debugMap DEBUG_P, DEBUG_M;
-//#endif
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x + delta, floatArgs, intArgs, residual_P, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_P
-//#endif
-//                                                                             );
-//
-//        i0 = intOuts;
-//        f0 = floatOuts;
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, floatArgs, intArgs, residual_M, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_M
-//#endif
-//                                                                             );
-//        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            jacobian[ j ][ i ] = gradCol[ j ];
-//        }
-//
-//    }
-
-    if ( error ){
-        error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
-        return 1;
-    }
-
-    dx = -vectorTools::solveLinearSystem( jacobian, residual, rank );
-
-    std::cout << "rank: " << rank << "\n";
-    std::cout << "dx: "; vectorTools::print( dx );
-
-    x += dx;
-    std::cout << "x: "; vectorTools::print( x );
-
-#ifdef DEBUG_MODE
-    DEBUG.clear();
-#endif
-
-    std::cout << "iteration 3\n";
-    error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
-                                                                             floatOuts, intOuts
-#ifdef DEBUG_MODE
-                                                                             , DEBUG
-#endif
-                                                                             );
-
-    std::cout << "macroYieldFunction: " << DEBUG[ "macroYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microYieldFunction: " << DEBUG[ "microYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microGradientYieldFunction: "; vectorTools::print( DEBUG[ "microGradientYieldFunction" ] );
-    std::cout << "residual:\n"; vectorTools::print( residual );
-    std::cout << "residual norm: " << std::sqrt( vectorTools::dot( residual, residual ) ) << "\n";
-
-//    //Form a numeric Jacobian
-//    for ( unsigned int i = 0; i < x.size(); i++ ){
-//        constantVector delta( x.size(), 0 );
-//        delta[ i ] = eps * fabs( x[ i ] ) + eps;
-//
-//        solverTools::intMatrix   i0 = intOutsDefault;
-//        solverTools::floatMatrix f0 = floatOutsDefault;
-//
-//        solverTools::floatVector residual_P, residual_M;
-//        solverTools::floatMatrix J;
-//
-//#ifdef DEBUG_MODE
-//        solverTools::debugMap DEBUG_P, DEBUG_M;
-//#endif
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x + delta, floatArgs, intArgs, residual_P, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_P
-//#endif
-//                                                                             );
-//
-//        i0 = intOuts;
-//        f0 = floatOuts;
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, floatArgs, intArgs, residual_M, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_M
-//#endif
-//                                                                             );
-//        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            jacobian[ j ][ i ] = gradCol[ j ];
-//        }
-//
-//    }
-
-    if ( error ){
-        error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
-        return 1;
-    }
-
-    dx = -vectorTools::solveLinearSystem( jacobian, residual, rank );
-
-    std::cout << "rank: " << rank << "\n";
-    std::cout << "dx: "; vectorTools::print( dx );
-
-    x += dx;
-    std::cout << "x: "; vectorTools::print( x );
-
-#ifdef DEBUG_MODE
-    DEBUG.clear();
-#endif
-
-    std::cout << "iteration 4\n";
-    error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
-                                                                             floatOuts, intOuts
-#ifdef DEBUG_MODE
-                                                                             , DEBUG
-#endif
-                                                                             );
-
-    std::cout << "macroYieldFunction: " << DEBUG[ "macroYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microYieldFunction: " << DEBUG[ "microYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microGradientYieldFunction: "; vectorTools::print( DEBUG[ "microGradientYieldFunction" ] );
-    std::cout << "residual:\n"; vectorTools::print( residual );
-    std::cout << "residual norm: " << std::sqrt( vectorTools::dot( residual, residual ) ) << "\n";
-
-//    //Form a numeric Jacobian
-//    for ( unsigned int i = 0; i < x.size(); i++ ){
-//        constantVector delta( x.size(), 0 );
-//        delta[ i ] = eps * fabs( x[ i ] ) + eps;
-//
-//        solverTools::intMatrix   i0 = intOutsDefault;
-//        solverTools::floatMatrix f0 = floatOutsDefault;
-//
-//        solverTools::floatVector residual_P, residual_M;
-//        solverTools::floatMatrix J;
-//
-//#ifdef DEBUG_MODE
-//        solverTools::debugMap DEBUG_P, DEBUG_M;
-//#endif
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x + delta, floatArgs, intArgs, residual_P, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_P
-//#endif
-//                                                                             );
-//
-//        i0 = intOuts;
-//        f0 = floatOuts;
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, floatArgs, intArgs, residual_M, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_M
-//#endif
-//                                                                             );
-//        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            jacobian[ j ][ i ] = gradCol[ j ];
-//        }
-//
-//    }
-
-    if ( error ){
-        error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
-        return 1;
-    }
-
-    dx = -vectorTools::solveLinearSystem( jacobian, residual, rank );
-
-    std::cout << "rank: " << rank << "\n";
-    std::cout << "dx: "; vectorTools::print( dx );
-
-    x += dx;
-    std::cout << "x: "; vectorTools::print( x );
-
-#ifdef DEBUG_MODE
-    DEBUG.clear();
-#endif
-
-    std::cout << "iteration 5\n";
-    error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
-                                                                             floatOuts, intOuts
-#ifdef DEBUG_MODE
-                                                                             , DEBUG
-#endif
-                                                                             );
-
-    std::cout << "macroYieldFunction: " << DEBUG[ "macroYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microYieldFunction: " << DEBUG[ "microYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microGradientYieldFunction: "; vectorTools::print( DEBUG[ "microGradientYieldFunction" ] );
-    std::cout << "residual:\n"; vectorTools::print( residual );
-    std::cout << "residual norm: " << std::sqrt( vectorTools::dot( residual, residual ) ) << "\n";
-
-//    //Form a numeric Jacobian
-//    for ( unsigned int i = 0; i < x.size(); i++ ){
-//        constantVector delta( x.size(), 0 );
-//        delta[ i ] = eps * fabs( x[ i ] ) + eps;
-//
-//        solverTools::intMatrix   i0 = intOutsDefault;
-//        solverTools::floatMatrix f0 = floatOutsDefault;
-//
-//        solverTools::floatVector residual_P, residual_M;
-//        solverTools::floatMatrix J;
-//
-//#ifdef DEBUG_MODE
-//        solverTools::debugMap DEBUG_P, DEBUG_M;
-//#endif
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x + delta, floatArgs, intArgs, residual_P, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_P
-//#endif
-//                                                                             );
-//
-//        i0 = intOuts;
-//        f0 = floatOuts;
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, floatArgs, intArgs, residual_M, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_M
-//#endif
-//                                                                             );
-//        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            jacobian[ j ][ i ] = gradCol[ j ];
-//        }
-//
-//    }
-
-    if ( error ){
-        error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
-        return 1;
-    }
-
-    dx = -vectorTools::solveLinearSystem( jacobian, residual, rank );
-
-    std::cout << "rank: " << rank << "\n";
-    std::cout << "dx: "; vectorTools::print( dx );
-
-    x += dx;
-    std::cout << "x: "; vectorTools::print( x );
-
-#ifdef DEBUG_MODE
-    DEBUG.clear();
-#endif
-
-    std::cout << "iteration 6\n";
-    error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
-                                                                             floatOuts, intOuts
-#ifdef DEBUG_MODE
-                                                                             , DEBUG
-#endif
-                                                                             );
-
-    std::cout << "macroYieldFunction: " << DEBUG[ "macroYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microYieldFunction: " << DEBUG[ "microYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microGradientYieldFunction: "; vectorTools::print( DEBUG[ "microGradientYieldFunction" ] );
-    std::cout << "residual:\n"; vectorTools::print( residual );
-    std::cout << "residual norm: " << std::sqrt( vectorTools::dot( residual, residual ) ) << "\n";
-
-//    //Form a numeric Jacobian
-//    for ( unsigned int i = 0; i < x.size(); i++ ){
-//        constantVector delta( x.size(), 0 );
-//        delta[ i ] = eps * fabs( x[ i ] ) + eps;
-//
-//        solverTools::intMatrix   i0 = intOutsDefault;
-//        solverTools::floatMatrix f0 = floatOutsDefault;
-//
-//        solverTools::floatVector residual_P, residual_M;
-//        solverTools::floatMatrix J;
-//
-//#ifdef DEBUG_MODE
-//        solverTools::debugMap DEBUG_P, DEBUG_M;
-//#endif
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x + delta, floatArgs, intArgs, residual_P, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_P
-//#endif
-//                                                                             );
-//
-//        i0 = intOuts;
-//        f0 = floatOuts;
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, floatArgs, intArgs, residual_M, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_M
-//#endif
-//                                                                             );
-//        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            jacobian[ j ][ i ] = gradCol[ j ];
-//        }
-//
-//    }
-
-    if ( error ){
-        error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
-        return 1;
-    }
-
-    dx = -vectorTools::solveLinearSystem( jacobian, residual, rank );
-
-    std::cout << "rank: " << rank << "\n";
-    std::cout << "dx: "; vectorTools::print( dx );
-
-    x += dx;
-    std::cout << "x: "; vectorTools::print( x );
-
-#ifdef DEBUG_MODE
-    DEBUG.clear();
-#endif
-
-    std::cout << "iteration 7\n";
-    error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
-                                                                             floatOuts, intOuts
-#ifdef DEBUG_MODE
-                                                                             , DEBUG
-#endif
-                                                                             );
-
-    std::cout << "macroYieldFunction: " << DEBUG[ "macroYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microYieldFunction: " << DEBUG[ "microYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microGradientYieldFunction: "; vectorTools::print( DEBUG[ "microGradientYieldFunction" ] );
-    std::cout << "residual:\n"; vectorTools::print( residual );
-    std::cout << "residual norm: " << std::sqrt( vectorTools::dot( residual, residual ) ) << "\n";
-
-//    //Form a numeric Jacobian
-//    for ( unsigned int i = 0; i < x.size(); i++ ){
-//        constantVector delta( x.size(), 0 );
-//        delta[ i ] = eps * fabs( x[ i ] ) + eps;
-//
-//        solverTools::intMatrix   i0 = intOutsDefault;
-//        solverTools::floatMatrix f0 = floatOutsDefault;
-//
-//        solverTools::floatVector residual_P, residual_M;
-//        solverTools::floatMatrix J;
-//
-//#ifdef DEBUG_MODE
-//        solverTools::debugMap DEBUG_P, DEBUG_M;
-//#endif
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x + delta, floatArgs, intArgs, residual_P, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_P
-//#endif
-//                                                                             );
-//
-//        i0 = intOuts;
-//        f0 = floatOuts;
-//
-//        error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, floatArgs, intArgs, residual_M, J,
-//                                                                                 f0, i0
-//#ifdef DEBUG_MODE
-//                                                                             , DEBUG_M
-//#endif
-//                                                                             );
-//        solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            jacobian[ j ][ i ] = gradCol[ j ];
-//        }
-//
-//    }
-
-    if ( error ){
-        error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
-        return 1;
-    }
-
-    dx = -vectorTools::solveLinearSystem( jacobian, residual, rank );
-
-    std::cout << "rank: " << rank << "\n";
-    std::cout << "dx: "; vectorTools::print( dx );
-
-    x += dx;
-    std::cout << "x: "; vectorTools::print( x );
-
-#ifdef DEBUG_MODE
-    DEBUG.clear();
-#endif
-
-    std::cout << "iteration 8\n";
-    error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs, intArgs, residual, jacobian,
-                                                                             floatOuts, intOuts
-#ifdef DEBUG_MODE
-                                                                             , DEBUG
-#endif
-                                                                             );
-
-    std::cout << "macroYieldFunction: " << DEBUG[ "macroYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microYieldFunction: " << DEBUG[ "microYieldFunction" ][ 0 ] << "\n";
-    std::cout << "microGradientYieldFunction: "; vectorTools::print( DEBUG[ "microGradientYieldFunction" ] );
-    std::cout << "residual:\n"; vectorTools::print( residual );
-    std::cout << "residual norm: " << std::sqrt( vectorTools::dot( residual, residual ) ) << "\n";
-//    assert( 1 == 0 );
 
     results << "test_computePlasticDeformationResidual & True\n";
     return 0;
