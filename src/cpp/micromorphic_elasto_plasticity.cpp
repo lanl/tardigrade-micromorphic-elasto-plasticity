@@ -4515,6 +4515,89 @@ namespace micromorphicElastoPlasticity{
             = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
 
+        //Jacobians w.r.t. the fundamental deformation measures
+        variableMatrix dPK2StressdDeformationGradient, dPK2StressdMicroDeformation, dPK2StressdGradientMicroDeformation,
+                       dReferenceMicroStressdDeformationGradient, dReferenceMicroStressdMicroDeformation,
+                       dReferenceMicroStressdGradientMicroDeformation,
+                       dReferenceHigherOrderStressdDeformationGradient, dReferenceHigherOrderStressdMicroDeformation,
+                       dReferenceHigherOrderStressdGradientMicroDeformation;
+
+        if ( evaluateFullDerivatives ){
+            dPK2StressdDeformationGradient = vectorTools::dot( dPK2StressdElasticDeformationGradient,
+                                                               dElasticDeformationGradientdDeformationGradient );
+            dPK2StressdMicroDeformation = vectorTools::dot( dPK2StressdElasticMicroDeformation,
+                                                            dElasticMicroDeformationdMicroDeformation )
+                                        + vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+                                                            dElasticGradientMicroDeformationdMicroDeformation );
+            dPK2StressdGradientMicroDeformation = vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+                                                                    dElasticGradientMicroDeformationdGradientMicroDeformation );
+
+            dReferenceMicroStressdDeformationGradient = vectorTools::dot( dReferenceMicroStressdElasticDeformationGradient,
+                                                                          dElasticDeformationGradientdDeformationGradient );
+            dReferenceMicroStressdMicroDeformation = vectorTools::dot( dReferenceMicroStressdElasticMicroDeformation,
+                                                                       dElasticMicroDeformationdMicroDeformation )
+                                                   + vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+                                                                       dElasticGradientMicroDeformationdMicroDeformation );
+            dReferenceMicroStressdGradientMicroDeformation
+                = vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+                                    dElasticGradientMicroDeformationdGradientMicroDeformation );
+
+            dReferenceHigherOrderStressdDeformationGradient
+                = vectorTools::dot( dReferenceHigherOrderStressdElasticDeformationGradient,
+                                    dElasticDeformationGradientdDeformationGradient );
+
+            dReferenceHigherOrderStressdMicroDeformation
+                = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+                                    dElasticGradientMicroDeformationdMicroDeformation );
+
+            dReferenceHigherOrderStressdGradientMicroDeformation
+                = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+                                    dElasticGradientMicroDeformationdGradientMicroDeformation );
+
+            //Assemble the jacobians into the output vector
+            
+            floatOuts[ 4 ] = solverTools::floatVector( 45 * 55, 0 ); //Jacobians w.r.t. the solution vector x
+            floatOuts[ 5 ] = solverTools::floatVector( 45 * 45, 0 ); //Jacobians w.r.t. the fundamental deformation measures
+
+            //Save the Jacobians of the PK2 and reference symmetric micro stresses
+            for ( unsigned int i = 0; i < 9; i++ ){
+                for ( unsigned int j = 0; j < 9; j++ ){
+                    floatOuts[ 4 ][ 55 * j + i ]     = dPK2StressdPlasticDeformationGradient[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * j + i ]     = dPK2StressdDeformationGradient[ i ][ j ];
+                    floatOuts[ 4 ][ 55 * j + i + 9 ] = dPK2StressdPlasticMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * j + i + 9 ] = dPK2StressdMicroDeformation[ i ][ j ];
+
+                    floatOuts[ 4 ][ 55 * ( j + 9 ) + i ] = dReferenceMicroStressdPlasticDeformationGradient[ i ][ j ];
+                    floatOuts[ 5 ][ 55 * ( j + 9 ) + i ] = dReferenceMicroStressdDeformationGradient[ i ][ j ];
+                    floatOuts[ 4 ][ 55 * ( j + 9 ) + i + 9 ] = dReferenceMicroStressdPlasticMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 55 * ( j + 9 ) + i + 9 ] = dReferenceMicroStressdMicroDeformation[ i ][ j ];
+                }
+
+                for ( unsigned int j = 0; j < 27; j++ ){
+                    floatOuts[ 4 ][ 55 * j + i + 18 ] = dPK2StressdPlasticGradientMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * j + i + 18 ] = dPK2StressdGradientMicroDeformation[ i ][ j ];
+
+                    floatOuts[ 4 ][ 55 * ( j + 9 ) + i + 18 ] = dReferenceMicroStressdPlasticGradientMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 55 * ( j + 9 ) + i + 18 ] = dReferenceMicroStressdGradientMicroDeformation[ i ][ j ];
+                }
+            }
+
+            //Save the Jacobians of the reference higher order stress
+            for ( unsigned int i = 0; i < 27; i++ ){
+                for ( unsigned int j = 0; j < 9; j++ ){
+                    floatOuts[ 4 ][ 55 * ( j + 18 ) + i ] = dReferenceHigherOrderStressdPlasticDeformationGradient[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * ( j + 18 ) + i ] = dReferenceHigherOrderStressdDeformationGradient[ i ][ j ];
+                    floatOuts[ 4 ][ 55 * ( j + 18 ) + i + 9 ] = dReferenceHigherOrderStressdPlasticMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * ( j + 18 ) + i + 9 ] = dReferenceHigherOrderStressdMicroDeformation[ i ][ j ];
+                }
+
+                for ( unsigned int j = 0; j < 27; j++ ){
+                    floatOuts[ 4 ][ 55 * ( j + 18 ) + i + 18 ] = dReferenceHigherOrderStressdPlasticGradientMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * ( j + 18 ) + i + 18 ] = dReferenceHigherOrderStressdGradientMicroDeformation[ i ][ j ];
+                }
+            }
+        }
+
 #ifdef DEBUG_MODE
 
         //Save the stress values
@@ -4523,6 +4606,8 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "currentReferenceHigherOrderStress", currentReferenceHigherOrderStress );
 
         //Save the Jacobians
+
+        //Save the Jacobians w.r.t. the plastic deformations
         DEBUG.emplace( "dPK2StressdPlasticDeformationGradient",
                        vectorTools::appendVectors( dPK2StressdPlasticDeformationGradient ) );
         DEBUG.emplace( "dPK2StressdPlasticMicroDeformation",
@@ -4541,6 +4626,30 @@ namespace micromorphicElastoPlasticity{
                        vectorTools::appendVectors( dReferenceHigherOrderStressdPlasticMicroDeformation ) );
         DEBUG.emplace( "dReferenceHigherOrderStressdPlasticGradientMicroDeformation",
                        vectorTools::appendVectors( dReferenceHigherOrderStressdPlasticGradientMicroDeformation ) );
+
+        //Save the Jacobians w.r.t. the fundamental deformation measures
+        if ( evaluateFullDerivatives ){
+            DEBUG.emplace( "dPK2StressdDeformationGradient",
+                            vectorTools::appendVectors( dPK2StressdDeformationGradient ) );
+            DEBUG.emplace( "dPK2StressdMicroDeformation",
+                            vectorTools::appendVectors( dPK2StressdMicroDeformation ) );
+            DEBUG.emplace( "dPK2StressdGradientMicroDeformation",
+                            vectorTools::appendVectors( dPK2StressdGradientMicroDeformation ) );
+    
+            DEBUG.emplace( "dReferenceMicroStressdDeformationGradient",
+                            vectorTools::appendVectors( dReferenceMicroStressdDeformationGradient ) );
+            DEBUG.emplace( "dReferenceMicroStressdMicroDeformation",
+                            vectorTools::appendVectors( dReferenceMicroStressdMicroDeformation ) );
+            DEBUG.emplace( "dReferenceMicroStressdGradientMicroDeformation",
+                            vectorTools::appendVectors( dReferenceMicroStressdGradientMicroDeformation ) );
+    
+            DEBUG.emplace( "dReferenceHigherOrderStressdDeformationGradient",
+                            vectorTools::appendVectors( dReferenceHigherOrderStressdDeformationGradient ) );
+            DEBUG.emplace( "dReferenceHigherOrderStressdMicroDeformation",
+                            vectorTools::appendVectors( dReferenceHigherOrderStressdMicroDeformation ) );
+            DEBUG.emplace( "dReferenceHigherOrderStressdGradientMicroDeformation",
+                            vectorTools::appendVectors( dReferenceHigherOrderStressdGradientMicroDeformation ) );
+        }
 
 #endif
 

@@ -14648,6 +14648,37 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                     return 1;
                 }
             }
+
+            /*!================
+            | Stress Measures |
+            =================*/
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
+                                                DEBUG[ "dPK2StressdDeformationGradient" ][ 9 * j + i ],
+                                                1e-6, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dPK2StressdDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
+                                                DEBUG[ "dReferenceMicroStressdDeformationGradient" ][ 9 * j + i ],
+                                                1e-6, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
+                                                DEBUG[ "dReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ],
+                                                1e-6, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
         }
 
         if ( ( i >= 9 ) && ( i < 18 ) ){
@@ -14722,6 +14753,49 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                     return 1;
                 }
             }
+
+            /*!================
+            | Stress Measures |
+            =================*/
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
+                                                DEBUG[ "dPK2StressdMicroDeformation" ][ 9 * j + i - 9 ],
+                                                1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "num:   " << numericGradients[ "currentPK2Stress" ][ j ] << "\n";
+                    std::cout << "ana:   " << DEBUG[ "dPK2StressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
+                    std::cout << "error: " << numericGradients[ "currentPK2Stress" ][ j ] - DEBUG[ "dPK2StressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
+                    results << "test_computePlasticDeformationResidual2 (dPK2StressdMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
+                                                DEBUG[ "dReferenceMicroStressdMicroDeformation" ][ 9 * j + i - 9 ],
+                                                1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "num:   " << numericGradients[ "currentReferenceMicroStress" ][ j ] << "\n";
+                    std::cout << "ana:   " << DEBUG[ "dReferenceMicroStressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
+                    std::cout << "error: " << numericGradients[ "currentReferenceMicroStress" ][ j ] - DEBUG[ "dReferenceMicroStressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
+                    results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
+                                                DEBUG[ "dReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i - 9 ],
+                                                1e-6, 1e-9 ) ){
+                    std::cout << "i, j: " << i << ", " << j << "\n";
+                    std::cout << "num:   " << numericGradients[ "currentReferenceHigherOrderStress" ][ j ] << "\n";
+                    std::cout << "ana:   " << DEBUG[ "dReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
+                    std::cout << "error: " << numericGradients[ "currentReferenceHigherOrderStress" ][ j ] - DEBUG[ "dReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
+                    results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
         }
 
         if ( ( i >= 18 ) && ( i < 45 ) ){
@@ -14793,6 +14867,37 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                                                 DEBUG[ "dElasticGammadGradientMicroDeformation" ][ 27 * j + i - 18 ],
                                                 1e-9, 1e-9 ) ){
                     results << "test_computePlasticDeformationResidual2 (dElasticGammadGradientMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            /*!================
+            | Stress Measures |
+            =================*/
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
+                                                DEBUG[ "dPK2StressdGradientMicroDeformation" ][ 27 * j + i - 18 ],
+                                                1e-5, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dPK2StressdGradientMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
+                                                DEBUG[ "dReferenceMicroStressdGradientMicroDeformation" ][ 27 * j + i - 18 ],
+                                                1e-5, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdGradientMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
+                                                DEBUG[ "dReferenceHigherOrderStressdGradientMicroDeformation" ][ 27 * j + i - 18 ],
+                                                1e-5, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdGradientMicroDeformation) & False\n";
                     return 1;
                 }
             }
