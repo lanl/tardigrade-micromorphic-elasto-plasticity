@@ -4792,6 +4792,50 @@ namespace micromorphicElastoPlasticity{
             = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                 dReferenceHigherOrderStressdPlasticGradientMicroDeformation );
 
+        //Assemble the Jacobians w.r.t. the fundamental deformation measures
+        variableMatrix dMacroFlowDirectiondDeformationGradient, dMacroFlowDirectiondMicroDeformation,
+                       dMacroFlowDirectiondGradientMicroDeformation,
+                       dMicroFlowDirectiondDeformationGradient, dMicroFlowDirectiondMicroDeformation,
+                       dMicroFlowDirectiondGradientMicroDeformation,
+                       dMicroGradientFlowDirectiondDeformationGradient, dMicroGradientFlowDirectiondMicroDeformation,
+                       dMicroGradientFlowDirectiondGradientMicroDeformation;
+
+        if ( evaluateFullDerivatives ){
+            dMacroFlowDirectiondDeformationGradient
+                = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdDeformationGradient )
+                + vectorTools::dot( dMacroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendDeformationGradient );
+
+            dMacroFlowDirectiondMicroDeformation
+                = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdMicroDeformation );
+
+            dMacroFlowDirectiondGradientMicroDeformation
+                = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdGradientMicroDeformation );
+
+            dMicroFlowDirectiondDeformationGradient
+                = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdDeformationGradient )
+                + vectorTools::dot( dMicroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendDeformationGradient );
+
+            dMicroFlowDirectiondMicroDeformation
+                = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdMicroDeformation );
+
+            dMicroFlowDirectiondGradientMicroDeformation
+                = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdGradientMicroDeformation );
+
+            dMicroGradientFlowDirectiondDeformationGradient
+                = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                    dReferenceHigherOrderStressdDeformationGradient )
+                + vectorTools::dot( dMicroGradientFlowDirectiondElasticRightCauchyGreen,
+                                    dElasticRightCauchyGreendDeformationGradient );
+
+            dMicroGradientFlowDirectiondMicroDeformation
+                = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                    dReferenceHigherOrderStressdMicroDeformation );
+
+            dMicroGradientFlowDirectiondGradientMicroDeformation
+                = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                                    dReferenceHigherOrderStressdGradientMicroDeformation );
+        }
+
 #ifdef DEBUG_MODE
 
         //Save the flow directions
@@ -4818,6 +4862,27 @@ namespace micromorphicElastoPlasticity{
                        vectorTools::appendVectors( dMicroGradientFlowDirectiondPlasticMicroDeformation ) );
         DEBUG.emplace( "dMicroGradientFlowDirectiondPlasticGradientMicroDeformation",
                        vectorTools::appendVectors( dMicroGradientFlowDirectiondPlasticGradientMicroDeformation  ) );
+
+        if ( evaluateFullDerivatives ){
+            DEBUG.emplace( "dMacroFlowDirectiondDeformationGradient",
+                            vectorTools::appendVectors( dMacroFlowDirectiondDeformationGradient ) );
+            DEBUG.emplace( "dMacroFlowDirectiondMicroDeformation",
+                            vectorTools::appendVectors( dMacroFlowDirectiondMicroDeformation ) );
+            DEBUG.emplace( "dMacroFlowDirectiondGradientMicroDeformation",
+                            vectorTools::appendVectors( dMacroFlowDirectiondGradientMicroDeformation ) );
+            DEBUG.emplace( "dMicroFlowDirectiondDeformationGradient",
+                            vectorTools::appendVectors( dMicroFlowDirectiondDeformationGradient ) );
+            DEBUG.emplace( "dMicroFlowDirectiondMicroDeformation",
+                            vectorTools::appendVectors( dMicroFlowDirectiondMicroDeformation ) );
+            DEBUG.emplace( "dMicroFlowDirectiondGradientMicroDeformation",
+                            vectorTools::appendVectors( dMicroFlowDirectiondGradientMicroDeformation ) );
+            DEBUG.emplace( "dMicroGradientFlowDirectiondDeformationGradient",
+                            vectorTools::appendVectors( dMicroGradientFlowDirectiondDeformationGradient ) );
+            DEBUG.emplace( "dMicroGradientFlowDirectiondMicroDeformation",
+                            vectorTools::appendVectors( dMicroGradientFlowDirectiondMicroDeformation ) );
+            DEBUG.emplace( "dMicroGradientFlowDirectiondGradientMicroDeformation",
+                            vectorTools::appendVectors( dMicroGradientFlowDirectiondGradientMicroDeformation ) );
+        }
 
 #endif
 
