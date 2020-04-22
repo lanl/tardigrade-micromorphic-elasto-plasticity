@@ -14517,8 +14517,13 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
         floatArgs_M[ 3 ] = cGradChi_M;
 
         //Evaluate the residual
-        solverTools::floatMatrix fO = floatOutsDefault;
-        solverTools::intMatrix iO = intOutsDefault;
+        solverTools::floatMatrix fO_P, fO_M;
+        fO_P = floatOutsDefault;
+        fO_M = floatOutsDefault;
+
+        solverTools::intMatrix iO_P, iO_M;
+        iO_P = intOutsDefault;
+        iO_M = intOutsDefault;
 
         solverTools::floatVector residual_P, residual_M;
         solverTools::floatMatrix _J;
@@ -14528,7 +14533,7 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
 #endif
 
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs_P, intArgs, residual_P, _J,
-                                                                                 fO, iO
+                                                                                 fO_P, iO_P
 #ifdef DEBUG_MODE
                                                                                  , DEBUG_P
 #endif
@@ -14539,12 +14544,9 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
             results << "test_computePlasticDeformationResidual2 & False\n";
             return 1;
         }
-
-        fO = floatOutsDefault;
-        iO = intOutsDefault;
         
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs_M, intArgs, residual_M, _J,
-                                                                                 fO, iO
+                                                                                 fO_M, iO_M
 #ifdef DEBUG_MODE
                                                                                  , DEBUG_M
 #endif
@@ -15427,7 +15429,17 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 5 ][ 45 * j + i ] ) ){
-                results << "test_computePlasticDeformationResidual2 (test 3) & False\n";
+                results << "test_computePlasticDeformationResidual2 (test 4) & False\n";
+                return 1;
+            }
+        }
+
+        //Test the partial derivative of the stress measures w.r.t. the fundamental deformation measures
+        gradCol = vectorTools::appendVectors( { fO_P[ 0 ] - fO_M[ 0 ], fO_P[ 1 ] - fO_M[ 1 ], fO_P[ 2 ] - fO_M[ 2 ] } ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 4 ][ 45 * j + i ], 1e-5 ) ){
+                results << "test_computePlasticDeformationResidual2 (test 5) & False\n";
                 return 1;
             }
         }
