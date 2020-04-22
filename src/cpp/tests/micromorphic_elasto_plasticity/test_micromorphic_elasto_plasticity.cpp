@@ -14757,6 +14757,39 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                 results << "test_computePlasticDeformationResidual2 (dExpectedMicroGradientStrainISVdDeformationGradient) & False\n";
                 return 1;
             }
+
+            /*!===========================
+            | Plastic Velocity Gradients |
+            ============================*/
+
+            vectorTools::print( numericGradients[ "currentPlasticMacroVelocityGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
+                                                DEBUG[ "dPlasticMacroVelocityGradientdDeformationGradient" ][ 9 * j + i ],
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+
+            vectorTools::print( numericGradients[ "currentPlasticMicroVelocityGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
+                                                DEBUG[ "dPlasticMicroVelocityGradientdDeformationGradient" ][ 9 * j + i ],
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+            vectorTools::print( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ] );
+            for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
+                                                DEBUG[ "dPlasticMicroGradientVelocityGradientdDeformationGradient" ][ 9 * j + i ],
+                                                1e-9, 1e-9 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroGradientVelocityGradientdDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
         }
 
         if ( ( i >= 9 ) && ( i < 18 ) ){
