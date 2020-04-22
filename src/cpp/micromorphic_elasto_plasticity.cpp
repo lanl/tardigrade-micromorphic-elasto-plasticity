@@ -5339,6 +5339,64 @@ namespace micromorphicElastoPlasticity{
             + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                 dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation );
 
+        variableMatrix dExpectedPlasticDeformationGradientdDeformationGradient, dExpectedPlasticDeformationGradientdMicroDeformation,
+                       dExpectedPlasticDeformationGradientdGradientMicroDeformation,
+                       dExpectedPlasticMicroDeformationdDeformationGradient, dExpectedPlasticMicroDeformationdMicroDeformation,
+                       dExpectedPlasticMicroDeformationdGradientMicroDeformation,
+                       dExpectedPlasticGradientMicroDeformationdDeformationGradient,
+                       dExpectedPlasticGradientMicroDeformationdMicroDeformation,
+                       dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation;
+
+        if ( evaluateFullDerivatives ){
+            dExpectedPlasticDeformationGradientdDeformationGradient
+                = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                                    dPlasticMacroVelocityGradientdDeformationGradient );
+    
+            dExpectedPlasticDeformationGradientdMicroDeformation
+                = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                                    dPlasticMacroVelocityGradientdMicroDeformation );
+    
+            dExpectedPlasticDeformationGradientdGradientMicroDeformation
+                = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                                    dPlasticMacroVelocityGradientdGradientMicroDeformation );
+    
+            dExpectedPlasticMicroDeformationdDeformationGradient
+                = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+                                    dPlasticMicroVelocityGradientdDeformationGradient );
+    
+            dExpectedPlasticMicroDeformationdMicroDeformation
+                = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+                                    dPlasticMicroVelocityGradientdMicroDeformation );
+    
+            dExpectedPlasticMicroDeformationdGradientMicroDeformation
+                = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+                                    dPlasticMicroVelocityGradientdGradientMicroDeformation );
+    
+            dExpectedPlasticGradientMicroDeformationdDeformationGradient
+                = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                                    dPlasticMacroVelocityGradientdDeformationGradient )
+                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                                    dPlasticMicroVelocityGradientdDeformationGradient )
+                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                                    dPlasticGradientMicroVelocityGradientdDeformationGradient );
+    
+            dExpectedPlasticGradientMicroDeformationdMicroDeformation
+                = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                                    dPlasticMacroVelocityGradientdMicroDeformation )
+                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                                    dPlasticMicroVelocityGradientdMicroDeformation )
+                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                                    dPlasticGradientMicroVelocityGradientdMicroDeformation );
+    
+            dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation
+                = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                                    dPlasticMacroVelocityGradientdGradientMicroDeformation )
+                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                                    dPlasticMicroVelocityGradientdGradientMicroDeformation )
+                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                                    dPlasticGradientMicroVelocityGradientdGradientMicroDeformation );
+        }
+
 #ifdef DEBUG_MODE
 
         //Save the velocity gradients
@@ -5379,6 +5437,27 @@ namespace micromorphicElastoPlasticity{
                        vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation ) );
         DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation",
                        vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation ) );
+
+        if ( evaluateFullDerivatives ){
+            DEBUG.emplace( "dExpectedPlasticDeformationGradientdDeformationGradient",
+                            vectorTools::appendVectors( dExpectedPlasticDeformationGradientdDeformationGradient ) );
+            DEBUG.emplace( "dExpectedPlasticDeformationGradientdMicroDeformation",
+                            vectorTools::appendVectors( dExpectedPlasticDeformationGradientdMicroDeformation ) );
+            DEBUG.emplace( "dExpectedPlasticDeformationGradientdGradientMicroDeformation",
+                            vectorTools::appendVectors( dExpectedPlasticDeformationGradientdGradientMicroDeformation ) );
+            DEBUG.emplace( "dExpectedPlasticMicroDeformationdDeformationGradient",
+                            vectorTools::appendVectors( dExpectedPlasticMicroDeformationdDeformationGradient ) );
+            DEBUG.emplace( "dExpectedPlasticMicroDeformationdMicroDeformation",
+                            vectorTools::appendVectors( dExpectedPlasticMicroDeformationdMicroDeformation ) );
+            DEBUG.emplace( "dExpectedPlasticMicroDeformationdGradientMicroDeformation",
+                            vectorTools::appendVectors( dExpectedPlasticMicroDeformationdGradientMicroDeformation ) );
+            DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdDeformationGradient",
+                            vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdDeformationGradient ) );
+            DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdMicroDeformation",
+                            vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdMicroDeformation ) );
+            DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation",
+                            vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation ) );
+        }
 
 #endif
 
