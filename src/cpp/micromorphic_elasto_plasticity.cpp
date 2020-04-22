@@ -4136,6 +4136,78 @@ namespace micromorphicElastoPlasticity{
          * :param solverTools::intMatrix &intOuts: The integer values that do change during the solve.
          * :param std::map< std::string, solverTools::floatVector > &DEBUG: The debug map. Only available if
          *     DEBUG_MODE is defined.
+         *
+         * Ordering of floatArgs
+         * floatArgs[  0 ] = Dt, The change in time
+         * floatArgs[  1 ] = currentDeformationGradient, The current value of the deformation gradient
+         * floatArgs[  2 ] = currentMicroDeformation, The current value of the micro-deformation
+         * floatArgs[  3 ] = currentGradientMicroDeformation, The current value of the gradient of the
+         *     micro deformation in the reference configuration.
+         * floatArgs[  4 ] = previousMacroGamma, The previous value of the macro plastic multiplier
+         * floatArgs[  5 ] = previousMicroGamma, The previous value of the micro plastic multiplier
+         * floatArgs[  6 ] = previousMicroGradientGamma, The previous values of the micro plastic
+         *     multipliers
+         * floatArgs[  7 ] = previousPlasticDeformationGradient, The previous value of the plastic
+         *     deformation gradient.
+         * floatArgs[  8 ] = previousPlasticMicroDeformation, The previous value of the plastic micro
+         *     deforamtion.
+         * floatArgs[  9 ] = previousPlasticGradientMicroDeformation, The previous value of the plastic
+         *     intermediate configuration gradient of the micro deformation.
+         * floatArgs[ 10 ] = previousMacroStrainISV, The previous value of the macro strain-like ISV.
+         * floatArgs[ 11 ] = previousMicroStrainISV, The previous value of the micro strain-like ISV.
+         * floatArgs[ 12 ] = previousMicroGradientStrainISV, The previous values of the micro gradient
+         *     strain-like ISVs.
+         * floatArgs[ 13 ] = previousdMacroGdMicroCohesion, The previous value of the Jacobian of the
+         *     macro flow direction w.r.t. the macro cohesion value.
+         * floatArgs[ 14 ] = previousdMicroGdMicroCohesion, The previous value of the Jacobian of the
+         *     micro flow direction w.r.t. the micro cohesion value.
+         * floatArgs[ 15 ] = previousdMicroGradientGdMicroGradientCohesion, The previous value of the
+         *     Jacobian of the micro gradient flow direction w.r.t. the micro gradient cohesion value.
+         * floatArgs[ 16 ] = previousPlasticMacroVelocityGradient, The previous plastic macro velocity
+         *     gradient.
+         * floatArgs[ 17 ] = previousPlasticMicroVelocityGradient, The previous plastic micro velocity
+         *     gradient.
+         * floatArgs[ 18 ] = previousPlasticMicroGradientVelocityGradient, The previous plastic micro
+         *     gradient velocity gradient.
+         * floatArgs[ 19 ] = macroFlowParameters, The macro flow parameters.
+         * floatArgs[ 20 ] = microFlowParameters, The micro flow parameters.
+         * floatArgs[ 21 ] = microGradientFlowParameters, The micro gradient flow parameters.
+         * floatArgs[ 22 ] = macroHardeningParameters, The macro hardening parameters.
+         * floatArgs[ 23 ] = microHardeningParameters, The micro hardening parameters.
+         * floatArgs[ 24 ] = microGradientHardeningParameters, The micro gradient hardening parameters.
+         * floatArgs[ 25 ] = macroYieldParameters, The macro yield parameters.
+         * floatArgs[ 26 ] = microYieldParameters, The micro yield parameters.
+         * floatArgs[ 27 ] = microGradientYieldParameters, The micro gradient yield parameters.
+         * floatArgs[ 28 ] = Amatrix, The A stiffness tensor.
+         * floatArgs[ 29 ] = Bmatrix, The B stiffness tensor.
+         * floatArgs[ 30 ] = Cmatrix, The C stiffness tensor.
+         * floatArgs[ 31 ] = Dmatrix, The D stiffness tensor.
+         * floatArgs[ 32 ] = alphaMacro, The macro integration parameter.
+         * floatArgs[ 33 ] = alphaMicro, The micro integration parameter.
+         * floatArgs[ 34 ] = alphaMicroGradient, The micro gradient integration parameter.
+         *
+         * Ordering of intArgs
+         * intArgs[ 0 ] = computeFullDerivatives, Flag which indicates if the full derivatives should be
+         *     computed.
+         * 
+         * Ordering of floatOuts
+         * floatOuts[ 0 ] = currentPK2Stress, The current value of the second Piola-Kirchoff stress
+         * floatOuts[ 1 ] = currentReferenceMicroStress, The current value of the reference micro
+         *     stress.
+         * floatOuts[ 2 ] = currentReferenceHigherOrderStress, The current value of the reference
+         *     higher order stress.
+         * floatOuts[ 3 ] = dStressdResidual, The partial derivative of the stresses w.r.t. the 
+         *     residual vector.
+         * floatOuts[ 4 ] = dStressdDeformation, The partial derivative of the stresses w.r.t.
+         *     the fundamental deformation measures.
+         * floatOuts[ 5 ] = dResidualdDeformation, The partial derivative of the residual w.r.t.
+         *     the fundamental deformation measures.
+         *
+         * Ordering of intOuts
+         * intOuts[ 0 ] = isYielding, The flags which indicate if a yield surface is yielding or not.
+         *     This activates different parts of the residual and can change during the solution if
+         *     different surfaces begin yielding. Once a surface has begun yielding it is assumed to 
+         *     continue yielding.
          */
 
         if ( x.size() != 55 ){
@@ -4148,18 +4220,18 @@ namespace micromorphicElastoPlasticity{
                                   "The floating point argument matrix floatArgs must have a length of 35" );
         }
 
-        if ( intOuts.size() != 2 ){
+        if ( intArgs.size() != 1 ){
             return new errorNode( "computePlasticDeformationResidual",
-                                  "The integer ouput matrix intOuts must have a length of 2" );
+                                  "The integer argument matrix intArgs must have a length of 1" );
         }
 
-        if ( intOuts[ 1 ].size() != 1 ){
+        if ( intArgs[ 0 ].size() != 1 ){
             return new errorNode( "computePlasticDeformationResidual",
                                   "The deformation measure evaluation flag must have a size of 1" );
         }
 
         bool evaluateFullDerivatives = false;
-        if ( intOuts[ 1 ][ 0 ] > 0 ){
+        if ( intArgs[ 0 ][ 0 ] > 0 ){
             evaluateFullDerivatives = true;
         }
 
@@ -4174,6 +4246,11 @@ namespace micromorphicElastoPlasticity{
                 return new errorNode( "computePlasticDeformationResidual",
                                       "The floating point output matrix floatOuts must have a length of 3" );
             }
+        }
+
+        if ( intOuts.size() != 1 ){
+            return new errorNode( "computePlasticDeformationResidual",
+                                  "The integer output matrix intOuts must have a length of 1" );
         }
 
         /*=============================
@@ -4200,7 +4277,7 @@ namespace micromorphicElastoPlasticity{
         const variableVector  *previousMicroGradientGamma                    = &floatArgs[ ii++ ];
         const variableVector  *previousPlasticDeformationGradient            = &floatArgs[ ii++ ];
         const variableVector  *previousPlasticMicroDeformation               = &floatArgs[ ii++ ];
-        const variableVector  *previousPlasticMicroGradient                  = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticGradientMicroDeformation       = &floatArgs[ ii++ ];
         const variableType    *previousMacroStrainISV                        = &floatArgs[ ii++ ][ 0 ];
         const variableType    *previousMicroStrainISV                        = &floatArgs[ ii++ ][ 0 ];
         const variableVector  *previousMicroGradientStrainISV                = &floatArgs[ ii++ ];
@@ -5236,7 +5313,7 @@ namespace micromorphicElastoPlasticity{
                                            currentPlasticMicroGradientVelocityGradient,
                                           *previousPlasticDeformationGradient,
                                           *previousPlasticMicroDeformation,
-                                          *previousPlasticMicroGradient,
+                                          *previousPlasticGradientMicroDeformation,
                                           *previousPlasticMacroVelocityGradient,
                                           *previousPlasticMicroVelocityGradient,
                                           *previousPlasticMicroGradientVelocityGradient,

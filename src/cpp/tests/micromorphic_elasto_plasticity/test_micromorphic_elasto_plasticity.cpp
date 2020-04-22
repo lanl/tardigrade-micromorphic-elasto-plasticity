@@ -10498,8 +10498,8 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     solverTools::floatMatrix floatArgs = floatArgsDefault;
     solverTools::floatMatrix floatOuts = floatOutsDefault;
 
-    solverTools::intMatrix intArgs;
-    solverTools::intMatrix intOutsDefault = { { 1, 1, 0, 0, 0 }, { 0 } };
+    solverTools::intMatrix intArgs = { { 0 } };
+    solverTools::intMatrix intOutsDefault = { { 1, 1, 0, 0, 0 } };
     
     solverTools::intMatrix intOuts = intOutsDefault;
 
@@ -10572,7 +10572,7 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
         solverTools::intMatrix iA, iO;
 
         fA = floatArgsDefault;
-        iA = { };
+        iA = intArgs;
 
 #ifdef DEBUG_MODE
         solverTools::debugMap DEBUG_P, DEBUG_M;
@@ -12581,8 +12581,8 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
     solverTools::floatMatrix floatArgs = floatArgsDefault;
     solverTools::floatMatrix floatOuts = floatOutsDefault;
 
-    solverTools::intMatrix intArgs;
-    solverTools::intMatrix intOutsDefault = { { 1, 1, 1, 1, 1 }, { 1 } };
+    solverTools::intMatrix intArgs = { { 1 } };
+    solverTools::intMatrix intOutsDefault = { { 1, 1, 1, 1, 1 } };
     
     solverTools::intMatrix intOuts = intOutsDefault;
 
@@ -12656,7 +12656,7 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
         solverTools::intMatrix iA, iO_P, iO_M;
 
         fA = floatArgsDefault;
-        iA = { };
+        iA = intArgs;
 
 #ifdef DEBUG_MODE
         solverTools::debugMap DEBUG_P, DEBUG_M;
