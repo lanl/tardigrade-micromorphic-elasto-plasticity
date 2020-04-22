@@ -6563,15 +6563,15 @@ int test_evaluate_model( std::ofstream &results){
     std::vector< double > time = { 10., 2.5 };
 
     //Initialize the material parameters
-    std::vector< double > fparams = { 2, 1e2, 1.5e1,               //Macro hardening parameters 
-                                      2, 2e2, 2.0e1,               //Micro hardening parameters
-                                      2, 2.5e2, 2.7e1,             //Micro gradient hardening parameters
-                                      2, 0.56, 0.,                 //Macro flow parameters
-                                      2, 0.15, 0.,                 //Micro flow parameters
-                                      2, 0.82, 0.,                 //Micro gradient flow parameters
-                                      2, 0.70, 0.,                 //Macro yield parameters
-                                      2, 0.40, 0.,                 //Micro yield parameters
-                                      2, 0.52, 0.,                 //Micro gradient yield parameters
+    std::vector< double > fparams = { 2, 1.0e2, 1.5e1,             //Macro hardening parameters
+                                      2, 1.5e2, 2.0e1,             //Micro hardening parameters
+                                      2, 2.0e2, 2.7e1,             //Micro gradient hardening parameters
+                                      2, 0.56, 0.2,                //Macro flow parameters
+                                      2, 0.15,-0.2,                //Micro flow parameters
+                                      2, 0.82, 0.1,                //Micro gradient flow parameters
+                                      2, 0.70, 0.3,                //Macro yield parameters
+                                      2, 0.40,-0.3,                //Micro yield parameters
+                                      2, 0.52, 0.4,                //Micro gradient yield parameters
                                       2, 696.47, 65.84,            //A stiffness tensor parameters
                                       5, -7.69, -51.92, 38.61, -27.31, 5.13,  //B stiffness tensor parameters
                                       11, 1.85, -0.19, -1.08, -1.57, 2.29, -0.61, 5.97, -2.02, 2.38, -0.32, -3.25, //C stiffness tensor parameters
@@ -6588,8 +6588,8 @@ int test_evaluate_model( std::ofstream &results){
 //                                         {  0.31303067, -1.23910631, -0.93837662 },
 //                                         { -0.32571524, -0.95306342, -0.93025257 } };
 
-    double current_grad_u[ 3 ][ 3 ] = { {0.200, 0.000, 0.000 },
-                                        {0.000, 0.000, 0.000 },
+    double current_grad_u[ 3 ][ 3 ] = { {0.200, 0.100, 0.000 },
+                                        {0.100, 0.001, 0.000 },
                                         {0.000, 0.000, 0.000 } };
 
     double previous_grad_u[ 3 ][ 3 ] = { {0, 0, 0},
@@ -6604,7 +6604,7 @@ int test_evaluate_model( std::ofstream &results){
 //                                 -0.11111872, -0.07416114, -1.01048108,
 //                                  0.1804018 , -1.01116291,  0.03248007 };
 
-    double current_phi[ 9 ] = { 0.600, 0.000, 0.000,
+    double current_phi[ 9 ] = { 0.100, 0.000, 0.000,
                                 0.000, 0.000, 0.000,
                                 0.000, 0.000, 0.000 };
 
@@ -6679,6 +6679,18 @@ int test_evaluate_model( std::ofstream &results){
     std::map< std::string, solverTools::floatVector > DEBUG;
 #endif
 
+    solverTools::floatVector SDVSAnswer = { 0.121442 , 0, 0, 0, 0,
+                                            0.0605888, 0, 0, 0, 0,
+                                            0.08227  , 0.0406864, 0,
+                                            0.0393374, 9.54548e-05, 0,
+                                            0, 0, 0.00288376,
+                                            0, 0, 0,
+                                            0, 0, 0,
+                                            0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
     int errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
                                                                   current_grad_u,  current_phi,  current_grad_phi,
                                                                   previous_grad_u, previous_phi, previous_grad_phi,
@@ -6699,7 +6711,10 @@ int test_evaluate_model( std::ofstream &results){
         return 1;
     }
 
-    std::cout << "SDVS:\n"; vectorTools::print( SDVS );
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) ){
+        results << "test_evaluate_model (test 1) & False\n";
+        return 1;
+    }
 
     results << "test_evaluate_model & True\n";
     return 1;
@@ -11872,7 +11887,7 @@ int main(){
     test_cout_redirect( results );
     test_cerr_redirect( results );
 
-//    test_evaluate_model( results );
+    test_evaluate_model( results );
 
     //Close the results file
     results.close();

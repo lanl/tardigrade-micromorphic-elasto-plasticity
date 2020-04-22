@@ -5477,9 +5477,9 @@ namespace micromorphicElastoPlasticity{
             return 2;
         }
 
-        std::cout << "currentPK2Stress:\n"; vectorTools::print( currentPK2Stress );
-        std::cout << "currentReferenceMicroStress:\n"; vectorTools::print( currentReferenceMicroStress );
-        std::cout << "currentReferenceHigherOrderStress:\n"; vectorTools::print( currentReferenceHigherOrderStress );
+//        std::cout << "currentPK2Stress:\n"; vectorTools::print( currentPK2Stress );
+//        std::cout << "currentReferenceMicroStress:\n"; vectorTools::print( currentReferenceMicroStress );
+//        std::cout << "currentReferenceHigherOrderStress:\n"; vectorTools::print( currentReferenceHigherOrderStress );
 
         //Evaluate the yield functions
 //        std::cout << "evaluating the yield functions\n";
@@ -5588,6 +5588,7 @@ namespace micromorphicElastoPlasticity{
                                             currentMicroGradientGamma[ 1 ],
                                             currentMicroGradientGamma[ 2 ]
                                           };
+
             x0 = vectorTools::appendVectors( { currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress, x0 } );
 
             solverTools::floatVector solutionVector;
@@ -5626,12 +5627,26 @@ namespace micromorphicElastoPlasticity{
             }
 
             //Extract the deformation measures
+//            std::cout << "solutionVector:\n"; vectorTools::print( solutionVector );
             currentPlasticDeformationGradient      = variableVector( solutionVector.begin() +  0, solutionVector.begin() +  9 );
             currentPlasticMicroDeformation         = variableVector( solutionVector.begin() +  9, solutionVector.begin() + 18 );
             currentPlasticGradientMicroDeformation = variableVector( solutionVector.begin() + 18, solutionVector.begin() + 45 );
             currentMacroStrainISV                  = solutionVector[ 45 ];
             currentMicroStrainISV                  = solutionVector[ 46 ];
             currentMicroGradientStrainISV          = variableVector( solutionVector.begin() + 47, solutionVector.begin() + 50 );
+            currentMacroGamma                      = solutionVector[ 50 ];
+            currentMicroGamma                      = solutionVector[ 51 ];
+            currentMicroGradientGamma              = variableVector( solutionVector.begin() + 52, solutionVector.begin() + 55 );
+
+//            std::cout << "currentPlasticDeformationGradient:\n"; vectorTools::print( currentPlasticDeformationGradient );
+//            std::cout << "currentPlasticMicroDeformation:\n"; vectorTools::print( currentPlasticMicroDeformation );
+//            std::cout << "currentPlasticGradientMicroDeformation:\n"; vectorTools::print( currentPlasticGradientMicroDeformation );
+//            std::cout << "currentMacroStrainISV:\n" << currentMacroStrainISV << "\n";
+//            std::cout << "currentMicroStrainISV:\n" << currentMicroStrainISV << "\n";
+//            std::cout << "currentMicroGradientStrainISV:\n"; vectorTools::print( currentMicroGradientStrainISV );
+//            std::cout << "currentMacroGamma:\n" << currentMacroGamma << "\n";
+//            std::cout << "currentMicroStrainISV:\n" << currentMicroGamma << "\n";
+//            std::cout << "currentMicroGradientStrainISV:\n"; vectorTools::print( currentMicroGradientGamma );
 
             //Extract the stresses
             currentPK2Stress                       = floatOuts[ 0 ];
@@ -5689,6 +5704,7 @@ namespace micromorphicElastoPlasticity{
             return 2;
         }
 
+//        std::cout << "SDVS:\n"; vectorTools::print( SDVS );
         //Model evaluation successful. Return.
         return 0;
     }
