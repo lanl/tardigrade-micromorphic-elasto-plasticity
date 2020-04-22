@@ -15424,6 +15424,13 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
 
         //Test the partial derivative of the residual w.r.t. the fundamental deformation measures 
         solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 5 ][ 45 * j + i ] ) ){
+                results << "test_computePlasticDeformationResidual2 (test 3) & False\n";
+                return 1;
+            }
+        }
     }
 
     results << "test_computePlasticDeformationResidual2 & True\n";

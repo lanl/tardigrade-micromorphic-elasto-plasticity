@@ -5649,7 +5649,7 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ i ][ j ] -= dExpectedPlasticDeformationGradientdPlasticDeformationGradient[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ 55 * i + j ] -= dExpectedPlasticDeformationGradientdDeformationGradient[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * i + j ] -= dExpectedPlasticDeformationGradientdDeformationGradient[ i ][ j ];
                 }
             }
 
@@ -5657,7 +5657,7 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ i ][ j + 9 ] -= dExpectedPlasticDeformationGradientdPlasticMicroDeformation[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ 55 * i + j + 9 ] -= dExpectedPlasticDeformationGradientdMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * i + j + 9 ] -= dExpectedPlasticDeformationGradientdMicroDeformation[ i ][ j ];
                 }
             }
 
@@ -5665,7 +5665,7 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ i ][ j + 18 ] -= dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ 55 * i + j + 18 ] -= dExpectedPlasticDeformationGradientdGradientMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * i + j + 18 ] -= dExpectedPlasticDeformationGradientdGradientMicroDeformation[ i ][ j ];
                 }
             }
 
@@ -5684,7 +5684,7 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ i + 9 ][ j ] -= dExpectedPlasticMicroDeformationdPlasticDeformationGradient[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ 55 * ( i + 9 ) + j ] -= dExpectedPlasticMicroDeformationdDeformationGradient[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * ( i + 9 ) + j ] -= dExpectedPlasticMicroDeformationdDeformationGradient[ i ][ j ];
                 }
             }
 
@@ -5692,7 +5692,7 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ i + 9 ][ j + 9 ] -= dExpectedPlasticMicroDeformationdPlasticMicroDeformation[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ 55 * ( i + 9 ) + j + 9 ] -= dExpectedPlasticMicroDeformationdMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * ( i + 9 ) + j + 9 ] -= dExpectedPlasticMicroDeformationdMicroDeformation[ i ][ j ];
                 }
             }
 
@@ -5700,7 +5700,7 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ i + 9 ][ j + 18 ] -= dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ 55 * ( i + 9 ) + j + 18 ] -= dExpectedPlasticMicroDeformationdGradientMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * ( i + 9 ) + j + 18 ] -= dExpectedPlasticMicroDeformationdGradientMicroDeformation[ i ][ j ];
                 }
             }
 
@@ -5717,7 +5717,7 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ i + 18 ][ j ] -= dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ 55 * ( i + 18 ) + j ] -= dExpectedPlasticGradientMicroDeformationdDeformationGradient[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * ( i + 18 ) + j ] -= dExpectedPlasticGradientMicroDeformationdDeformationGradient[ i ][ j ];
                 }
             }
 
@@ -5725,7 +5725,7 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ i + 18 ][ j + 9 ] -= dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ 55 * ( i + 18 ) + j + 9 ] -= dExpectedPlasticGradientMicroDeformationdMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * ( i + 18 ) + j + 9 ] -= dExpectedPlasticGradientMicroDeformationdMicroDeformation[ i ][ j ];
                 }
             }
 
@@ -5733,7 +5733,7 @@ namespace micromorphicElastoPlasticity{
                 jacobian[ i + 18 ][ j + 18 ] -= dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ 55 * ( i + 18 ) + j + 18 ] -= dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ 45 * ( i + 18 ) + j + 18 ] -= dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation[ i ][ j ];
                 }
             }
 
@@ -5778,14 +5778,26 @@ namespace micromorphicElastoPlasticity{
             //The Jacobian terms w.r.t. the plastic deformation
             for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
                 jacobian[ 50 ][ i ] = dMacroYielddPlasticDeformationGradient[ i ];
+
+                if ( evaluateFullDerivatives ){
+                    floatOuts[ 5 ][ 50 * 45 + i ] = dMacroYielddDeformationGradient[ i ];
+                }
             }
 
             for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
                 jacobian[ 50 ][ i + 9 ] = dMacroYielddPlasticMicroDeformation[ i ];
+
+                if ( evaluateFullDerivatives ){
+                    floatOuts[ 5 ][ 50 * 45 + i + 9 ] = dMacroYielddMicroDeformation[ i ];
+                }
             }
 
             for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
                 jacobian[ 50 ][ i + 18 ] = dMacroYielddPlasticGradientMicroDeformation[ i ];
+
+                if ( evaluateFullDerivatives ){
+                    floatOuts[ 5 ][ 50 * 45 + i + 18 ] = dMacroYielddGradientMicroDeformation[ i ];
+                }
             }
 
             //The Jacobian terms w.r.t. the strain-like ISVs
@@ -5804,14 +5816,26 @@ namespace micromorphicElastoPlasticity{
             //The Jacobian terms w.r.t. the plastic deformation
             for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
                 jacobian[ 51 ][ i ] = dMicroYielddPlasticDeformationGradient[ i ];
+
+                if ( evaluateFullDerivatives ){
+                    floatOuts[ 5 ][ 51 * 45 + i ] = dMicroYielddDeformationGradient[ i ];
+                }
             }
 
             for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
                 jacobian[ 51 ][ i + 9 ] = dMicroYielddPlasticMicroDeformation[ i ];
+
+                if ( evaluateFullDerivatives ){
+                    floatOuts[ 5 ][ 51 * 45 + i + 9 ] = dMicroYielddMicroDeformation[ i ];
+                }
             }
 
             for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
                 jacobian[ 51 ][ i + 18 ] = dMicroYielddPlasticGradientMicroDeformation[ i ];
+
+                if ( evaluateFullDerivatives ){
+                    floatOuts[ 5 ][ 51 * 45 + i + 18 ] = dMicroYielddGradientMicroDeformation[ i ];
+                }
             }
 
             //The Jacobian terms w.r.t. the strain-like ISVs
@@ -5831,14 +5855,26 @@ namespace micromorphicElastoPlasticity{
                 //The Jacobian terms w.r.t. the plastic deformation
                 for ( unsigned int j = 0; j < currentPlasticDeformationGradient.size(); j++ ){
                     jacobian[ 52 + i ][ j ] = dMicroGradientYielddPlasticDeformationGradient[ i ][ j ];
+
+                    if ( evaluateFullDerivatives ){
+                        floatOuts[ 5 ][ ( 52 + i ) * 45 + j ] = dMicroGradientYielddDeformationGradient[ i ][ j ];
+                    }
                 }
 
                 for ( unsigned int j = 0; j < currentPlasticMicroDeformation.size(); j++ ){
                     jacobian[ 52 + i ][ j + 9 ] = dMicroGradientYielddPlasticMicroDeformation[ i ][ j ];
+
+                    if ( evaluateFullDerivatives ){
+                        floatOuts[ 5 ][ ( 52 + i ) * 45 + j + 9 ] = dMicroGradientYielddMicroDeformation[ i ][ j ];
+                    }
                 }
 
                 for ( unsigned int j = 0; j < currentPlasticGradientMicroDeformation.size(); j++ ){
                     jacobian[ 52 + i ][ j + 18 ] = dMicroGradientYielddPlasticGradientMicroDeformation[ i ][ j ];
+
+                    if ( evaluateFullDerivatives ){
+                        floatOuts[ 5 ][ ( 52 + i ) * 45 + j + 18 ] = dMicroGradientYielddGradientMicroDeformation[ i ][ j ];
+                    }
                 }
 
                 //The Jacobian terms w.r.t. the strain-like ISVs
