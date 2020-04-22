@@ -441,23 +441,6 @@ namespace micromorphicElastoPlasticity{
 #endif
                                     );
 
-    errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                              const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts
-#ifdef DEBUG_MODE
-                              , solverTools::debugMap &DEBUG
-#endif
-                             );
-
-    errorOut computeResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                              const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                              solverTools::floatMatrix &jacobian,
-                              solverTools::floatMatrix &floatOuts, solverTools::intMatrix &intOuts
-#ifdef DEBUG_MODE
-                              , solverTools::debugMap &DEBUG
-#endif
-                            );
-
     errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
                                                      const double ( &grad_phi )[ 9 ][ 3 ],
                                                      variableVector &deformationGradient, variableVector &microDeformation,
@@ -507,24 +490,6 @@ namespace micromorphicElastoPlasticity{
                               variableType &dMacroCdMacroStrainISV, variableType &dMicroCdMicroStrainISV,
                               variableMatrix &dMicroGradientCdMicroGradientStrainISV );
 
-    errorOut computeStrainISVResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                       const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                                       solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                       solverTools::intMatrix &intOuts
-#ifdef DEBUG_MODE
-                                       , solverTools::debugMap &DEBUG
-#endif
-                                     );
-
-    errorOut computeStressResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                    const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                                    solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                    solverTools::intMatrix &intOuts
-#ifdef DEBUG_MODE
-                                    , solverTools::debugMap &DEBUG
-#endif
-                                  );
-
     errorOut computePlasticDeformationResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
                                                 const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
                                                 solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
@@ -533,44 +498,6 @@ namespace micromorphicElastoPlasticity{
                                                 , solverTools::debugMap &DEBUG
 #endif
                                               );
-
-    errorOut solveForStrainISV( const constantType &Dt,
-                                const variableType &currentMacroGamma, const variableType &currentMicroGamma,
-                                const variableVector &currentMicroGradientGamma,
-                                const variableVector &currentElasticRightCauchyGreen,
-                                const variableVector &currentPK2Stress,
-                                const variableVector &currentReferenceMicroStress,
-                                const variableVector &currentReferenceHigherOrderStress,
-                                const variableType &previousMacroGamma, const variableType &previousMicroGamma,
-                                const variableVector &previousMicroGradientGamma,
-                                const variableType &previousMacroStrainISV, const variableType &previousMicroStrainISV,
-                                const variableVector &previousMicroGradientStrainISV,
-                                const variableType &previousdMacroGdMicroCohesion,
-                                const variableType &previousdMicroGdMicroCohesion,
-                                const variableMatrix &previousdMicroGradientGdMicroGradientCohesion,
-                                variableType &currentMacroStrainISV, variableType &currentMicroStrainISV,
-                                variableVector &currentMicroGradientISV,
-                                variableType &currentMacroCohesion, variableType &currentMicroCohesion,
-                                variableVector &currentMicroGradientCohesion,
-                                variableVector &currentMacroFlowDirection, variableVector &currentMicroFlowDirection,
-                                variableVector &currentMicroGradientFlowDirection,
-                                variableMatrix &dMacroFlowDirectiondPK2Stress,
-                                variableMatrix &dMacroFlowDirectiondElasticRCG,
-                                variableMatrix &dMicroFlowDirectiondReferenceMicroStress,
-                                variableMatrix &dMicroFlowDirectiondElasticRCG,
-                                variableMatrix &dMicroGradientFlowDirectiondReferenceHigherOrderStress,
-                                variableMatrix &dMicroGradientFlowDirectiondElasticRCG,
-                                bool convergeFlag, bool fatalErrorFlag,
-                                const parameterVector &macroHardeningParameters, const parameterVector &microHardeningParameters,
-                                const parameterVector &microGradientHardeningParameters,
-                                const parameterVector &macroFlowParameters, const parameterVector &microFlowParameters,
-                                const parameterVector &microGradientFlowParameters,
-                                const parameterType &alphaMacro, const parameterType &alphaMicro,
-                                const parameterType &alphaMicroGradient
-#ifdef DEBUG_MODE
-                                , solverTools::debugMap &DEBUG
-#endif
-                              );
 
     int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
                         const double ( &current_grad_u )[ 3 ][ 3 ],   const double ( &current_phi )[ 9 ],
