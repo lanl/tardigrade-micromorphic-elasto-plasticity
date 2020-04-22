@@ -12652,8 +12652,8 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
         solverTools::floatVector residual_P, residual_M;
         solverTools::floatMatrix jacobian_P, jacobian_M;
 
-        solverTools::floatMatrix fA, fO;
-        solverTools::intMatrix iA, iO;
+        solverTools::floatMatrix fA, fO_P, fO_M;
+        solverTools::intMatrix iA, iO_P, iO_M;
 
         fA = floatArgsDefault;
         iA = { };
@@ -12662,11 +12662,14 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
         solverTools::debugMap DEBUG_P, DEBUG_M;
 #endif
 
-        fO = floatOutsDefault;
-        iO = intOutsDefault;
+        fO_P = floatOutsDefault;
+        fO_M = floatOutsDefault;
+
+        iO_P = intOutsDefault;
+        iO_M = intOutsDefault;
 
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x + delta, fA, iA, residual_P, jacobian_P,
-                                                                                 fO, iO
+                                                                                 fO_P, iO_P
 #ifdef DEBUG_MODE
                                                                                  , DEBUG_P
 #endif
@@ -12678,11 +12681,8 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
             return 1;
         }
 
-        fO = floatOutsDefault;
-        iO = intOutsDefault;
-
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, fA, iA, residual_M, jacobian_M,
-                                                                                 fO, iO
+                                                                                 fO_M, iO_M
 #ifdef DEBUG_MODE
                                                                                  , DEBUG_M
 #endif
@@ -14472,6 +14472,20 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                 std::cout << "gradCol:\n"; vectorTools::print( gradCol );
                 std::cout << "jacobian:\n"; vectorTools::print( jacobian );
                 results << "test_computePlasticDeformationResidual2 (test 2) & False\n";
+                return 1;
+            }
+        }
+
+        //Test the partial derivative of the stress measures w.r.t. the plastic fundamental deformation measures
+        gradCol = vectorTools::appendVectors( { fO_P[ 0 ] - fO_M[ 0 ], fO_P[ 1 ] - fO_M[ 1 ], fO_P[ 2 ] - fO_M[ 2 ] } ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 3 ][ 55 * j + i ], 1e-5 ) ){
+                std::cout << "i, j: " << i << ", " << j << "\n";
+                std::cout << "num:   " << gradCol[ j ] << "\n";
+                std::cout << "ana:   " << floatOuts[ 3 ][ 55 * j + i ] << "\n";
+                std::cout << "error: " << gradCol[ j ] - floatOuts[ 3 ][ 55 * j + i ] << "\n";
+                results << "test_computePlasticDeformationResidual2 (test 3) & False\n";
                 return 1;
             }
         }
