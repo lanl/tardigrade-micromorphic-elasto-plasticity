@@ -5537,6 +5537,44 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dMicroGradientYielddMicroGradientStrainISV = vectorTools::dot( dMicroGradientYielddMicroGradientCohesion,
                                                                                       dMicroGradientCohesiondMicroGradientStrainISV );
 
+        variableVector dMacroYielddDeformationGradient, dMacroYielddMicroDeformation, dMacroYielddGradientMicroDeformation,
+                       dMicroYielddDeformationGradient, dMicroYielddMicroDeformation, dMicroYielddGradientMicroDeformation;
+        variableMatrix dMicroGradientYielddDeformationGradient, dMicroGradientYielddMicroDeformation,
+                       dMicroGradientYielddGradientMicroDeformation;
+
+        if ( evaluateFullDerivatives ){
+            dMacroYielddDeformationGradient
+                = vectorTools::Tdot( dPK2StressdDeformationGradient, dMacroYielddPK2Stress )
+                + vectorTools::Tdot( dElasticRightCauchyGreendDeformationGradient, dMacroYielddElasticRightCauchyGreen );
+    
+            dMacroYielddMicroDeformation
+                = vectorTools::Tdot( dPK2StressdMicroDeformation, dMacroYielddPK2Stress );
+    
+            dMacroYielddGradientMicroDeformation
+                = vectorTools::Tdot( dPK2StressdGradientMicroDeformation, dMacroYielddPK2Stress );
+    
+            dMicroYielddDeformationGradient
+                = vectorTools::Tdot( dReferenceMicroStressdDeformationGradient, dMicroYielddReferenceMicroStress )
+                + vectorTools::Tdot( dElasticRightCauchyGreendDeformationGradient, dMicroYielddElasticRightCauchyGreen );
+    
+            dMicroYielddMicroDeformation
+                = vectorTools::Tdot( dReferenceMicroStressdMicroDeformation, dMicroYielddReferenceMicroStress );
+    
+            dMicroYielddGradientMicroDeformation
+                = vectorTools::Tdot( dReferenceMicroStressdGradientMicroDeformation, dMicroYielddReferenceMicroStress );
+    
+            dMicroGradientYielddDeformationGradient
+                = vectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress, dReferenceHigherOrderStressdDeformationGradient )
+                + vectorTools::dot( dMicroGradientYielddElasticRightCauchyGreen, dElasticRightCauchyGreendDeformationGradient );
+    
+            dMicroGradientYielddMicroDeformation
+                = vectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress, dReferenceHigherOrderStressdMicroDeformation );
+    
+            dMicroGradientYielddGradientMicroDeformation
+                = vectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress,
+                                    dReferenceHigherOrderStressdGradientMicroDeformation );
+        }
+
 #ifdef DEBUG_MODE
 
         //Save the values to the debug map
@@ -5572,6 +5610,21 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "dMicroYielddMicroStrainISV", temp );
         DEBUG.emplace( "dMicroGradientYielddMicroGradientStrainISV",
                         vectorTools::appendVectors( dMicroGradientYielddMicroGradientStrainISV ) );
+
+        if ( evaluateFullDerivatives ){
+            DEBUG.emplace( "dMacroYielddDeformationGradient", dMacroYielddDeformationGradient );
+            DEBUG.emplace( "dMacroYielddMicroDeformation", dMacroYielddMicroDeformation );
+            DEBUG.emplace( "dMacroYielddGradientMicroDeformation", dMacroYielddGradientMicroDeformation );
+            DEBUG.emplace( "dMicroYielddDeformationGradient", dMicroYielddDeformationGradient );
+            DEBUG.emplace( "dMicroYielddMicroDeformation", dMicroYielddMicroDeformation );
+            DEBUG.emplace( "dMicroYielddGradientMicroDeformation", dMicroYielddGradientMicroDeformation );
+            DEBUG.emplace( "dMicroGradientYielddDeformationGradient",
+                            vectorTools::appendVectors( dMicroGradientYielddDeformationGradient ) );
+            DEBUG.emplace( "dMicroGradientYielddMicroDeformation",
+                            vectorTools::appendVectors( dMicroGradientYielddMicroDeformation ) );
+            DEBUG.emplace( "dMicroGradientYielddGradientMicroDeformation",
+                            vectorTools::appendVectors( dMicroGradientYielddGradientMicroDeformation ) );
+        }
 
 #endif
 

@@ -14819,6 +14819,37 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                     return 1;
                 }
             }
+
+            /*!====================
+            | The Yield Equations |
+            =====================*/
+
+            for ( unsigned int j = 0; j < numericGradients[ "macroYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ j ],
+                                                DEBUG[ "dMacroYielddDeformationGradient" ][ 9 * j + i ],
+                                                1e-6, 1e-8 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dMacroYielddDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "microYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ j ],
+                                                DEBUG[ "dMicroYielddDeformationGradient" ][ 9 * j + i ],
+                                                1e-6, 1e-8 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dMicroYielddDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
+                                                DEBUG[ "dMicroGradientYielddDeformationGradient" ][ 9 * j + i ],
+                                                1e-6, 1e-8 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dMicroGradientYielddDeformationGradient) & False\n";
+                    return 1;
+                }
+            }
         }
 
         if ( ( i >= 9 ) && ( i < 18 ) ){
@@ -15076,6 +15107,37 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                     return 1;
                 }
             }
+
+            /*!====================
+            | The Yield Equations |
+            =====================*/
+
+            for ( unsigned int j = 0; j < numericGradients[ "macroYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ j ],
+                                                DEBUG[ "dMacroYielddMicroDeformation" ][ 9 * j + i - 9 ],
+                                                1e-6, 1e-8 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dMacroYielddMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "microYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ j ],
+                                                DEBUG[ "dMicroYielddMicroDeformation" ][ 9 * j + i - 9 ],
+                                                1e-6, 1e-8 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dMicroYielddMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
+                                                DEBUG[ "dMicroGradientYielddMicroDeformation" ][ 9 * j + i - 9 ],
+                                                1e-6, 1e-7 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dMicroGradientYielddMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
         }
 
         if ( ( i >= 18 ) && ( i < 45 ) ){
@@ -15318,6 +15380,37 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i - 18 ],
                                                 1e-9, 1e-9 ) ){
                     results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            /*!====================
+            | The Yield Equations |
+            =====================*/
+
+            for ( unsigned int j = 0; j < numericGradients[ "macroYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ j ],
+                                                DEBUG[ "dMacroYielddGradientMicroDeformation" ][ 27 * j + i - 18 ],
+                                                1e-6, 1e-7 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dMacroYielddGradientMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "microYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ j ],
+                                                DEBUG[ "dMicroYielddGradientMicroDeformation" ][ 27 * j + i - 18 ],
+                                                1e-6, 1e-7 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dMicroYielddGradientMicroDeformation) & False\n";
+                    return 1;
+                }
+            }
+
+            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
+                                                DEBUG[ "dMicroGradientYielddGradientMicroDeformation" ][ 27 * j + i - 18 ],
+                                                1e-6, 1e-7 ) ){
+                    results << "test_computePlasticDeformationResidual2 (dMicroGradientYielddGradientMicroDeformation) & False\n";
                     return 1;
                 }
             }
