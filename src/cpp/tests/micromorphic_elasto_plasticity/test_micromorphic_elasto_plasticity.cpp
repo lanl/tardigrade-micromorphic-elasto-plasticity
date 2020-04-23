@@ -6679,6 +6679,14 @@ int test_evaluate_model( std::ofstream &results){
     std::map< std::string, solverTools::floatVector > DEBUG;
 #endif
 
+    solverTools::floatVector PK2Answer = { 81.7872 , 2.47596, 0      ,
+                                            2.86008, 75.614 , 0      ,
+                                            0      , 0      , 75.0941 };
+    solverTools::floatVector SigmaAnswer = { 86.4049 ,  2.76742,  0,
+                                              2.76742, 79.5226 ,  0,
+                                              0      ,  0      , 79.0043 };;
+    solverTools::floatVector MAnswer( 27, 0 );
+
     solverTools::floatVector SDVSAnswer = { 0.121442 , 0, 0, 0, 0,
                                             0.0605888, 0, 0, 0, 0,
                                             0.08227  , 0.0406864, 0,
@@ -6713,6 +6721,21 @@ int test_evaluate_model( std::ofstream &results){
 
     if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) ){
         results << "test_evaluate_model (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( PK2Answer, current_PK2 ) ){
+        results << "test_evaluate_model (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SigmaAnswer, current_SIGMA ) ){
+        results << "test_evaluate_model (test 3) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( MAnswer, current_M ) ){
+        results << "test_evaluate_model (test 4) & False\n";
         return 1;
     }
 
