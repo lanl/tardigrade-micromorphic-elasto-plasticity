@@ -6653,7 +6653,7 @@ int test_evaluate_model( std::ofstream &results){
                                            
 
     //Initialize the state variable vector
-    std::vector< double > SDVS( 55, 0 );
+    std::vector< double > SDVSDefault( 55, 0 );
 
     //Initialize the additional degree of freedom vectors
     std::vector< double > current_ADD_DOF;
@@ -6699,6 +6699,8 @@ int test_evaluate_model( std::ofstream &results){
                                             0, 0, 0, 0, 0, 0, 0, 0, 0,
                                             0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+    std::vector< double > SDVS = SDVSDefault;
+
     int errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
                                                                   current_grad_u,  current_phi,  current_grad_phi,
                                                                   previous_grad_u, previous_phi, previous_grad_phi,
@@ -6738,6 +6740,58 @@ int test_evaluate_model( std::ofstream &results){
         results << "test_evaluate_model (test 4) & False\n";
         return 1;
     }
+
+    //Test the Jacobians
+    std::vector< std::vector< double > > DPK2Dgrad_u, DPK2Dphi, DPK2Dgrad_phi, DSIGMADgrad_u, DSIGMADphi, DSIGMADgrad_phi,
+                                         DMDgrad_u, DMDphi, DMDgrad_phi;
+
+    std::vector< std::vector< std::vector< double > > > ADD_JACOBIANS;
+
+    SDVS = SDVSDefault;
+    
+    errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                              current_grad_u,  current_phi,  current_grad_phi,
+                                                              previous_grad_u, previous_phi, previous_grad_phi,
+                                                              SDVS,
+                                                              current_ADD_DOF,  current_ADD_grad_DOF,
+                                                              previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                              current_PK2, current_SIGMA, current_M,
+                                                              DPK2Dgrad_u, DPK2Dphi, DPK2Dgrad_phi,
+                                                              DSIGMADgrad_u, DSIGMADphi, DSIGMADgrad_phi,
+                                                              DMDgrad_u, DMDphi, DMDgrad_phi,
+                                                              ADD_TERMS, ADD_JACOBIANS,
+                                                              output_message
+#ifdef DEBUG_MODE
+                                                              , DEBUG
+#endif
+                                                              );
+
+    if ( errorCode != 0 ){
+        std::cout << output_message;
+        results << "test_evaluate_model & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) ){
+        results << "test_evaluate_model (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( PK2Answer, current_PK2 ) ){
+        results << "test_evaluate_model (test 6) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SigmaAnswer, current_SIGMA ) ){
+        results << "test_evaluate_model (test 7) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( MAnswer, current_M ) ){
+        results << "test_evaluate_model (test 8) & False\n";
+        return 1;
+    }
+
 
     results << "test_evaluate_model & True\n";
     return 1;
