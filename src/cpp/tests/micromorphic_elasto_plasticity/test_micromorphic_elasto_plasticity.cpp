@@ -6748,7 +6748,11 @@ int test_evaluate_model( std::ofstream &results){
     std::vector< std::vector< std::vector< double > > > ADD_JACOBIANS;
 
     SDVS = SDVSDefault;
-    
+
+#ifdef DEBUG_MODE
+    DEBUG.clear();
+#endif
+
     errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
                                                               current_grad_u,  current_phi,  current_grad_phi,
                                                               previous_grad_u, previous_phi, previous_grad_phi,
@@ -6765,6 +6769,17 @@ int test_evaluate_model( std::ofstream &results){
                                                               , DEBUG
 #endif
                                                               );
+
+    std::cout << "Jacobians\n";
+    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
+//    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
+//    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
+    std::cout << "DSIGMADgrad_u:\n"; vectorTools::print( DSIGMADgrad_u );
+//    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
+//    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
+    std::cout << "DMDgrad_u:\n"; vectorTools::print( DMDgrad_u );
+//    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
+//    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
 
     if ( errorCode != 0 ){
         std::cout << output_message;
@@ -6792,6 +6807,500 @@ int test_evaluate_model( std::ofstream &results){
         return 1;
     }
 
+    //Test the jacobians w.r.t. the gradient of the macro displacement
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < 9; i++ ){
+        constantMatrix delta( 3, constantVector( 3, 0 ) );
+        delta[ i / 3 ][ i % 3 ] = eps * fabs( current_grad_u[ i / 3 ][ i % 3 ] ) + eps;
+
+        constantMatrix gradU =
+        { 
+            { current_grad_u[ 0 ][ 0 ], current_grad_u[ 0 ][ 1 ], current_grad_u[ 0 ][ 2 ] },
+            { current_grad_u[ 1 ][ 0 ], current_grad_u[ 1 ][ 1 ], current_grad_u[ 1 ][ 2 ] },
+            { current_grad_u[ 2 ][ 0 ], current_grad_u[ 2 ][ 1 ], current_grad_u[ 2 ][ 2 ] }
+        };
+
+        constantMatrix gradU_P = gradU + delta;
+        constantMatrix gradU_M = gradU - delta;
+
+        double current_grad_u_P[ 3 ][ 3 ] =
+        {
+            { gradU_P[ 0 ][ 0 ], gradU_P[ 0 ][ 1 ], gradU_P[ 0 ][ 2 ] },
+            { gradU_P[ 1 ][ 0 ], gradU_P[ 1 ][ 1 ], gradU_P[ 1 ][ 2 ] },
+            { gradU_P[ 2 ][ 0 ], gradU_P[ 2 ][ 1 ], gradU_P[ 2 ][ 2 ] }
+        };
+
+        double current_grad_u_M[ 3 ][ 3 ] =
+        {
+            { gradU_M[ 0 ][ 0 ], gradU_M[ 0 ][ 1 ], gradU_M[ 0 ][ 2 ] },
+            { gradU_M[ 1 ][ 0 ], gradU_M[ 1 ][ 1 ], gradU_M[ 1 ][ 2 ] },
+            { gradU_M[ 2 ][ 0 ], gradU_M[ 2 ][ 1 ], gradU_M[ 2 ][ 2 ] }
+        };
+
+        solverTools::floatVector PK2_P, SIGMA_P, M_P;
+        solverTools::floatVector PK2_M, SIGMA_M, M_M;
+
+        solverTools::floatVector SDVS_P = SDVSDefault;
+        solverTools::floatVector SDVS_M = SDVSDefault;
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap DEBUG_P, DEBUG_M;
+#endif
+
+        errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                                  current_grad_u_P,  current_phi,  current_grad_phi,
+                                                                  previous_grad_u, previous_phi, previous_grad_phi,
+                                                                  SDVS_P,
+                                                                  current_ADD_DOF,  current_ADD_grad_DOF,
+                                                                  previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                                  PK2_P, SIGMA_P, M_P,
+                                                                  ADD_TERMS,
+                                                                  output_message
+#ifdef DEBUG_MODE
+                                                                  , DEBUG_P
+#endif
+                                                                  );
+
+        if ( errorCode != 0 ){
+            std::cout << output_message;
+            results << "test_evaluate_model & False\n";
+            return 1;
+        }
+
+        errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                                  current_grad_u_M,  current_phi,  current_grad_phi,
+                                                                  previous_grad_u, previous_phi, previous_grad_phi,
+                                                                  SDVS_M,
+                                                                  current_ADD_DOF,  current_ADD_grad_DOF,
+                                                                  previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                                  PK2_M, SIGMA_M, M_M,
+                                                                  ADD_TERMS,
+                                                                  output_message
+#ifdef DEBUG_MODE
+                                                                  , DEBUG_M
+#endif
+                                                                  );
+
+        if ( errorCode != 0 ){
+            std::cout << output_message;
+            results << "test_evaluate_model & False\n";
+            return 1;
+        }
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap numericGradients;
+        
+        for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
+            
+            auto it_M = DEBUG_M.find( it_P->first );
+            if ( it_M == DEBUG_M.end() ){
+                std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
+                results << "test_evaluate_model & False\n";
+                return 1;
+            }
+
+            numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i / 3 ][ i % 3 ] ) );
+
+        }
+
+        //Check the total Jacobians of the plastic deformation measures
+        for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
+                                            DEBUG[ "dPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ],
+                                            1e-5,
+                                            1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "dPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
+                                        - DEBUG[ "dPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ] << "\n";
+                results << "test_evaluate_model (dPlasticDeformationGradientdDeformationGradient) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
+                                            DEBUG[ "dPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ],
+                                            1e-5,
+                                            1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "dPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
+                                        - DEBUG[ "dPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
+                results << "test_evaluate_model (dPlasticMicroDeformationdDeformationGradient) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
+                                            DEBUG[ "dPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ],
+                                            1e-5,
+                                            1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "dPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "convergedPlasticGradientDeformationGradient" ][ j ]
+                                        - DEBUG[ "dPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
+                results << "test_evaluate_model (dPlasticGradientMicroDeformationdDeformationGradient) & False\n";
+                return 1;
+            }
+        }
+
+        //Check the total Jacobians of the intermediate stresses
+        
+#endif
+
+        solverTools::floatVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
+
+//        std::cout << "numeric DPK2Dgrad_u:\n"; vectorTools::print( gradCol );
+
+        gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
+
+//        std::cout << "numeric DSIGMADphi:\n"; vectorTools::print( gradCol );
+
+        gradCol = ( M_P - M_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
+
+//        std::cout << "numeric DMDgrad_phi:\n"; vectorTools::print( gradCol );
+
+    }
+
+    //Test the jacobians w.r.t. the micro displacement
+    for ( unsigned int i = 0; i < 9; i++ ){
+        constantVector delta( 9, 0 );
+        delta[ i ] = eps * fabs( current_phi[ i ] ) + eps;
+
+        constantVector phi =
+        {
+            current_phi[ 0 ], current_phi[ 1 ], current_phi[ 2 ],
+            current_phi[ 3 ], current_phi[ 4 ], current_phi[ 5 ],
+            current_phi[ 6 ], current_phi[ 7 ], current_phi[ 8 ]
+        };
+
+        constantVector phi_P = phi + delta;
+        constantVector phi_M = phi - delta;
+
+        double current_phi_P[ 9 ] =
+        {
+            phi_P[ 0 ], phi_P[ 1 ], phi_P[ 2 ],
+            phi_P[ 3 ], phi_P[ 4 ], phi_P[ 5 ],
+            phi_P[ 6 ], phi_P[ 7 ], phi_P[ 8 ]
+        };
+
+        double current_phi_M[ 9 ] =
+        {
+            phi_M[ 0 ], phi_M[ 1 ], phi_M[ 2 ],
+            phi_M[ 3 ], phi_M[ 4 ], phi_M[ 5 ],
+            phi_M[ 6 ], phi_M[ 7 ], phi_M[ 8 ]
+        };
+
+        solverTools::floatVector PK2_P, SIGMA_P, M_P;
+        solverTools::floatVector PK2_M, SIGMA_M, M_M;
+
+        solverTools::floatVector SDVS_P = SDVSDefault;
+        solverTools::floatVector SDVS_M = SDVSDefault;
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap DEBUG_P, DEBUG_M;
+#endif
+
+        errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                                  current_grad_u,  current_phi_P,  current_grad_phi,
+                                                                  previous_grad_u, previous_phi, previous_grad_phi,
+                                                                  SDVS_P,
+                                                                  current_ADD_DOF,  current_ADD_grad_DOF,
+                                                                  previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                                  PK2_P, SIGMA_P, M_P,
+                                                                  ADD_TERMS,
+                                                                  output_message
+#ifdef DEBUG_MODE
+                                                                  , DEBUG_P
+#endif
+                                                                  );
+
+        if ( errorCode != 0 ){
+            std::cout << output_message;
+            results << "test_evaluate_model & False\n";
+            return 1;
+        }
+
+        errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                                  current_grad_u,  current_phi_M,  current_grad_phi,
+                                                                  previous_grad_u, previous_phi, previous_grad_phi,
+                                                                  SDVS_M,
+                                                                  current_ADD_DOF,  current_ADD_grad_DOF,
+                                                                  previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                                  PK2_M, SIGMA_M, M_M,
+                                                                  ADD_TERMS,
+                                                                  output_message
+#ifdef DEBUG_MODE
+                                                                  , DEBUG_M
+#endif
+                                                                  );
+
+        if ( errorCode != 0 ){
+            std::cout << output_message;
+            results << "test_evaluate_model & False\n";
+            return 1;
+        }
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap numericGradients;
+        
+        for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
+            
+            auto it_M = DEBUG_M.find( it_P->first );
+            if ( it_M == DEBUG_M.end() ){
+                std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
+                results << "test_evaluate_model & False\n";
+                return 1;
+            }
+
+            numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i ] ) );
+
+        }
+
+        //Check the total Jacobians of the plastic deformation measures
+        std::cout << "dFpdChi:\n"; vectorTools::print( numericGradients[ "convergedPlasticDeformationGradient" ] );
+        for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
+                                            DEBUG[ "dPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ],
+                                            1e-5,
+                                            1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "dPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
+                                        - DEBUG[ "dPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ] << "\n";
+                results << "test_evaluate_model (dPlasticDeformationGradientdMicroDeformation) & False\n";
+                return 1;
+            }
+        }
+
+        std::cout << "dFpdChi:\n"; vectorTools::print( numericGradients[ "convergedPlasticMicroDeformation" ] );
+        for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
+                                            DEBUG[ "dPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ],
+                                            1e-5,
+                                            1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "dPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
+                                        - DEBUG[ "dPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
+                results << "test_evaluate_model (dPlasticMicroDeformationdMicroDeformation) & False\n";
+                return 1;
+            }
+        }
+
+        std::cout << "dFpdChi:\n"; vectorTools::print( numericGradients[ "convergedPlasticGradientMicroDeformation" ] );
+        for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
+                                            DEBUG[ "dPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ],
+                                            1e-5,
+                                            1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "dPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "convergedPlasticGradientDeformationGradient" ][ j ]
+                                        - DEBUG[ "dPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
+                results << "test_evaluate_model (dPlasticGradientMicroDeformationdMicroDeformation) & False\n";
+                return 1;
+            }
+        }
+
+
+#endif
+
+        solverTools::floatVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i ] );
+
+//        std::cout << "numeric DPK2Dgrad_u:\n"; vectorTools::print( gradCol );
+
+        gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i ] );
+
+//        std::cout << "numeric DSIGMADphi:\n"; vectorTools::print( gradCol );
+
+        gradCol = ( M_P - M_M ) / ( 2 * delta[ i ] );
+
+//        std::cout << "numeric DMDgrad_phi:\n"; vectorTools::print( gradCol );
+
+    }
+
+    //Test the jacobians w.r.t. the gradient of the micro displacement
+    for ( unsigned int i = 0; i < 27; i++ ){
+        constantMatrix delta( 9, constantVector( 3, 0 ) );
+        delta[ i / 3 ][ i % 3 ] = eps * fabs( current_grad_u[ i / 3 ][ i % 3 ] ) + eps;
+
+        constantMatrix gradPhi =
+        { 
+            { current_grad_phi[ 0 ][ 0 ], current_grad_phi[ 0 ][ 1 ], current_grad_phi[ 0 ][ 2 ] },
+            { current_grad_phi[ 1 ][ 0 ], current_grad_phi[ 1 ][ 1 ], current_grad_phi[ 1 ][ 2 ] },
+            { current_grad_phi[ 2 ][ 0 ], current_grad_phi[ 2 ][ 1 ], current_grad_phi[ 2 ][ 2 ] },
+            { current_grad_phi[ 3 ][ 0 ], current_grad_phi[ 3 ][ 1 ], current_grad_phi[ 3 ][ 2 ] },
+            { current_grad_phi[ 4 ][ 0 ], current_grad_phi[ 4 ][ 1 ], current_grad_phi[ 4 ][ 2 ] },
+            { current_grad_phi[ 5 ][ 0 ], current_grad_phi[ 5 ][ 1 ], current_grad_phi[ 5 ][ 2 ] },
+            { current_grad_phi[ 6 ][ 0 ], current_grad_phi[ 6 ][ 1 ], current_grad_phi[ 6 ][ 2 ] },
+            { current_grad_phi[ 7 ][ 0 ], current_grad_phi[ 7 ][ 1 ], current_grad_phi[ 7 ][ 2 ] },
+            { current_grad_phi[ 8 ][ 0 ], current_grad_phi[ 8 ][ 1 ], current_grad_phi[ 8 ][ 2 ] }
+        };
+
+        constantMatrix gradPhi_P = gradPhi + delta;
+        constantMatrix gradPhi_M = gradPhi - delta;
+
+        double current_grad_phi_P[ 9 ][ 3 ] =
+        {
+            { gradPhi_P[ 0 ][ 0 ], gradPhi_P[ 0 ][ 1 ], gradPhi_P[ 0 ][ 2 ] },
+            { gradPhi_P[ 1 ][ 0 ], gradPhi_P[ 1 ][ 1 ], gradPhi_P[ 1 ][ 2 ] },
+            { gradPhi_P[ 2 ][ 0 ], gradPhi_P[ 2 ][ 1 ], gradPhi_P[ 2 ][ 2 ] },
+            { gradPhi_P[ 3 ][ 0 ], gradPhi_P[ 3 ][ 1 ], gradPhi_P[ 3 ][ 2 ] },
+            { gradPhi_P[ 4 ][ 0 ], gradPhi_P[ 4 ][ 1 ], gradPhi_P[ 4 ][ 2 ] },
+            { gradPhi_P[ 5 ][ 0 ], gradPhi_P[ 5 ][ 1 ], gradPhi_P[ 5 ][ 2 ] },
+            { gradPhi_P[ 6 ][ 0 ], gradPhi_P[ 6 ][ 1 ], gradPhi_P[ 6 ][ 2 ] },
+            { gradPhi_P[ 7 ][ 0 ], gradPhi_P[ 7 ][ 1 ], gradPhi_P[ 7 ][ 2 ] },
+            { gradPhi_P[ 8 ][ 0 ], gradPhi_P[ 8 ][ 1 ], gradPhi_P[ 8 ][ 2 ] }
+        };
+
+        double current_grad_phi_M[ 9 ][ 3 ] =
+        {
+            { gradPhi_M[ 0 ][ 0 ], gradPhi_M[ 0 ][ 1 ], gradPhi_M[ 0 ][ 2 ] },
+            { gradPhi_M[ 1 ][ 0 ], gradPhi_M[ 1 ][ 1 ], gradPhi_M[ 1 ][ 2 ] },
+            { gradPhi_M[ 2 ][ 0 ], gradPhi_M[ 2 ][ 1 ], gradPhi_M[ 2 ][ 2 ] },
+            { gradPhi_M[ 3 ][ 0 ], gradPhi_M[ 3 ][ 1 ], gradPhi_M[ 3 ][ 2 ] },
+            { gradPhi_M[ 4 ][ 0 ], gradPhi_M[ 4 ][ 1 ], gradPhi_M[ 4 ][ 2 ] },
+            { gradPhi_M[ 5 ][ 0 ], gradPhi_M[ 5 ][ 1 ], gradPhi_M[ 5 ][ 2 ] },
+            { gradPhi_M[ 6 ][ 0 ], gradPhi_M[ 6 ][ 1 ], gradPhi_M[ 6 ][ 2 ] },
+            { gradPhi_M[ 7 ][ 0 ], gradPhi_M[ 7 ][ 1 ], gradPhi_M[ 7 ][ 2 ] },
+            { gradPhi_M[ 8 ][ 0 ], gradPhi_M[ 8 ][ 1 ], gradPhi_M[ 8 ][ 2 ] }
+        };
+
+        solverTools::floatVector PK2_P, SIGMA_P, M_P;
+        solverTools::floatVector PK2_M, SIGMA_M, M_M;
+
+        solverTools::floatVector SDVS_P = SDVSDefault;
+        solverTools::floatVector SDVS_M = SDVSDefault;
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap DEBUG_P, DEBUG_M;
+#endif
+
+        errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                                  current_grad_u,  current_phi,  current_grad_phi_P,
+                                                                  previous_grad_u, previous_phi, previous_grad_phi,
+                                                                  SDVS_P,
+                                                                  current_ADD_DOF,  current_ADD_grad_DOF,
+                                                                  previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                                  PK2_P, SIGMA_P, M_P,
+                                                                  ADD_TERMS,
+                                                                  output_message
+#ifdef DEBUG_MODE
+                                                                  , DEBUG_P
+#endif
+                                                                  );
+
+        if ( errorCode != 0 ){
+            std::cout << output_message;
+            results << "test_evaluate_model & False\n";
+            return 1;
+        }
+
+        errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                                  current_grad_u,  current_phi,  current_grad_phi_M,
+                                                                  previous_grad_u, previous_phi, previous_grad_phi,
+                                                                  SDVS_M,
+                                                                  current_ADD_DOF,  current_ADD_grad_DOF,
+                                                                  previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                                  PK2_M, SIGMA_M, M_M,
+                                                                  ADD_TERMS,
+                                                                  output_message
+#ifdef DEBUG_MODE
+                                                                  , DEBUG_M
+#endif
+                                                                  );
+
+        if ( errorCode != 0 ){
+            std::cout << output_message;
+            results << "test_evaluate_model & False\n";
+            return 1;
+        }
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap numericGradients;
+        
+        for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
+            
+            auto it_M = DEBUG_M.find( it_P->first );
+            if ( it_M == DEBUG_M.end() ){
+                std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
+                results << "test_evaluate_model & False\n";
+                return 1;
+            }
+
+            numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i / 3 ][ i % 3 ] ) );
+
+        }
+
+        //Check the total Jacobians of the plastic deformation measures
+        for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
+                                            DEBUG[ "dPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ],
+                                            1e-5,
+                                            1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "dPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
+                                        - DEBUG[ "dPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                results << "test_evaluate_model (dPlasticDeformationGradientdGradientMicroDeformation) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
+                                            DEBUG[ "dPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ],
+                                            1e-5,
+                                            1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "dPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
+                                        - DEBUG[ "dPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                results << "test_evaluate_model (dPlasticMicroDeformationdGradientMicroDeformation) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
+                                            DEBUG[ "dPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ],
+                                            1e-5,
+                                            1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "dPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "convergedPlasticGradientDeformationGradient" ][ j ]
+                                        - DEBUG[ "dPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                results << "test_evaluate_model (dPlasticGradientMicroDeformationdDeformationGradient) & False\n";
+                return 1;
+            }
+        }
+#endif
+
+        solverTools::floatVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
+
+//        std::cout << "numeric DPK2Dgrad_u:\n"; vectorTools::print( gradCol );
+
+        gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
+
+//        std::cout << "numeric DSIGMADphi:\n"; vectorTools::print( gradCol );
+
+        gradCol = ( M_P - M_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
+
+//        std::cout << "numeric DMDgrad_phi:\n"; vectorTools::print( gradCol );
+
+    }
 
     results << "test_evaluate_model & True\n";
     return 1;
@@ -11954,8 +12463,8 @@ int main(){
     test_evolvePlasticDeformation( results );
     test_evolveStrainStateVariables( results );
     test_computeFlowDirections( results );
-    test_computePlasticDeformationResidual( results );
-    test_computePlasticDeformationResidual2( results );
+//    test_computePlasticDeformationResidual( results );
+//    test_computePlasticDeformationResidual2( results );
     test_extractMaterialParameters( results );
     test_extractStateVariables( results );
     test_assembleFundamentalDeformationMeasures( results );

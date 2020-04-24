@@ -5202,6 +5202,12 @@ namespace micromorphicElastoPlasticity{
             return 2;
         }
 
+#ifdef DEBUG_MODE
+        DEBUG.emplace( "currentDeformationGradient", currentDeformationGradient );
+        DEBUG.emplace( "currentMicroDeformation", currentMicroDeformation );
+        DEBUG.emplace( "currentGradientMicroDeformation", currentGradientMicroDeformation );
+#endif
+
         /*================================
         | Initialize the model variables |
         =================================*/
@@ -5652,6 +5658,32 @@ namespace micromorphicElastoPlasticity{
             currentPK2Stress                       = floatOuts[ 0 ];
             currentReferenceMicroStress            = floatOuts[ 1 ];
             currentReferenceHigherOrderStress      = floatOuts[ 2 ];
+
+#ifdef DEBUG_MODE
+            DEBUG.emplace( "convergedPlasticDeformationGradient", currentPlasticDeformationGradient );
+            DEBUG.emplace( "convergedPlasticMicroDeformation", currentPlasticMicroDeformation );
+            DEBUG.emplace( "convergedPlasticGradientMicroDeformation", currentPlasticGradientMicroDeformation );
+
+            solverTools::floatVector temp = { currentMacroStrainISV };
+            DEBUG.emplace( "convergedMacroStrainISV", temp );
+
+            temp = { currentMicroStrainISV };
+            DEBUG.emplace( "convergedMicroStrainISV", temp );
+
+            DEBUG.emplace( "convergedMicroGradientStrainISV", currentMicroGradientStrainISV );
+
+            temp = { currentMacroGamma };
+            DEBUG.emplace( "convergedMacroGamma", temp );
+
+            temp = { currentMicroGamma };
+            DEBUG.emplace( "convergedMicroGamma", temp );
+
+            DEBUG.emplace( "convergedMicroGradientGamma", currentMicroGradientGamma );
+
+            DEBUG.emplace( "intermediatePK2Stress", currentPK2Stress );
+            DEBUG.emplace( "intermediateReferenceMicroStress", currentReferenceMicroStress );
+            DEBUG.emplace( "intermediateReferenceHigherOrderStress", currentReferenceHigherOrderStress );
+#endif
         }
 
         /*============================
@@ -5932,6 +5964,19 @@ namespace micromorphicElastoPlasticity{
             output_message = buffer.str(); //Save the output to enable message printing
             return 2;
         }
+
+#ifdef DEBUG_MODE
+        DEBUG.emplace( "currentDeformationGradient", currentDeformationGradient );
+        DEBUG.emplace( "currentMicroDeformation", currentMicroDeformation );
+        DEBUG.emplace( "currentGradientMicroDeformation", currentGradientMicroDeformation );
+
+        DEBUG.emplace( "dDeformationGradientdGradientMacroDisplacement",
+                        vectorTools::appendVectors( dDeformationGradientdGradientMacroDisplacement ) );
+        DEBUG.emplace( "dMicroDeformationdMicroDisplacement",
+                        vectorTools::appendVectors( dMicroDeformationdMicroDisplacement ) );
+        DEBUG.emplace( "dGradientMicroDeformationdGradientMicroDisplacement",
+                        vectorTools::appendVectors( dGradientMicroDeformationdGradientMicroDisplacement ) );
+#endif
 
         /*================================
         | Initialize the model variables |
@@ -6462,6 +6507,32 @@ namespace micromorphicElastoPlasticity{
             dStressdDeformation                    = floatOuts[ 4 ];
             dResidualdDeformation                  = floatOuts[ 5 ];
 
+#ifdef DEBUG_MODE
+            DEBUG.emplace( "convergedPlasticDeformationGradient", currentPlasticDeformationGradient );
+            DEBUG.emplace( "convergedPlasticMicroDeformation", currentPlasticMicroDeformation );
+            DEBUG.emplace( "convergedPlasticGradientMicroDeformation", currentPlasticGradientMicroDeformation );
+
+            solverTools::floatVector temp = { currentMacroStrainISV };
+            DEBUG.emplace( "convergedMacroStrainISV", temp );
+
+            temp = { currentMicroStrainISV };
+            DEBUG.emplace( "convergedMicroStrainISV", temp );
+
+            DEBUG.emplace( "convergedMicroGradientStrainISV", currentMicroGradientStrainISV );
+
+            temp = { currentMacroGamma };
+            DEBUG.emplace( "convergedMacroGamma", temp );
+
+            temp = { currentMicroGamma };
+            DEBUG.emplace( "convergedMicroGamma", temp );
+
+            DEBUG.emplace( "convergedMicroGradientGamma", currentMicroGradientGamma );
+
+            DEBUG.emplace( "intermediatedPK2Stress", currentPK2Stress );
+            DEBUG.emplace( "intermediateReferenceMicroStress", currentReferenceMicroStress );
+            DEBUG.emplace( "intermediateReferenceHigherOrderStress", currentReferenceHigherOrderStress );
+#endif
+
             //Form the Jacobian of the stresses w.r.t. the fundamental deformation measures
             Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
                 dRdD( dResidualdDeformation.data(), 55, 45 );
@@ -6578,6 +6649,52 @@ namespace micromorphicElastoPlasticity{
 
 
         }
+
+#ifdef DEBUG_MODE
+        //Save the total derivatives of the plastic deformation measures w.r.t. the fundamental deformation measures
+        DEBUG.emplace( "dPlasticDeformationGradientdDeformationGradient",
+                        vectorTools::appendVectors( dPlasticDeformationGradientdDeformationGradient ) );
+        DEBUG.emplace( "dPlasticDeformationGradientdMicroDeformation",
+                        vectorTools::appendVectors( dPlasticDeformationGradientdMicroDeformation ) );
+        DEBUG.emplace( "dPlasticDeformationGradientdGradientMicroDeformation",
+                        vectorTools::appendVectors( dPlasticDeformationGradientdGradientMicroDeformation ) );
+
+        DEBUG.emplace( "dPlasticMicroDeformationdDeformationGradient",
+                        vectorTools::appendVectors( dPlasticMicroDeformationdDeformationGradient ) );
+        DEBUG.emplace( "dPlasticMicroDeformationdMicroDeformation",
+                        vectorTools::appendVectors( dPlasticMicroDeformationdMicroDeformation ) );
+        DEBUG.emplace( "dPlasticMicroDeformationdGradientMicroDeformation",
+                        vectorTools::appendVectors( dPlasticMicroDeformationdGradientMicroDeformation ) );
+
+        DEBUG.emplace( "dPlasticGradientMicroDeformationdDeformationGradient",
+                        vectorTools::appendVectors( dPlasticGradientMicroDeformationdDeformationGradient ) );
+        DEBUG.emplace( "dPlasticGradientMicroDeformationdMicroDeformation",
+                        vectorTools::appendVectors( dPlasticGradientMicroDeformationdMicroDeformation ) );
+        DEBUG.emplace( "dPlasticGradientMicroDeformationdGradientMicroDeformation",
+                        vectorTools::appendVectors( dPlasticGradientMicroDeformationdGradientMicroDeformation ) );
+
+        //Save the total derivatives of the intermediate stresses w.r.t. the fundamental deformation measures
+        DEBUG.emplace( "dPK2StressdDeformationGradient",
+                        vectorTools::appendVectors( dPK2StressdDeformationGradient ) );
+        DEBUG.emplace( "dPK2STressdMicroDeformation",
+                        vectorTools::appendVectors( dPK2StressdMicroDeformation ) );
+        DEBUG.emplace( "dPK2StressdGradientMicroDeformation",
+                        vectorTools::appendVectors( dPK2StressdGradientMicroDeformation ) );
+
+        DEBUG.emplace( "dReferenceMicroStressdDeformationGradient",
+                        vectorTools::appendVectors( dReferenceMicroStressdDeformationGradient ) );
+        DEBUG.emplace( "dReferenceMicroStressdMicroDeformation",
+                        vectorTools::appendVectors( dReferenceMicroStressdMicroDeformation ) );
+        DEBUG.emplace( "dReferenceMicroSressdGradientMicroDeformation",
+                        vectorTools::appendVectors( dReferenceMicroStressdGradientMicroDeformation ) );
+
+        DEBUG.emplace( "dReferenceHigherOrderStressdDeformationGradient",
+                        vectorTools::appendVectors( dReferenceHigherOrderStressdDeformationGradient ) );
+        DEBUG.emplace( "dReferenceHigherOrderStressdMicroDeformation",
+                        vectorTools::appendVectors( dReferenceHigherOrderStressdMicroDeformation ) );
+        DEBUG.emplace( "dReferenceHigherOrderStressdGradientMicroDeformation",
+                        vectorTools::appendVectors( dReferenceHigherOrderStressdGradientMicroDeformation ) );
+#endif
 
         /*============================
         | Assemble the output values |
