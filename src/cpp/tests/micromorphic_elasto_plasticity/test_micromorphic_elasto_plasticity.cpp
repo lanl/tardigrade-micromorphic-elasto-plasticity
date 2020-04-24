@@ -6771,14 +6771,11 @@ int test_evaluate_model( std::ofstream &results){
                                                               );
 
     std::cout << "Jacobians\n";
-    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
+    std::cout << "DPK2Dphi:\n"; vectorTools::print( DPK2Dphi );
 //    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
+    std::cout << "DSIGMADphi:\n"; vectorTools::print( DSIGMADphi );
 //    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
-    std::cout << "DSIGMADgrad_u:\n"; vectorTools::print( DSIGMADgrad_u );
-//    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
-//    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
-    std::cout << "DMDgrad_u:\n"; vectorTools::print( DMDgrad_u );
-//    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
+    std::cout << "DMDphi:\n"; vectorTools::print( DMDphi );
 //    std::cout << "DPK2Dgrad_u:\n"; vectorTools::print( DPK2Dgrad_u );
 
     if ( errorCode != 0 ){
@@ -6906,14 +6903,13 @@ int test_evaluate_model( std::ofstream &results){
         //Check the total Jacobians of the plastic deformation measures
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
-                                            DEBUG[ "dPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ],
-                                            1e-5,
-                                            1e-5 ) ){
+                                            DEBUG[ "totaldPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ],
+                                            1e-6, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "dPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ] << "\n";
                 std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "dPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ] << "\n";
+                                        - DEBUG[ "totaldPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ] << "\n";
                 results << "test_evaluate_model (dPlasticDeformationGradientdDeformationGradient) & False\n";
                 return 1;
             }
@@ -6921,14 +6917,13 @@ int test_evaluate_model( std::ofstream &results){
 
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
-                                            DEBUG[ "dPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ],
-                                            1e-5,
-                                            1e-5 ) ){
+                                            DEBUG[ "totaldPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ],
+                                            1e-6, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "dPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
                 std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "dPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
+                                        - DEBUG[ "totaldPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
                 results << "test_evaluate_model (dPlasticMicroDeformationdDeformationGradient) & False\n";
                 return 1;
             }
@@ -6936,35 +6931,101 @@ int test_evaluate_model( std::ofstream &results){
 
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
-                                            DEBUG[ "dPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ],
-                                            1e-5,
-                                            1e-5 ) ){
+                                            DEBUG[ "totaldPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ],
+                                            1e-6, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "dPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
                 std::cout << "error: " << numericGradients[ "convergedPlasticGradientDeformationGradient" ][ j ]
-                                        - DEBUG[ "dPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
+                                        - DEBUG[ "totaldPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
                 results << "test_evaluate_model (dPlasticGradientMicroDeformationdDeformationGradient) & False\n";
                 return 1;
             }
         }
 
         //Check the total Jacobians of the intermediate stresses
-        
+        for ( unsigned int j = 0; j < numericGradients[ "intermediatePK2Stress" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediatePK2Stress" ][ j ],
+                                            DEBUG[ "totaldPK2StressdDeformationGradient" ][ 9 * j + i ],
+                                            1e-6, 1e-8 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "intermediatePK2Stress" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPK2StressdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "intermediatePK2Stress" ][ j ]
+                                        - DEBUG[ "totaldPK2StressdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldPK2StressdDeformationGradient" ], 9, 9 ) );
+                results << "test_evaluate_model (dPK2StressdDeformationGradient) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceMicroStress" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceMicroStress" ][ j ],
+                                            DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ][ 9 * j + i ],
+                                            1e-6, 1e-8 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "intermediateReferenceMicroStress" ][ j ]
+                                        - DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ], 9, 9 ) );
+                results << "test_evaluate_model (dReferenceMicroStressdDeformationGradient) & False\n";
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceHigherOrderStress" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ],
+                                            DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ],
+                                            1e-6, 1e-8 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "intermediateReferenceMicroStress" ][ j ]
+                                        - DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ] << "\n";
+                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ], 27, 9 ) );
+                results << "test_evaluate_model (dReferenceHigherOrderStressdDeformationGradient) & False\n";
+            }
+        }
 #endif
 
         solverTools::floatVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
 
-//        std::cout << "numeric DPK2Dgrad_u:\n"; vectorTools::print( gradCol );
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dgrad_u[ j ][ i ], 1e-5 ) ){
+                std::cout << "row, column: " << j << ", " << i << "\n";
+                std::cout << "num:   " << gradCol[ j ] << "\n";
+                std::cout << "ana:   " << DPK2Dgrad_u[ j ][ i ] << "\n";
+                std::cout << "error: " << gradCol[ j ] - DPK2Dgrad_u[ j ][ i ] << "\n";
+                results << "test_evaluate_model (test 9) & False\n";
+                return 1;
+            }
+        }
 
         gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
 
-//        std::cout << "numeric DSIGMADphi:\n"; vectorTools::print( gradCol );
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADgrad_u[ j ][ i ], 1e-5 ) ){
+                std::cout << "row, column: " << j << ", " << i << "\n";
+                std::cout << "num:   " << gradCol[ j ] << "\n";
+                std::cout << "ana:   " << DSIGMADgrad_u[ j ][ i ] << "\n";
+                std::cout << "error: " << gradCol[ j ] - DSIGMADgrad_u[ j ][ i ] << "\n";
+                results << "test_evaluate_model (test 10) & False\n";
+                return 1;
+            }
+        }
 
         gradCol = ( M_P - M_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
 
-//        std::cout << "numeric DMDgrad_phi:\n"; vectorTools::print( gradCol );
-
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DMDgrad_u[ j ][ i ], 1e-5 ) ){
+                std::cout << "row, column: " << j << ", " << i << "\n";
+                std::cout << "num:   " << gradCol[ j ] << "\n";
+                std::cout << "ana:   " << DSIGMADgrad_u[ j ][ i ] << "\n";
+                std::cout << "error: " << gradCol[ j ] - DMDgrad_u[ j ][ i ] << "\n";
+                results << "test_evaluate_model (test 11) & False\n";
+                return 1;
+            }
+        }
     }
 
     //Test the jacobians w.r.t. the micro displacement
@@ -7063,69 +7124,134 @@ int test_evaluate_model( std::ofstream &results){
         }
 
         //Check the total Jacobians of the plastic deformation measures
-        std::cout << "dFpdChi:\n"; vectorTools::print( numericGradients[ "convergedPlasticDeformationGradient" ] );
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
-                                            DEBUG[ "dPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ],
-                                            1e-5,
-                                            1e-5 ) ){
+                                            DEBUG[ "totaldPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ],
+                                            1e-6, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "dPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ] << "\n";
                 std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "dPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ] << "\n";
+                                        - DEBUG[ "totaldPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ] << "\n";
                 results << "test_evaluate_model (dPlasticDeformationGradientdMicroDeformation) & False\n";
                 return 1;
             }
         }
 
-        std::cout << "dFpdChi:\n"; vectorTools::print( numericGradients[ "convergedPlasticMicroDeformation" ] );
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
-                                            DEBUG[ "dPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ],
-                                            1e-5,
-                                            1e-5 ) ){
+                                            DEBUG[ "totaldPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ],
+                                            1e-6, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "dPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
                 std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "dPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
+                                        - DEBUG[ "totaldPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
                 results << "test_evaluate_model (dPlasticMicroDeformationdMicroDeformation) & False\n";
                 return 1;
             }
         }
 
-        std::cout << "dFpdChi:\n"; vectorTools::print( numericGradients[ "convergedPlasticGradientMicroDeformation" ] );
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
-                                            DEBUG[ "dPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ],
-                                            1e-5,
-                                            1e-5 ) ){
+                                            DEBUG[ "totaldPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ],
+                                            1e-6, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "dPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
                 std::cout << "error: " << numericGradients[ "convergedPlasticGradientDeformationGradient" ][ j ]
-                                        - DEBUG[ "dPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
+                                        - DEBUG[ "totaldPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
                 results << "test_evaluate_model (dPlasticGradientMicroDeformationdMicroDeformation) & False\n";
                 return 1;
             }
         }
 
+        //Check the total Jacobians of the intermediate stresses
+        for ( unsigned int j = 0; j < numericGradients[ "intermediatePK2Stress" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediatePK2Stress" ][ j ],
+                                            DEBUG[ "totaldPK2StressdMicroDeformation" ][ 9 * j + i ],
+                                            1e-5, 1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "intermediatePK2Stress" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPK2StressdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "intermediatePK2Stress" ][ j ]
+                                        - DEBUG[ "totaldPK2StressdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldPK2StressdMicroDeformation" ], 9, 9 ) );
+                results << "test_evaluate_model (dPK2StressdMicroDeformation) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceMicroStress" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceMicroStress" ][ j ],
+                                            DEBUG[ "totaldReferenceMicroStressdMicroDeformation" ][ 9 * j + i ],
+                                            1e-5, 1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldReferenceMicroStressdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "intermediateReferenceMicroStress" ][ j ]
+                                        - DEBUG[ "totaldReferenceMicroStressdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceMicroStressdMicroDeformation" ], 9, 9 ) );
+                results << "test_evaluate_model (dReferenceMicroStressdMicroDeformation) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceHigherOrderStress" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ],
+                                            DEBUG[ "totaldReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i ],
+                                            1e-5, 1e-5 ) ){
+                std::cout << "i, j:  " << i << ", " << j << "\n";
+                std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "error: " << numericGradients[ "intermediateReferenceMicroStress" ][ j ]
+                                        - DEBUG[ "totaldReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i ] << "\n";
+                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceHigherOrderStressdMicroDeformation" ], 27, 9 ) );
+                results << "test_evaluate_model (dReferenceHigherOrderStressdMicroDeformation) & False\n";
+                return 1;
+            }
+        }
 
 #endif
 
         solverTools::floatVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i ] );
 
-//        std::cout << "numeric DPK2Dgrad_u:\n"; vectorTools::print( gradCol );
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dphi[ j ][ i ], 1e-5, 1e-4 ) ){
+                std::cout << "row, column: " << j << ", " << i << "\n";
+                std::cout << "num:   " << gradCol[ j ] << "\n";
+                std::cout << "ana:   " << DPK2Dphi[ j ][ i ] << "\n";
+                std::cout << "error: " << gradCol[ j ] - DPK2Dphi[ j ][ i ] << "\n";
+                results << "test_evaluate_model (test 12) & False\n";
+                return 1;
+            }
+        }
 
         gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i ] );
 
-//        std::cout << "numeric DSIGMADphi:\n"; vectorTools::print( gradCol );
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADphi[ j ][ i ], 1e-5, 1e-4 ) ){
+                std::cout << "row, column: " << j << ", " << i << "\n";
+                std::cout << "num:   " << gradCol[ j ] << "\n";
+                std::cout << "ana:   " << DSIGMADphi[ j ][ i ] << "\n";
+                std::cout << "error: " << gradCol[ j ] - DSIGMADphi[ j ][ i ] << "\n";
+                results << "test_evaluate_model (test 13) & False\n";
+                return 1;
+            }
+        }
 
         gradCol = ( M_P - M_M ) / ( 2 * delta[ i ] );
 
-//        std::cout << "numeric DMDgrad_phi:\n"; vectorTools::print( gradCol );
-
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DMDphi[ j ][ i ], 1e-5, 1e-4 ) ){
+                std::cout << "row, column: " << j << ", " << i << "\n";
+                std::cout << "num:   " << gradCol[ j ] << "\n";
+                std::cout << "ana:   " << DMDphi[ j ][ i ] << "\n";
+                std::cout << "error: " << gradCol[ j ] - DMDphi[ j ][ i ] << "\n";
+                results << "test_evaluate_model (test 14) & False\n";
+                return 1;
+            }
+        }
     }
 
     //Test the jacobians w.r.t. the gradient of the micro displacement
@@ -7242,46 +7368,46 @@ int test_evaluate_model( std::ofstream &results){
         }
 
         //Check the total Jacobians of the plastic deformation measures
+        std::cout << "dFpdGradChi\n";
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
-                                            DEBUG[ "dPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ],
-                                            1e-5,
-                                            1e-5 ) ){
+                                            DEBUG[ "totaldPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ],
+                                            1e-6, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "dPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
                 std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "dPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                                        - DEBUG[ "totaldPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
                 results << "test_evaluate_model (dPlasticDeformationGradientdGradientMicroDeformation) & False\n";
                 return 1;
             }
         }
 
+        std::cout << "dChipdGradChi\n";
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
-                                            DEBUG[ "dPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ],
-                                            1e-5,
-                                            1e-5 ) ){
+                                            DEBUG[ "totaldPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ],
+                                            1e-6, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "dPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
                 std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "dPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                                        - DEBUG[ "totaldPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
                 results << "test_evaluate_model (dPlasticMicroDeformationdGradientMicroDeformation) & False\n";
                 return 1;
             }
         }
 
+        std::cout << "dGradChipdGradChi\n";
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
-                                            DEBUG[ "dPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ],
-                                            1e-5,
-                                            1e-5 ) ){
+                                            DEBUG[ "totaldPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ],
+                                            1e-6, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "dPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                std::cout << "ana:   " << DEBUG[ "totaldPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
                 std::cout << "error: " << numericGradients[ "convergedPlasticGradientDeformationGradient" ][ j ]
-                                        - DEBUG[ "dPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
+                                        - DEBUG[ "totaldPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
                 results << "test_evaluate_model (dPlasticGradientMicroDeformationdDeformationGradient) & False\n";
                 return 1;
             }
