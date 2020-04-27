@@ -6565,7 +6565,7 @@ int test_evaluate_model( std::ofstream &results){
     //Initialize the material parameters
     std::vector< double > fparams = { 2, 2.4e2, 1.5e1,             //Macro hardening parameters
                                       2, 1.4e2, 2.0e1,             //Micro hardening parameters
-                                      2, 2.0e2, 2.7e1,             //Micro gradient hardening parameters
+                                      2, 2.0e0, 2.7e1,             //Micro gradient hardening parameters
                                       2, 0.56, 0.2,                //Macro flow parameters
                                       2, 0.15,-0.2,                //Micro flow parameters
                                       2, 0.82, 0.1,                //Micro gradient flow parameters
@@ -6611,16 +6611,16 @@ int test_evaluate_model( std::ofstream &results){
     double previous_phi[ 9 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     //Initialize the gradient of the micro displacement
-//    double current_grad_phi[ 9 ][ 3 ] = { {  0.13890017, -0.3598602 , -0.08048856 },
-//                                          { -0.18572739,  0.06847269,  0.22931628 },
-//                                          { -0.01829735, -0.48731265, -0.25277529 },
-//                                          {  0.26626212,  0.4844646 , -0.31965177 },
-//                                          {  0.49197846,  0.19051656, -0.0365349  },
-//                                          { -0.06607774, -0.33526875, -0.15803078 },
-//                                          {  0.09738707, -0.49482218, -0.39584868 },
-//                                          { -0.45599864,  0.08585038, -0.09432794 },
-//                                          {  0.23055539,  0.07564162,  0.24051469 } };
-//
+    double current_grad_phi[ 9 ][ 3 ] = { {  0.13890017, -0.3598602 , -0.08048856 },
+                                          { -0.18572739,  0.06847269,  0.22931628 },
+                                          { -0.01829735, -0.48731265, -0.25277529 },
+                                          {  0.26626212,  0.4844646 , -0.31965177 },
+                                          {  0.49197846,  0.19051656, -0.0365349  },
+                                          { -0.06607774, -0.33526875, -0.15803078 },
+                                          {  0.09738707, -0.49482218, -0.39584868 },
+                                          { -0.45599864,  0.08585038, -0.09432794 },
+                                          {  0.23055539,  0.07564162,  0.24051469 } };
+
 //    double previous_grad_phi[ 9 ][ 3 ] = { { -0.47850242,  0.36472234,  0.37071411 },
 //                                           {  0.00294417,  0.34480654, -0.34450988 },
 //                                           {  0.21056511, -0.28113967, -0.45726839 },
@@ -6631,15 +6631,15 @@ int test_evaluate_model( std::ofstream &results){
 //                                           { -0.15455446,  0.40552715, -0.4216042  },
 //                                           { -0.38930237,  0.10974753, -0.31188239 } };
 
-    double current_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
-                                          {0, 0, 0},
-                                          {0, 0, 0},
-                                          {0, 0, 0},
-                                          {0, 0, 0},
-                                          {0, 0, 0},
-                                          {0, 0, 0},
-                                          {0, 0, 0},
-                                          {0, 0, 0} };
+//    double current_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0} };
 
     double previous_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
                                            {0, 0, 0},
@@ -6939,7 +6939,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "intermediatePK2Stress" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediatePK2Stress" ][ j ],
                                             DEBUG[ "totaldPK2StressdDeformationGradient" ][ 9 * j + i ],
-                                            1e-6, 1e-8 ) ){
+                                            1e-5, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "intermediatePK2Stress" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldPK2StressdDeformationGradient" ][ 9 * j + i ] << "\n";
@@ -6954,7 +6954,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceMicroStress" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceMicroStress" ][ j ],
                                             DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ][ 9 * j + i ],
-                                            1e-6, 1e-8 ) ){
+                                            1e-5, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ][ 9 * j + i ] << "\n";
@@ -6968,7 +6968,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceHigherOrderStress" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ],
                                             DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ],
-                                            1e-6, 1e-8 ) ){
+                                            1e-5, 1e-8 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ] << "\n";
@@ -12643,8 +12643,8 @@ int main(){
     test_evolvePlasticDeformation( results );
     test_evolveStrainStateVariables( results );
     test_computeFlowDirections( results );
-//    test_computePlasticDeformationResidual( results );
-//    test_computePlasticDeformationResidual2( results );
+    test_computePlasticDeformationResidual( results );
+    test_computePlasticDeformationResidual2( results );
     test_extractMaterialParameters( results );
     test_extractStateVariables( results );
     test_assembleFundamentalDeformationMeasures( results );
