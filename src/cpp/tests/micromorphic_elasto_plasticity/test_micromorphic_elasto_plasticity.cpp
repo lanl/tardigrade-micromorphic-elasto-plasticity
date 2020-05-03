@@ -6679,25 +6679,30 @@ int test_evaluate_model( std::ofstream &results){
     std::map< std::string, solverTools::floatVector > DEBUG;
 #endif
 
-    solverTools::floatVector PK2Answer = { 81.7872 , 2.47596, 0      ,
-                                            2.86008, 75.614 , 0      ,
-                                            0      , 0      , 75.0941 };
-    solverTools::floatVector SigmaAnswer = { 86.4049 ,  2.76742,  0,
-                                              2.76742, 79.5226 ,  0,
-                                              0      ,  0      , 79.0043 };;
-    solverTools::floatVector MAnswer( 27, 0 );
+    solverTools::floatVector PK2Answer = { 177.067  , 13.287 ,  -0.577489,
+                                            10.7222 , 152.621,  -0.288668,
+                                            -1.38898, 1.61632, 150.85 };
+    solverTools::floatVector SigmaAnswer = { 178.961  ,  13.5623 ,  -2.43027,
+                                              13.5623 , 151.785  ,   1.62465,
+                                              -2.43027,   1.62465, 149.31 };
+    solverTools::floatVector MAnswer = { 0.541081, -0.533639,  0.640843,  2.92886 ,  1.1505  ,
+                                         1.14946 ,  0.605546, -2.62366 ,  1.54942 , -2.40585 ,
+                                        -0.670181, -0.848562,  0.678723,  0.433934, -0.206886,
+                                        -2.7026  ,  0.964407,  1.68227 , -0.480138,  2.68016 ,
+                                        -0.628373,  1.14616 , -0.10665 , -2.2393  , -0.765349,
+                                         0.746722,  0.994415 };
 
-    solverTools::floatVector SDVSAnswer = { 0.121442 , 0, 0, 0, 0,
-                                            0.0605888, 0, 0, 0, 0,
-                                            0.08227  , 0.0406864, 0,
-                                            0.0393374, 9.54548e-05, 0,
-                                            0, 0, 0.00288376,
-                                            0, 0, 0,
-                                            0, 0, 0,
-                                            0, 0, 0,
-                                            0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                            0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                            0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    solverTools::floatVector SDVSAnswer = { -0.0394628  ,  0.102019   ,  0.0453858  ,  0.0262009 ,  0.0232167 ,
+                                            -0.0196885  ,  0.0357449  ,  0.0453858  ,  0.0262009 ,  0.0232167 ,
+                                             0.00813011 ,  0.00956498 , -0.000691731,  0.00885806, -0.0103998 ,
+                                             0.000451969, -0.00115188 ,  0.00088041 , -0.00882951,  0.0622934 ,
+                                             0.0274584  , -0.00113356 ,  0.0403186  , -0.00945181,  0.00119733,
+                                            -0.00227071 ,  0.000880704, -0.00792983 ,  0.0554737 , -0.0202861 ,
+                                            -0.0208186  ,  0.0122486  ,  0.0119279  ,  0.037049  ,  0.0168925 ,
+                                            -0.0430597  , -0.0242213  ,  0.0244271  , -0.00880588,  0.0383104 ,
+                                             0.00423276 ,  0.0111449  ,  0.0155982  ,  0.0136987 , -0.00813611,
+                                            -0.0305008  ,  0.0171903  , -0.0126259  ,  0.0500443 , -0.0276203 ,
+                                             0.0193062  ,  0.0310543  ,  0.0157931  ,  0.0168109 ,  0.0196658 };
 
     std::vector< double > SDVS = SDVSDefault;
 
@@ -6721,25 +6726,26 @@ int test_evaluate_model( std::ofstream &results){
         return 1;
     }
 
-//    if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) ){
-//        results << "test_evaluate_model (test 1) & False\n";
-//        return 1;
-//    }
-//
-//    if ( !vectorTools::fuzzyEquals( PK2Answer, current_PK2 ) ){
-//        results << "test_evaluate_model (test 2) & False\n";
-//        return 1;
-//    }
-//
-//    if ( !vectorTools::fuzzyEquals( SigmaAnswer, current_SIGMA ) ){
-//        results << "test_evaluate_model (test 3) & False\n";
-//        return 1;
-//    }
-//
-//    if ( !vectorTools::fuzzyEquals( MAnswer, current_M ) ){
-//        results << "test_evaluate_model (test 4) & False\n";
-//        return 1;
-//    }
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) ){
+        results << "test_evaluate_model (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( PK2Answer, current_PK2, 1e-5, 1e-5 ) ){
+        std::cout << "error: "; vectorTools::print( PK2Answer - current_PK2 );
+        results << "test_evaluate_model (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SigmaAnswer, current_SIGMA, 1e-5, 1e-5 ) ){
+        results << "test_evaluate_model (test 3) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( MAnswer, current_M, 1e-5 ) ){
+        results << "test_evaluate_model (test 4) & False\n";
+        return 1;
+    }
 
     //Test the Jacobians
     std::vector< std::vector< double > > DPK2Dgrad_u, DPK2Dphi, DPK2Dgrad_phi, DSIGMADgrad_u, DSIGMADphi, DSIGMADgrad_phi,
@@ -6776,25 +6782,25 @@ int test_evaluate_model( std::ofstream &results){
         return 1;
     }
 
-//    if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) ){
-//        results << "test_evaluate_model (test 5) & False\n";
-//        return 1;
-//    }
-//
-//    if ( !vectorTools::fuzzyEquals( PK2Answer, current_PK2 ) ){
-//        results << "test_evaluate_model (test 6) & False\n";
-//        return 1;
-//    }
-//
-//    if ( !vectorTools::fuzzyEquals( SigmaAnswer, current_SIGMA ) ){
-//        results << "test_evaluate_model (test 7) & False\n";
-//        return 1;
-//    }
-//
-//    if ( !vectorTools::fuzzyEquals( MAnswer, current_M ) ){
-//        results << "test_evaluate_model (test 8) & False\n";
-//        return 1;
-//    }
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) ){
+        results << "test_evaluate_model (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( PK2Answer, current_PK2, 1e-5, 1e-5 ) ){
+        results << "test_evaluate_model (test 6) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SigmaAnswer, current_SIGMA, 1e-5, 1e-5 ) ){
+        results << "test_evaluate_model (test 7) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( MAnswer, current_M, 1e-5 ) ){
+        results << "test_evaluate_model (test 8) & False\n";
+        return 1;
+    }
 
     //Test the jacobians w.r.t. the gradient of the macro displacement
     constantType eps = 1e-6;
@@ -12618,6 +12624,421 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
     return 0;
 }
 
+int test_materialLibraryInterface( std::ofstream &results ){
+    /*!
+     * Test the interface to the linear elastic model
+     * via the material library.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    //Initialize the model
+    std::string _model_name = "LinearElasticityDruckerPragerPlasticity";
+    auto &factory = micromorphic_material_library::MaterialFactory::Instance();
+    auto material = factory.GetMaterial(_model_name);
+
+    //Set up the inputs
+    //Initialize the time
+    std::vector< double > time = { 10., 2.5 };
+
+    //Initialize the material parameters
+    std::vector< double > fparams = { 2, 2.4e2, 1.5e1,             //Macro hardening parameters
+                                      2, 1.4e2, 2.0e1,             //Micro hardening parameters
+                                      2, 2.0e0, 2.7e1,             //Micro gradient hardening parameters
+                                      2, 0.56, 0.2,                //Macro flow parameters
+                                      2, 0.15,-0.2,                //Micro flow parameters
+                                      2, 0.82, 0.1,                //Micro gradient flow parameters
+                                      2, 0.70, 0.3,                //Macro yield parameters
+                                      2, 0.40,-0.3,                //Micro yield parameters
+                                      2, 0.52, 0.4,                //Micro gradient yield parameters
+                                      2, 696.47, 65.84,            //A stiffness tensor parameters
+                                      5, -7.69, -51.92, 38.61, -27.31, 5.13,  //B stiffness tensor parameters
+                                      11, 1.85, -0.19, -1.08, -1.57, 2.29, -0.61, 5.97, -2.02, 2.38, -0.32, -3.25, //C stiffness tensor parameters
+                                      2, -51.92, 5.13,             //D stiffness tensor parameters
+                                      0.4, 0.3, 0.35, 1e-8, 1e-8   //Integration parameters
+                                    };
+
+    //Initialize the gradient of the macro displacement
+//    double current_grad_u[ 3 ][ 3 ] = { { -1.83182277, -0.66558173,  0.23458272 },
+//                                        { -0.56632666, -0.21399259,  0.16367238 },
+//                                        { -0.29129789, -0.22367825, -2.0632945  } };
+//
+//    double previous_grad_u[ 3 ][ 3 ] = { { -1.89906429,  0.20890208, -0.39814132 },
+//                                         {  0.31303067, -1.23910631, -0.93837662 },
+//                                         { -0.32571524, -0.95306342, -0.93025257 } };
+
+    double current_grad_u[ 3 ][ 3 ] = { {0.200, 0.100, 0.000 },
+                                        {0.100, 0.001, 0.000 },
+                                        {0.000, 0.000, 0.000 } };
+
+    double previous_grad_u[ 3 ][ 3 ] = { {0, 0, 0},
+                                         {0, 0, 0},
+                                         {0, 0, 0} };
+    //Initialize the micro displacement
+//    double current_phi[ 9 ] = { 0.84729289,  0.40617104,  0.59534561,  
+//                                0.44195587,  0.34121966, -0.79098944, 
+//                               -0.43965428,  0.88466225,  0.1684519 };
+//
+//    double previous_phi[ 9 ] = { -0.99935855, -0.21425717,  0.0668254 ,
+//                                 -0.11111872, -0.07416114, -1.01048108,
+//                                  0.1804018 , -1.01116291,  0.03248007 };
+
+    double current_phi[ 9 ] = { 0.100, 0.000, 0.000,
+                                0.000, 0.000, 0.000,
+                                0.000, 0.000, 0.000 };
+
+    double previous_phi[ 9 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    //Initialize the gradient of the micro displacement
+    double current_grad_phi[ 9 ][ 3 ] = { {  0.13890017, -0.3598602 , -0.08048856 },
+                                          { -0.18572739,  0.06847269,  0.22931628 },
+                                          { -0.01829735, -0.48731265, -0.25277529 },
+                                          {  0.26626212,  0.4844646 , -0.31965177 },
+                                          {  0.49197846,  0.19051656, -0.0365349  },
+                                          { -0.06607774, -0.33526875, -0.15803078 },
+                                          {  0.09738707, -0.49482218, -0.39584868 },
+                                          { -0.45599864,  0.08585038, -0.09432794 },
+                                          {  0.23055539,  0.07564162,  0.24051469 } };
+
+//    double previous_grad_phi[ 9 ][ 3 ] = { { -0.47850242,  0.36472234,  0.37071411 },
+//                                           {  0.00294417,  0.34480654, -0.34450988 },
+//                                           {  0.21056511, -0.28113967, -0.45726839 },
+//                                           { -0.26431286, -0.09985721,  0.47322301 },
+//                                           { -0.18156887, -0.32226199, -0.37295847 },
+//                                           {  0.15062371,  0.09439471,  0.09167948 },
+//                                           { -0.46869859,  0.018301  ,  0.45013866 },
+//                                           { -0.15455446,  0.40552715, -0.4216042  },
+//                                           { -0.38930237,  0.10974753, -0.31188239 } };
+
+//    double current_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0} };
+
+    double previous_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0} };
+                                           
+
+    //Initialize the state variable vector
+    std::vector< double > SDVSDefault( 55, 0 );
+
+    //Initialize the additional degree of freedom vectors
+    std::vector< double > current_ADD_DOF;
+    std::vector< std::vector< double > > current_ADD_grad_DOF;
+
+    std::vector< double > previous_ADD_DOF;
+    std::vector< std::vector< double > > previous_ADD_grad_DOF;
+
+    //Initialize the stress measures
+    std::vector< double > current_PK2( 9, 0 );
+
+    std::vector< double > current_SIGMA( 9, 0 );
+
+    std::vector< double > current_M( 27, 0 );
+
+    //Initialize the additional terms vector
+    std::vector< std::vector< double > > ADD_TERMS;
+
+    //Initialize the output message string
+    std::string output_message;
+
+#ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG;
+#endif
+
+    solverTools::floatVector PK2_answer = { 177.067  , 13.287 ,  -0.577489,
+                                             10.7222 , 152.621,  -0.288668,
+                                             -1.38898, 1.61632, 150.85 };
+    solverTools::floatVector SIGMA_answer = { 178.961  ,  13.5623 ,  -2.43027,
+                                               13.5623 , 151.785  ,   1.62465,
+                                               -2.43027,   1.62465, 149.31 };
+    solverTools::floatVector M_answer = { 0.541081, -0.533639,  0.640843,  2.92886 ,  1.1505  ,
+                                          1.14946 ,  0.605546, -2.62366 ,  1.54942 , -2.40585 ,
+                                         -0.670181, -0.848562,  0.678723,  0.433934, -0.206886,
+                                         -2.7026  ,  0.964407,  1.68227 , -0.480138,  2.68016 ,
+                                         -0.628373,  1.14616 , -0.10665 , -2.2393  , -0.765349,
+                                          0.746722,  0.994415 };
+
+    solverTools::floatVector SDVS_answer = { -0.0394628  ,  0.102019   ,  0.0453858  ,  0.0262009 ,  0.0232167 ,
+                                             -0.0196885  ,  0.0357449  ,  0.0453858  ,  0.0262009 ,  0.0232167 ,
+                                              0.00813011 ,  0.00956498 , -0.000691731,  0.00885806, -0.0103998 ,
+                                              0.000451969, -0.00115188 ,  0.00088041 , -0.00882951,  0.0622934 ,
+                                              0.0274584  , -0.00113356 ,  0.0403186  , -0.00945181,  0.00119733,
+                                             -0.00227071 ,  0.000880704, -0.00792983 ,  0.0554737 , -0.0202861 ,
+                                             -0.0208186  ,  0.0122486  ,  0.0119279  ,  0.037049  ,  0.0168925 ,
+                                             -0.0430597  , -0.0242213  ,  0.0244271  , -0.00880588,  0.0383104 ,
+                                              0.00423276 ,  0.0111449  ,  0.0155982  ,  0.0136987 , -0.00813611,
+                                             -0.0305008  ,  0.0171903  , -0.0126259  ,  0.0500443 , -0.0276203 ,
+                                              0.0193062  ,  0.0310543  ,  0.0157931  ,  0.0168109 ,  0.0196658 };
+
+    std::vector< double > SDVS = SDVSDefault;
+
+    std::vector< double > PK2_result, SIGMA_result, M_result;
+
+    //Evaluate the model
+    int errorCode = material->evaluate_model( time, fparams,
+                                              current_grad_u, current_phi, current_grad_phi,
+                                              previous_grad_u, previous_phi, previous_grad_phi,
+                                              SDVS,
+                                              current_ADD_DOF, current_ADD_grad_DOF,
+                                              previous_ADD_DOF, previous_ADD_grad_DOF,
+                                              PK2_result, SIGMA_result, M_result,
+                                              ADD_TERMS,
+                                              output_message
+                                            );
+
+    if ( errorCode > 0 ){
+        std::cout << output_message << "\n";
+        results << "test_materialLibraryInterface & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) ){
+        std::cout << "PK2_result:\n"; vectorTools::print( PK2_result );
+        std::cout << "PK2_answer:\n"; vectorTools::print( PK2_answer );
+        results << "test_materialLibraryInterface (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SIGMA_result, SIGMA_answer, 1e-5, 1e-5 ) ){
+        results << "test_materialLibraryInterface (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( M_result, M_answer, 1e-5 ) ){
+        results << "test_materialLibraryInterface (test 3) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVS_answer ) ){
+        results << "test_materialLibraryInterface (test 4) & False\n";
+        return 1;
+    }
+
+    //Check the Jacobian using the previously tested jacobian
+    std::vector< std::vector< double > > DPK2Dgrad_u_answer, DPK2Dphi_answer, DPK2Dgrad_phi_answer,
+                                         DSIGMADgrad_u_answer, DSIGMADphi_answer, DSIGMADgrad_phi_answer,
+                                         DMDgrad_u_answer, DMDphi_answer, DMDgrad_phi_answer;
+
+    std::vector< std::vector< std::vector< double > > > ADD_JACOBIANS;
+
+    SDVS = SDVSDefault;
+
+    errorCode = micromorphicElastoPlasticity::evaluate_model(
+                                time, fparams,
+                                current_grad_u, current_phi, current_grad_phi,
+                                previous_grad_u, previous_phi, previous_grad_phi,
+                                SDVS,
+                                current_ADD_DOF, current_ADD_grad_DOF,
+                                previous_ADD_DOF, previous_ADD_grad_DOF,
+                                PK2_result, SIGMA_result, M_result,
+                                DPK2Dgrad_u_answer, DPK2Dphi_answer, DPK2Dgrad_phi_answer,
+                                DSIGMADgrad_u_answer, DSIGMADphi_answer, DSIGMADgrad_phi_answer,
+                                DMDgrad_u_answer, DMDphi_answer, DMDgrad_phi_answer,
+                                ADD_TERMS, ADD_JACOBIANS,
+                                output_message
+                              );
+
+    if ( errorCode > 0 ){
+        std::cout << output_message << "\n";
+        results << "test_materialLibraryInterface & False\n";
+        return 1;
+    }
+
+    PK2_result.clear();
+    SIGMA_result.clear();
+    M_result.clear();
+
+    SDVS = SDVSDefault;
+
+    std::vector< std::vector< double > > DPK2Dgrad_u_result, DPK2Dphi_result, DPK2Dgrad_phi_result,
+                                         DSIGMADgrad_u_result, DSIGMADphi_result, DSIGMADgrad_phi_result,
+                                         DMDgrad_u_result, DMDphi_result, DMDgrad_phi_result;
+
+    errorCode = material->evaluate_model( time, fparams,
+                                          current_grad_u, current_phi, current_grad_phi,
+                                          previous_grad_u, previous_phi, previous_grad_phi,
+                                          SDVS,
+                                          current_ADD_DOF, current_ADD_grad_DOF,
+                                          previous_ADD_DOF, previous_ADD_grad_DOF,
+                                          PK2_result, SIGMA_result, M_result,
+                                          DPK2Dgrad_u_result, DPK2Dphi_result, DPK2Dgrad_phi_result,
+                                          DSIGMADgrad_u_result, DSIGMADphi_result, DSIGMADgrad_phi_result,
+                                          DMDgrad_u_result, DMDphi_result, DMDgrad_phi_result,
+                                          ADD_TERMS, ADD_JACOBIANS,
+                                          output_message
+                                        );
+
+    if ( !vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) ){
+        results << "test_materialLibraryInterface (test 5) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SIGMA_result, SIGMA_answer, 1e-5, 1e-5 ) ){
+        results << "test_materialLibraryInterface (test 6) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( M_result, M_answer, 1e-5 ) ){
+        results << "test_materialLibraryInterface (test 7) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SDVS_answer, SDVS ) ){
+        results << "test_materialLibraryInterface (test 8) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DPK2Dgrad_u_result, DPK2Dgrad_u_answer ) ){
+        results << "test_materialLibraryInterface (test 9) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DPK2Dphi_result, DPK2Dphi_answer ) ){
+        results << "test_materialLibraryInterface (test 10) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DPK2Dgrad_phi_result, DPK2Dgrad_phi_answer ) ){
+        results << "test_materialLibraryInterface (test 11) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DSIGMADgrad_u_result, DSIGMADgrad_u_answer ) ){
+        results << "test_materialLibraryInterface (test 12) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DSIGMADphi_result, DSIGMADphi_answer ) ){
+        results << "test_materialLibraryInterface (test 13) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DSIGMADgrad_phi_result, DSIGMADgrad_phi_answer ) ){
+        results << "test_materialLibraryInterface (test 14) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DMDgrad_u_result, DMDgrad_u_answer ) ){
+        results << "test_materialLibraryInterface (test 15) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DMDphi_result, DMDphi_answer ) ){
+        results << "test_materialLibraryInterface (test 16) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DMDgrad_phi_result, DMDgrad_phi_answer ) ){
+        results << "test_materialLibraryInterface (test 17) & False\n";
+        return 1;
+    }
+
+    //Test the computed numeric Jacobian values
+    SDVS = SDVSDefault;
+    errorCode = material->evaluate_model_numeric_gradients( time, fparams,
+                                                            current_grad_u, current_phi, current_grad_phi,
+                                                            previous_grad_u, previous_phi, previous_grad_phi,
+                                                            SDVS,
+                                                            current_ADD_DOF, current_ADD_grad_DOF,
+                                                            previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                            PK2_result, SIGMA_result, M_result,
+                                                            DPK2Dgrad_u_result, DPK2Dphi_result, DPK2Dgrad_phi_result,
+                                                            DSIGMADgrad_u_result, DSIGMADphi_result, DSIGMADgrad_phi_result,
+                                                            DMDgrad_u_result, DMDphi_result, DMDgrad_phi_result,
+                                                            ADD_TERMS, ADD_JACOBIANS,
+                                                            output_message, 1e-6 );
+
+    if ( errorCode > 0 ){
+        results << "test_materialLibraryInterface & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) ){
+        results << "test_materialLibraryInterface (test 18) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SIGMA_result, SIGMA_answer, 1e-5, 1e-5 ) ){
+        results << "test_materialLibraryInterface (test 19) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( M_result, M_answer, 1e-5 ) ){
+        results << "test_materialLibraryInterface (test 20) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVS_answer ) ){
+        std::cout << "error: "; vectorTools::print( SDVS - SDVS_answer );
+        results << "test_materialLibraryInterface (test 21) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DPK2Dgrad_u_result, DPK2Dgrad_u_answer ) ){
+        std::cout << "num:\n"; vectorTools::print( DPK2Dgrad_u_result );
+        std::cout << "ana:\n"; vectorTools::print( DPK2Dgrad_u_answer );
+        results << "test_materialLibraryInterface (test 22) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DPK2Dphi_result, DPK2Dphi_answer ) ){
+        results << "test_materialLibraryInterface (test 23) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DPK2Dgrad_phi_result, DPK2Dgrad_phi_answer ) ){
+        results << "test_materialLibraryInterface (test 24) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DSIGMADgrad_u_result, DSIGMADgrad_u_answer ) ){
+        results << "test_materialLibraryInterface (test 25) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DSIGMADphi_result, DSIGMADphi_answer ) ){
+        results << "test_materialLibraryInterface (test 26) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DSIGMADgrad_phi_result, DSIGMADgrad_phi_answer ) ){
+        results << "test_materialLibraryInterface (test 27) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DMDgrad_u_result, DMDgrad_u_answer ) ){
+        results << "test_materialLibraryInterface (test 28) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DMDphi_result, DMDphi_answer ) ){
+        results << "test_materialLibraryInterface (test 29) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( DMDgrad_phi_result, DMDgrad_phi_answer ) ){
+        results << "test_materialLibraryInterface (test 30) & False\n";
+        return 1;
+    }
+
+    results << "test_materialLibraryInterface & True\n";
+    return 1;
+}
+
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -12654,6 +13075,8 @@ int main(){
     test_cerr_redirect( results );
 
     test_evaluate_model( results );
+
+    test_materialLibraryInterface( results );
 
     //Close the results file
     results.close();
