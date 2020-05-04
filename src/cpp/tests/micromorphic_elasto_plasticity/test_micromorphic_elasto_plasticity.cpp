@@ -6676,7 +6676,7 @@ int test_evaluate_model( std::ofstream &results){
     std::string output_message;
 
 #ifdef DEBUG_MODE
-    std::map< std::string, solverTools::floatVector > DEBUG;
+    solverTools::homotopyMap homotopyDEBUG;
 #endif
 
     solverTools::floatVector PK2Answer = { 177.067  , 13.287 ,  -0.577489,
@@ -6716,7 +6716,7 @@ int test_evaluate_model( std::ofstream &results){
                                                                   ADD_TERMS,
                                                                   output_message
 #ifdef DEBUG_MODE
-                                                                  , DEBUG
+                                                                  , homotopyDEBUG
 #endif
                                                                   );
 
@@ -6756,7 +6756,7 @@ int test_evaluate_model( std::ofstream &results){
     SDVS = SDVSDefault;
 
 #ifdef DEBUG_MODE
-    DEBUG.clear();
+    homotopyDEBUG.clear();
 #endif
 
     errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
@@ -6772,9 +6772,16 @@ int test_evaluate_model( std::ofstream &results){
                                                               ADD_TERMS, ADD_JACOBIANS,
                                                               output_message
 #ifdef DEBUG_MODE
-                                                              , DEBUG
+                                                              , homotopyDEBUG
 #endif
                                                               );
+#ifdef DEBUG_MODE
+    solverTools::debugMap DEBUG = homotopyDEBUG[ "converged_values" ][ "converged_values" ];
+    if ( DEBUG.size() == 0 ){
+        results << "test_evaluate_model & False\n";
+        return 1;
+    }
+#endif
 
     if ( errorCode != 0 ){
         std::cout << output_message;
@@ -6839,7 +6846,7 @@ int test_evaluate_model( std::ofstream &results){
         solverTools::floatVector SDVS_M = SDVSDefault;
 
 #ifdef DEBUG_MODE
-        solverTools::debugMap DEBUG_P, DEBUG_M;
+        solverTools::homotopyMap DEBUG_P, DEBUG_M;
 #endif
 
         errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
@@ -6885,10 +6892,11 @@ int test_evaluate_model( std::ofstream &results){
 #ifdef DEBUG_MODE
         solverTools::debugMap numericGradients;
         
-        for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
+        for ( auto it_P = DEBUG_P[ "converged_values" ][ "converged_values" ].begin();
+                   it_P != DEBUG_P[ "converged_values" ][ "converged_values" ].end(); it_P++ ){
             
-            auto it_M = DEBUG_M.find( it_P->first );
-            if ( it_M == DEBUG_M.end() ){
+            auto it_M = DEBUG_M[ "converged_values" ][ "converged_values" ].find( it_P->first );
+            if ( it_M == DEBUG_M[ "converged_values" ][ "converged_values" ].end() ){
                 std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
                 results << "test_evaluate_model & False\n";
                 return 1;
@@ -6896,6 +6904,11 @@ int test_evaluate_model( std::ofstream &results){
 
             numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i / 3 ][ i % 3 ] ) );
 
+        }
+
+        if ( numericGradients.size() == 0 ){
+            results << "test_evaluate_model & False\n";
+            return 1;
         }
 
         //Check the total Jacobians of the plastic deformation measures
@@ -7062,7 +7075,7 @@ int test_evaluate_model( std::ofstream &results){
         solverTools::floatVector SDVS_M = SDVSDefault;
 
 #ifdef DEBUG_MODE
-        solverTools::debugMap DEBUG_P, DEBUG_M;
+        solverTools::homotopyMap DEBUG_P, DEBUG_M;
 #endif
 
         errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
@@ -7108,10 +7121,11 @@ int test_evaluate_model( std::ofstream &results){
 #ifdef DEBUG_MODE
         solverTools::debugMap numericGradients;
         
-        for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
+        for ( auto it_P = DEBUG_P[ "converged_values" ][ "converged_values" ].begin();
+                   it_P != DEBUG_P[ "converged_values" ][ "converged_values" ].end(); it_P++ ){
             
-            auto it_M = DEBUG_M.find( it_P->first );
-            if ( it_M == DEBUG_M.end() ){
+            auto it_M = DEBUG_M[ "converged_values" ][ "converged_values" ].find( it_P->first );
+            if ( it_M == DEBUG_M[ "converged_values" ][ "converged_values" ].end() ){
                 std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
                 results << "test_evaluate_model & False\n";
                 return 1;
@@ -7119,6 +7133,11 @@ int test_evaluate_model( std::ofstream &results){
 
             numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i ] ) );
 
+        }
+
+        if ( numericGradients.size() == 0 ){
+            results << "test_evaluate_model & False\n";
+            return 1;
         }
 
         //Check the total Jacobians of the plastic deformation measures
@@ -7306,7 +7325,7 @@ int test_evaluate_model( std::ofstream &results){
         solverTools::floatVector SDVS_M = SDVSDefault;
 
 #ifdef DEBUG_MODE
-        solverTools::debugMap DEBUG_P, DEBUG_M;
+        solverTools::homotopyMap DEBUG_P, DEBUG_M;
 #endif
 
         errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
@@ -7352,10 +7371,11 @@ int test_evaluate_model( std::ofstream &results){
 #ifdef DEBUG_MODE
         solverTools::debugMap numericGradients;
         
-        for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
+        for ( auto it_P = DEBUG_P[ "converged_values" ][ "converged_values" ].begin();
+                   it_P != DEBUG_P[ "converged_values" ][ "converged_values" ].end(); it_P++ ){
             
-            auto it_M = DEBUG_M.find( it_P->first );
-            if ( it_M == DEBUG_M.end() ){
+            auto it_M = DEBUG_M[ "converged_values" ][ "converged_values" ].find( it_P->first );
+            if ( it_M == DEBUG_M[ "converged_values" ][ "converged_values" ].end() ){
                 std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
                 results << "test_evaluate_model & False\n";
                 return 1;
@@ -7363,6 +7383,11 @@ int test_evaluate_model( std::ofstream &results){
 
             numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i / 3 ][ i % 3 ] ) );
 
+        }
+
+        if ( numericGradients.size() == 0 ){
+            results << "test_evaluate_model & False\n";
+            return 1;
         }
 
         //Check the total Jacobians of the plastic deformation measures
@@ -12755,7 +12780,7 @@ int test_materialLibraryInterface( std::ofstream &results ){
     std::string output_message;
 
 #ifdef DEBUG_MODE
-    std::map< std::string, solverTools::floatVector > DEBUG;
+    solverTools::homotopyMap DEBUG;
 #endif
 
     solverTools::floatVector PK2_answer = { 177.067  , 13.287 ,  -0.577489,
@@ -12797,6 +12822,9 @@ int test_materialLibraryInterface( std::ofstream &results ){
                                               PK2_result, SIGMA_result, M_result,
                                               ADD_TERMS,
                                               output_message
+#ifdef DEBUG_MODE
+                                              , DEBUG
+#endif
                                             );
 
     if ( errorCode > 0 ){
@@ -12836,6 +12864,10 @@ int test_materialLibraryInterface( std::ofstream &results ){
 
     SDVS = SDVSDefault;
 
+#ifdef DEBUG_MODE
+    DEBUG.clear();
+#endif
+
     errorCode = micromorphicElastoPlasticity::evaluate_model(
                                 time, fparams,
                                 current_grad_u, current_phi, current_grad_phi,
@@ -12849,6 +12881,9 @@ int test_materialLibraryInterface( std::ofstream &results ){
                                 DMDgrad_u_answer, DMDphi_answer, DMDgrad_phi_answer,
                                 ADD_TERMS, ADD_JACOBIANS,
                                 output_message
+#ifdef DEBUG_MODE
+                                , DEBUG
+#endif
                               );
 
     if ( errorCode > 0 ){
@@ -12879,6 +12914,9 @@ int test_materialLibraryInterface( std::ofstream &results ){
                                           DMDgrad_u_result, DMDphi_result, DMDgrad_phi_result,
                                           ADD_TERMS, ADD_JACOBIANS,
                                           output_message
+#ifdef DEBUG_MODE
+                                          , DEBUG
+#endif
                                         );
 
     if ( !vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) ){
@@ -12946,6 +12984,10 @@ int test_materialLibraryInterface( std::ofstream &results ){
         return 1;
     }
 
+#ifdef DEBUG_MODE
+    DEBUG.clear();
+#endif
+
     //Test the computed numeric Jacobian values
     SDVS = SDVSDefault;
     errorCode = material->evaluate_model_numeric_gradients( time, fparams,
@@ -12959,7 +13001,11 @@ int test_materialLibraryInterface( std::ofstream &results ){
                                                             DSIGMADgrad_u_result, DSIGMADphi_result, DSIGMADgrad_phi_result,
                                                             DMDgrad_u_result, DMDphi_result, DMDgrad_phi_result,
                                                             ADD_TERMS, ADD_JACOBIANS,
-                                                            output_message, 1e-6 );
+                                                            output_message,
+#ifdef DEBUG_MODE
+                                                            DEBUG,
+#endif
+                                                            1e-6 );
 
     if ( errorCode > 0 ){
         results << "test_materialLibraryInterface & False\n";
@@ -13038,7 +13084,147 @@ int test_materialLibraryInterface( std::ofstream &results ){
     return 1;
 }
 
+int test_materialLibraryInterface2( std::ofstream &results ){
+    /*!
+     * Test the interface to the linear elastic model
+     * via the material library.
+     *
+     * NOTE: This function mostly exists to perform debugging
+     *       on the implementation of the function into a 
+     *       larger solver code.
+     *
+     * :param std::ofstream &results: The output file.
+     */
 
+    //Initialize the model
+    std::string _model_name = "LinearElasticityDruckerPragerPlasticity";
+    auto &factory = micromorphic_material_library::MaterialFactory::Instance();
+    auto material = factory.GetMaterial(_model_name);
+
+    //Set up the inputs
+    //Initialize the time
+    std::vector< double > time = { 0.045, 0.01 };
+
+    //Initialize the material parameters
+    std::vector< double > fparams = { 2, 170, 15, 2, 140, 20, 2, 2, 27, 2, 0.56, 0.2, 2, 0.15, 0.3, 2, 0.82, 0.1, 2, 0.42, 0.3, 2, 0.05, 0.2, 2, 0.52, 0.4, 2, 29480, 25480, 5, 1000, 400, -1500, -1400, -3000, 11, 0, 0, 0, 0, 0, 0, 1e+06, 0, 0, 0, 0, 2, 400, -3000, 0.5, 0.5, 0.5, 1e-09, 1e-09 };
+
+    //Initialize the gradient of the macro displacement
+    double current_grad_u[ 3 ][ 3 ] =
+    {
+        { -0.00124343, -6.55319e-14, 3.99657e-13},
+        { 0, 0.0045, 0},
+        { -1.75135e-13, -1.35481e-13, -0.00124343 },
+    };
+
+    double previous_grad_u[ 3 ][ 3 ] =
+    {
+        { -0.00123858, -1.22379e-17, 5.04154e-18},
+        { 0, 0.004, 0},
+        { -1.47723e-18, 4.44523e-18, -0.00123858 },
+    };
+
+    //Initialize the micro displacement
+    double current_phi[ 9 ] = { -0.00153489, -3.04626e-13, 5.16537e-13, 1.58771e-13, 0.00303407, 4.29828e-14, -4.38368e-13, -1.80694e-13, -0.00153489 };
+
+    double previous_phi[ 9 ] = { -0.00164749, -2.63663e-17, 1.35603e-17, 8.65138e-19, 0.00325613, -2.13082e-20, -1.17433e-17, 2.24626e-18, -0.00164749 };
+
+    //Initialize the gradient of the micro displacement
+    double current_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0} };
+
+    double previous_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0} };
+                                           
+
+    //Initialize the state variable vector
+    std::vector< double > SDVSDefault( 55, 0 );
+
+    //Initialize the additional degree of freedom vectors
+    std::vector< double > current_ADD_DOF;
+    std::vector< std::vector< double > > current_ADD_grad_DOF;
+
+    std::vector< double > previous_ADD_DOF;
+    std::vector< std::vector< double > > previous_ADD_grad_DOF;
+
+    //Initialize the stress measures
+    std::vector< double > current_PK2( 9, 0 );
+
+    std::vector< double > current_SIGMA( 9, 0 );
+
+    std::vector< double > current_M( 27, 0 );
+
+    //Initialize the additional terms vector
+    std::vector< std::vector< double > > ADD_TERMS;
+
+    //Initialize the output message string
+    std::string output_message;
+
+#ifdef DEBUG_MODE
+    solverTools::homotopyMap DEBUG;
+#endif
+
+    std::vector< double > SDVS = SDVSDefault;
+
+    std::vector< double > PK2_result, SIGMA_result, M_result;
+
+    //Evaluate the model
+    int errorCode = material->evaluate_model( time, fparams,
+                                              current_grad_u, current_phi, current_grad_phi,
+                                              previous_grad_u, previous_phi, previous_grad_phi,
+                                              SDVS,
+                                              current_ADD_DOF, current_ADD_grad_DOF,
+                                              previous_ADD_DOF, previous_ADD_grad_DOF,
+                                              PK2_result, SIGMA_result, M_result,
+                                              ADD_TERMS,
+                                              output_message
+#ifdef DEBUG_MODE
+                                              , DEBUG
+#endif
+                                            );
+
+    if ( errorCode > 0 ){
+        std::cout << output_message << "\n";
+        results << "test_materialLibraryInterface & False\n";
+        return 1;
+    }
+
+
+    std::cout << "SDVS:\n"; vectorTools::print( SDVS );
+    std::cout << "PK2:\n"; vectorTools::print( PK2_result );
+    std::cout << "SIGMA:\n"; vectorTools::print( SIGMA_result );
+    std::cout << "M:\n"; vectorTools::print( M_result );
+
+#ifdef DEBUG_MODE
+    for ( auto step = DEBUG.begin(); step != DEBUG.end(); step++ ){
+        std::cout << step->first << "\n";
+        for ( auto iteration = step->second.begin(); iteration != step->second.end(); iteration++ ){
+            std::cout << "    " << iteration->first << "\n";
+            for ( auto value = iteration->second.begin(); value != iteration->second.end(); value++ ){
+                if ( value->second.size() <= 27 ) {
+                    std::cout << "        " << value->first << "\n";
+                    std::cout << "            "; vectorTools::print( value->second );
+                }
+            }
+        }
+    }
+#endif
+
+    return 0;
+}
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -13077,6 +13263,7 @@ int main(){
     test_evaluate_model( results );
 
     test_materialLibraryInterface( results );
+//    test_materialLibraryInterface2( results );
 
     //Close the results file
     results.close();

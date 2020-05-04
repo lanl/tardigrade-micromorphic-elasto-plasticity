@@ -513,7 +513,7 @@ namespace micromorphicElastoPlasticity{
                         std::vector< std::vector< double > > &ADD_TERMS,
                         std::string &output_message
 #ifdef DEBUG_MODE
-                        , solverTools::debugMap &DEBUG
+                        , solverTools::homotopyMap &DEBUG
 #endif
                       );
 
@@ -537,7 +537,7 @@ namespace micromorphicElastoPlasticity{
                         std::vector< std::vector< std::vector< double > > > &ADD_JACOBIANS,
                         std::string &output_message
 #ifdef DEBUG_MODE
-                        , solverTools::debugMap &DEBUG
+                        , solverTools::homotopyMap &DEBUG
 #endif
                       );
 
@@ -564,11 +564,11 @@ namespace micromorphicElastoPlasticity{
                                 std::vector< double > &PK2, std::vector< double > &SIGMA, std::vector< double > &M,
                                 std::vector< std::vector< double > > &ADD_TERMS,
                                 std::string &output_message
+#ifdef DEBUG_MODE
+                                , solverTools::homotopyMap &DEBUG
+#endif
                               )
             {
-#ifdef DEBUG_MODE
-                std::map< std::string, std::vector< double > > DEBUG;
-#endif
                 return micromorphicElastoPlasticity::evaluate_model(
                                          time, fparams,
                                          current_grad_u, current_phi, current_grad_phi,
@@ -607,11 +607,12 @@ namespace micromorphicElastoPlasticity{
                                 std::vector< std::vector< double > > &ADD_TERMS,
                                 std::vector< std::vector< std::vector< double > > > &ADD_JACOBIANS,
                                 std::string &output_message
+#ifdef DEBUG_MODE
+                                , solverTools::homotopyMap &DEBUG
+#endif
                               )
             {
-#ifdef DEBUG_MODE
-                std::map< std::string, std::vector< double > > DEBUG;
-#endif
+
                 return micromorphicElastoPlasticity::evaluate_model(
                                          time, fparams,
                                          current_grad_u, current_phi, current_grad_phi,
