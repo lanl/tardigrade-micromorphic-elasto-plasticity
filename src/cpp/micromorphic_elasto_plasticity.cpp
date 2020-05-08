@@ -5210,9 +5210,9 @@ namespace micromorphicElastoPlasticity{
 
 #ifdef DEBUG_MODE
 
-        tempDEBUG.emplace( "currentDeformationGradient_", currentDeformationGradient );
-        tempDEBUG.emplace( "currentMicroDeformation_", currentMicroDeformation );
-        tempDEBUG.emplace( "currentGradientMicroDeformation_", currentGradientMicroDeformation );
+        tempDEBUG.emplace( "currentDeformationGradient", currentDeformationGradient );
+        tempDEBUG.emplace( "currentMicroDeformation", currentMicroDeformation );
+        tempDEBUG.emplace( "currentGradientMicroDeformation", currentGradientMicroDeformation );
 
 #endif
 
@@ -5285,13 +5285,13 @@ namespace micromorphicElastoPlasticity{
         }
 
 #ifdef DEBUG_MODE
-        tempDEBUG.emplace( "previousElasticDeformationGradient_", previousElasticDeformationGradient );
-        tempDEBUG.emplace( "previousElasticMicroDeformation_", previousElasticMicroDeformation );
-        tempDEBUG.emplace( "previousElasticGradientMicroDeformation_", previousElasticGradientMicroDeformation );
+        tempDEBUG.emplace( "previousElasticDeformationGradient", previousElasticDeformationGradient );
+        tempDEBUG.emplace( "previousElasticMicroDeformation", previousElasticMicroDeformation );
+        tempDEBUG.emplace( "previousElasticGradientMicroDeformation", previousElasticGradientMicroDeformation );
 
-        tempDEBUG.emplace( "previousPlasticDeformationGradient_", previousPlasticDeformationGradient );
-        tempDEBUG.emplace( "previousPlasticMicroDeformation_", previousPlasticMicroDeformation );
-        tempDEBUG.emplace( "previousPlasticGradientMicroDeformation_", previousPlasticGradientMicroDeformation );
+        tempDEBUG.emplace( "previousPlasticDeformationGradient", previousPlasticDeformationGradient );
+        tempDEBUG.emplace( "previousPlasticMicroDeformation", previousPlasticMicroDeformation );
+        tempDEBUG.emplace( "previousPlasticGradientMicroDeformation", previousPlasticGradientMicroDeformation );
 #endif
 
         //Compute the previous cohesion values
@@ -5349,6 +5349,12 @@ namespace micromorphicElastoPlasticity{
                 return 2;
             }
 
+#ifdef DEBUG_MODE
+            tempDEBUG.emplace( "previousPK2Stress", previousPK2Stress );
+            tempDEBUG.emplace( "previousReferenceMicroStress", previousReferenceMicroStress );
+            tempDEBUG.emplace( "previousReferenceHigherOrderStress", previousReferenceHigherOrderStress );
+#endif
+
             //Compute the elastic deformation measures for the plastic evolution
             variableVector previousElasticRightCauchyGreen, previousElasticMicroRightCauchyGreen,
                            previousElasticPsi, previousElasticGamma;
@@ -5367,6 +5373,13 @@ namespace micromorphicElastoPlasticity{
                 return 2;
             }
 
+#ifdef DEBUG_MODE
+            tempDEBUG.emplace( "previousElasticRightCauchyGreen", previousElasticRightCauchyGreen );
+            tempDEBUG.emplace( "previousElasticMicroRightCauchyGreen", previousElasticMicroRightCauchyGreen );
+            tempDEBUG.emplace( "previousElasticPsi", previousElasticPsi );
+            tempDEBUG.emplace( "previousElasticGamma", previousElasticGamma );
+#endif
+
             //Compute the previous plastic flow directions
 
             error = computeFlowDirections( previousPK2Stress, previousReferenceMicroStress, previousReferenceHigherOrderStress,
@@ -5384,6 +5397,21 @@ namespace micromorphicElastoPlasticity{
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 2;
             }
+
+#ifdef DEBUG_MODE
+            tempDEBUG.emplace( "previousMacroFlowDirection", previousMacroFlowDirection );
+            tempDEBUG.emplace( "previousMicroFlowDirection", previousMicroFlowDirection );
+            tempDEBUG.emplace( "previousMicroGradientFlowDirection", previousMicroGradientFlowDirection );
+
+            tmp = { previousdMacroGdMacroCohesion };
+            tempDEBUG.emplace( "previousdMacroGdMacroCohesion", tmp );
+
+            tmp = { previousdMicroGdMicroCohesion };
+            tempDEBUG.emplace( "previousdMicroGdMicroCohesion", tmp );
+
+            tempDEBUG.emplace( "previousdMicroGradientGdMicroGradientCohesion",
+                               vectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ) );
+#endif
 
             //Update the strain ISV values
             error = evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
@@ -5404,6 +5432,16 @@ namespace micromorphicElastoPlasticity{
                 return 2;
             }
 
+#ifdef DEBUG_MODE
+            tmp = { currentMacroStrainISV };
+            tempDEBUG.emplace( "currentMacroStrainISV", tmp );
+
+            tmp = { currentMicroStrainISV };
+            tempDEBUG.emplace( "currentMicroStrainISV", currentMicroStrainISV );
+
+            tempDEBUG.emplace( "currentMicroGradientStrainISV", currentMicroGradientStrainISV );
+#endif
+
             //Compute the current cohesion values
             error = computeCohesion( currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV,
                                      macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
@@ -5417,6 +5455,16 @@ namespace micromorphicElastoPlasticity{
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 2;
             }
+
+#ifdef DEBUG_MODE
+            tmp = { currentMacroCohesion };
+            tempDEBUG.emplace( "currentMacroCohesion", tmp );
+
+            tmp = { currentMicroCohesion };
+            tempDEBUG.emplace( "currentMicroCohesion", currentMicroCohesion );
+
+            tempDEBUG.emplace( "currentMicroGradientCohesion", currentMicroGradientCohesion );
+#endif
 
             //Compute the previous plastic velocity gradients
             error = computePlasticVelocityGradients( previousMacroGamma, previousMicroGamma, previousMicroGradientGamma,
@@ -5434,6 +5482,11 @@ namespace micromorphicElastoPlasticity{
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 2;
             }
+#ifdef DEBUG_MODE
+            tempDEBUG.emplace( "previousMacroFlowDirection", previousMacroFlowDirection );
+            tempDEBUG.emplace( "previousMicroFlowDirection", previousMicroFlowDirection );
+            tempDEBUG.emplace( "previousMicroGradientFlowDirection", previousMicroGradientFlowDirection );
+#endif
 
             //Update the current plastic deformation measures
             variableVector currentPlasticMacroVelocityGradient( dim * dim, 0 );
@@ -5518,6 +5571,12 @@ namespace micromorphicElastoPlasticity{
             output_message = buffer.str(); //Save the output to enable message passing
             return 2;
         }
+
+#ifdef DEBUG_MODE
+        tempDEBUG.emplace( "intermediatePK2Stress", currentPK2Stress );
+        tempDEBUG.emplace( "intermediateReferenceMicroStress", currentReferenceMicroStress );
+        tempDEBUG.emplace( "intermediateReferenceHigherOrderStress", currentReferenceHigherOrderStress );
+#endif
 
 //        std::cout << "current stress measures\n";
 //        std::cout << "currentPK2Stress:\n"; vectorTools::print( currentPK2Stress );
@@ -6136,13 +6195,13 @@ namespace micromorphicElastoPlasticity{
         }
 
 #ifdef DEBUG_MODE
-        tempDEBUG.emplace( "previousElasticDeformationGradient_", previousElasticDeformationGradient );
-        tempDEBUG.emplace( "previousElasticMicroDeformation_", previousElasticMicroDeformation );
-        tempDEBUG.emplace( "previousElasticGradientMicroDeformation_", previousElasticGradientMicroDeformation );
+        tempDEBUG.emplace( "previousElasticDeformationGradient", previousElasticDeformationGradient );
+        tempDEBUG.emplace( "previousElasticMicroDeformation", previousElasticMicroDeformation );
+        tempDEBUG.emplace( "previousElasticGradientMicroDeformation", previousElasticGradientMicroDeformation );
 
-        tempDEBUG.emplace( "previousPlasticDeformationGradient_", previousPlasticDeformationGradient );
-        tempDEBUG.emplace( "previousPlasticMicroDeformation_", previousPlasticMicroDeformation );
-        tempDEBUG.emplace( "previousPlasticGradientMicroDeformation_", previousPlasticGradientMicroDeformation );
+        tempDEBUG.emplace( "previousPlasticDeformationGradient", previousPlasticDeformationGradient );
+        tempDEBUG.emplace( "previousPlasticMicroDeformation", previousPlasticMicroDeformation );
+        tempDEBUG.emplace( "previousPlasticGradientMicroDeformation", previousPlasticGradientMicroDeformation );
 #endif
 
         //Compute the previous cohesion values
@@ -6198,6 +6257,12 @@ namespace micromorphicElastoPlasticity{
                 return 2;
             }
 
+#ifdef DEBUG_MODE
+            tempDEBUG.emplace( "previousPK2Stress", previousPK2Stress );
+            tempDEBUG.emplace( "previousReferenceMicroStress", previousReferenceMicroStress );
+            tempDEBUG.emplace( "previousReferenceHigherOrderStress", previousReferenceHigherOrderStress );
+#endif
+
             //Compute the elastic deformation measures for the plastic evolution
             variableVector previousElasticRightCauchyGreen, previousElasticMicroRightCauchyGreen,
                            previousElasticPsi, previousElasticGamma;
@@ -6216,6 +6281,13 @@ namespace micromorphicElastoPlasticity{
                 return 2;
             }
 
+#ifdef DEBUG_MODE
+            tempDEBUG.emplace( "previousElasticRightCauchyGreen", previousElasticRightCauchyGreen );
+            tempDEBUG.emplace( "previousElasticMicroRightCauchyGreen", previousElasticMicroRightCauchyGreen );
+            tempDEBUG.emplace( "previousElasticPsi", previousElasticPsi );
+            tempDEBUG.emplace( "previousElasticGamma", previousElasticGamma );
+#endif
+
             //Compute the previous plastic flow directions
 
             error = computeFlowDirections( previousPK2Stress, previousReferenceMicroStress, previousReferenceHigherOrderStress,
@@ -6233,6 +6305,21 @@ namespace micromorphicElastoPlasticity{
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 2;
             }
+
+#ifdef DEBUG_MODE
+            tempDEBUG.emplace( "previousMacroFlowDirection", previousMacroFlowDirection );
+            tempDEBUG.emplace( "previousMicroFlowDirection", previousMicroFlowDirection );
+            tempDEBUG.emplace( "previousMicroGradientFlowDirection", previousMicroGradientFlowDirection );
+
+            tmp = { previousdMacroGdMacroCohesion };
+            tempDEBUG.emplace( "previousdMacroGdMacroCohesion", tmp );
+
+            tmp = { previousdMicroGdMicroCohesion };
+            tempDEBUG.emplace( "previousdMicroGdMicroCohesion", tmp );
+
+            tempDEBUG.emplace( "previousdMicroGradientGdMicroGradientCohesion",
+                               vectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ) );
+#endif
 
             //Update the strain ISV values
             error = evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma, currentMicroGradientGamma,
@@ -6253,6 +6340,16 @@ namespace micromorphicElastoPlasticity{
                 return 2;
             }
 
+#ifdef DEBUG_MODE
+            tmp = { currentMacroStrainISV };
+            tempDEBUG.emplace( "currentMacroStrainISV", tmp );
+
+            tmp = { currentMicroStrainISV };
+            tempDEBUG.emplace( "currentMicroStrainISV", tmp );
+
+            tempDEBUG.emplace( "currentMicroGradientStrainISV", currentMicroGradientStrainISV );
+#endif
+
             //Compute the current cohesion values
             error = computeCohesion( currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV,
                                      macroHardeningParameters, microHardeningParameters, microGradientHardeningParameters,
@@ -6266,6 +6363,16 @@ namespace micromorphicElastoPlasticity{
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 2;
             }
+
+#ifdef DEBUG_MODE
+            tmp = { currentMacroCohesion };
+            tempDEBUG.emplace( "currentMacroCohesion", tmp );
+
+            tmp = { currentMicroCohesion };
+            tempDEBUG.emplace( "currentMicroCohesion", tmp );
+
+            tempDEBUG.emplace( "currentMicroGradientCohesion", currentMicroGradientCohesion );
+#endif
 
             //Compute the previous plastic velocity gradients
             error = computePlasticVelocityGradients( previousMacroGamma, previousMicroGamma, previousMicroGradientGamma,
@@ -6283,6 +6390,12 @@ namespace micromorphicElastoPlasticity{
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 2;
             }
+
+#ifdef DEBUG_MODE
+            tempDEBUG.emplace( "previousPlasticMacroVelocityGradient", previousPlasticMacroVelocityGradient );
+            tempDEBUG.emplace( "previousPlasticMicroVelocityGradient", previousPlasticMicroVelocityGradient );
+            tempDEBUG.emplace( "previousPlasticMicroGradientVelocityGradient", previousPlasticMicroGradientVelocityGradient );
+#endif
 
             //Update the current plastic deformation measures
             variableVector currentPlasticMacroVelocityGradient( dim * dim, 0 );
@@ -6397,6 +6510,12 @@ namespace micromorphicElastoPlasticity{
             output_message = buffer.str(); //Save the output to enable message passing
             return 2;
         }
+
+#ifdef DEBUG_MODE
+        tempDEBUG.emplace( "intermediatePK2Stress", currentPK2Stress );
+        tempDEBUG.emplace( "intermediateReferenceMicroStress", currentReferenceMicroStress );
+        tempDEBUG.emplace( "intermediateReferenceHigherOrderStress", currentReferenceHigherOrderStress );
+#endif
 
         //Evaluate the yield functions
         variableVector currentYieldFunctionValues;

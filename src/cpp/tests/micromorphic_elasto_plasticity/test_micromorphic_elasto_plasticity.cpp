@@ -13225,6 +13225,389 @@ int test_materialLibraryInterface2( std::ofstream &results ){
 
     return 0;
 }
+
+int test_evaluate_model_continuation( std::ofstream &results){
+    /*!
+     * Test the evaluation of the constitutive model when being
+     * continued from a previous plastic deformation
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    //Initialize the time
+    std::vector< double > time = { 10., 2.5 };
+
+    //Initialize the material parameters
+    std::vector< double > fparams = { 2, 2.4e2, 1.5e1,             //Macro hardening parameters
+                                      2, 1.4e2, 2.0e1,             //Micro hardening parameters
+                                      2, 2.0e0, 2.7e1,             //Micro gradient hardening parameters
+                                      2, 0.56, 0.2,                //Macro flow parameters
+                                      2, 0.15,-0.2,                //Micro flow parameters
+                                      2, 0.82, 0.1,                //Micro gradient flow parameters
+                                      2, 0.70, 0.3,                //Macro yield parameters
+                                      2, 0.40,-0.3,                //Micro yield parameters
+                                      2, 0.52, 0.4,                //Micro gradient yield parameters
+                                      2, 696.47, 65.84,            //A stiffness tensor parameters
+                                      5, -7.69, -51.92, 38.61, -27.31, 5.13,  //B stiffness tensor parameters
+                                      11, 1.85, -0.19, -1.08, -1.57, 2.29, -0.61, 5.97, -2.02, 2.38, -0.32, -3.25, //C stiffness tensor parameters
+                                      2, -51.92, 5.13,             //D stiffness tensor parameters
+                                      0.4, 0.3, 0.35, 1e-8, 1e-8   //Integration parameters
+                                    };
+
+    //Initialize the gradient of the macro displacement
+//    double current_grad_u[ 3 ][ 3 ] = { { -1.83182277, -0.66558173,  0.23458272 },
+//                                        { -0.56632666, -0.21399259,  0.16367238 },
+//                                        { -0.29129789, -0.22367825, -2.0632945  } };
+//
+//    double previous_grad_u[ 3 ][ 3 ] = { { -1.89906429,  0.20890208, -0.39814132 },
+//                                         {  0.31303067, -1.23910631, -0.93837662 },
+//                                         { -0.32571524, -0.95306342, -0.93025257 } };
+
+    double current_grad_u0[ 3 ][ 3 ] = { {0.200, 0.100, 0.000 },
+                                         {0.100, 0.001, 0.000 },
+                                         {0.000, 0.000, 0.000 } };
+
+    double previous_grad_u[ 3 ][ 3 ] = { {0, 0, 0},
+                                         {0, 0, 0},
+                                         {0, 0, 0} };
+    //Initialize the micro displacement
+//    double current_phi[ 9 ] = { 0.84729289,  0.40617104,  0.59534561,  
+//                                0.44195587,  0.34121966, -0.79098944, 
+//                               -0.43965428,  0.88466225,  0.1684519 };
+//
+//    double previous_phi[ 9 ] = { -0.99935855, -0.21425717,  0.0668254 ,
+//                                 -0.11111872, -0.07416114, -1.01048108,
+//                                  0.1804018 , -1.01116291,  0.03248007 };
+
+    double current_phi0[ 9 ] = { 0.100, 0.000, 0.000,
+                                 0.000, 0.000, 0.000,
+                                 0.000, 0.000, 0.000 };
+
+    double previous_phi[ 9 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    //Initialize the gradient of the micro displacement
+    double current_grad_phi0[ 9 ][ 3 ] = { {  0.13890017, -0.3598602 , -0.08048856 },
+                                           { -0.18572739,  0.06847269,  0.22931628 },
+                                           { -0.01829735, -0.48731265, -0.25277529 },
+                                           {  0.26626212,  0.4844646 , -0.31965177 },
+                                           {  0.49197846,  0.19051656, -0.0365349  },
+                                           { -0.06607774, -0.33526875, -0.15803078 },
+                                           {  0.09738707, -0.49482218, -0.39584868 },
+                                           { -0.45599864,  0.08585038, -0.09432794 },
+                                           {  0.23055539,  0.07564162,  0.24051469 } };
+
+//    double previous_grad_phi[ 9 ][ 3 ] = { { -0.47850242,  0.36472234,  0.37071411 },
+//                                           {  0.00294417,  0.34480654, -0.34450988 },
+//                                           {  0.21056511, -0.28113967, -0.45726839 },
+//                                           { -0.26431286, -0.09985721,  0.47322301 },
+//                                           { -0.18156887, -0.32226199, -0.37295847 },
+//                                           {  0.15062371,  0.09439471,  0.09167948 },
+//                                           { -0.46869859,  0.018301  ,  0.45013866 },
+//                                           { -0.15455446,  0.40552715, -0.4216042  },
+//                                           { -0.38930237,  0.10974753, -0.31188239 } };
+
+//    double current_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0} };
+
+    double previous_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0} };
+                                           
+
+    //Initialize the state variable vector
+    std::vector< double > SDVSDefault( 55, 0 );
+
+    //Initialize the additional degree of freedom vectors
+    std::vector< double > current_ADD_DOF;
+    std::vector< std::vector< double > > current_ADD_grad_DOF;
+
+    std::vector< double > previous_ADD_DOF;
+    std::vector< std::vector< double > > previous_ADD_grad_DOF;
+
+    //Initialize the stress measures
+    std::vector< double > current_PK20( 9, 0 );
+
+    std::vector< double > current_SIGMA0( 9, 0 );
+
+    std::vector< double > current_M0( 27, 0 );
+
+    //Initialize the additional terms vector
+    std::vector< std::vector< double > > ADD_TERMS;
+
+    //Initialize the output message string
+    std::string output_message;
+
+#ifdef DEBUG_MODE
+    solverTools::homotopyMap homotopyDEBUG0;
+#endif
+
+    solverTools::floatVector PK2Answer0 = { 177.067  , 13.287 ,  -0.577489,
+                                             10.7222 , 152.621,  -0.288668,
+                                             -1.38898, 1.61632, 150.85 };
+    solverTools::floatVector SigmaAnswer0 = { 178.961  ,  13.5623 ,  -2.43027,
+                                              13.5623 , 151.785  ,   1.62465,
+                                              -2.43027,   1.62465, 149.31 };
+    solverTools::floatVector MAnswer0 = { 0.541081, -0.533639,  0.640843,  2.92886 ,  1.1505  ,
+                                          1.14946 ,  0.605546, -2.62366 ,  1.54942 , -2.40585 ,
+                                         -0.670181, -0.848562,  0.678723,  0.433934, -0.206886,
+                                         -2.7026  ,  0.964407,  1.68227 , -0.480138,  2.68016 ,
+                                         -0.628373,  1.14616 , -0.10665 , -2.2393  , -0.765349,
+                                          0.746722,  0.994415 };
+
+    solverTools::floatVector SDVSAnswer0 = { -0.0394628  ,  0.102019   ,  0.0453858  ,  0.0262009 ,  0.0232167 ,
+                                             -0.0196885  ,  0.0357449  ,  0.0453858  ,  0.0262009 ,  0.0232167 ,
+                                              0.00813011 ,  0.00956498 , -0.000691731,  0.00885806, -0.0103998 ,
+                                              0.000451969, -0.00115188 ,  0.00088041 , -0.00882951,  0.0622934 ,
+                                              0.0274584  , -0.00113356 ,  0.0403186  , -0.00945181,  0.00119733,
+                                             -0.00227071 ,  0.000880704, -0.00792983 ,  0.0554737 , -0.0202861 ,
+                                             -0.0208186  ,  0.0122486  ,  0.0119279  ,  0.037049  ,  0.0168925 ,
+                                             -0.0430597  , -0.0242213  ,  0.0244271  , -0.00880588,  0.0383104 ,
+                                              0.00423276 ,  0.0111449  ,  0.0155982  ,  0.0136987 , -0.00813611,
+                                             -0.0305008  ,  0.0171903  , -0.0126259  ,  0.0500443 , -0.0276203 ,
+                                              0.0193062  ,  0.0310543  ,  0.0157931  ,  0.0168109 ,  0.0196658 };
+
+    std::vector< double > SDVS = SDVSDefault;
+
+    int errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                                  current_grad_u0,  current_phi0,  current_grad_phi0,
+                                                                  previous_grad_u, previous_phi, previous_grad_phi,
+                                                                  SDVS,
+                                                                  current_ADD_DOF,  current_ADD_grad_DOF,
+                                                                  previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                                  current_PK20, current_SIGMA0, current_M0,
+                                                                  ADD_TERMS,
+                                                                  output_message
+#ifdef DEBUG_MODE
+                                                                  , homotopyDEBUG0
+#endif
+                                                                  );
+
+    if ( errorCode != 0 ){
+        std::cout << output_message;
+        results << "test_evaluate_model_continuation & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer0 ) ){
+        results << "test_evaluate_model_continuation (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( PK2Answer0, current_PK20, 1e-5, 1e-5 ) ){
+        std::cout << "error: "; vectorTools::print( PK2Answer0 - current_PK20 );
+        results << "test_evaluate_model_continuation (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SigmaAnswer0, current_SIGMA0, 1e-5, 1e-5 ) ){
+        results << "test_evaluate_model_continuation (test 3) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( MAnswer0, current_M0, 1e-5 ) ){
+        results << "test_evaluate_model_continuation (test 4) & False\n";
+        return 1;
+    }
+
+#ifdef DEBUG_MODE
+    solverTools::homotopyMap homotopyDEBUG1;
+#endif
+
+    double current_grad_u1[ 3 ][ 3 ];
+    for ( unsigned int i = 0; i < 3; i++ ){
+        for ( unsigned int j = 0; j < 3; j++ ){
+            current_grad_u1[ i ][ j ] = current_grad_u0[ i ][ j ];
+        }
+    }
+
+    double current_phi1[ 9 ];
+    for ( unsigned int i = 0; i < 9; i++ ){
+        current_phi1[ i ] = current_phi0[ i ];
+    }
+
+    double current_grad_phi1[ 9 ][ 3 ];
+    for ( unsigned int i = 0; i < 9; i++ ){
+        for ( unsigned int j = 0; j < 3; j++ ){
+            current_grad_phi1[ i ][ j ] = current_grad_phi0[ i ][ j ];
+        }
+    }
+
+    //Compute the new stress
+    std::vector< double > current_PK21( 9, 0 );
+
+    std::vector< double > current_SIGMA1( 9, 0 );
+
+    std::vector< double > current_M1( 27, 0 );
+
+    std::vector< double  > SDVSAnswer1 = { -0.0657714,  0.145741,  0,  0,  0,
+                                             0, 0, 0, 0, 0,
+                                             0.0149052, 0.0175358, -0.00126817,
+                                             0.0162398, -0.0190663, 0.000828609,
+                                             -0.00211178, 0.00161408, -0.0161874,
+                                             0.106789, 0.0470716, -0.00194324,
+                                             0.0691176, -0.0162031, 0.00205256,
+                                             -0.00389264, 0.00150978, -0.013594,
+                                             0.0981457, -0.0358908, -0.036833, 0.0216706, 0.0211032,
+                                             0.0655483, 0.0298867, -0.0761825, -0.042853, 0.0432171,
+                                             -0.0155796, 0.0677799, 0.00748873, 0.019718, 0.0275969,
+                                             0.0242362, -0.0143947, -0.053963, 0.0304137, -0.0223381,
+                                             0.08854, -0.0488666, 0.0341572, 0.0549423, 0.0279417,
+                                             0.0297423, 0.0347933 };
+
+    std::vector< double > PK2Answer1 = { 1.74029073e+02,  9.05450215e+00,  2.93544317e-02,
+                                         6.44094192e+00,  1.58361256e+02, -5.22170721e-01,
+                                        -6.57681916e-01,  1.17044279e+00,  1.56348954e+02 };
+    std::vector< double > SIGMAAnswer1 = { 174.39704902,   9.32312559,  -1.49162981,
+                                             9.32312559, 156.13854317,   1.23425444,
+                                            -1.49162981,   1.23425444, 153.62357663 };
+    std::vector< double > MAnswer1 = { 0.3159288 , -0.51026594,  0.59348322,  2.3181475 ,  1.14371751,
+                                       0.95470183,  0.53124447, -2.44215656,  1.38618688, -2.02400602,
+                                      -0.84888623, -0.68377578,  0.64164069,  0.23102733, -0.22805207,
+                                      -2.39228727,  1.04649009,  1.42732866, -0.4263453 ,  2.53589461,
+                                      -0.55870875,  0.86178852, -0.19022294, -2.02130033, -0.84633362,
+                                       0.61859862,  0.92745449 };
+
+    errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                              current_grad_u1, current_phi1, current_grad_phi1,
+                                                              current_grad_u0, current_phi0, current_grad_phi0,
+                                                              SDVS,
+                                                              current_ADD_DOF,  current_ADD_grad_DOF,
+                                                              previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                              current_PK21, current_SIGMA1, current_M1,
+                                                              ADD_TERMS,
+                                                              output_message
+#ifdef DEBUG_MODE
+                                                              , homotopyDEBUG1
+#endif
+                                                              );
+    std::vector< double > SDVS1 = SDVS;
+
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer1 ) ){
+        results << "test_evaluate_model_continuation (test 9) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_PK21, PK2Answer1 ) ){
+        std::cout << "error: "; vectorTools::print( current_PK21 - PK2Answer1 );
+        results << "test_evaluate_model_continuation (test 10) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_SIGMA1, SIGMAAnswer1 ) ){
+        std::cout << "error: "; vectorTools::print( current_SIGMA1 - SIGMAAnswer1 );
+        results << "test_evaluate_model_continuation (test 11) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_M1, MAnswer1 ) ){
+        std::cout << "error: "; vectorTools::print( current_M1 - MAnswer1 );
+        results << "test_evaluate_model_continuation (test 12) & False\n";
+        return 1;
+    }
+
+#ifdef DEBUG_MODE
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPK2Stress" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediatePK2Stress" ] ) ){
+        results << "test_evaluate_model_continuation (intermediatePK2Stress) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousReferenceMicroStress" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceMicroStress" ] ) ){
+        results << "test_evaluate_model_continuation (intermediateReferenceMicroStress) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousReferenceHigherOrderStress" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceHigherOrderStress" ] ) ){
+        results << "test_evaluate_model_continuation (intermediateReferenceHigherOrderStress) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticDeformationGradient" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticDeformationGradient" ] ) ){
+        results << "test_evaluate_model_continuation (previousElasticDeformationGradient) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticMicroDeformation" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticMicroDeformation" ] ) ){
+        results << "test_evaluate_model_continuation (previousPlasticMicroDeformation) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticGradientMicroDeformation" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticGradientMicroDeformation" ] ) ){
+        results << "test_evaluate_model_continuation (previousPlasticGradientMicroDeformation) & False\n";
+        return 1;
+    }
+
+#endif
+    
+    //Compute the new stress
+    std::vector< double > current_PK22( 9, 0 );
+
+    std::vector< double > current_SIGMA2( 9, 0 );
+
+    std::vector< double > current_M2( 27, 0 );
+
+#ifdef DEBUG_MODE
+    solverTools::homotopyMap homotopyDEBUG2;
+#endif
+
+    errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                              current_grad_u1, current_phi1, current_grad_phi1,
+                                                              current_grad_u1, current_phi1, current_grad_phi1,
+                                                              SDVS,
+                                                              current_ADD_DOF,  current_ADD_grad_DOF,
+                                                              previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                              current_PK22, current_SIGMA2, current_M2,
+                                                              ADD_TERMS,
+                                                              output_message
+#ifdef DEBUG_MODE
+                                                              , homotopyDEBUG2
+#endif
+                                                              );
+
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVS1 ) ){
+        results << "test_evaluate_model_continuation (test 9) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_PK21, current_PK22 ) ){
+        results << "test_evaluate_model_continuation (test 10) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_SIGMA1, current_SIGMA2 ) ){
+        results << "test_evaluate_model_continuation (test 11) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_M1, current_M2 ) ){
+        results << "test_evaluate_model_continuation (test 12) & False\n";
+        return 1;
+    }
+     
+
+    results << "test_evaluate_model_continuation & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -13261,6 +13644,7 @@ int main(){
     test_cerr_redirect( results );
 
     test_evaluate_model( results );
+    test_evaluate_model_continuation( results );
 
     test_materialLibraryInterface( results );
 //    test_materialLibraryInterface2( results );
