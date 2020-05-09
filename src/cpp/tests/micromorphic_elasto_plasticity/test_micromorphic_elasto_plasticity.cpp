@@ -13452,33 +13452,38 @@ int test_evaluate_model_continuation( std::ofstream &results){
 
     std::vector< double > current_M1( 27, 0 );
 
-    std::vector< double  > SDVSAnswer1 = { -0.0657714,  0.145741,  0,  0,  0,
-                                             0, 0, 0, 0, 0,
-                                             0.0149052, 0.0175358, -0.00126817,
-                                             0.0162398, -0.0190663, 0.000828609,
-                                             -0.00211178, 0.00161408, -0.0161874,
-                                             0.106789, 0.0470716, -0.00194324,
-                                             0.0691176, -0.0162031, 0.00205256,
-                                             -0.00389264, 0.00150978, -0.013594,
-                                             0.0981457, -0.0358908, -0.036833, 0.0216706, 0.0211032,
-                                             0.0655483, 0.0298867, -0.0761825, -0.042853, 0.0432171,
-                                             -0.0155796, 0.0677799, 0.00748873, 0.019718, 0.0275969,
-                                             0.0242362, -0.0143947, -0.053963, 0.0304137, -0.0223381,
-                                             0.08854, -0.0488666, 0.0341572, 0.0549423, 0.0279417,
-                                             0.0297423, 0.0347933 };
+    std::vector< double  > SDVSAnswer1 = { -0.0657714, 0.145741, 0, 0, 0,
+                                            0, 0, 0, 0, 0,
+                                            0.0135502 , 0.0159416  , -0.00115289 ,
+                                            0.0147634 , -0.017333  ,  0.000753281,
+                                           -0.0019198 ,  0.00146735, -0.0147159  ,
+                                            0.0889905 ,  0.0392263 , -0.00161937 ,
+                                            0.057598  , -0.0135026 ,  0.00171046 ,
+                                           -0.00324386, 0.00125815 , -0.0113283  ,
+                                            0.0853441 , -0.0312094 , -0.0320287  ,
+                                            0.018844  , 0.0183506  ,  0.0569985  ,
+                                            0.0259884 , -0.0662456 , -0.0372635  ,
+                                            0.0375801 , -0.0135475 ,  0.0589391  ,
+                                            0.00651194, 0.0171461  ,  0.0239973  ,
+                                            0.0210749 , -0.0125171 , -0.0469244  ,
+                                            0.0264467 , -0.0194244 ,  0.0769913  ,
+                                           -0.0424927 , 0.0297019  ,  0.0477759  ,
+                                            0.0242971 , 0.0258629  ,  0.030255 };
 
-    std::vector< double > PK2Answer1 = { 1.74029073e+02,  9.05450215e+00,  2.93544317e-02,
-                                         6.44094192e+00,  1.58361256e+02, -5.22170721e-01,
-                                        -6.57681916e-01,  1.17044279e+00,  1.56348954e+02 };
-    std::vector< double > SIGMAAnswer1 = { 174.39704902,   9.32312559,  -1.49162981,
-                                             9.32312559, 156.13854317,   1.23425444,
-                                            -1.49162981,   1.23425444, 153.62357663 };
-    std::vector< double > MAnswer1 = { 0.3159288 , -0.51026594,  0.59348322,  2.3181475 ,  1.14371751,
-                                       0.95470183,  0.53124447, -2.44215656,  1.38618688, -2.02400602,
-                                      -0.84888623, -0.68377578,  0.64164069,  0.23102733, -0.22805207,
-                                      -2.39228727,  1.04649009,  1.42732866, -0.4263453 ,  2.53589461,
-                                      -0.55870875,  0.86178852, -0.19022294, -2.02130033, -0.84633362,
-                                       0.61859862,  0.92745449 };
+    std::vector< double > PK2Answer1 = { 1.74594528e+02,  9.90357506e+00, -1.16456128e-01,
+                                         7.35100585e+00,  1.57060509e+02, -4.68051721e-01,
+                                        -8.40302786e-01,  1.28400640e+00,  1.55106125e+02 };
+
+    std::vector< double > SIGMAAnswer1 = { 175.50856348,  10.16163404,  -1.73547912,
+                                            10.16163404, 155.38685738,   1.3379937 ,
+                                            -1.73547912,   1.3379937 , 152.87515001 };
+
+    std::vector< double > MAnswer1 = { 0.37220031, -0.51491634,  0.60588705,  2.5117993 ,  1.15120688,
+                                       1.01073726,  0.54881061, -2.49187357,  1.42408148, -2.15103266,
+                                      -0.81552364, -0.72425736,  0.6621303 ,  0.29584242, -0.22199834,
+                                      -2.4997514 ,  1.02467573,  1.50571566, -0.43582018,  2.57530701,
+                                      -0.56574275,  0.94510996, -0.17195943, -2.08860752, -0.83703857,
+                                       0.6563958 ,  0.94868265 };
 
     errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
                                                               current_grad_u1, current_phi1, current_grad_phi1,
@@ -13494,6 +13499,15 @@ int test_evaluate_model_continuation( std::ofstream &results){
 #endif
                                                               );
     std::vector< double > SDVS1 = SDVS;
+
+    std::cout << "current_SDVS1\n";
+    vectorTools::print( SDVS );
+    std::cout << "current_PK21\n";
+    vectorTools::print( current_PK21 - PK2Answer1 );
+    std::cout << "current_SIGMA1\n";
+    vectorTools::print( current_SIGMA1 - SIGMAAnswer1 );
+    std::cout << "current_M1\n";
+    vectorTools::print( current_M1 - MAnswer1);
 
     if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer1 ) ){
         results << "test_evaluate_model_continuation (test 9) & False\n";
@@ -13608,6 +13622,442 @@ int test_evaluate_model_continuation( std::ofstream &results){
     return 0;
 }
 
+int test_evaluate_model_history( std::ofstream &results ){
+    /*!
+     * Test the material model undergoing a time history.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+#ifdef DEBUG_MODE
+    std::ofstream output_file;
+    output_file.open( "output_file.txt" );
+#endif
+
+    //Initialize the model
+    std::string _model_name = "LinearElasticityDruckerPragerPlasticity";
+    auto &factory = micromorphic_material_library::MaterialFactory::Instance();
+    auto material = factory.GetMaterial(_model_name);
+
+    std::vector< std::vector< double > > grad_u_0 = { { 0, 0, 0 },
+                                                      { 0, 0, 0 },
+                                                      { 0, 0, 0 } };
+
+    std::vector< std::vector< double > > grad_u_f = { { 0.5, 0, 0 },
+                                                      { 0.0, 0, 0 },
+                                                      { 0.0, 0, 0 } };
+
+    std::vector< double > phi_0 = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    std::vector< double > phi_f = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    std::vector< std::vector< double > > grad_phi_0 = { { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0} };
+
+    std::vector< std::vector< double > > grad_phi_f = { { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0},
+                                                        { 0, 0, 0} };
+
+    double dt = 0.01;
+    double t0 = 0.;
+    double tf = 1.0;
+
+    double t = t0;
+
+    //Set up the model parameters
+    std::vector< double > fparams = { 2, 1e3, 0,
+                                      2, 1e3, 0,
+                                      2, 1e3, 0,
+                                      2, 0., 0.0,
+                                      2, 0., 0.0,
+                                      2, 0., 0.0,
+                                      2, 0., 0.0,
+                                      2, 0., 0.0,
+                                      2, 0., 0.0,
+                                      2, 29480, 25480,
+                                      5, 1000, 400, -1500, -1400, -3000,
+                                      11, 0, 0, 0, 0, 0, 0, 1e+06, 0, 0, 0, 0,
+                                      2, 400, -3000,
+//                                      0.5, 0.5, 0.5, 1e-09, 1e-09 };
+                                      0.0, 0.0, 0.0, 1e-09, 1e-09 };
+
+    //Initialize the state variable vector
+    std::vector< double > SDVSDefault( 55, 0 );
+
+    //Initialize the additional degree of freedom vectors
+    std::vector< double > current_ADD_DOF;
+    std::vector< std::vector< double > > current_ADD_grad_DOF;
+
+    std::vector< double > previous_ADD_DOF;
+    std::vector< std::vector< double > > previous_ADD_grad_DOF;
+
+    //Initialize the stress measures
+    std::vector< double > current_PK2( 9, 0 );
+
+    std::vector< double > current_SIGMA( 9, 0 );
+
+    std::vector< double > current_M( 27, 0 );
+
+    //Initialize the additional terms vector
+    std::vector< std::vector< double > > ADD_TERMS;
+
+    //Initialize the output message string
+    std::string output_message;
+
+#ifdef DEBUG_MODE
+    solverTools::homotopyMap DEBUG;
+#endif
+
+    std::vector< double > SDVS = SDVSDefault;
+
+    std::vector< double > PK2_result, SIGMA_result, M_result;
+
+    std::vector< std::vector< double > > grad_u_prev   = grad_u_0;
+    std::vector< double > phi_prev                     = phi_0;
+    std::vector< std::vector< double > > grad_phi_prev = grad_phi_0;
+
+    std::vector< std::vector< double > > grad_u_curr;
+    std::vector< double > phi_curr;
+    std::vector< std::vector< double > > grad_phi_curr;
+
+    std::vector< double > time;
+
+    double current_grad_u[ 3 ][ 3 ], current_phi[ 9 ], current_grad_phi[ 9 ][ 3 ];
+    double previous_grad_u[ 3 ][ 3 ], previous_phi[ 9 ], previous_grad_phi[ 9 ][ 3 ];
+
+    //Initial state
+    //Update the arrays
+    for ( unsigned int i = 0; i < 3; i++ ){
+        for ( unsigned int j = 0; j < 3; j++ ){
+            previous_grad_u[ i ][ j ] = grad_u_prev[ i ][ j ];
+        }
+    }
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+        previous_phi[ i ] = phi_prev[ i ];
+
+        for ( unsigned int j = 0; j < 3; j++ ){
+            previous_grad_phi[ i ][ j ] = grad_phi_prev[ i ][ j ];
+        }
+    }
+    //Evaluate the model
+    time = { 0., 0. };
+    int errorCode = material->evaluate_model( time, fparams,
+                                              previous_grad_u, previous_phi, previous_grad_phi,
+                                              previous_grad_u, previous_phi, previous_grad_phi,
+                                              SDVS,
+                                              current_ADD_DOF, current_ADD_grad_DOF,
+                                              previous_ADD_DOF, previous_ADD_grad_DOF,
+                                              PK2_result, SIGMA_result, M_result,
+                                              ADD_TERMS,
+                                              output_message
+#ifdef DEBUG_MODE
+                                              , DEBUG
+#endif
+                                            );
+    
+    if ( errorCode > 0 ){
+        std::cout << output_message << "\n";
+        results << "test_evaluate_model_history & False\n";
+        output_file.close();
+        return 1;
+    }
+
+#ifdef DEBUG_MODE
+    output_file << "NEW_INCREMENT\n";
+
+    //Output the time
+    output_file << time[ 0 ] << ", " << time[ 1 ] << "\n";
+
+    //Output the current gradient of u
+    output_file << current_grad_u[ 0 ][ 0 ] << ", " << current_grad_u[ 0 ][ 1 ] << ", " << current_grad_u[ 0 ][ 2 ] << ", "
+                << current_grad_u[ 1 ][ 0 ] << ", " << current_grad_u[ 1 ][ 1 ] << ", " << current_grad_u[ 1 ][ 2 ] << ", "
+                << current_grad_u[ 2 ][ 0 ] << ", " << current_grad_u[ 2 ][ 1 ] << ", " << current_grad_u[ 2 ][ 2 ] << "\n";
+
+    //Output the current micro displacement
+    output_file << current_phi[ 0 ] << ", " << current_phi[ 1 ] << ", " << current_phi[ 2 ] << ", "
+                << current_phi[ 3 ] << ", " << current_phi[ 4 ] << ", " << current_phi[ 5 ] << ", "
+                << current_phi[ 6 ] << ", " << current_phi[ 7 ] << ", " << current_phi[ 8 ] << "\n";
+
+    //Output the current gradient of the micro displacement
+    output_file << current_grad_phi[ 0 ][ 0 ] << ", " << current_grad_phi[ 0 ][ 1 ] << ", " << current_grad_phi[ 0 ][ 2 ] << ", "
+                << current_grad_phi[ 1 ][ 0 ] << ", " << current_grad_phi[ 1 ][ 1 ] << ", " << current_grad_phi[ 1 ][ 2 ] << ", "
+                << current_grad_phi[ 2 ][ 0 ] << ", " << current_grad_phi[ 2 ][ 1 ] << ", " << current_grad_phi[ 2 ][ 2 ] << ", "
+                << current_grad_phi[ 3 ][ 0 ] << ", " << current_grad_phi[ 3 ][ 1 ] << ", " << current_grad_phi[ 3 ][ 2 ] << ", "
+                << current_grad_phi[ 4 ][ 0 ] << ", " << current_grad_phi[ 4 ][ 1 ] << ", " << current_grad_phi[ 4 ][ 2 ] << ", "
+                << current_grad_phi[ 5 ][ 0 ] << ", " << current_grad_phi[ 5 ][ 1 ] << ", " << current_grad_phi[ 5 ][ 2 ] << ", "
+                << current_grad_phi[ 6 ][ 0 ] << ", " << current_grad_phi[ 6 ][ 1 ] << ", " << current_grad_phi[ 6 ][ 2 ] << ", "
+                << current_grad_phi[ 7 ][ 0 ] << ", " << current_grad_phi[ 7 ][ 1 ] << ", " << current_grad_phi[ 7 ][ 2 ] << ", "
+                << current_grad_phi[ 8 ][ 0 ] << ", " << current_grad_phi[ 8 ][ 1 ] << ", " << current_grad_phi[ 8 ][ 2 ] << "\n";
+
+    //Output the PK2 stress
+    output_file << PK2_result[ 0 ] << ", " << PK2_result[ 1 ] << ", " << PK2_result[ 2 ] << ", "
+                << PK2_result[ 3 ] << ", " << PK2_result[ 4 ] << ", " << PK2_result[ 5 ] << ", "
+                << PK2_result[ 6 ] << ", " << PK2_result[ 7 ] << ", " << PK2_result[ 8 ] << "\n";
+
+    //Output the SIGMA stress
+    output_file << SIGMA_result[ 0 ] << ", " << SIGMA_result[ 1 ] << ", " << SIGMA_result[ 2 ] << ", "
+                << SIGMA_result[ 3 ] << ", " << SIGMA_result[ 4 ] << ", " << SIGMA_result[ 5 ] << ", "
+                << SIGMA_result[ 6 ] << ", " << SIGMA_result[ 7 ] << ", " << SIGMA_result[ 8 ] << "\n";
+
+    //Output the M stress
+    output_file << M_result[  0 ] << ", " << M_result[  1 ] << ", " << M_result[  2 ] << ", "
+                << M_result[  3 ] << ", " << M_result[  4 ] << ", " << M_result[  5 ] << ", "
+                << M_result[  6 ] << ", " << M_result[  7 ] << ", " << M_result[  8 ] << ", "
+                << M_result[  9 ] << ", " << M_result[ 10 ] << ", " << M_result[ 11 ] << ", "
+                << M_result[ 12 ] << ", " << M_result[ 13 ] << ", " << M_result[ 14 ] << ", "
+                << M_result[ 15 ] << ", " << M_result[ 16 ] << ", " << M_result[ 17 ] << ", "
+                << M_result[ 18 ] << ", " << M_result[ 19 ] << ", " << M_result[ 20 ] << ", "
+                << M_result[ 21 ] << ", " << M_result[ 22 ] << ", " << M_result[ 23 ] << ", "
+                << M_result[ 24 ] << ", " << M_result[ 25 ] << ", " << M_result[ 26 ] << "\n";
+
+    std::vector< double > PK2_intermediate, SIGMA_intermediate, M_intermediate;
+
+    //Determine if there were non-linear iterations
+    auto inc = DEBUG.find( "converged_values" );
+    if ( inc != DEBUG.end() ){
+        PK2_intermediate   = DEBUG[ "converged_values" ][ "converged_values" ][ "intermediatePK2Stress" ];
+        SIGMA_intermediate = DEBUG[ "converged_values" ][ "converged_values" ][ "intermediateReferenceMicroStress" ];
+        M_intermediate     = DEBUG[ "converged_values" ][ "converged_values" ][ "intermediateReferenceHigherOrderStress" ];
+    }
+    else{
+        PK2_intermediate   = DEBUG[ "pre_iteration_values" ][ "pre_iteration_values" ][ "intermediatePK2Stress" ];
+        SIGMA_intermediate = DEBUG[ "pre_iteration_values" ][ "pre_iteration_values" ][ "intermediateReferenceMicroStress" ];
+        M_intermediate     = DEBUG[ "pre_iteration_values" ][ "pre_iteration_values" ][ "intermediateReferenceHigherOrderStress" ];
+    }
+
+    //Output the intermediate PK2 stress
+    output_file << PK2_intermediate[ 0 ] << ", " << PK2_intermediate[ 1 ] << ", " << PK2_intermediate[ 2 ] << ", "
+                << PK2_intermediate[ 3 ] << ", " << PK2_intermediate[ 4 ] << ", " << PK2_intermediate[ 5 ] << ", "
+                << PK2_intermediate[ 6 ] << ", " << PK2_intermediate[ 7 ] << ", " << PK2_intermediate[ 8 ] << "\n";
+
+    //Output the intermediate SIGMA stress
+    output_file << SIGMA_intermediate[ 0 ] << ", " << SIGMA_intermediate[ 1 ] << ", " << SIGMA_intermediate[ 2 ] << ", "
+                << SIGMA_intermediate[ 3 ] << ", " << SIGMA_intermediate[ 4 ] << ", " << SIGMA_intermediate[ 5 ] << ", "
+                << SIGMA_intermediate[ 6 ] << ", " << SIGMA_intermediate[ 7 ] << ", " << SIGMA_intermediate[ 8 ] << "\n";
+
+    //Output the intermediate M stress
+    output_file << M_intermediate[  0 ] << ", " << M_intermediate[  1 ] << ", " << M_intermediate[  2 ] << ", "
+                << M_intermediate[  3 ] << ", " << M_intermediate[  4 ] << ", " << M_intermediate[  5 ] << ", "
+                << M_intermediate[  6 ] << ", " << M_intermediate[  7 ] << ", " << M_intermediate[  8 ] << ", "
+                << M_intermediate[  9 ] << ", " << M_intermediate[ 10 ] << ", " << M_intermediate[ 11 ] << ", "
+                << M_intermediate[ 12 ] << ", " << M_intermediate[ 13 ] << ", " << M_intermediate[ 14 ] << ", "
+                << M_intermediate[ 15 ] << ", " << M_intermediate[ 16 ] << ", " << M_intermediate[ 17 ] << ", "
+                << M_intermediate[ 18 ] << ", " << M_intermediate[ 19 ] << ", " << M_intermediate[ 20 ] << ", "
+                << M_intermediate[ 21 ] << ", " << M_intermediate[ 22 ] << ", " << M_intermediate[ 23 ] << ", "
+                << M_intermediate[ 24 ] << ", " << M_intermediate[ 25 ] << ", " << M_intermediate[ 26 ] << "\n";
+
+    //Output the state variables
+    for ( unsigned int i = 0; i < SDVS.size()-1; i++ ){
+        output_file << SDVS[ i ] << ", ";
+    }
+    output_file << SDVS[ SDVS.size() - 1 ] << "\n";
+
+#endif
+
+
+    //Begin iteration
+    while ( t + dt < tf ){
+
+        std::cout << "t: " << t + dt << "\n";
+        time = { t + dt, dt };
+
+        //Increment the displacements
+        grad_u_curr   = grad_u_prev   + dt * ( grad_u_f - grad_u_0 );
+        phi_curr      = phi_prev      + dt * ( phi_f - phi_0 );
+        grad_phi_curr = grad_phi_prev + dt * ( grad_phi_f - grad_phi_0 );
+
+        //Update the arrays
+        for ( unsigned int i = 0; i < 3; i++ ){
+            for ( unsigned int j = 0; j < 3; j++ ){
+                current_grad_u[ i ][ j ]  = grad_u_curr[ i ][ j ];
+                previous_grad_u[ i ][ j ] = grad_u_prev[ i ][ j ];
+            }
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+            current_phi[ i ] = phi_curr[ i ];
+            previous_phi[ i ] = phi_prev[ i ];
+
+            for ( unsigned int j = 0; j < 3; j++ ){
+                current_grad_phi[ i ][ j ] = grad_phi_curr[ i ][ j ];
+                previous_grad_phi[ i ][ j ] = grad_phi_prev[ i ][ j ];
+            }
+        }
+
+        //Evaluate the model
+#ifdef DEBUG_MODE
+        DEBUG.clear();
+#endif
+        int errorCode = material->evaluate_model( time, fparams,
+                                                  current_grad_u, current_phi, current_grad_phi,
+                                                  previous_grad_u, previous_phi, previous_grad_phi,
+                                                  SDVS,
+                                                  current_ADD_DOF, current_ADD_grad_DOF,
+                                                  previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                  PK2_result, SIGMA_result, M_result,
+                                                  ADD_TERMS,
+                                                  output_message
+#ifdef DEBUG_MODE
+                                                  , DEBUG
+#endif
+                                                );
+    
+        if ( errorCode > 0 ){
+            std::cout << output_message << "\n";
+            results << "test_evaluate_model_history & False\n";
+            output_file.close();
+            return 1;
+        }
+
+        std::cout << "SDVS:\n"; vectorTools::print( SDVS );
+
+#ifdef DEBUG_MODE
+
+        if ( fabs( SDVS[ 0 ] ) > 1e-8 ){
+            for ( auto inc = DEBUG.begin(); inc != DEBUG.end(); inc++ ){
+                std::cout << inc->first << "\n";
+                for ( auto itr = inc->second.begin(); itr != inc->second.end(); itr++ ){
+                    if ( itr->first.compare( "converged_values" ) != 0 ){
+                        std::cout << "    " << itr->first << "\n";
+                        std::cout << "        currentDeformationGradient:\n";
+                        std::cout << "        "; vectorTools::print( itr->second[ "currentDeformationGradient" ] );
+                        std::cout << "        currentElasticDeformationGradient:\n";
+                        std::cout << "        "; vectorTools::print( itr->second[ "currentElasticDeformationGradient" ] );
+                        std::cout << "        currentPlasticDeformationGradient:\n";
+                        std::cout << "        "; vectorTools::print( itr->second[ "currentPlasticDeformationGradient" ] );
+                        std::cout << "        previousMacroFlowDirection:\n";
+                        std::cout << "        "; vectorTools::print( itr->second[ "previousMacroFlowDirection" ] );
+                        std::cout << "        previousMicroFlowDirection:\n";
+                        std::cout << "        "; vectorTools::print( itr->second[ "previousMicroFlowDirection" ] );
+                        std::cout << "        previousMicroGradientFlowDirection:\n";
+                        std::cout << "        "; vectorTools::print( itr->second[ "previousMicroGradientFlowDirection" ] );
+                    }
+                    else{
+                        std::cout << "        convergedPlasticDeformationGradient:\n";
+                        std::cout << "        "; vectorTools::print( itr->second[ "convergedPlasticDeformationGradient" ] );
+                    }
+                }
+            }
+        }
+
+        output_file << "NEW_INCREMENT\n";
+
+        //Output the time
+        output_file << time[ 0 ] << ", " << time[ 1 ] << "\n";
+
+        //Output the current gradient of u
+        output_file << current_grad_u[ 0 ][ 0 ] << ", " << current_grad_u[ 0 ][ 1 ] << ", " << current_grad_u[ 0 ][ 2 ] << ", "
+                    << current_grad_u[ 1 ][ 0 ] << ", " << current_grad_u[ 1 ][ 1 ] << ", " << current_grad_u[ 1 ][ 2 ] << ", "
+                    << current_grad_u[ 2 ][ 0 ] << ", " << current_grad_u[ 2 ][ 1 ] << ", " << current_grad_u[ 2 ][ 2 ] << "\n";
+
+        //Output the current micro displacement
+        output_file << current_phi[ 0 ] << ", " << current_phi[ 1 ] << ", " << current_phi[ 2 ] << ", "
+                    << current_phi[ 3 ] << ", " << current_phi[ 4 ] << ", " << current_phi[ 5 ] << ", "
+                    << current_phi[ 6 ] << ", " << current_phi[ 7 ] << ", " << current_phi[ 8 ] << "\n";
+
+        //Output the current gradient of the micro displacement
+        output_file << current_grad_phi[ 0 ][ 0 ] << ", " << current_grad_phi[ 0 ][ 1 ] << ", " << current_grad_phi[ 0 ][ 2 ] << ", "
+                    << current_grad_phi[ 1 ][ 0 ] << ", " << current_grad_phi[ 1 ][ 1 ] << ", " << current_grad_phi[ 1 ][ 2 ] << ", "
+                    << current_grad_phi[ 2 ][ 0 ] << ", " << current_grad_phi[ 2 ][ 1 ] << ", " << current_grad_phi[ 2 ][ 2 ] << ", "
+                    << current_grad_phi[ 3 ][ 0 ] << ", " << current_grad_phi[ 3 ][ 1 ] << ", " << current_grad_phi[ 3 ][ 2 ] << ", "
+                    << current_grad_phi[ 4 ][ 0 ] << ", " << current_grad_phi[ 4 ][ 1 ] << ", " << current_grad_phi[ 4 ][ 2 ] << ", "
+                    << current_grad_phi[ 5 ][ 0 ] << ", " << current_grad_phi[ 5 ][ 1 ] << ", " << current_grad_phi[ 5 ][ 2 ] << ", "
+                    << current_grad_phi[ 6 ][ 0 ] << ", " << current_grad_phi[ 6 ][ 1 ] << ", " << current_grad_phi[ 6 ][ 2 ] << ", "
+                    << current_grad_phi[ 7 ][ 0 ] << ", " << current_grad_phi[ 7 ][ 1 ] << ", " << current_grad_phi[ 7 ][ 2 ] << ", "
+                    << current_grad_phi[ 8 ][ 0 ] << ", " << current_grad_phi[ 8 ][ 1 ] << ", " << current_grad_phi[ 8 ][ 2 ] << "\n";
+
+        //Output the PK2 stress
+        output_file << PK2_result[ 0 ] << ", " << PK2_result[ 1 ] << ", " << PK2_result[ 2 ] << ", "
+                    << PK2_result[ 3 ] << ", " << PK2_result[ 4 ] << ", " << PK2_result[ 5 ] << ", "
+                    << PK2_result[ 6 ] << ", " << PK2_result[ 7 ] << ", " << PK2_result[ 8 ] << "\n";
+
+        //Output the SIGMA stress
+        output_file << SIGMA_result[ 0 ] << ", " << SIGMA_result[ 1 ] << ", " << SIGMA_result[ 2 ] << ", "
+                    << SIGMA_result[ 3 ] << ", " << SIGMA_result[ 4 ] << ", " << SIGMA_result[ 5 ] << ", "
+                    << SIGMA_result[ 6 ] << ", " << SIGMA_result[ 7 ] << ", " << SIGMA_result[ 8 ] << "\n";
+
+        //Output the M stress
+        output_file << M_result[  0 ] << ", " << M_result[  1 ] << ", " << M_result[  2 ] << ", "
+                    << M_result[  3 ] << ", " << M_result[  4 ] << ", " << M_result[  5 ] << ", "
+                    << M_result[  6 ] << ", " << M_result[  7 ] << ", " << M_result[  8 ] << ", "
+                    << M_result[  9 ] << ", " << M_result[ 10 ] << ", " << M_result[ 11 ] << ", "
+                    << M_result[ 12 ] << ", " << M_result[ 13 ] << ", " << M_result[ 14 ] << ", "
+                    << M_result[ 15 ] << ", " << M_result[ 16 ] << ", " << M_result[ 17 ] << ", "
+                    << M_result[ 18 ] << ", " << M_result[ 19 ] << ", " << M_result[ 20 ] << ", "
+                    << M_result[ 21 ] << ", " << M_result[ 22 ] << ", " << M_result[ 23 ] << ", "
+                    << M_result[ 24 ] << ", " << M_result[ 25 ] << ", " << M_result[ 26 ] << "\n";
+
+        //Determine if there were non-linear iterations
+        auto inc = DEBUG.find( "converged_values" );
+        if ( inc != DEBUG.end() ){
+            PK2_intermediate   = DEBUG[ "converged_values" ][ "converged_values" ][ "intermediatePK2Stress" ];
+            SIGMA_intermediate = DEBUG[ "converged_values" ][ "converged_values" ][ "intermediateReferenceMicroStress" ];
+            M_intermediate     = DEBUG[ "converged_values" ][ "converged_values" ][ "intermediateReferenceHigherOrderStress" ];
+        }
+        else{
+            PK2_intermediate   = DEBUG[ "pre_iteration_values" ][ "pre_iteration_values" ][ "intermediatePK2Stress" ];
+            SIGMA_intermediate = DEBUG[ "pre_iteration_values" ][ "pre_iteration_values" ][ "intermediateReferenceMicroStress" ];
+            M_intermediate     = DEBUG[ "pre_iteration_values" ][ "pre_iteration_values" ][ "intermediateReferenceHigherOrderStress" ];
+        }
+
+        //Output the intermediate PK2 stress
+        output_file << PK2_intermediate[ 0 ] << ", " << PK2_intermediate[ 1 ] << ", " << PK2_intermediate[ 2 ] << ", "
+                    << PK2_intermediate[ 3 ] << ", " << PK2_intermediate[ 4 ] << ", " << PK2_intermediate[ 5 ] << ", "
+                    << PK2_intermediate[ 6 ] << ", " << PK2_intermediate[ 7 ] << ", " << PK2_intermediate[ 8 ] << "\n";
+
+        //Output the intermediate SIGMA stress
+        output_file << SIGMA_intermediate[ 0 ] << ", " << SIGMA_intermediate[ 1 ] << ", " << SIGMA_intermediate[ 2 ] << ", "
+                    << SIGMA_intermediate[ 3 ] << ", " << SIGMA_intermediate[ 4 ] << ", " << SIGMA_intermediate[ 5 ] << ", "
+                    << SIGMA_intermediate[ 6 ] << ", " << SIGMA_intermediate[ 7 ] << ", " << SIGMA_intermediate[ 8 ] << "\n";
+
+        //Output the intermediate M stress
+        output_file << M_intermediate[  0 ] << ", " << M_intermediate[  1 ] << ", " << M_intermediate[  2 ] << ", "
+                    << M_intermediate[  3 ] << ", " << M_intermediate[  4 ] << ", " << M_intermediate[  5 ] << ", "
+                    << M_intermediate[  6 ] << ", " << M_intermediate[  7 ] << ", " << M_intermediate[  8 ] << ", "
+                    << M_intermediate[  9 ] << ", " << M_intermediate[ 10 ] << ", " << M_intermediate[ 11 ] << ", "
+                    << M_intermediate[ 12 ] << ", " << M_intermediate[ 13 ] << ", " << M_intermediate[ 14 ] << ", "
+                    << M_intermediate[ 15 ] << ", " << M_intermediate[ 16 ] << ", " << M_intermediate[ 17 ] << ", "
+                    << M_intermediate[ 18 ] << ", " << M_intermediate[ 19 ] << ", " << M_intermediate[ 20 ] << ", "
+                    << M_intermediate[ 21 ] << ", " << M_intermediate[ 22 ] << ", " << M_intermediate[ 23 ] << ", "
+                    << M_intermediate[ 24 ] << ", " << M_intermediate[ 25 ] << ", " << M_intermediate[ 26 ] << "\n";
+        
+        //Output the state variables
+        for ( unsigned int i = 0; i < SDVS.size()-1; i++ ){
+            output_file << SDVS[ i ] << ", ";
+        }
+        output_file << SDVS[ SDVS.size() - 1 ] << "\n";
+
+#endif
+
+        t += dt;
+
+        grad_u_prev   = grad_u_curr;
+        phi_prev      = phi_curr;
+        grad_phi_prev = grad_phi_curr;
+
+        if ( t > 0.2 ){ return 1; }
+    }
+    
+#ifdef DEBUG_MODE
+    output_file.close();
+#endif
+    results << "test_evaluate_model_history & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -13647,7 +14097,8 @@ int main(){
     test_evaluate_model_continuation( results );
 
     test_materialLibraryInterface( results );
-//    test_materialLibraryInterface2( results );
+
+    test_evaluate_model_history( results );
 
     //Close the results file
     results.close();
