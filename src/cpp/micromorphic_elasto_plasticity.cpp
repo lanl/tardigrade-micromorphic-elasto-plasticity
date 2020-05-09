@@ -5499,7 +5499,8 @@ namespace micromorphicElastoPlasticity{
                                               previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
                                               previousPlasticMicroGradientVelocityGradient,
                                               currentPlasticDeformationGradient, currentPlasticMicroDeformation,
-                                              currentPlasticGradientMicroDeformation );
+                                              currentPlasticGradientMicroDeformation,
+                                              alphaMacro, alphaMicro, alphaMicroGradient );
 
             if ( error ){
                 errorOut result = new errorNode( "evaluate_model",
@@ -6408,7 +6409,8 @@ namespace micromorphicElastoPlasticity{
                                               previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
                                               previousPlasticMicroGradientVelocityGradient,
                                               currentPlasticDeformationGradient, currentPlasticMicroDeformation,
-                                              currentPlasticGradientMicroDeformation );
+                                              currentPlasticGradientMicroDeformation,
+                                              alphaMacro, alphaMicro, alphaMicroGradient );
 
             if ( error ){
                 errorOut result = new errorNode( "evaluate_model (jacobian)",
