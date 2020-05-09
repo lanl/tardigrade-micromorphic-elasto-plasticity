@@ -2930,30 +2930,44 @@ namespace micromorphicElastoPlasticity{
         parameterType macroBeta          = macroFlowParameters[ 1 ];
         parameterType macroFlowPotential;
 
-        errorOut error = computeSecondOrderDruckerPragerYieldEquation( PK2Stress, macroCohesion, elasticRightCauchyGreen,
-                                                                       macroFrictionAngle, macroBeta, macroFlowPotential, 
-                                                                       macroFlowDirection, dGdMacroCohesion, tmpVec );
+        errorOut error;
 
-        if ( error ){
-            errorOut result = new errorNode( "computeFlowDirections",
-                                             "Error in the computation of the macro flow direction" );
-            result->addNext( error );
-            return result;
+        if ( vectorTools::dot( PK2Stress, PK2Stress ) < 1e-9 ){
+            macroFlowDirection = variableVector( 9, 0 );
+            dGdMacroCohesion = 0.;
+        }
+        else{
+            error = computeSecondOrderDruckerPragerYieldEquation( PK2Stress, macroCohesion, elasticRightCauchyGreen,
+                                                                  macroFrictionAngle, macroBeta, macroFlowPotential, 
+                                                                  macroFlowDirection, dGdMacroCohesion, tmpVec );
+
+            if ( error ){
+                errorOut result = new errorNode( "computeFlowDirections",
+                                                 "Error in the computation of the macro flow direction" );
+                result->addNext( error );
+                return result;
+            }
         }
 
         parameterType microFrictionAngle = microFlowParameters[ 0 ];
         parameterType microBeta          = microFlowParameters[ 1 ];
         parameterType microFlowPotential;
 
-        error = computeSecondOrderDruckerPragerYieldEquation( referenceMicroStress, microCohesion, elasticRightCauchyGreen,
-                                                              microFrictionAngle, microBeta, microFlowPotential, 
-                                                              microFlowDirection, dGdMicroCohesion, tmpVec );
-
-        if ( error ){
-            errorOut result = new errorNode( "computeFlowDirections",
-                                             "Error in the computation of the macro flow direction" );
-            result->addNext( error );
-            return result;
+        if ( vectorTools::dot( referenceMicroStress, referenceMicroStress ) < 1e-9 ) {
+            microFlowDirection = variableVector( 9, 0 );
+            dGdMicroCohesion = 0.;
+        }
+        else{
+            error = computeSecondOrderDruckerPragerYieldEquation( referenceMicroStress, microCohesion, elasticRightCauchyGreen,
+                                                                  microFrictionAngle, microBeta, microFlowPotential, 
+                                                                  microFlowDirection, dGdMicroCohesion, tmpVec );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeFlowDirections",
+                                                 "Error in the computation of the macro flow direction" );
+                result->addNext( error );
+                return result;
+            }
         }
 
         parameterType microGradientFrictionAngle = microGradientFlowParameters[ 0 ];
@@ -2961,17 +2975,23 @@ namespace micromorphicElastoPlasticity{
         parameterVector microGradientFlowPotential;
 
         variableMatrix _microGradientFlowDirection;
-        error = computeHigherOrderDruckerPragerYieldEquation( referenceHigherOrderStress, microGradientCohesion, elasticRightCauchyGreen,
-                                                              microGradientFrictionAngle, microGradientBeta, microGradientFlowPotential,
-                                                              _microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat ); 
-
-        microGradientFlowDirection = variableVector( dim * dim * dim * dim, 0 );
-        for ( unsigned int I = 0; I < dim; I++ ){
-            for ( unsigned int K = 0; K < dim; K++ ){
-                for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        microGradientFlowDirection[ dim * dim * dim * I + dim * dim * K + dim * L + M ]
-                            = _microGradientFlowDirection[ I ][ dim * dim * K + dim * L + M ];
+        if ( vectorTools::dot( referenceHigherOrderStress, referenceHigherOrderStress ) < 1e-9 ){
+            microGradientFlowDirection = variableVector( 81, 0 );
+            dGdMicroGradientCohesion = variableMatrix( dim, variableVector( dim, 0 ) );
+        }
+        else{
+            error = computeHigherOrderDruckerPragerYieldEquation( referenceHigherOrderStress, microGradientCohesion, elasticRightCauchyGreen,
+                                                                  microGradientFrictionAngle, microGradientBeta, microGradientFlowPotential,
+                                                                  _microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat ); 
+    
+            microGradientFlowDirection = variableVector( dim * dim * dim * dim, 0 );
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int K = 0; K < dim; K++ ){
+                    for ( unsigned int L = 0; L < dim; L++ ){
+                        for ( unsigned int M = 0; M < dim; M++ ){
+                            microGradientFlowDirection[ dim * dim * dim * I + dim * dim * K + dim * L + M ]
+                                = _microGradientFlowDirection[ I ][ dim * dim * K + dim * L + M ];
+                        }
                     }
                 }
             }
@@ -3060,33 +3080,53 @@ namespace micromorphicElastoPlasticity{
         parameterType macroBeta          = macroFlowParameters[ 1 ];
         parameterType macroFlowPotential;
 
-        errorOut error = computeSecondOrderDruckerPragerYieldEquation( PK2Stress, macroCohesion, elasticRightCauchyGreen,
-                                                                       macroFrictionAngle, macroBeta, macroFlowPotential, 
-                                                                       macroFlowDirection, dGdMacroCohesion, tmpVec,
-                                                                       dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRCG );
+        errorOut error;
 
-        if ( error ){
-            errorOut result = new errorNode( "computeFlowDirections",
-                                             "Error in the computation of the macro flow direction" );
-            result->addNext( error );
-            return result;
+        if ( vectorTools::dot( PK2Stress, PK2Stress ) < 1e-9 ){
+            macroFlowDirection             = variableVector( 9, 0 );
+            dGdMacroCohesion               = 0.; //TODO: Understand if this is the best approach
+            dMacroFlowDirectiondPK2Stress  = variableMatrix( 9, variableVector( 9, 0 ) );
+            dMacroFlowDirectiondElasticRCG = variableMatrix( 9, variableVector( 9, 0 ) );
+
+        }
+        else{
+            error = computeSecondOrderDruckerPragerYieldEquation( PK2Stress, macroCohesion, elasticRightCauchyGreen,
+                                                                  macroFrictionAngle, macroBeta, macroFlowPotential, 
+                                                                  macroFlowDirection, dGdMacroCohesion, tmpVec,
+                                                                  dMacroFlowDirectiondPK2Stress, dMacroFlowDirectiondElasticRCG );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeFlowDirections",
+                                                 "Error in the computation of the macro flow direction" );
+                result->addNext( error );
+                return result;
+            }
         }
 
         parameterType microFrictionAngle = microFlowParameters[ 0 ];
         parameterType microBeta          = microFlowParameters[ 1 ];
         parameterType microFlowPotential;
 
-        error = computeSecondOrderDruckerPragerYieldEquation( referenceMicroStress, microCohesion, elasticRightCauchyGreen,
-                                                              microFrictionAngle, microBeta, microFlowPotential, 
-                                                              microFlowDirection, dGdMicroCohesion, tmpVec,
-                                                              dMicroFlowDirectiondReferenceMicroStress,
-                                                              dMicroFlowDirectiondElasticRCG );
 
-        if ( error ){
-            errorOut result = new errorNode( "computeFlowDirections",
-                                             "Error in the computation of the macro flow direction" );
-            result->addNext( error );
-            return result;
+        if ( vectorTools::dot( referenceMicroStress, referenceMicroStress ) < 1e-9 ){
+            microFlowDirection                       = variableVector( 9, 0 );
+            dGdMicroCohesion                         = 0.; //TODO: Understand if this is the best approach
+            dMicroFlowDirectiondReferenceMicroStress = variableMatrix( 9, variableVector( 9, 0 ) );
+            dMicroFlowDirectiondElasticRCG           = variableMatrix( 9, variableVector( 9, 0 ) );
+        }
+        else{
+            error = computeSecondOrderDruckerPragerYieldEquation( referenceMicroStress, microCohesion, elasticRightCauchyGreen,
+                                                                  microFrictionAngle, microBeta, microFlowPotential, 
+                                                                  microFlowDirection, dGdMicroCohesion, tmpVec,
+                                                                  dMicroFlowDirectiondReferenceMicroStress,
+                                                                  dMicroFlowDirectiondElasticRCG );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeFlowDirections",
+                                                 "Error in the computation of the macro flow direction" );
+                result->addNext( error );
+                return result;
+            }
         }
 
         parameterType microGradientFrictionAngle = microGradientFlowParameters[ 0 ];
@@ -3096,40 +3136,49 @@ namespace micromorphicElastoPlasticity{
         variableMatrix tmp1, tmp2;
 
         variableMatrix _microGradientFlowDirection;
-        error = computeHigherOrderDruckerPragerYieldEquation( referenceHigherOrderStress, microGradientCohesion, elasticRightCauchyGreen,
-                                                              microGradientFrictionAngle, microGradientBeta, microGradientFlowPotential,
-                                                              _microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat,
-                                                              tmp1, tmp2 );
 
-        microGradientFlowDirection = variableVector( dim * dim * dim * dim, 0 );
-        for ( unsigned int I = 0; I < dim; I++ ){
-            for ( unsigned int K = 0; K < dim; K++ ){
-                for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        microGradientFlowDirection[ dim * dim * dim * I + dim * dim * K + dim * L + M ]
-                            = _microGradientFlowDirection[ I ][ dim * dim * K + dim * L + M ];
+        if ( vectorTools::dot( referenceHigherOrderStress, referenceHigherOrderStress ) < 1e-9 ){
+            microGradientFlowDirection                             = variableVector( 81, 0 );
+            dGdMicroGradientCohesion                               = variableMatrix( dim, variableVector( dim, 0 ) ); //TODO: Understand if this is the best appraoch
+            dMicroGradientFlowDirectiondReferenceHigherOrderStress = variableMatrix( 81, variableVector( 27, 0 ) );
+            dMicroGradientFlowDirectiondElasticRCG                 = variableMatrix( 81, variableVector(  9, 0 ) );
+        }
+        else{
+            error = computeHigherOrderDruckerPragerYieldEquation( referenceHigherOrderStress, microGradientCohesion, elasticRightCauchyGreen,
+                                                                  microGradientFrictionAngle, microGradientBeta, microGradientFlowPotential,
+                                                                  _microGradientFlowDirection, dGdMicroGradientCohesion, tmpMat,
+                                                                  tmp1, tmp2 );
+    
+            microGradientFlowDirection = variableVector( dim * dim * dim * dim, 0 );
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int K = 0; K < dim; K++ ){
+                    for ( unsigned int L = 0; L < dim; L++ ){
+                        for ( unsigned int M = 0; M < dim; M++ ){
+                            microGradientFlowDirection[ dim * dim * dim * I + dim * dim * K + dim * L + M ]
+                                = _microGradientFlowDirection[ I ][ dim * dim * K + dim * L + M ];
+                        }
                     }
                 }
             }
-        }
-
-        //Reform the jacobians to a matrix form which enables matrix multiplication of the jacobians
-        dMicroGradientFlowDirectiondReferenceHigherOrderStress = variableMatrix( dim * dim * dim * dim,
-                                                                 variableVector( dim * dim * dim, 0 ) );
-        dMicroGradientFlowDirectiondElasticRCG = variableMatrix( dim * dim * dim * dim,
-                                                 variableVector( dim * dim, 0 ) );
-
-        for ( unsigned int i = 0; i < dim; i++ ){
-            for ( unsigned int j = 0; j < dim; j++ ){
-                for ( unsigned int k = 0; k < dim; k++ ){
-                    for ( unsigned int l = 0; l < dim; l++ ){
-                        for ( unsigned int m = 0; m < dim; m++ ){
-                            for ( unsigned int n = 0; n < dim; n++ ){
-                                dMicroGradientFlowDirectiondElasticRCG[ dim * dim * dim * i + dim * dim * j + dim * k + l ][ dim * m + n ]
-                                    = tmp2[ i ][ dim * dim * dim * dim * j + dim * dim * dim * k + dim * dim * l + dim * m + n ];
-                                for ( unsigned int o = 0; o < dim; o++ ){
-                                    dMicroGradientFlowDirectiondReferenceHigherOrderStress[ dim * dim * dim * i + dim * dim * j + dim * k + l ][ dim * dim * m + dim * n + o ]
-                                        = tmp1[ i ][ dim * dim * dim * dim * dim * j + dim * dim * dim * dim * k + dim * dim * dim * l + dim * dim * m + dim * n + o ];
+    
+            //Reform the jacobians to a matrix form which enables matrix multiplication of the jacobians
+            dMicroGradientFlowDirectiondReferenceHigherOrderStress = variableMatrix( dim * dim * dim * dim,
+                                                                     variableVector( dim * dim * dim, 0 ) );
+            dMicroGradientFlowDirectiondElasticRCG = variableMatrix( dim * dim * dim * dim,
+                                                     variableVector( dim * dim, 0 ) );
+    
+            for ( unsigned int i = 0; i < dim; i++ ){
+                for ( unsigned int j = 0; j < dim; j++ ){
+                    for ( unsigned int k = 0; k < dim; k++ ){
+                        for ( unsigned int l = 0; l < dim; l++ ){
+                            for ( unsigned int m = 0; m < dim; m++ ){
+                                for ( unsigned int n = 0; n < dim; n++ ){
+                                    dMicroGradientFlowDirectiondElasticRCG[ dim * dim * dim * i + dim * dim * j + dim * k + l ][ dim * m + n ]
+                                        = tmp2[ i ][ dim * dim * dim * dim * j + dim * dim * dim * k + dim * dim * l + dim * m + n ];
+                                    for ( unsigned int o = 0; o < dim; o++ ){
+                                        dMicroGradientFlowDirectiondReferenceHigherOrderStress[ dim * dim * dim * i + dim * dim * j + dim * k + l ][ dim * dim * m + dim * n + o ]
+                                            = tmp1[ i ][ dim * dim * dim * dim * dim * j + dim * dim * dim * dim * k + dim * dim * dim * l + dim * dim * m + dim * n + o ];
+                                    }
                                 }
                             }
                         }
@@ -3840,25 +3889,6 @@ namespace micromorphicElastoPlasticity{
                                              "Error in the computation of the flow directions" );
             result->addNext( error );
             return result;
-        }
-
-        //Set the flow directions to zero if the stresses are small
-        if ( vectorTools::dot( currentPK2Stress, currentPK2Stress ) < 1e-9 ){
-            currentMacroFlowDirection                   = variableVector( 9, 0 );
-            dMacroFlowDirectiondPK2Stress               = variableMatrix( 9, variableVector( 9, 0 ) );
-            dMacroFlowDirectiondElasticRightCauchyGreen = variableMatrix( 9, variableVector( 9, 0 ) );
-        }
-
-        if ( vectorTools::dot( currentReferenceMicroStress, currentReferenceMicroStress ) < 1e-9 ){
-            currentMicroFlowDirection                   = variableVector( 9, 0 );
-            dMicroFlowDirectiondReferenceMicroStress    = variableMatrix( 9, variableVector( 9, 0 ) );
-            dMicroFlowDirectiondElasticRightCauchyGreen = variableMatrix( 9, variableVector( 9, 0 ) );
-        }
-
-        if ( vectorTools::dot( currentReferenceHigherOrderStress, currentReferenceHigherOrderStress ) < 1e-9 ){
-            currentMicroGradientFlowDirection                      = variableVector( 81, 0 );
-            dMicroGradientFlowDirectiondReferenceHigherOrderStress = variableMatrix( 81, variableVector( 27, 0 ) );
-            dMicroGradientFlowDirectiondElasticRightCauchyGreen    = variableMatrix( 81, variableVector(  9, 0 ) );
         }
 
         /*!============================
