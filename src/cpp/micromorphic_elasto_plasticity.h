@@ -69,14 +69,14 @@ namespace micromorphicElastoPlasticity{
                                                            const variableVector &elasticRightCauchyGreen,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
-                                                           variableVector &dFdElasticRCG );
+                                                           variableVector &dFdElasticRCG, double tol = 1e-9 );
 
     errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
                                                            const variableVector &elasticRightCauchyGreen,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
                                                            variableVector &dFdElasticRCG, variableMatrix &d2FdStress2,
-                                                           variableMatrix &d2FdStressdElasticRCG );
+                                                           variableMatrix &d2FdStressdElasticRCG, double tol = 1e-9 );
 
     errorOut computeHigherOrderDruckerPragerYieldEquation( const variableVector &referenceHigherOrderStress,
                                                            const variableVector &cohesion,
