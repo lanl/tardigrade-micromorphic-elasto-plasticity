@@ -3347,6 +3347,16 @@ namespace micromorphicElastoPlasticity{
         const variableType   currentMicroGamma = x[ 51 ];
         const variableVector currentMicroGradientGamma( x.begin() + 52, x.begin() + 55 );
 
+#ifdef DEBUG_MODE
+        variableVector temp = { currentMacroGamma };
+        DEBUG.emplace( "currentMacroGamma", temp );
+
+        temp = { currentMicroGamma };
+        DEBUG.emplace( "currentMicroGamma", temp );
+
+        DEBUG.emplace( "currentMicroGradientGamma", currentMicroGradientGamma );
+#endif
+
         unsigned int ii = 0;
         const constantType    *Dt                                            = &floatArgs[ ii++ ][ 0 ];
         const variableVector  *currentDeformationGradient                    = &floatArgs[ ii++ ];
@@ -3835,7 +3845,7 @@ namespace micromorphicElastoPlasticity{
 #ifdef DEBUG_MODE
 
         //Save the cohesion values
-        variableVector temp = { currentMacroCohesion };
+        temp = { currentMacroCohesion };
 
         DEBUG.emplace( "currentMacroCohesion", temp );
 
