@@ -3306,6 +3306,13 @@ namespace micromorphicElastoPlasticity{
         const variableType   currentMicroGamma = x[ 51 ];
         const variableVector currentMicroGradientGamma( x.begin() + 52, x.begin() + 55 );
 
+        //Assume the logs of the gammas are passed in ( enforcing positivity )
+        currentMacroGamma = std::exp( currentMacroGamma );
+        currentMicroGamma = std::exp( currentMicroGamma );
+        for ( unsigned int i = 0; i < currentMicroGradientGamma.size(); i++ ){
+            currentMicroGradientGamma[ i ] = std::exp( currentMicroGradientGamma[ i ] );
+        }
+
 #ifdef DEBUG_MODE
         variableVector temp = { currentMacroGamma };
         DEBUG.emplace( "currentMacroGamma", temp );
@@ -4873,114 +4880,114 @@ namespace micromorphicElastoPlasticity{
 
         //Set the residuals and Jacobians for the macro-scale terms
         variableType dMacMacroYielddMacroYield;
-        residual[ 50 ] = fabs( currentMacroGamma ) * yieldFunctionValues[ 0 ]
+        residual[ 50 ] = currentMacroGamma * yieldFunctionValues[ 0 ]
                        + constitutiveTools::mac( yieldFunctionValues[ 0 ], dMacMacroYielddMacroYield );
 
         //The Jacobian terms w.r.t. the plastic deformation
         for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
-            jacobian[ 50 ][ i ] = ( fabs( currentMacroGamma ) + dMacMacroYielddMacroYield ) * dMacroYielddPlasticDeformationGradient[ i ];
+            jacobian[ 50 ][ i ] = ( currentMacroGamma + dMacMacroYielddMacroYield ) * dMacroYielddPlasticDeformationGradient[ i ];
 
             if ( evaluateFullDerivatives ){
-                floatOuts[ 5 ][ 50 * 45 + i ] = ( fabs( currentMacroGamma ) + dMacMacroYielddMacroYield ) * dMacroYielddDeformationGradient[ i ];
+                floatOuts[ 5 ][ 50 * 45 + i ] = ( currentMacroGamma + dMacMacroYielddMacroYield ) * dMacroYielddDeformationGradient[ i ];
             }
         }
 
         for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
-            jacobian[ 50 ][ i + 9 ] = ( fabs( currentMacroGamma ) + dMacMacroYielddMacroYield ) * dMacroYielddPlasticMicroDeformation[ i ];
+            jacobian[ 50 ][ i + 9 ] = ( currentMacroGamma + dMacMacroYielddMacroYield ) * dMacroYielddPlasticMicroDeformation[ i ];
 
             if ( evaluateFullDerivatives ){
-                floatOuts[ 5 ][ 50 * 45 + i + 9 ] = ( fabs( currentMacroGamma ) + dMacMacroYielddMacroYield ) * dMacroYielddMicroDeformation[ i ];
+                floatOuts[ 5 ][ 50 * 45 + i + 9 ] = ( currentMacroGamma + dMacMacroYielddMacroYield ) * dMacroYielddMicroDeformation[ i ];
             }
         }
 
         for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
-            jacobian[ 50 ][ i + 18 ] = ( fabs( currentMacroGamma ) + dMacMacroYielddMacroYield ) * dMacroYielddPlasticGradientMicroDeformation[ i ];
+            jacobian[ 50 ][ i + 18 ] = ( currentMacroGamma + dMacMacroYielddMacroYield ) * dMacroYielddPlasticGradientMicroDeformation[ i ];
 
             if ( evaluateFullDerivatives ){
-                floatOuts[ 5 ][ 50 * 45 + i + 18 ] = ( fabs( currentMacroGamma ) + dMacMacroYielddMacroYield ) * dMacroYielddGradientMicroDeformation[ i ];
+                floatOuts[ 5 ][ 50 * 45 + i + 18 ] = ( currentMacroGamma + dMacMacroYielddMacroYield ) * dMacroYielddGradientMicroDeformation[ i ];
             }
         }
 
         //The Jacobian terms w.r.t. the strain-like ISVs
-        jacobian[ 50 ][ 45 ] = ( fabs( currentMacroGamma ) + dMacMacroYielddMacroYield ) * dMacroYielddMacroStrainISV;
+        jacobian[ 50 ][ 45 ] = ( currentMacroGamma + dMacMacroYielddMacroYield ) * dMacroYielddMacroStrainISV;
 
         //The Jacobian terms w.r.t. the plastic multipliers
-        jacobian[ 50 ][ 50 ] = ( ( int )( currentMacroGamma >= 0 ) - ( int )( currentMacroGamma < 0 ) ) * yieldFunctionValues[ 0 ];
+        jacobian[ 50 ][ 50 ] = yieldFunctionValues[ 0 ];
 
         //Set the residuals and Jacobians for the micro-scale terms
         variableType dMacMicroYielddMicroYield;
-        residual[ 51 ] = fabs( currentMicroGamma ) * yieldFunctionValues[ 1 ]
+        residual[ 51 ] = currentMicroGamma * yieldFunctionValues[ 1 ]
                        + constitutiveTools::mac( yieldFunctionValues[ 1 ], dMacMicroYielddMicroYield );
 
         //The Jacobian terms w.r.t. the plastic deformation
         for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
-            jacobian[ 51 ][ i ] = ( fabs( currentMicroGamma ) + dMacMicroYielddMicroYield ) * dMicroYielddPlasticDeformationGradient[ i ];
+            jacobian[ 51 ][ i ] = ( currentMicroGamma + dMacMicroYielddMicroYield ) * dMicroYielddPlasticDeformationGradient[ i ];
 
             if ( evaluateFullDerivatives ){
-                floatOuts[ 5 ][ 51 * 45 + i ] = ( fabs( currentMicroGamma ) + dMacMicroYielddMicroYield ) * dMicroYielddDeformationGradient[ i ];
+                floatOuts[ 5 ][ 51 * 45 + i ] = ( currentMicroGamma + dMacMicroYielddMicroYield ) * dMicroYielddDeformationGradient[ i ];
             }
         }
 
         for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
-            jacobian[ 51 ][ i + 9 ] = ( fabs( currentMicroGamma ) + dMacMicroYielddMicroYield ) * dMicroYielddPlasticMicroDeformation[ i ];
+            jacobian[ 51 ][ i + 9 ] = ( currentMicroGamma + dMacMicroYielddMicroYield ) * dMicroYielddPlasticMicroDeformation[ i ];
 
             if ( evaluateFullDerivatives ){
-                floatOuts[ 5 ][ 51 * 45 + i + 9 ] = ( fabs( currentMicroGamma ) + dMacMicroYielddMicroYield ) * dMicroYielddMicroDeformation[ i ];
+                floatOuts[ 5 ][ 51 * 45 + i + 9 ] = ( currentMicroGamma + dMacMicroYielddMicroYield ) * dMicroYielddMicroDeformation[ i ];
             }
         }
 
         for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
-            jacobian[ 51 ][ i + 18 ] = ( fabs( currentMicroGamma ) + dMacMicroYielddMicroYield ) * dMicroYielddPlasticGradientMicroDeformation[ i ];
+            jacobian[ 51 ][ i + 18 ] = ( currentMicroGamma + dMacMicroYielddMicroYield ) * dMicroYielddPlasticGradientMicroDeformation[ i ];
 
             if ( evaluateFullDerivatives ){
-                floatOuts[ 5 ][ 51 * 45 + i + 18 ] = ( fabs( currentMicroGamma ) + dMacMicroYielddMicroYield ) * dMicroYielddGradientMicroDeformation[ i ];
+                floatOuts[ 5 ][ 51 * 45 + i + 18 ] = ( currentMicroGamma + dMacMicroYielddMicroYield ) * dMicroYielddGradientMicroDeformation[ i ];
             }
         }
 
         //The Jacobian terms w.r.t. the strain-like ISVs
-        jacobian[ 51 ][ 46 ] = ( fabs( currentMicroGamma ) + dMacMicroYielddMicroYield ) * dMicroYielddMicroStrainISV;
+        jacobian[ 51 ][ 46 ] = ( currentMicroGamma + dMacMicroYielddMicroYield ) * dMicroYielddMicroStrainISV;
 
         //The Jacobian terms w.r.t. the plastic multipliers
-        jacobian[ 51 ][ 51 ] = ( ( int )( currentMicroGamma >= 0 ) - ( int )( currentMicroGamma < 0 ) ) * yieldFunctionValues[ 1 ];
+        jacobian[ 51 ][ 51 ] = yieldFunctionValues[ 1 ];
 
         //Set the residuals and jacobians for the micro gradient terms
         variableType dMacMicroGradientYielddMicroGradientYield;
         for ( unsigned int i = 0; i < 3; i++ ){
-            residual[ 52 + i ] = fabs( currentMicroGradientGamma[ i ] ) * yieldFunctionValues[ 2 + i ]
+            residual[ 52 + i ] = currentMicroGradientGamma[ i ] * yieldFunctionValues[ 2 + i ]
                                + constitutiveTools::mac( yieldFunctionValues[ 2 + i ], dMacMicroGradientYielddMicroGradientYield );
 
             //The Jacobian terms w.r.t. the plastic deformation
             for ( unsigned int j = 0; j < currentPlasticDeformationGradient.size(); j++ ){
-                jacobian[ 52 + i ][ j ] = ( fabs( currentMicroGradientGamma[ i ] ) + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddPlasticDeformationGradient[ i ][ j ];
+                jacobian[ 52 + i ][ j ] = ( currentMicroGradientGamma[ i ] + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddPlasticDeformationGradient[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ ( 52 + i ) * 45 + j ] = ( fabs( currentMicroGradientGamma[ i ] ) + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddDeformationGradient[ i ][ j ];
+                    floatOuts[ 5 ][ ( 52 + i ) * 45 + j ] = ( currentMicroGradientGamma[ i ] + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddDeformationGradient[ i ][ j ];
                 }
             }
 
             for ( unsigned int j = 0; j < currentPlasticMicroDeformation.size(); j++ ){
-                jacobian[ 52 + i ][ j + 9 ] = ( fabs( currentMicroGradientGamma[ i ] ) + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddPlasticMicroDeformation[ i ][ j ];
+                jacobian[ 52 + i ][ j + 9 ] = ( currentMicroGradientGamma[ i ] + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddPlasticMicroDeformation[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ ( 52 + i ) * 45 + j + 9 ] = ( fabs( currentMicroGradientGamma[ i ] ) + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ ( 52 + i ) * 45 + j + 9 ] = ( currentMicroGradientGamma[ i ] + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddMicroDeformation[ i ][ j ];
                 }
             }
 
             for ( unsigned int j = 0; j < currentPlasticGradientMicroDeformation.size(); j++ ){
-                jacobian[ 52 + i ][ j + 18 ] = ( fabs( currentMicroGradientGamma[ i ] ) + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddPlasticGradientMicroDeformation[ i ][ j ];
+                jacobian[ 52 + i ][ j + 18 ] = ( currentMicroGradientGamma[ i ] + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddPlasticGradientMicroDeformation[ i ][ j ];
 
                 if ( evaluateFullDerivatives ){
-                    floatOuts[ 5 ][ ( 52 + i ) * 45 + j + 18 ] = ( fabs( currentMicroGradientGamma[ i ] ) + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddGradientMicroDeformation[ i ][ j ];
+                    floatOuts[ 5 ][ ( 52 + i ) * 45 + j + 18 ] = ( currentMicroGradientGamma[ i ] + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddGradientMicroDeformation[ i ][ j ];
                 }
             }
 
             //The Jacobian terms w.r.t. the strain-like ISVs
             for ( unsigned int j = 0; j < currentMicroGradientStrainISV.size(); j++ ){
-                jacobian[ 52 + i ][ 47 + j ] = ( fabs( currentMicroGradientGamma[ i ] ) + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddMicroGradientStrainISV[ i ][ j ];
+                jacobian[ 52 + i ][ 47 + j ] = ( currentMicroGradientGamma[ i ] + dMacMicroGradientYielddMicroGradientYield ) * dMicroGradientYielddMicroGradientStrainISV[ i ][ j ];
             }
 
             //The Jacobian terms w.r.t. the plastic multipliers
-            jacobian[ 52 + i ][ 52 + i ] = ( ( int )( currentMicroGradientGamma[ i ] >= 0 ) - ( int )( currentMicroGradientGamma[ i ] < 0 ) ) * yieldFunctionValues[ 2 + i ];
+            jacobian[ 52 + i ][ 52 + i ] = yieldFunctionValues[ 2 + i ];
         }
 
         //Save the stresses
