@@ -14184,6 +14184,103 @@ int test_aFxn( std::ofstream &results ){
     return 0;
 }
 
+int test_computeBoundaryFunction( std::ofstream &results ){
+    /*!
+     * Test the computation of the boundary function
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    variableType x        = 0.4;
+    variableType pseudoT  = 0.25;
+    parameterType logAmax = 5;
+    parameterType b       = 0.14;
+
+    variableType answer = -0.5964638357684787;
+
+    variableType result;
+
+    errorOut error = micromorphicElastoPlasticity::computeBoundaryFunction( x, pseudoT, logAmax, b, result );
+
+    if ( error ){
+        error->print();
+        results << "test_computeBoundaryFunction & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( result, answer ) ){
+        results << "test_computeBoundaryFunction (test 1) & False\n";
+        return 1;
+    }
+
+    variableType dbdx, dbdt;
+
+    error = micromorphicElastoPlasticity::computeBoundaryFunction( x, pseudoT, logAmax, b, result, dbdx, dbdt );
+
+    if ( error ){
+        error->print();
+        results << "test_computeBoundaryFunction & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( result, answer ) ){
+        results << "test_computeBoundaryFunction (test 2) & False\n";
+        return 1;
+    }
+    
+    constantType eps = 1e-6;
+
+    constantType dx = eps * fabs( x ) + eps;
+    constantType dt = eps * fabs( pseudoT ) + eps;
+
+    variableType bP, bM;
+
+    error = micromorphicElastoPlasticity::computeBoundaryFunction( x + dx, pseudoT, logAmax, b, bP );
+
+    if ( error ){
+        error->print();
+        results << "test_computeBoundaryFunction & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::computeBoundaryFunction( x - dx, pseudoT, logAmax, b, bM );
+
+    if ( error ){
+        error->print();
+        results << "test_computeBoundaryFunction & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( ( bP - bM ) / ( 2 * dx ), dbdx ) ){
+        results << "test_computeBoundaryFunction (test 3) & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::computeBoundaryFunction( x, pseudoT + dt, logAmax, b, bP );
+
+    if ( error ){
+        error->print();
+        results << "test_computeBoundaryFunction & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::computeBoundaryFunction( x, pseudoT - dt, logAmax, b, bM );
+
+    if ( error ){
+        error->print();
+        results << "test_computeBoundaryFunction & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( ( bP - bM ) / ( 2 * dt ), dbdt ) ){
+        results << "test_computeBoundaryFunction (test 4) & False\n";
+        return 1;
+    }
+
+    results << "test_computeBoundaryFunction & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -14197,29 +14294,30 @@ int main(){
     results.open("results.tex");
 
     //Run the tests
-//    test_computeSecondOrderDruckerPragerYieldEquation( results );
-//    test_computeHigherOrderDruckerPragerYieldEquation( results );
-//    test_computeElasticPartOfDeformation( results );
-//    test_computeElasticDeformationMeasures( results );
-//    test_computePlasticMacroVelocityGradient( results );
-//    test_computePlasticMicroVelocityGradient( results );
-//    test_computePlasticMicroGradientVelocityGradient( results );
-//    test_computePlasticVelocityGradients( results );
-//    test_evolvePlasticMicroGradChi( results );
-//    test_evolvePlasticDeformation( results );
-//    test_evolveStrainStateVariables( results );
-//    test_computeFlowDirections( results );
-//    test_computePlasticDeformationResidual( results );
-//    test_computePlasticDeformationResidual2( results );
-//    test_extractMaterialParameters( results );
-//    test_extractStateVariables( results );
-//    test_assembleFundamentalDeformationMeasures( results );
-//    test_evaluateYieldFunctions( results );
-//    test_computeCohesion( results );
-//    test_cout_redirect( results );
-//    test_cerr_redirect( results );
+    test_computeSecondOrderDruckerPragerYieldEquation( results );
+    test_computeHigherOrderDruckerPragerYieldEquation( results );
+    test_computeElasticPartOfDeformation( results );
+    test_computeElasticDeformationMeasures( results );
+    test_computePlasticMacroVelocityGradient( results );
+    test_computePlasticMicroVelocityGradient( results );
+    test_computePlasticMicroGradientVelocityGradient( results );
+    test_computePlasticVelocityGradients( results );
+    test_evolvePlasticMicroGradChi( results );
+    test_evolvePlasticDeformation( results );
+    test_evolveStrainStateVariables( results );
+    test_computeFlowDirections( results );
+    test_computePlasticDeformationResidual( results );
+    test_computePlasticDeformationResidual2( results );
+    test_extractMaterialParameters( results );
+    test_extractStateVariables( results );
+    test_assembleFundamentalDeformationMeasures( results );
+    test_evaluateYieldFunctions( results );
+    test_computeCohesion( results );
+    test_cout_redirect( results );
+    test_cerr_redirect( results );
 
     test_aFxn( results );
+    test_computeBoundaryFunction( results );
 
 //    test_evaluate_model( results );
 //    test_evaluate_model_continuation( results );
