@@ -7719,4 +7719,65 @@ namespace micromorphicElastoPlasticity{
 
         return NULL;
     }
+
+    errorOut computeBoundaryFunction( const variableType &x, const variableType &pseudoT, const parameterType &logAmax,
+                                      const parameterType &b, variableType &boundaryFunction ){
+        /*!
+         * Compute the boundary ( barrier ) function for a positivity constraint.
+         *
+         * g = exp( a * ( b - x ) ) - 1
+         *
+         * :param const variableType &x: The constrained variable value.
+         * :param const variableType &pseudoT: The value of the pseudo time.
+         * :param const parameterType &logAmax: The log of the maximum value of the a parameter.
+         * :param const parameterType &b: The offset variable ( i.e. the location of the barrier )
+         * :param variableType &boundaryFunction: The value of the boundary function.
+         */
+
+        variableType a;
+        errorOut error = aFxn( pseudoT, a, logAmax );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeBoundaryFunction", "Error in the computation of the a value" );
+            result->addNext( error );
+            return result;
+        }
+
+        boundaryFunction = std::exp( a * ( b - x ) ) - 1;
+
+        return NULL;
+    }
+
+    errorOut computeBoundaryFunction( const variableType &x, const variableType &pseudoT, const parameterType &logAmax,
+                                      const parameterType &b, variableType &boundaryFunction,
+                                      variableType &dbdx, variableType &dbdt ){
+        /*!
+         * Compute the boundary ( barrier ) function for a positivity constraint.
+         *
+         * g = exp( a * ( b - x ) ) - 1
+         *
+         * :param const variableType &x: The constrained variable value.
+         * :param const variableType &pseudoT: The value of the pseudo time.
+         * :param const parameterType &logAmax: The log of the maximum value of the a parameter.
+         * :param const parameterType &b: The offset variable ( i.e. the location of the barrier )
+         * :param variableType &boundaryFunction: The value of the boundary function.
+         * :param variableType &dbdx: The Jacobian of the boundary function w.r.t. the variable value.
+         * :param variableType &dbdt: the Jacobian of the boundary function w.r.t. the pseudo time.
+         */
+
+        variableType a, dadt;
+        errorOut error = aFxn( pseudoT, a, dadt, logAmax );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeBoundaryFunction (jacobian)", "Error in the computation of the a value" );
+            result->addNext( error );
+            return result;
+        }
+
+        boundaryFunction = std::exp( a * ( b - x ) ) - 1;
+        dbdx = -a * std::exp( a * ( b - x ) );
+        dbdt = ( b - x ) * std::exp( a * ( b - x ) ) * dadt;
+
+        return NULL;
+    }
 }

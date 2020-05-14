@@ -545,6 +545,13 @@ namespace micromorphicElastoPlasticity{
 
     errorOut aFxn( const variableType &pseudoT, variableType &a, variableType &dadt, const parameterType logAMax );
 
+    errorOut computeBoundaryFunction( const variableType &x, const variableType &pseudoT, const parameterType &logAmax,
+                                      const parameterType &b, variableType &boundaryFunction );
+
+    errorOut computeBoundaryFunction( const variableType &x, const variableType &pseudoT, const parameterType &logAmax,
+                                      const parameterType &b, variableType &boundaryFunction,
+                                      variableType &dbdx, variableType &dbdt );
+
     class LinearElasticityDruckerPragerPlasticity: public micromorphic_material_library::IMaterial{
         /*!
          * The class which is called when evaluating a
