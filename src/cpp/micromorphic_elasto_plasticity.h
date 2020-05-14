@@ -541,6 +541,10 @@ namespace micromorphicElastoPlasticity{
 #endif
                       );
 
+    errorOut aFxn( const variableType &pseudoT, variableType &a,  const parameterType &logAMax = 10 );
+
+    errorOut aFxn( const variableType &pseudoT, variableType &a, variableType &dadt, const parameterType &logAMax = 10 );
+
     class LinearElasticityDruckerPragerPlasticity: public micromorphic_material_library::IMaterial{
         /*!
          * The class which is called when evaluating a

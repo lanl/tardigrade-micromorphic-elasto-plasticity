@@ -7679,4 +7679,44 @@ namespace micromorphicElastoPlasticity{
 
         return NULL;
     }
+
+    errorOut aFxn( const variableType &pseudoT, variableType &a,  const parameterType &logAMax ){
+        /*!
+         * Compute the a parameter for the Boundary Function
+         *
+         * :param const variableType &pseudoT: The pseudo time ( 0 - 1 )
+         * :param const variableType &a: The current value of a
+         * :param const parameterType &logAMax: The logarithm of the maximum a parameter value
+         *     defaults to 10.
+         */
+
+        a = std::exp( pseudoT * logAMax );
+
+        return NULL;
+    }
+
+    errorOut aFxn( const variableType &pseudoT, variableType &a, variableType &dadt, const parameterType &logAMax ){
+        /*!
+         * Compute the a parameter for the Boundary Function along with the derivative w.r.t.
+         * the pseudo time.
+         *
+         * :param const variableType &pseudoT: The pseudo time ( 0 - 1 )
+         * :param const variableType &a: The current value of a
+         * :param const variableType &dadt: The Jacobian of a w.r.t. pseudoT.
+         * :param const parameterType &logAMax: The logarithm of the maximum a parameter value
+         *     defaults to 10.
+         */
+
+        errorOut error = aFxn( pseudoT, a, dadt, logAMax );
+
+        if ( error ){
+            errorOut result = new errorNode( "aFxn (jacobian)", "Error in computation of a" );
+            result->addNext( error );
+            return result;
+        }
+
+        dadt = logAMax * a;
+
+        return NULL;
+    }
 }
