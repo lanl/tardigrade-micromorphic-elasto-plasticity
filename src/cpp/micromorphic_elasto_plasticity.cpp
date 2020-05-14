@@ -7680,13 +7680,13 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
-    errorOut aFxn( const variableType &pseudoT, variableType &a,  const parameterType &logAMax ){
+    errorOut aFxn( const variableType &pseudoT, variableType &a, const parameterType logAMax ){
         /*!
          * Compute the a parameter for the Boundary Function
          *
          * :param const variableType &pseudoT: The pseudo time ( 0 - 1 )
          * :param const variableType &a: The current value of a
-         * :param const parameterType &logAMax: The logarithm of the maximum a parameter value
+         * :param const parameterType logAMax: The logarithm of the maximum a parameter value
          *     defaults to 10.
          */
 
@@ -7695,7 +7695,7 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
-    errorOut aFxn( const variableType &pseudoT, variableType &a, variableType &dadt, const parameterType &logAMax ){
+    errorOut aFxn( const variableType &pseudoT, variableType &a, variableType &dadt, const parameterType logAMax ){
         /*!
          * Compute the a parameter for the Boundary Function along with the derivative w.r.t.
          * the pseudo time.
@@ -7703,11 +7703,11 @@ namespace micromorphicElastoPlasticity{
          * :param const variableType &pseudoT: The pseudo time ( 0 - 1 )
          * :param const variableType &a: The current value of a
          * :param const variableType &dadt: The Jacobian of a w.r.t. pseudoT.
-         * :param const parameterType &logAMax: The logarithm of the maximum a parameter value
+         * :param const parameterType logAMax: The logarithm of the maximum a parameter value
          *     defaults to 10.
          */
 
-        errorOut error = aFxn( pseudoT, a, dadt, logAMax );
+        errorOut error = aFxn( pseudoT, a, logAMax );
 
         if ( error ){
             errorOut result = new errorNode( "aFxn (jacobian)", "Error in computation of a" );

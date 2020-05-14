@@ -14112,6 +14112,78 @@ int test_evaluate_model_history( std::ofstream &results ){
     return 0;
 }
 
+int test_aFxn( std::ofstream &results ){
+    /*!
+     * Test the computation of the a parameter in the Barrier function.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    variableType pseudoT = .72;
+    parameterType logAfxn = 5.2;
+
+    variableType answer = 42.26671935907283;
+
+    variableType result;
+
+    errorOut error = micromorphicElastoPlasticity::aFxn( pseudoT, result, logAfxn );
+
+    if ( error ){
+        error->print();
+        results << "test_aFxn & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( result, answer ) ){
+        results << "test_aFxn (test 1) & False\n";
+        return 1;
+    }
+
+    variableType dadT;
+
+    error = micromorphicElastoPlasticity::aFxn( pseudoT, result, dadT, logAfxn );
+
+    if ( error ){
+        error->print();
+        results << "test_aFxn & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( result, answer ) ){
+        results << "test_aFxn (test 2) & False\n";
+        return 1;
+    }
+
+    constantType eps = 1e-6;
+    constantType delta = eps * pseudoT + eps;
+
+    variableType aP, aM;
+
+    error = micromorphicElastoPlasticity::aFxn( pseudoT + delta, aP, logAfxn );
+
+    if ( error ){
+        error->print();
+        results << "test_aFxn & False\n";
+        return 1;
+    }
+
+    error = micromorphicElastoPlasticity::aFxn( pseudoT - delta, aM, logAfxn );
+
+    if ( error ){
+        error->print();
+        results << "test_aFxn & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( ( aP - aM ) / ( 2 * delta ), dadT ) ){
+        results << "test_aFxn (test 3) & False\n";
+        return 1;
+    }
+
+    results << "test_aFxn & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -14125,34 +14197,36 @@ int main(){
     results.open("results.tex");
 
     //Run the tests
-    test_computeSecondOrderDruckerPragerYieldEquation( results );
-    test_computeHigherOrderDruckerPragerYieldEquation( results );
-    test_computeElasticPartOfDeformation( results );
-    test_computeElasticDeformationMeasures( results );
-    test_computePlasticMacroVelocityGradient( results );
-    test_computePlasticMicroVelocityGradient( results );
-    test_computePlasticMicroGradientVelocityGradient( results );
-    test_computePlasticVelocityGradients( results );
-    test_evolvePlasticMicroGradChi( results );
-    test_evolvePlasticDeformation( results );
-    test_evolveStrainStateVariables( results );
-    test_computeFlowDirections( results );
-    test_computePlasticDeformationResidual( results );
-    test_computePlasticDeformationResidual2( results );
-    test_extractMaterialParameters( results );
-    test_extractStateVariables( results );
-    test_assembleFundamentalDeformationMeasures( results );
-    test_evaluateYieldFunctions( results );
-    test_computeCohesion( results );
-    test_cout_redirect( results );
-    test_cerr_redirect( results );
+//    test_computeSecondOrderDruckerPragerYieldEquation( results );
+//    test_computeHigherOrderDruckerPragerYieldEquation( results );
+//    test_computeElasticPartOfDeformation( results );
+//    test_computeElasticDeformationMeasures( results );
+//    test_computePlasticMacroVelocityGradient( results );
+//    test_computePlasticMicroVelocityGradient( results );
+//    test_computePlasticMicroGradientVelocityGradient( results );
+//    test_computePlasticVelocityGradients( results );
+//    test_evolvePlasticMicroGradChi( results );
+//    test_evolvePlasticDeformation( results );
+//    test_evolveStrainStateVariables( results );
+//    test_computeFlowDirections( results );
+//    test_computePlasticDeformationResidual( results );
+//    test_computePlasticDeformationResidual2( results );
+//    test_extractMaterialParameters( results );
+//    test_extractStateVariables( results );
+//    test_assembleFundamentalDeformationMeasures( results );
+//    test_evaluateYieldFunctions( results );
+//    test_computeCohesion( results );
+//    test_cout_redirect( results );
+//    test_cerr_redirect( results );
 
-    test_evaluate_model( results );
-    test_evaluate_model_continuation( results );
+    test_aFxn( results );
 
-    test_materialLibraryInterface( results );
-
-    test_evaluate_model_history( results );
+//    test_evaluate_model( results );
+//    test_evaluate_model_continuation( results );
+//
+//    test_materialLibraryInterface( results );
+//
+//    test_evaluate_model_history( results );
 
     //Close the results file
     results.close();
