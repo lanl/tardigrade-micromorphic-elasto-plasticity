@@ -3302,16 +3302,9 @@ namespace micromorphicElastoPlasticity{
         const variableType   currentMacroStrainISV = x[ 45 ];
         const variableType   currentMicroStrainISV = x[ 46 ];
         const variableVector currentMicroGradientStrainISV( x.begin() + 47, x.begin() + 50 );
-        const variableType   currentLogMacroGamma = x[ 50 ];
-        const variableType   currentLogMicroGamma = x[ 51 ];
-        const variableVector currentLogMicroGradientGamma( x.begin() + 52, x.begin() + 55 );
-
-        //Assume the logs of the gammas are passed in ( enforcing positivity )
-        const variableType currentMacroGamma = std::exp( currentLogMacroGamma );
-        const variableType currentMicroGamma = std::exp( currentLogMicroGamma );
-        const variableVector currentMicroGradientGamma = { std::exp( currentLogMicroGradientGamma[ 0 ] ),
-                                                           std::exp( currentLogMicroGradientGamma[ 1 ] ),
-                                                           std::exp( currentLogMicroGradientGamma[ 2 ] ) };
+        const variableType   currentMacroGamma = x[ 50 ];
+        const variableType   currentMicroGamma = x[ 51 ];
+        const variableVector currentMicroGradientGamma( x.begin() + 52, x.begin() + 55 );
 
 #ifdef DEBUG_MODE
         variableVector temp = { currentMacroGamma };
@@ -4786,8 +4779,8 @@ namespace micromorphicElastoPlasticity{
             //The strain-like ISV residuals
             
             //The plastic multiplier residuals
-            jacobian[ i ][ 50 ] -= dExpectedPlasticDeformationGradientdMacroGamma[ i ] * currentMacroGamma;
-            jacobian[ i ][ 51 ] -= dExpectedPlasticDeformationGradientdMicroGamma[ i ] * currentMicroGamma;
+            jacobian[ i ][ 50 ] -= dExpectedPlasticDeformationGradientdMacroGamma[ i ];
+            jacobian[ i ][ 51 ] -= dExpectedPlasticDeformationGradientdMicroGamma[ i ];
 
         }
 
@@ -4821,7 +4814,7 @@ namespace micromorphicElastoPlasticity{
             //The strain-like ISV residuals
             
             //The plastic multiplier residuals
-            jacobian[ i + 9 ][ 51 ] -= dExpectedPlasticMicroDeformationdMicroGamma[ i ] * currentMicroGamma;
+            jacobian[ i + 9 ][ 51 ] -= dExpectedPlasticMicroDeformationdMicroGamma[ i ];
         }
 
         for ( unsigned int i = 0; i < currentPlasticGradientMicroDeformation.size(); i++ ){
@@ -4854,25 +4847,25 @@ namespace micromorphicElastoPlasticity{
             //The strain-like ISV residuals are all zero
 
             //The plastic multiplier residuals
-            jacobian[ i + 18 ][ 50 ] -= dExpectedPlasticGradientMicroDeformationdMacroGamma[ i ] * currentMacroGamma;
-            jacobian[ i + 18 ][ 51 ] -= dExpectedPlasticGradientMicroDeformationdMicroGamma[ i ] * currentMicroGamma; 
+            jacobian[ i + 18 ][ 50 ] -= dExpectedPlasticGradientMicroDeformationdMacroGamma[ i ];
+            jacobian[ i + 18 ][ 51 ] -= dExpectedPlasticGradientMicroDeformationdMicroGamma[ i ]; 
             for ( unsigned int j = 0; j < currentMicroGradientGamma.size(); j++ ){
-                jacobian[ i + 18 ][ 52 + j ] -= dExpectedPlasticGradientMicroDeformationdMicroGradientGamma[ i ][ j ] * currentMicroGradientGamma[ j ];
+                jacobian[ i + 18 ][ 52 + j ] -= dExpectedPlasticGradientMicroDeformationdMicroGradientGamma[ i ][ j ];
             }
         }
 
         //Compute the residuals and the Jacobians for the plastic strain-like ISVs
         residual[ 45 ] = currentMacroStrainISV - expectedMacroStrainISV;
-        jacobian[ 45 ][ 50 ] = -dExpectedMacroISVdMacroGamma * currentMacroGamma;
+        jacobian[ 45 ][ 50 ] = -dExpectedMacroISVdMacroGamma;
 
         residual[ 46 ] = currentMicroStrainISV - expectedMicroStrainISV;
-        jacobian[ 46 ][ 51 ] = -dExpectedMicroISVdMicroGamma * currentMicroGamma;
+        jacobian[ 46 ][ 51 ] = -dExpectedMicroISVdMicroGamma;
 
         for ( unsigned int i = 0; i < currentMicroGradientStrainISV.size(); i++ ){
             residual[ 47 + i ] = currentMicroGradientStrainISV[ i ] - expectedMicroGradientStrainISV[ i ];
             
             for ( unsigned int j = 0; j < currentMicroGradientGamma.size(); j++ ){
-                jacobian[ 47 + i ][ 52 + j ] = -dExpectedMicroGradientISVdMicroGradientGamma[ i ][ j ] * currentMicroGradientGamma[ j ];
+                jacobian[ 47 + i ][ 52 + j ] = -dExpectedMicroGradientISVdMicroGradientGamma[ i ][ j ];
             }
         }
 
@@ -4912,7 +4905,7 @@ namespace micromorphicElastoPlasticity{
         jacobian[ 50 ][ 45 ] = ( currentMacroGamma + dMacMacroYielddMacroYield ) * dMacroYielddMacroStrainISV;
 
         //The Jacobian terms w.r.t. the plastic multipliers
-        jacobian[ 50 ][ 50 ] = yieldFunctionValues[ 0 ] * currentMacroGamma;
+        jacobian[ 50 ][ 50 ] = yieldFunctionValues[ 0 ];
 
         //Set the residuals and Jacobians for the micro-scale terms
         variableType dMacMicroYielddMicroYield;
@@ -4948,7 +4941,7 @@ namespace micromorphicElastoPlasticity{
         jacobian[ 51 ][ 46 ] = ( currentMicroGamma + dMacMicroYielddMicroYield ) * dMicroYielddMicroStrainISV;
 
         //The Jacobian terms w.r.t. the plastic multipliers
-        jacobian[ 51 ][ 51 ] = yieldFunctionValues[ 1 ] * currentMicroGamma;
+        jacobian[ 51 ][ 51 ] = yieldFunctionValues[ 1 ];
 
         //Set the residuals and jacobians for the micro gradient terms
         variableType dMacMicroGradientYielddMicroGradientYield;
@@ -4987,7 +4980,7 @@ namespace micromorphicElastoPlasticity{
             }
 
             //The Jacobian terms w.r.t. the plastic multipliers
-            jacobian[ 52 + i ][ 52 + i ] = yieldFunctionValues[ 2 + i ] * currentMicroGradientGamma[ i ];
+            jacobian[ 52 + i ][ 52 + i ] = yieldFunctionValues[ 2 + i ];
         }
 
         //Save the stresses
@@ -5680,22 +5673,15 @@ namespace micromorphicElastoPlasticity{
             solverTools::stdFncNLFJ func
                 = static_cast< solverTools::NonLinearFunctionWithJacobian >( computePlasticDeformationResidual );
 
-            variableType currentLogMacroGamma = std::log( currentMacroGamma + 1e-9 );
-            variableType currentLogMicroGamma = std::log( currentMicroGamma + 1e-9 );
-            variableVector currentLogMicroGradientGamma = { std::log( currentMicroGradientGamma[ 0 ] + 1e-9 ),
-                                                            std::log( currentMicroGradientGamma[ 1 ] + 1e-9 ),
-                                                            std::log( currentMicroGradientGamma[ 2 ] + 1e-9 ) };
-
-
             solverTools::floatVector x0 = { currentMacroStrainISV, currentMicroStrainISV,
                                             currentMicroGradientStrainISV[ 0 ],
                                             currentMicroGradientStrainISV[ 1 ],
                                             currentMicroGradientStrainISV[ 2 ],
-                                            currentLogMacroGamma,
-                                            currentLogMicroGamma,
-                                            currentLogMicroGradientGamma[ 0 ],
-                                            currentLogMicroGradientGamma[ 1 ],
-                                            currentLogMicroGradientGamma[ 2 ]
+                                            currentMacroGamma,
+                                            currentMicroGamma,
+                                            currentMicroGradientGamma[ 0 ],
+                                            currentMicroGradientGamma[ 1 ],
+                                            currentMicroGradientGamma[ 2 ]
                                           };
 
             x0 = vectorTools::appendVectors( { currentPlasticDeformationGradient,
@@ -5745,15 +5731,9 @@ namespace micromorphicElastoPlasticity{
             currentMacroStrainISV                  = solutionVector[ 45 ];
             currentMicroStrainISV                  = solutionVector[ 46 ];
             currentMicroGradientStrainISV          = variableVector( solutionVector.begin() + 47, solutionVector.begin() + 50 );
-            currentLogMacroGamma                   = solutionVector[ 50 ];
-            currentLogMicroGamma                   = solutionVector[ 51 ];
-            currentLogMicroGradientGamma           = variableVector( solutionVector.begin() + 52, solutionVector.begin() + 55 );
-
-            currentMacroGamma = std::exp( currentLogMacroGamma );
-            currentMicroGamma = std::exp( currentLogMicroGamma );
-            for ( unsigned int i = 0; i < currentLogMicroGradientGamma.size(); i++ ){
-                currentMicroGradientGamma[ i ] = std::exp( currentLogMicroGradientGamma[ i ] );
-            }
+            currentMacroGamma                      = solutionVector[ 50 ];
+            currentMicroGamma                      = solutionVector[ 51 ];
+            currentMicroGradientGamma              = variableVector( solutionVector.begin() + 52, solutionVector.begin() + 55 );
 
 //            std::cout << "currentPlasticDeformationGradient:\n"; vectorTools::print( currentPlasticDeformationGradient );
 //            std::cout << "currentPlasticMicroDeformation:\n"; vectorTools::print( currentPlasticMicroDeformation );
@@ -6630,21 +6610,15 @@ namespace micromorphicElastoPlasticity{
             solverTools::stdFncNLFJ func
                 = static_cast< solverTools::NonLinearFunctionWithJacobian >( computePlasticDeformationResidual );
 
-            variableType   currentLogMacroGamma         = std::log( currentMacroGamma + 1e-9 );
-            variableType   currentLogMicroGamma         = std::log( currentMicroGamma + 1e-9 );
-            variableVector currentLogMicroGradientGamma = { std::log( currentMicroGradientGamma[ 0 ] + 1e-9 ),
-                                                            std::log( currentMicroGradientGamma[ 1 ] + 1e-9 ),
-                                                            std::log( currentMicroGradientGamma[ 2 ] + 1e-9 ) };
-
             solverTools::floatVector x0 = { currentMacroStrainISV, currentMicroStrainISV,
                                             currentMicroGradientStrainISV[ 0 ],
                                             currentMicroGradientStrainISV[ 1 ],
                                             currentMicroGradientStrainISV[ 2 ],
-                                            currentLogMacroGamma,
-                                            currentLogMicroGamma, 
-                                            currentLogMicroGradientGamma[ 0 ],
-                                            currentLogMicroGradientGamma[ 1 ],
-                                            currentLogMicroGradientGamma[ 2 ]
+                                            currentMacroGamma,
+                                            currentMicroGamma, 
+                                            currentMicroGradientGamma[ 0 ],
+                                            currentMicroGradientGamma[ 1 ],
+                                            currentMicroGradientGamma[ 2 ]
                                           };
 
             x0 = vectorTools::appendVectors( { currentPlasticDeformationGradient,
@@ -6697,15 +6671,9 @@ namespace micromorphicElastoPlasticity{
             currentMacroStrainISV                  = solutionVector[ 45 ];
             currentMicroStrainISV                  = solutionVector[ 46 ];
             currentMicroGradientStrainISV          = variableVector( solutionVector.begin() + 47, solutionVector.begin() + 50 );
-            currentLogMacroGamma                   = solutionVector[ 50 ];
-            currentLogMicroGamma                   = solutionVector[ 51 ];
-            currentLogMicroGradientGamma           = variableVector( solutionVector.begin() + 52, solutionVector.begin() + 55 );
-
-            currentMacroGamma = std::exp( currentLogMacroGamma );
-            currentMicroGamma = std::exp( currentLogMicroGamma );
-            for ( unsigned int i = 0; i < currentLogMicroGradientGamma.size(); i++ ){
-                currentMicroGradientGamma[ i ] = std::exp( currentLogMicroGradientGamma[ i ] );
-            }
+            currentMacroGamma                      = solutionVector[ 50 ];
+            currentMicroGamma                      = solutionVector[ 51 ];
+            currentMicroGradientGamma              = variableVector( solutionVector.begin() + 52, solutionVector.begin() + 55 );
 
             //Extract the stresses and Jacobians
             currentPK2Stress                       = floatOuts[ 0 ];
