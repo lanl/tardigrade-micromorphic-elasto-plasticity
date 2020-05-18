@@ -5706,6 +5706,31 @@ namespace micromorphicElastoPlasticity{
                                                  20, relativeTolerance, absoluteTolerance,
                                                  1e-4, 5, 1.0, .1 );
 
+//            solverTools::intVector variableIndices = { 50, 51, 52, 53, 54 };
+//            solverTools::intVector residualIndices = { 50, 51, 52, 53, 54 };
+//            solverTools::intVector barrierSigns    = {  0,  0,  0,  0,  0 };
+//
+//            solverTools::floatVector barrierValues = { -absoluteTolerance, -absoluteTolerance,
+//                                                       -absoluteTolerance, -absoluteTolerance,
+//                                                       -absoluteTolerance };
+//
+//            solverTools::floatVector logAMaxValues = { 2, 2, 2, 2, 2 };
+//
+//            std::cout << "pre-barrierHomotopySolver x0:\n"; vectorTools::print( x0 );
+//
+//            error = solverTools::barrierHomotopySolver( func, 0.5, x0, variableIndices, residualIndices,
+//                                                        barrierSigns, barrierValues, logAMaxValues,
+//                                                        floatArgs, intArgs, true, solutionVector,
+//                                                        convergeFlag, fatalErrorFlag, floatOuts, intOuts,
+//#ifdef DEBUG_MODE
+//                                                        DEBUG,
+//#endif
+//                                                        20, relativeTolerance, absoluteTolerance,
+//                                                        1e-4, 5, true );
+//
+//            std::cout << "solutionVector:\n"; vectorTools::print( solutionVector );
+//            std::cout << "\n";
+
             if ( ( error ) && fatalErrorFlag ){ //Fatal error
                 errorOut result = new errorNode( "evaluate_model",
                                                  "Error in nonlinear solve" );
@@ -5744,6 +5769,29 @@ namespace micromorphicElastoPlasticity{
 //            std::cout << "currentMacroGamma:\n" << currentMacroGamma << "\n";
 //            std::cout << "currentMicroStrainISV:\n" << currentMicroGamma << "\n";
 //            std::cout << "currentMicroGradientStrainISV:\n"; vectorTools::print( currentMicroGradientGamma );
+
+            if ( currentMacroGamma < -absoluteTolerance ){
+                errorOut result = new errorNode( "evaluate_model", "The macro-scale plastic multiplier is negative" );
+                result->print();
+                output_message = buffer.str();
+                return 1;
+            }
+
+            if ( currentMicroGamma < -absoluteTolerance ){
+                errorOut result = new errorNode( "evaluate_model", "The micro-scale plastic multiplier is negative" );
+                result->print();
+                output_message = buffer.str();
+                return 1;
+            }
+
+            for ( unsigned int i = 0; i < currentMicroGradientGamma.size(); i++ ){
+                if ( currentMicroGradientGamma[ i ] < -absoluteTolerance ){
+                    errorOut result = new errorNode( "evaluate_model", "A micro-gradient plastic multiplier is negative" );
+                    result->print();
+                    output_message = buffer.str();
+                    return 1;
+                }
+            }
 
             //Extract the stresses
             currentPK2Stress                       = floatOuts[ 0 ];
@@ -6635,13 +6683,33 @@ namespace micromorphicElastoPlasticity{
 
             solverTools::solverType finalSolver;
             solverTools::floatMatrix J;
-            error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
-                                                 floatOuts, intOuts, floatArgs, intArgs, finalSolver, J,
+//            error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
+//                                                 floatOuts, intOuts, floatArgs, intArgs, finalSolver, J,
+//#ifdef DEBUG_MODE
+//                                                 DEBUG,
+//#endif
+//                                                 20, relativeTolerance, absoluteTolerance,
+//                                                 1e-4, 5, 1.0, .1 );
+            solverTools::intVector variableIndices = { 50, 51, 52, 53, 54 };
+            solverTools::intVector residualIndices = { 50, 51, 52, 53, 54 };
+            solverTools::intVector barrierSigns    = { 0, 0, 0, 0, 0 };
+
+            solverTools::floatVector barrierValues = { -absoluteTolerance, -absoluteTolerance,
+                                                       -absoluteTolerance, -absoluteTolerance,
+                                                       -absoluteTolerance };
+
+            solverTools::floatVector logAMaxValues = { 10, 10, 10, 10, 10 };
+
+            error = solverTools::barrierHomotopySolver( func, 0.5, x0, variableIndices, residualIndices,
+                                                        barrierSigns, barrierValues, logAMaxValues,
+                                                        floatArgs, intArgs, true, solutionVector,
+                                                        convergeFlag, fatalErrorFlag, floatOuts, intOuts,
+                                                        finalSolver, J,
 #ifdef DEBUG_MODE
-                                                 DEBUG,
+                                                        DEBUG,
 #endif
-                                                 20, relativeTolerance, absoluteTolerance,
-                                                 1e-4, 5, 1.0, .1 );
+                                                        20, relativeTolerance, absoluteTolerance,
+                                                        1e-4, 5, true );
 
             if ( ( error ) && fatalErrorFlag ){ //Fatal error
                 errorOut result = new errorNode( "evaluate_model",
@@ -6658,6 +6726,17 @@ namespace micromorphicElastoPlasticity{
                 result->print();          //Print the error message
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 1;
+            }
+
+            for ( unsigned int i = 0; i< variableIndices.size(); i++ ){
+                if ( solutionVector[ i ] < -absoluteTolerance ){
+                    std::string error_message = "One of the plastic multipliers is negative";
+                    convergeFlag = false;
+                    errorOut result = new errorNode( "evaluate_model", error_message.c_str() );
+                    result->print();               //Print the error message
+                    output_message = buffer.str(); //Save the output to enable message passing
+                    return 1;
+                }
             }
 
             for ( unsigned int i = 0; i < 5; i++ ){

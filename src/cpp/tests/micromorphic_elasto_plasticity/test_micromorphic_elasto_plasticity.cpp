@@ -14125,34 +14125,34 @@ int main(){
     results.open("results.tex");
 
     //Run the tests
-    test_computeSecondOrderDruckerPragerYieldEquation( results );
-    test_computeHigherOrderDruckerPragerYieldEquation( results );
-    test_computeElasticPartOfDeformation( results );
-    test_computeElasticDeformationMeasures( results );
-    test_computePlasticMacroVelocityGradient( results );
-    test_computePlasticMicroVelocityGradient( results );
-    test_computePlasticMicroGradientVelocityGradient( results );
-    test_computePlasticVelocityGradients( results );
-    test_evolvePlasticMicroGradChi( results );
-    test_evolvePlasticDeformation( results );
-    test_evolveStrainStateVariables( results );
-    test_computeFlowDirections( results );
-    test_computePlasticDeformationResidual( results );
-    test_computePlasticDeformationResidual2( results );
-    test_extractMaterialParameters( results );
-    test_extractStateVariables( results );
-    test_assembleFundamentalDeformationMeasures( results );
-    test_evaluateYieldFunctions( results );
-    test_computeCohesion( results );
-    test_cout_redirect( results );
-    test_cerr_redirect( results );
-
+//    test_computeSecondOrderDruckerPragerYieldEquation( results );
+//    test_computeHigherOrderDruckerPragerYieldEquation( results );
+//    test_computeElasticPartOfDeformation( results );
+//    test_computeElasticDeformationMeasures( results );
+//    test_computePlasticMacroVelocityGradient( results );
+//    test_computePlasticMicroVelocityGradient( results );
+//    test_computePlasticMicroGradientVelocityGradient( results );
+//    test_computePlasticVelocityGradients( results );
+//    test_evolvePlasticMicroGradChi( results );
+//    test_evolvePlasticDeformation( results );
+//    test_evolveStrainStateVariables( results );
+//    test_computeFlowDirections( results );
+//    test_computePlasticDeformationResidual( results );
+//    test_computePlasticDeformationResidual2( results );
+//    test_extractMaterialParameters( results );
+//    test_extractStateVariables( results );
+//    test_assembleFundamentalDeformationMeasures( results );
+//    test_evaluateYieldFunctions( results );
+//    test_computeCohesion( results );
+//    test_cout_redirect( results );
+//    test_cerr_redirect( results );
+//
 //    test_evaluate_model( results );
 //    test_evaluate_model_continuation( results );
 //
 //    test_materialLibraryInterface( results );
-//
-//    test_evaluate_model_history( results );
+
+    test_evaluate_model_history( results );
 
     //Close the results file
     results.close();
