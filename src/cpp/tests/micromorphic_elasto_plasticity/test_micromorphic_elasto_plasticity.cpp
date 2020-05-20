@@ -13789,11 +13789,13 @@ int test_evaluate_model_history( std::ofstream &results ){
                                               , DEBUG
 #endif
                                             );
-    
+   
     if ( errorCode > 0 ){
         std::cout << output_message << "\n";
         results << "test_evaluate_model_history & False\n";
+#ifdef DEBUG_MODE 
         output_file.close();
+#endif
         return 1;
     }
 
@@ -14092,7 +14094,9 @@ int test_evaluate_model_history( std::ofstream &results ){
         if ( errorCode > 0 ){
             std::cout << output_message << "\n";
             results << "test_evaluate_model_history & False\n";
+#ifdef DEBUG_MODE
             output_file.close();
+#endif
             return 1;
         }
 
@@ -14101,8 +14105,10 @@ int test_evaluate_model_history( std::ofstream &results ){
         grad_u_prev   = grad_u_curr;
         phi_prev      = phi_curr;
         grad_phi_prev = grad_phi_curr;
-    
+
+#ifdef DEBUG_MODE    
         if ( t > 0.12 ){ output_file.close(); return 1; }
+#endif
     }
     
 #ifdef DEBUG_MODE
