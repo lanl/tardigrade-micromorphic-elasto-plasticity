@@ -9,6 +9,38 @@
 
 namespace micromorphicElastoPlasticity{
 
+    errorOut computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
+                                                     parameterType &A, parameterType &B ){
+        /*!
+         * Compute the Drucker-Prager internal parameters
+         *
+         * :param const parameterType &frictionAngle: The material friction angle ( 0 < frictionAngle < pi / 2 );
+         * :param const parameterType &beta: The beta parameter.
+         * :param parameterType &A: The A parameter.
+         * :param parameterType &B: The B parameter.
+         */
+
+        //Make sure the parameters are within bounds
+        if ( ( 0 > frictionAngle ) || ( frictionAngle > 1.570796 ) ){
+            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
+                                  "The friction angle must between 0 and pi / 2" );
+        }
+
+        if ( abs( beta ) > 1 ){
+            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
+                                  "Beta must be between -1 and 1" );
+        }
+
+        //Compute the parameters
+        parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
+
+        A = betaAngle * std::cos( frictionAngle );
+
+        B = betaAngle * std::sin( frictionAngle );
+
+        return NULL;
+    }
+
     errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
                                                            const variableVector &elasticRightCauchyGreen,
                                                            const parameterType &frictionAngle, const parameterType &beta,
@@ -34,29 +66,21 @@ namespace micromorphicElastoPlasticity{
          * :param variableType &yieldValue: The yield value.
          */
 
-        //Make sure the parameters are within bounds
-        if ( ( 0 > frictionAngle ) || ( frictionAngle > 1.570796 ) ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "The friction angle must between 0 and pi / 2" );
+        parameterType AAngle, BAngle;
+        errorOut error = computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
+                                             "Error in computation of the Drucker-Prager internal parameters" );
+            result->addNext( error );
+            return result;
         }
-
-        if ( abs( beta ) > 1 ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "Beta must be between -1 and 1" );
-        }
-
-        //Compute the parameters
-        parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
-
-        parameterType AAngle = betaAngle * std::cos( frictionAngle );
-
-        parameterType BAngle = betaAngle * std::sin( frictionAngle );
 
         //Compute the decomposition of the stress
         variableType pressure;
         variableVector deviatoricReferenceStress;
         
-        errorOut error = micromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
+        error = micromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure );
 
         if ( error ){
@@ -111,23 +135,15 @@ namespace micromorphicElastoPlasticity{
          * :param double tol: The tolerance used to prevent nans in the Jacobians
          */
 
-        //Make sure the parameters are within bounds
-        if ( ( 0 > frictionAngle ) || ( frictionAngle > 1.570796 ) ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "The friction angle must between 0 and pi / 2" );
+        parameterType AAngle, BAngle;
+        errorOut error = computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeSecondOrderDruckerPragerYieldEquation (jacobian)",
+                                             "Error in computation of the Drucker-Prager internal parameters" );
+            result->addNext( error );
+            return result;
         }
-
-        if ( abs( beta ) > 1 ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "Beta must be between -1 and 1" );
-        }
-
-        //Compute the parameters
-        parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
-
-        parameterType AAngle = betaAngle * std::cos( frictionAngle );
-
-        parameterType BAngle = betaAngle * std::sin( frictionAngle );
 
         //Compute the decomposition of the stress
         variableType pressure;
@@ -136,7 +152,7 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dDevStressdStress, dDevStressdRCG;
         variableVector dPressuredStress, dPressuredRCG;
         
-        errorOut error = micromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
+        error = micromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                              dDevStressdRCG, dPressuredStress, dPressuredRCG );
 
@@ -213,23 +229,15 @@ namespace micromorphicElastoPlasticity{
         //Assume 3D
         unsigned int dim = 3;
 
-        //Make sure the parameters are within bounds
-        if ( ( 0 > frictionAngle ) || ( frictionAngle > 1.570796 ) ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "The friction angle must between 0 and pi / 2" );
+        parameterType AAngle, BAngle;
+        errorOut error = computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeSecondOrderDruckerPragerYieldEquation (second order jacobian)",
+                                             "Error in computation of the Drucker-Prager internal parameters" );
+            result->addNext( error );
+            return result;
         }
-
-        if ( abs( beta ) > 1 ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "Beta must be between -1 and 1" );
-        }
-
-        //Compute the parameters
-        parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
-
-        parameterType AAngle = betaAngle * std::cos( frictionAngle );
-
-        parameterType BAngle = betaAngle * std::sin( frictionAngle );
 
         //Compute the decomposition of the stress
         variableType pressure;
@@ -240,7 +248,7 @@ namespace micromorphicElastoPlasticity{
 
         variableMatrix d2DevStressdStressdRCG, d2PressuredStressdRCG;
 
-        errorOut error = micromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
+        error = micromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                              dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG );
 
@@ -320,29 +328,21 @@ namespace micromorphicElastoPlasticity{
          * :param variableVector &yieldValue: The yield value.
          */
 
-        //Make sure the parameters are within bounds
-        if ( ( 0 > frictionAngle ) || ( frictionAngle > 1.570796 ) ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "The friction angle must between 0 and pi / 2" );
+        parameterType AAngle, BAngle;
+        errorOut error = computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeHigherOrderDruckerPragerYieldEquation",
+                                             "Error in computation of the Drucker-Prager internal parameters" );
+            result->addNext( error );
+            return result;
         }
-
-        if ( abs( beta ) > 1 ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "Beta must be between -1 and 1" );
-        }
-
-        //Compute the parameters
-        parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
-
-        parameterType AAngle = betaAngle * std::cos( frictionAngle );
-
-        parameterType BAngle = betaAngle * std::sin( frictionAngle );
 
         //Compute the decomposition of the stress
         variableVector pressure;
         variableVector deviatoricReferenceStress;
         
-        errorOut error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
+        error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure );
 
         if ( error ){
@@ -402,23 +402,15 @@ namespace micromorphicElastoPlasticity{
          *     deformation tensor.
          */
 
-        //Make sure the parameters are within bounds
-        if ( ( 0 > frictionAngle ) || ( frictionAngle > 1.570796 ) ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "The friction angle must between 0 and pi / 2" );
+        parameterType AAngle, BAngle;
+        errorOut error = computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeHigherOrderDruckerPragerYieldEquation (jacobian)",
+                                             "Error in computation of the Drucker-Prager internal parameters" );
+            result->addNext( error );
+            return result;
         }
-
-        if ( abs( beta ) > 1 ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "Beta must be between -1 and 1" );
-        }
-
-        //Compute the parameters
-        parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
-
-        parameterType AAngle = betaAngle * std::cos( frictionAngle );
-
-        parameterType BAngle = betaAngle * std::sin( frictionAngle );
 
         //Compute the decomposition of the stress
         variableVector pressure;
@@ -427,7 +419,7 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dDevStressdStress, dDevStressdRCG;
         variableMatrix dPressuredStress, dPressuredRCG;
         
-        errorOut error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
+        error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                              dDevStressdRCG, dPressuredStress, dPressuredRCG );
 
@@ -506,23 +498,15 @@ namespace micromorphicElastoPlasticity{
         //Assume 3D
         unsigned int dim = 3;
 
-        //Make sure the parameters are within bounds
-        if ( ( 0 > frictionAngle ) || ( frictionAngle > 1.570796 ) ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "The friction angle must between 0 and pi / 2" );
+        parameterType AAngle, BAngle;
+        errorOut error = computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle );
+
+        if ( error ){
+            errorOut result = new errorNode( "computeHigherOrderDruckerPragerYieldEquation (second order jacobian)",
+                                             "Error in computation of the Drucker-Prager internal parameters" );
+            result->addNext( error );
+            return result;
         }
-
-        if ( abs( beta ) > 1 ){
-            return new errorNode( "computeSecondOrderDruckerPragerYieldEquation",
-                                  "Beta must be between -1 and 1" );
-        }
-
-        //Compute the parameters
-        parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
-
-        parameterType AAngle = betaAngle * std::cos( frictionAngle );
-
-        parameterType BAngle = betaAngle * std::sin( frictionAngle );
 
         //Compute the decomposition of the stress
         variableVector pressure;
@@ -533,7 +517,7 @@ namespace micromorphicElastoPlasticity{
 
         variableMatrix d2DevStressdStressdRCG, d2PressuredStressdRCG;
         
-        errorOut error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
+        error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                              dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG );
 
@@ -3249,9 +3233,9 @@ namespace micromorphicElastoPlasticity{
          *     continue yielding.
          */
 
-        if ( x.size() != 55 ){
+        if ( x.size() != 50 ){
             return new errorNode( "computePlasticDeformationResidual",
-                                  "The x vector must have a length of 55" );
+                                  "The x vector must have a length of 50" );
         }
 
         if ( floatArgs.size() != 35 ){
@@ -3803,6 +3787,8 @@ namespace micromorphicElastoPlasticity{
         }
 
 #endif
+
+
 
         /*!============================
         | Compute the cohesion values |
@@ -5624,6 +5610,11 @@ namespace micromorphicElastoPlasticity{
         std::cout << "  "; vectorTools::print( currentPlasticMicroDeformation );
         std::cout << "  "; vectorTools::print( currentPlasticGradientMicroDeformation );
 
+        std::cout << "PREVIOUS PLASTIC DEFORMATION MEASURES\n";
+        std::cout << "  "; vectorTools::print( previousPlasticDeformationGradient );
+        std::cout << "  "; vectorTools::print( previousPlasticMicroDeformation );
+        std::cout << "  "; vectorTools::print( previousPlasticGradientMicroDeformation );
+
         //Compute the right Cauchy-Green deformation gradient
         variableVector currentElasticRightCauchyGreen;
 
@@ -5787,16 +5778,16 @@ namespace micromorphicElastoPlasticity{
                                             currentMicroGradientStrainISV[ 0 ],
                                             currentMicroGradientStrainISV[ 1 ],
                                             currentMicroGradientStrainISV[ 2 ],
-//                                            currentMacroGamma,
-//                                            currentMicroGamma,
-//                                            currentMicroGradientGamma[ 0 ],
-//                                            currentMicroGradientGamma[ 1 ],
-//                                            currentMicroGradientGamma[ 2 ]
-                                            previousMacroGamma,
-                                            previousMicroGamma,
-                                            previousMicroGradientGamma[ 0 ],
-                                            previousMicroGradientGamma[ 1 ],
-                                            previousMicroGradientGamma[ 2 ]
+                                            currentMacroGamma,
+                                            currentMicroGamma,
+                                            currentMicroGradientGamma[ 0 ],
+                                            currentMicroGradientGamma[ 1 ],
+                                            currentMicroGradientGamma[ 2 ]
+//                                            previousMacroGamma,
+//                                            previousMicroGamma,
+//                                            previousMicroGradientGamma[ 0 ],
+//                                            previousMicroGradientGamma[ 1 ],
+//                                            previousMicroGradientGamma[ 2 ]
                                           };
 
             x0 = vectorTools::appendVectors( { currentPlasticDeformationGradient,
@@ -5827,7 +5818,7 @@ namespace micromorphicElastoPlasticity{
 
             error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
                                                  floatOuts, intOuts, floatArgs, intArgs, linearSolver, J,
-                                                 boundVariableIndices, boundSigns, boundValues,
+//                                                 boundVariableIndices, boundSigns, boundValues,
 #ifdef DEBUG_MODE
                                                  DEBUG,
 #endif
@@ -5874,6 +5865,19 @@ namespace micromorphicElastoPlasticity{
                 solverTools::debugMap tempDEBUG;
     
                 errorOut error2 = func( x0, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+                solverTools::floatVector jflat = vectorTools::appendVectors( jbase );
+                Eigen::Map < const Eigen::Matrix<solverTools::floatType, -1, -1, Eigen::RowMajor> > jmat(jflat.data(), 55, 55);
+
+                std::ofstream jfile;
+                jfile.open( "jacobian.out" );
+                jfile << jmat << "\n";
+                jfile.close();
+
+                std::ofstream rfile;
+                rfile.open( "residual.out" );
+                for ( unsigned int i = 0; i < rbase.size(); i++ ){ rfile << rbase[ i ] << ", "; };
+                rfile.close();
+
                 std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
                 if ( error2 ){
                     errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
@@ -5884,107 +5888,107 @@ namespace micromorphicElastoPlasticity{
                 }
 
                 unsigned int rank;
-                solverTools::floatVector dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
-
-                vectorTools::print( dx1 );
-
-                solverTools::applyBoundaryLimitation( x0, boundVariableIndices, boundSigns, boundValues, dx1 );
-
-                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
-                solverTools::floatVector xn = x0 + dx1;
-
-                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
-                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
-                if ( error2 ){
-                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
-                    result->addNext( error2 );
-                    result->print();
-                    output_message = buffer.str();
-                    return 2;
-                }
-
-                std::cout << "full increment dx1:\n";
-                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
-
-                vectorTools::print( dx1 );
-
-                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
-
-                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
-                xn = x0 + dx1;
-
-                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
-                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
-                if ( error2 ){
-                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
-                    result->addNext( error2 );
-                    result->print();
-                    output_message = buffer.str();
-                    return 2;
-                }
-
-                std::cout << "full increment dx1:\n";
-                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
-
-                vectorTools::print( dx1 );
-
-                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
-
-                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
-                xn += dx1;
-
-                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
-                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
-                if ( error2 ){
-                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
-                    result->addNext( error2 );
-                    result->print();
-                    output_message = buffer.str();
-                    return 2;
-                }
-
-                std::cout << "full increment dx1:\n";
-                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
-
-                vectorTools::print( dx1 );
-
-                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
-
-                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
-                xn += dx1;
-
-                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
-                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
-                if ( error2 ){
-                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
-                    result->addNext( error2 );
-                    result->print();
-                    output_message = buffer.str();
-                    return 2;
-                }
-
-                std::cout << "full increment dx1:\n";
-                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
-
-                vectorTools::print( dx1 );
-
-                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
-
-                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
-                xn += dx1;
-
-                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
-                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
+//                solverTools::floatVector dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+//
+//                vectorTools::print( dx1 );
+//
+//                solverTools::applyBoundaryLimitation( x0, boundVariableIndices, boundSigns, boundValues, dx1 );
+//
+//                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
+//                solverTools::floatVector xn = x0 + dx1;
+//
+//                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+//                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
+//                if ( error2 ){
+//                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
+//                    result->addNext( error2 );
+//                    result->print();
+//                    output_message = buffer.str();
+//                    return 2;
+//                }
+//
+//                std::cout << "full increment dx1:\n";
+//                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+//
+//                vectorTools::print( dx1 );
+//
+//                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
+//
+//                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
+//                xn = x0 + dx1;
+//
+//                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+//                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
+//                if ( error2 ){
+//                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
+//                    result->addNext( error2 );
+//                    result->print();
+//                    output_message = buffer.str();
+//                    return 2;
+//                }
+//
+//                std::cout << "full increment dx1:\n";
+//                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+//
+//                vectorTools::print( dx1 );
+//
+//                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
+//
+//                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
+//                xn += dx1;
+//
+//                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+//                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
+//                if ( error2 ){
+//                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
+//                    result->addNext( error2 );
+//                    result->print();
+//                    output_message = buffer.str();
+//                    return 2;
+//                }
+//
+//                std::cout << "full increment dx1:\n";
+//                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+//
+//                vectorTools::print( dx1 );
+//
+//                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
+//
+//                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
+//                xn += dx1;
+//
+//                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+//                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
+//                if ( error2 ){
+//                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
+//                    result->addNext( error2 );
+//                    result->print();
+//                    output_message = buffer.str();
+//                    return 2;
+//                }
+//
+//                std::cout << "full increment dx1:\n";
+//                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+//
+//                vectorTools::print( dx1 );
+//
+//                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
+//
+//                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
+//                xn += dx1;
+//
+//                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+//                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
     
                 for ( unsigned int yerp = 0; yerp < solutionVector.size(); yerp++ ){
                     solverTools::floatVector delta( x0.size(), 0 );
                     solverTools::floatVector RP, RM;
                     solverTools::floatMatrix _J;
                     delta[ yerp ] = eps * fabs( x0[ yerp ] ) + eps;
-                    error2 = func( x0 + delta, floatArgs, intArgs, RP, _J, floatOuts, intOuts
-                                   , tempDEBUG
-                                 );
+                    solverTools::debugMap DEBUG_P, DEBUG_M;
     
+                    error2 = func( x0 + delta, floatArgs, intArgs, RP, _J, floatOuts, intOuts, DEBUG_P );
+
                     if ( error2 ){
                         errorOut result = new errorNode( "evaluate_model", "Error in numeric jacobian test" );
                         result->addNext( error2 );
@@ -5993,7 +5997,7 @@ namespace micromorphicElastoPlasticity{
                         return 2;
                     }
     
-                    error2 = func( x0 - delta, floatArgs, intArgs, RM, _J, floatOuts, intOuts, tempDEBUG );
+                    error2 = func( x0 - delta, floatArgs, intArgs, RM, _J, floatOuts, intOuts, DEBUG_M );
     
                     if ( error2 ){
                         errorOut result = new errorNode( "evaluate_model", "Error in numeric jacobian test" );
@@ -6004,6 +6008,17 @@ namespace micromorphicElastoPlasticity{
                     }
     
                     solverTools::floatVector gradCol = ( RP - RM ) / ( 2 * delta[ yerp ] );
+
+                    //Check Jacobians of the subterms
+                    solverTools::debugMap numericGrad;
+                    for ( auto dP = DEBUG_P.begin(); dP != DEBUG_P.end(); dP++ ){
+                        auto dM = DEBUG_M.find( dP->first );
+                        numericGrad.emplace( dP->first, ( dP->second - dM->second ) / ( 2 * delta[ yerp ] ) );
+                    }
+
+                    std::cout << "expectedPlasticDeformationGradient\n";
+                    vectorTools::print( numericGrad[ "expectedPlasticDeformationGradient" ] );
+
     
                     for ( unsigned int derp = 0; derp < gradCol.size(); derp++ ){
                         if ( !vectorTools::fuzzyEquals( gradCol[ derp ], jbase[ derp ][ yerp ] ) ){
@@ -6021,8 +6036,8 @@ namespace micromorphicElastoPlasticity{
                 solverTools::floatType minMicroGamma = 0.;
                 solverTools::floatType maxMacroGamma = 2.;
                 solverTools::floatType maxMicroGamma = 2.;
-                unsigned int nMacro = 80;
-                unsigned int nMicro = 80;
+                unsigned int nMacro = 10;
+                unsigned int nMicro = 10;
 
                 solverTools::floatType dMacro = ( maxMacroGamma - minMacroGamma ) / nMacro;
                 solverTools::floatType dMicro = ( maxMicroGamma - minMicroGamma ) / nMicro;

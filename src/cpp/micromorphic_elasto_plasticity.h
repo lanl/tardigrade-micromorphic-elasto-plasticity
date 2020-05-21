@@ -60,6 +60,9 @@ namespace micromorphicElastoPlasticity{
             std::streambuf * old;
     };
 
+    errorOut computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
+                                                     parameterType &A, parameterType &B );
+
     errorOut computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
                                                            const variableVector &elasticRightCauchyGreen,
                                                            const parameterType &frictionAngle, const parameterType &beta,
