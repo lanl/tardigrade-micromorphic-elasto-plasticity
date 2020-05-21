@@ -3398,6 +3398,20 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+//        std::cout << "IN PLASTIC DEFORMATION RESIDUAL\n";
+//        std::cout << "\n  gammas:\n";
+//        std::cout << "    " << currentMacroGamma << "\n";
+//        std::cout << "    " << currentMicroGamma << "\n";
+//        std::cout << "    "; vectorTools::print( currentMicroGradientGamma );
+//        std::cout << "\n  ISVS:\n";
+//        std::cout << "    " << currentMacroStrainISV << "\n";
+//        std::cout << "    " << currentMicroStrainISV << "\n";
+//        std::cout << "    "; vectorTools::print( currentMicroGradientStrainISV ); 
+//        std::cout << "  elastic fundamental deformation measures\n";
+//        std::cout << "    "; vectorTools::print( currentElasticDeformationGradient );
+//        std::cout << "    "; vectorTools::print( currentElasticMicroDeformation );
+//        std::cout << "    "; vectorTools::print( currentElasticGradientMicroDeformation );
+
 #ifdef DEBUG_MODE
 
         //Save the elastic fundamental deformation measures
@@ -3456,6 +3470,12 @@ namespace micromorphicElastoPlasticity{
             result->addNext( error );
             return result;
         }
+
+//        std::cout << "\n  elastic derived deformation measures\n";
+//        std::cout << "    "; vectorTools::print( currentElasticRightCauchyGreen );
+//        std::cout << "    "; vectorTools::print( currentElasticMicroRightCauchyGreen );
+//        std::cout << "    "; vectorTools::print( currentElasticPsi );
+//        std::cout << "    "; vectorTools::print( currentElasticGamma );
 
         /*!==================================================================
         | Assemble the Jacobian of the elastic derived deformation measures |
@@ -3589,6 +3609,11 @@ namespace micromorphicElastoPlasticity{
             result->addNext( error );
             return result;
         }
+
+//        std::cout << "\n  current stress measures\n";
+//        std::cout << "    "; vectorTools::print( currentPK2Stress );
+//        std::cout << "    "; vectorTools::print( currentReferenceMicroStress );
+//        std::cout << "    "; vectorTools::print( currentReferenceHigherOrderStress );
 
         /*===============================
         | Assemble the stress Jacobians |
@@ -3726,10 +3751,10 @@ namespace micromorphicElastoPlasticity{
 
 #ifdef DEBUG_MODE
 
-        //Save the stress values
-        DEBUG.emplace( "currentPK2Stress", currentPK2Stress );
-        DEBUG.emplace( "currentReferenceMicroStress", currentReferenceMicroStress );
-        DEBUG.emplace( "currentReferenceHigherOrderStress", currentReferenceHigherOrderStress );
+//        //Save the stress values
+//        DEBUG.emplace( "currentPK2Stress", currentPK2Stress );
+//        DEBUG.emplace( "currentReferenceMicroStress", currentReferenceMicroStress );
+//        DEBUG.emplace( "currentReferenceHigherOrderStress", currentReferenceHigherOrderStress );
 
         //Save the Jacobians
 
@@ -3801,6 +3826,11 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+//        std::cout << "\n  current cohesion values\n";
+//        std::cout << "    " << currentMacroCohesion << "\n";
+//        std::cout << "    " << currentMicroCohesion << "\n";
+//        std::cout << "    "; vectorTools::print( currentMicroGradientCohesion );
+
 #ifdef DEBUG_MODE
 
         //Save the cohesion values
@@ -3859,6 +3889,11 @@ namespace micromorphicElastoPlasticity{
             result->addNext( error );
             return result;
         }
+
+//        std::cout << "\n  current flow directions\n";
+//        std::cout << "    "; vectorTools::print( currentMacroFlowDirection );
+//        std::cout << "    "; vectorTools::print( currentMicroFlowDirection );
+//        std::cout << "    "; vectorTools::print( currentMicroGradientFlowDirection );
 
         /*!============================
         | Assemble the flow Jacobians |
@@ -4027,6 +4062,11 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+//        std::cout << "\n  expected strain state variables\n";
+//        std::cout << "    " << expectedMacroStrainISV << "\n";
+//        std::cout << "    " << expectedMicroStrainISV << "\n";
+//        std::cout << "    "; vectorTools::print( expectedMicroGradientStrainISV );
+
 #ifdef DEBUG_MODE
 
         //Save the expected macro-strain values
@@ -4111,6 +4151,11 @@ namespace micromorphicElastoPlasticity{
             result->addNext( error );
             return result;
         }
+
+//        std::cout << "\n  current plastic velocity gradients\n";
+//        std::cout << "    "; vectorTools::print( currentPlasticMacroVelocityGradient );
+//        std::cout << "    "; vectorTools::print( currentPlasticMicroVelocityGradient );
+//        std::cout << "    "; vectorTools::print( currentPlasticMicroGradientVelocityGradient );
 
         /*!=========================================================
         | Assemble the jacobians of the plastic velocity gradients |
@@ -4364,6 +4409,11 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+//        std::cout << "\n  expected plastic deformation\n";
+//        std::cout << "    "; vectorTools::print( expectedPlasticDeformationGradient );
+//        std::cout << "    "; vectorTools::print( expectedPlasticMicroDeformation );
+//        std::cout << "    "; vectorTools::print( expectedPlasticGradientMicroDeformation );
+
         /*!==========================================
         | Assemble the plastic deformation Jacobian |
         ===========================================*/
@@ -4601,6 +4651,9 @@ namespace micromorphicElastoPlasticity{
             result->addNext( error );
             return result;
         }
+
+//        std::cout << "\n  expected yield values\n";
+//        std::cout << "    "; vectorTools::print( yieldFunctionValues );
 
         /*!===============================================
         | Construct the Jacobians of the yield equations |
@@ -4991,6 +5044,34 @@ namespace micromorphicElastoPlasticity{
         //Save whether the function is yielding
         intOuts[ 0 ] = isYielding;
 
+//        //Try conditioning the residual and jacobian matrix
+//        constantType norm;
+//        for ( unsigned int i = 0; i < jacobian.size(); i++ ){
+//            norm = vectorTools::l2norm( jacobian[ i ] );
+//
+//            residual[ i ] /= norm;
+//            jacobian[ i ] /= norm;
+//        }
+//
+//        //Check the condition number of the Jacobian
+//        variableVector jflat = vectorTools::appendVectors( jacobian );
+//        Eigen::Map < const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor> > A(jflat.data(), 55, 55);
+//
+//        Eigen::JacobiSVD<Eigen::MatrixXd> svd(A);
+//        double cond = svd.singularValues()(0)
+//        / svd.singularValues()(svd.singularValues().size()-1);
+//
+//        std::cout << "\nJACOBAIN CONDITION NUMBER: " << cond << "\n";
+//        if ( cond > 1000 ){
+//            std::cout << "\nJACOBIAN SINGULAR VALUES:\n" << svd.singularValues() << "\n";
+//    
+//            std::cout << "\nRESIDUAL\n"; vectorTools::print( residual );
+//    
+//            std::cout << "\nJACOBIAN\n" << A.block<55,18>(0,0) << "\n";
+//            std::cout << A.block<55,10>(0,45) << "\n";
+//            assert( 1 == 0 );
+//        }
+
         return NULL;
     }
 
@@ -5314,7 +5395,7 @@ namespace micromorphicElastoPlasticity{
              ( previousMicroGradientGamma[ 1 ] > relativeTolerance * fabs( previousMicroGradientGamma[ 1 ] ) + absoluteTolerance ) ||
              ( previousMicroGradientGamma[ 2 ] > relativeTolerance * fabs( previousMicroGradientGamma[ 2 ] ) + absoluteTolerance ) ){
 
-//            std::cout << "  previous yielding detected\n";
+            std::cout << "  previous yielding detected\n";
             //Compute the previous stress
             error = micromorphicLinearElasticity::linearElasticityReference( previousElasticDeformationGradient,
                                                                              previousElasticMicroDeformation,
@@ -5414,6 +5495,8 @@ namespace micromorphicElastoPlasticity{
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 2;
             }
+            std::cout << "previousMacroStrainISV: " << previousMacroStrainISV << "\n";
+            std::cout << "currentMacroStrainISV: " << currentMacroStrainISV << "\n";
 
 #ifdef DEBUG_MODE
             tmp = { currentMacroStrainISV };
@@ -5493,6 +5576,9 @@ namespace micromorphicElastoPlasticity{
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 2;
             }
+
+            std::cout << "previousPlasticDeformationGradient:\n"; vectorTools::print( previousPlasticDeformationGradient );
+            std::cout << "currentPlasticDeformationGradient:\n"; vectorTools::print( currentPlasticDeformationGradient );
         }
 
         //Update the elastic deformation
@@ -5522,6 +5608,21 @@ namespace micromorphicElastoPlasticity{
         tempDEBUG.emplace( "currentPlasticMicroDeformation", currentPlasticMicroDeformation );
         tempDEBUG.emplace( "currentPlasticGradientMicroDeformation", currentPlasticGradientMicroDeformation );
 #endif
+
+        std::cout << "\n\nDEFORMATION MEASURES\n";
+        std::cout << "  "; vectorTools::print( currentDeformationGradient );
+        std::cout << "  "; vectorTools::print( currentMicroDeformation );
+        std::cout << "  "; vectorTools::print( currentGradientMicroDeformation );
+
+        std::cout << "TRIAL ELASTIC DEFORMATION MEASURES\n";
+        std::cout << "  "; vectorTools::print( currentElasticDeformationGradient );
+        std::cout << "  "; vectorTools::print( currentElasticMicroDeformation );
+        std::cout << "  "; vectorTools::print( currentElasticGradientMicroDeformation );
+
+        std::cout << "TRIAL PLASTIC DEFORMATION MEASURES\n";
+        std::cout << "  "; vectorTools::print( currentPlasticDeformationGradient );
+        std::cout << "  "; vectorTools::print( currentPlasticMicroDeformation );
+        std::cout << "  "; vectorTools::print( currentPlasticGradientMicroDeformation );
 
         //Compute the right Cauchy-Green deformation gradient
         variableVector currentElasticRightCauchyGreen;
@@ -5555,6 +5656,11 @@ namespace micromorphicElastoPlasticity{
             output_message = buffer.str(); //Save the output to enable message passing
             return 2;
         }
+
+        std::cout << "TRIAL STRESSES\n";
+        std::cout << "  "; vectorTools::print( currentPK2Stress );
+        std::cout << "  "; vectorTools::print( currentReferenceMicroStress );
+        std::cout << "  "; vectorTools::print( currentReferenceHigherOrderStress );
 
 #ifdef DEBUG_MODE
         tempDEBUG.emplace( "intermediatePK2Stress", currentPK2Stress );
@@ -5598,6 +5704,9 @@ namespace micromorphicElastoPlasticity{
             return 2;
         }
 
+        std::cout << "TRIAL YIELD VALUES\n";
+        std::cout << "  "; vectorTools::print( currentYieldFunctionValues );
+
 //        std::cout << "initial yield function values:\n"; vectorTools::print( currentYieldFunctionValues );
 
         /*============================
@@ -5610,7 +5719,7 @@ namespace micromorphicElastoPlasticity{
         solverTools::intVector activePlasticity( currentYieldFunctionValues.size(), 0 );
         bool convergenceFlag = true;
 
-        for ( unsigned int i = 0; i < currentYieldFunctionValues[ i ]; i++ ){
+        for ( unsigned int i = 0; i < currentYieldFunctionValues.size(); i++ ){
             if ( currentYieldFunctionValues[ i ] > absoluteTolerance ){
 
                 convergenceFlag = false;
@@ -5618,7 +5727,7 @@ namespace micromorphicElastoPlasticity{
                 activePlasticity[ i ] = 1;
             }
         }
-//        std::cout << "convergenceFlag: " << convergenceFlag << "\n";
+        std::cout << "convergenceFlag: " << convergenceFlag << "\n";
 //        std::cout << "activePlasticity: "; vectorTools::print( activePlasticity );
 
         if ( !convergenceFlag ){
@@ -5673,20 +5782,28 @@ namespace micromorphicElastoPlasticity{
             solverTools::stdFncNLFJ func
                 = static_cast< solverTools::NonLinearFunctionWithJacobian >( computePlasticDeformationResidual );
 
-            solverTools::floatVector x0 = { currentMacroStrainISV, currentMicroStrainISV,
+            solverTools::floatVector x0 = { currentMacroStrainISV,
+                                            currentMicroStrainISV,
                                             currentMicroGradientStrainISV[ 0 ],
                                             currentMicroGradientStrainISV[ 1 ],
                                             currentMicroGradientStrainISV[ 2 ],
-                                            currentMacroGamma,
-                                            currentMicroGamma,
-                                            currentMicroGradientGamma[ 0 ],
-                                            currentMicroGradientGamma[ 1 ],
-                                            currentMicroGradientGamma[ 2 ]
+//                                            currentMacroGamma,
+//                                            currentMicroGamma,
+//                                            currentMicroGradientGamma[ 0 ],
+//                                            currentMicroGradientGamma[ 1 ],
+//                                            currentMicroGradientGamma[ 2 ]
+                                            previousMacroGamma,
+                                            previousMicroGamma,
+                                            previousMicroGradientGamma[ 0 ],
+                                            previousMicroGradientGamma[ 1 ],
+                                            previousMicroGradientGamma[ 2 ]
                                           };
 
             x0 = vectorTools::appendVectors( { currentPlasticDeformationGradient,
                                                currentPlasticMicroDeformation,
                                                currentPlasticGradientMicroDeformation, x0 } );
+
+            std::cout << "x0 pre solver:\n"; vectorTools::print( x0 );
 
             solverTools::floatVector solutionVector;
 
@@ -5698,8 +5815,82 @@ namespace micromorphicElastoPlasticity{
 //                                                floatOuts, intOuts, floatArgs, intArgs,
 //                                                20, relativeTolerance, absoluteTolerance );
 
+            solverTools::solverType linearSolver;
+            solverTools::floatMatrix J;
+            solverTools::intVector boundVariableIndices = {       45,       46,       47,       48,       49, 50, 51, 52, 53, 54 };
+            solverTools::intVector boundSigns           = {        0,        0,        0,        0,        0,  0,  0,  0,  0,  0 };
+            solverTools::floatVector boundValues        = { x0[ 45 ], x0[ 46 ], x0[ 47 ], x0[ 48 ], x0[ 49 ],  0,  0,  0,  0,  0 };
+
+#ifdef DEBUG_MODE
+            //check the Jacobian
+
+            solverTools::floatType eps = 1e-6;
+            solverTools::floatVector rbase;
+            solverTools::floatMatrix jbase;
+
+            solverTools::debugMap tempDEBUG;
+
+            error = func( x0, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+
+            for ( unsigned int yerp = 0; yerp < x0.size(); yerp++ ){
+                solverTools::floatVector delta( x0.size(), 0 );
+                solverTools::floatVector RP, RM;
+                solverTools::floatMatrix _J;
+                delta[ yerp ] = eps * fabs( x0[ yerp ] ) + eps;
+                error = func( x0 + delta, floatArgs, intArgs, RP, _J, floatOuts, intOuts
+                                , tempDEBUG
+                            );
+
+                if ( error ){
+                    errorOut result = new errorNode( "evaluate_model", "Error in numeric jacobian test" );
+                    result->addNext( error );
+                    result->print();           //Print the error message
+                    output_message = buffer.str(); //Save the output to enable message passing
+                    return 2;
+                }
+
+                error = func( x0 - delta, floatArgs, intArgs, RM, _J, floatOuts, intOuts, tempDEBUG );
+
+                if ( error ){
+                    errorOut result = new errorNode( "evaluate_model", "Error in numeric jacobian test" );
+                    result->addNext( error );
+                    result->print();           //Print the error message
+                    output_message = buffer.str(); //Save the output to enable message passing
+                    return 2;
+                }
+
+                solverTools::floatVector gradCol = ( RP - RM ) / ( 2 * delta[ yerp ] );
+
+                for ( unsigned int derp = 0; derp < gradCol.size(); derp++ ){
+                    if ( !vectorTools::fuzzyEquals( gradCol[ derp ], jbase[ derp ][ yerp ] ) ){
+                        std::cout << "row, col: " << derp << ", " << yerp << "\n";
+                        std::cout << "numeric:  " << gradCol[ derp ] << "\n";
+                        std::cout << "analytic: " << jbase[ derp ][ yerp ] << "\n";
+                        std::cout << "error:    " << gradCol[ derp ] - jbase[ derp ][ yerp ] << "\n";
+                        assert( 1 == 0 );
+                    }
+                }
+            }
+
+            //Output a map of the residual vs the macro and micro gammas
+            solverTools::floatType minMacroGamma = 0.;
+            solverTools::floatType minMicroGamma = 0.;
+            solverTools::floatType maxMacroGamma = 1.;
+            solverTools::floatType maxMicroGamma = 1.;
+
+            for ( unsigned int rv = 0; rv < 100; rv++ ){
+                for ( unsigned int cv = 0; cv < 100; cv++ ){
+
+                }
+            }
+
+
+//            assert( 1 == 0 );
+#endif
+
             error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
-                                                 floatOuts, intOuts, floatArgs, intArgs,
+                                                 floatOuts, intOuts, floatArgs, intArgs, linearSolver, J,
+//                                                 boundVariableIndices, boundSigns, boundValues,
 #ifdef DEBUG_MODE
                                                  DEBUG,
 #endif
@@ -6683,33 +6874,37 @@ namespace micromorphicElastoPlasticity{
 
             solverTools::solverType finalSolver;
             solverTools::floatMatrix J;
-//            error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
-//                                                 floatOuts, intOuts, floatArgs, intArgs, finalSolver, J,
-//#ifdef DEBUG_MODE
-//                                                 DEBUG,
-//#endif
-//                                                 20, relativeTolerance, absoluteTolerance,
-//                                                 1e-4, 5, 1.0, .1 );
-            solverTools::intVector variableIndices = { 50, 51, 52, 53, 54 };
-            solverTools::intVector residualIndices = { 50, 51, 52, 53, 54 };
-            solverTools::intVector barrierSigns    = { 0, 0, 0, 0, 0 };
-
-            solverTools::floatVector barrierValues = { -absoluteTolerance, -absoluteTolerance,
-                                                       -absoluteTolerance, -absoluteTolerance,
-                                                       -absoluteTolerance };
-
-            solverTools::floatVector logAMaxValues = { 10, 10, 10, 10, 10 };
-
-            error = solverTools::barrierHomotopySolver( func, 0.5, x0, variableIndices, residualIndices,
-                                                        barrierSigns, barrierValues, logAMaxValues,
-                                                        floatArgs, intArgs, true, solutionVector,
-                                                        convergeFlag, fatalErrorFlag, floatOuts, intOuts,
-                                                        finalSolver, J,
+            solverTools::intVector boundVariableIndices = { 50, 51, 52, 53, 54 };
+            solverTools::intVector boundSigns           = {  0,  0,  0,  0,  0 };
+            solverTools::floatVector boundValues        = {  0,  0,  0,  0,  0 };
+            error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
+                                                 floatOuts, intOuts, floatArgs, intArgs, finalSolver, J,
+                                                 boundVariableIndices, boundSigns, boundValues,
 #ifdef DEBUG_MODE
-                                                        DEBUG,
+                                                 DEBUG,
 #endif
-                                                        20, relativeTolerance, absoluteTolerance,
-                                                        1e-4, 5, true );
+                                                 20, relativeTolerance, absoluteTolerance,
+                                                 1e-4, 5, 1.0, .1 );
+//            solverTools::intVector variableIndices = { 50, 51, 52, 53, 54 };
+//            solverTools::intVector residualIndices = { 50, 51, 52, 53, 54 };
+//            solverTools::intVector barrierSigns    = { 0, 0, 0, 0, 0 };
+//
+//            solverTools::floatVector barrierValues = { -absoluteTolerance, -absoluteTolerance,
+//                                                       -absoluteTolerance, -absoluteTolerance,
+//                                                       -absoluteTolerance };
+//
+//            solverTools::floatVector logAMaxValues = { 10, 10, 10, 10, 10 };
+//
+//            error = solverTools::barrierHomotopySolver( func, 0.5, x0, variableIndices, residualIndices,
+//                                                        barrierSigns, barrierValues, logAMaxValues,
+//                                                        floatArgs, intArgs, true, solutionVector,
+//                                                        convergeFlag, fatalErrorFlag, floatOuts, intOuts,
+//                                                        finalSolver, J,
+//#ifdef DEBUG_MODE
+//                                                        DEBUG,
+//#endif
+//                                                        20, relativeTolerance, absoluteTolerance,
+//                                                        1e-4, 5, true );
 
             if ( ( error ) && fatalErrorFlag ){ //Fatal error
                 errorOut result = new errorNode( "evaluate_model",
@@ -6726,21 +6921,6 @@ namespace micromorphicElastoPlasticity{
                 result->print();          //Print the error message
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 1;
-            }
-
-            for ( unsigned int i = 0; i< variableIndices.size(); i++ ){
-                if ( solutionVector[ i ] < -absoluteTolerance ){
-                    std::string error_message = "One of the plastic multipliers is negative";
-                    convergeFlag = false;
-                    errorOut result = new errorNode( "evaluate_model", error_message.c_str() );
-                    result->print();               //Print the error message
-                    output_message = buffer.str(); //Save the output to enable message passing
-                    return 1;
-                }
-            }
-
-            for ( unsigned int i = 0; i < 5; i++ ){
-                output_message += std::to_string( solutionVector[ 50 + i ] ) + " ";
             }
 
             //Extract the deformation measures
