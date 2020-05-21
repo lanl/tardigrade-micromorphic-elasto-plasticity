@@ -13692,7 +13692,7 @@ int test_evaluate_model_history( std::ofstream &results ){
                                                         { 0, 0, 0},
                                                         { 0, 0, 0} };
 
-    double dt = 0.01;
+    double dt = 0.001;
     double t0 = 0.;
     double tf = 1.0;
 
@@ -13700,7 +13700,7 @@ int test_evaluate_model_history( std::ofstream &results ){
 
     //Set up the model parameters
     std::vector< double > fparams = { 2, 1e3, 1e2,
-                                      2, 1e3, 1e4,
+                                      2, 7e2, 1e4,
                                       2, 1e3, 1e4,
                                       2, 0., 0.0,
                                       2, 0., 0.0,
@@ -14130,35 +14130,35 @@ int main(){
     std::ofstream results;
     results.open("results.tex");
 
-    //Run the tests
-    test_computeSecondOrderDruckerPragerYieldEquation( results );
-    test_computeHigherOrderDruckerPragerYieldEquation( results );
-    test_computeElasticPartOfDeformation( results );
-    test_computeElasticDeformationMeasures( results );
-    test_computePlasticMacroVelocityGradient( results );
-    test_computePlasticMicroVelocityGradient( results );
-    test_computePlasticMicroGradientVelocityGradient( results );
-    test_computePlasticVelocityGradients( results );
-    test_evolvePlasticMicroGradChi( results );
-    test_evolvePlasticDeformation( results );
-    test_evolveStrainStateVariables( results );
-    test_computeFlowDirections( results );
-    test_computePlasticDeformationResidual( results );
-    test_computePlasticDeformationResidual2( results );
-    test_extractMaterialParameters( results );
-    test_extractStateVariables( results );
-    test_assembleFundamentalDeformationMeasures( results );
-    test_evaluateYieldFunctions( results );
-    test_computeCohesion( results );
-    test_cout_redirect( results );
-    test_cerr_redirect( results );
+//    //Run the tests
+//    test_computeSecondOrderDruckerPragerYieldEquation( results );
+//    test_computeHigherOrderDruckerPragerYieldEquation( results );
+//    test_computeElasticPartOfDeformation( results );
+//    test_computeElasticDeformationMeasures( results );
+//    test_computePlasticMacroVelocityGradient( results );
+//    test_computePlasticMicroVelocityGradient( results );
+//    test_computePlasticMicroGradientVelocityGradient( results );
+//    test_computePlasticVelocityGradients( results );
+//    test_evolvePlasticMicroGradChi( results );
+//    test_evolvePlasticDeformation( results );
+//    test_evolveStrainStateVariables( results );
+//    test_computeFlowDirections( results );
+//    test_computePlasticDeformationResidual( results );
+//    test_computePlasticDeformationResidual2( results );
+//    test_extractMaterialParameters( results );
+//    test_extractStateVariables( results );
+//    test_assembleFundamentalDeformationMeasures( results );
+//    test_evaluateYieldFunctions( results );
+//    test_computeCohesion( results );
+//    test_cout_redirect( results );
+//    test_cerr_redirect( results );
+//
+//    test_evaluate_model( results );
+//    test_evaluate_model_continuation( results );
+//
+//    test_materialLibraryInterface( results );
 
-    test_evaluate_model( results );
-    test_evaluate_model_continuation( results );
-
-    test_materialLibraryInterface( results );
-
-//    test_evaluate_model_history( results );
+    test_evaluate_model_history( results );
 
     //Close the results file
     results.close();
