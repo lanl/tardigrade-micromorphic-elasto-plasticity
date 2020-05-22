@@ -13530,7 +13530,7 @@ int main(){
 //
 //    test_materialLibraryInterface( results );
 
-//    test_evaluate_model_history( results );
+    test_evaluate_model_history( results );
 
     //Close the results file
     results.close();
