@@ -5036,10 +5036,10 @@ namespace micromorphicElastoPlasticity{
             }
 
             //The Jacobian terms w.r.t. the plastic multipliers
+            jacobian[ 47 + i ][ 47 + i ] = yieldFunctionValues[ 2 + i ];
             for ( unsigned int j = 0; j < 3; j++ ){
-                jacobian[ 47 + i ][ 47 + j ] = yieldFunctionValues[ 2 + i ]
-                                             + ( currentMicroGradientGamma[ i ] + dMacMicroGradientYielddMicroGradientYield )
-                                             * dMicroGradientYielddMicroGradientGamma[ i ][ j ];
+                jacobian[ 47 + i ][ 47 + j ] += ( currentMicroGradientGamma[ i ] + dMacMicroGradientYielddMicroGradientYield )
+                                              * dMicroGradientYielddMicroGradientGamma[ i ][ j ];
             }
         }
 
