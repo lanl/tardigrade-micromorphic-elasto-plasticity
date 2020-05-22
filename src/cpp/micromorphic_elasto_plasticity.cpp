@@ -3688,28 +3688,28 @@ namespace micromorphicElastoPlasticity{
 
             //Assemble the jacobians into the output vector
             
-            floatOuts[ 3 ] = solverTools::floatVector( 45 * 55, 0 ); //Jacobians w.r.t. the solution vector x
+            floatOuts[ 3 ] = solverTools::floatVector( 45 * 50, 0 ); //Jacobians w.r.t. the solution vector x
             floatOuts[ 4 ] = solverTools::floatVector( 45 * 45, 0 ); //Jacobians w.r.t. the fundamental deformation measures
 
             //Save the Jacobians of the PK2 and reference symmetric micro stresses
             for ( unsigned int i = 0; i < 9; i++ ){
                 for ( unsigned int j = 0; j < 9; j++ ){
-                    floatOuts[ 3 ][ 55 * i + j ]     = dPK2StressdPlasticDeformationGradient[ i ][ j ];
+                    floatOuts[ 3 ][ 50 * i + j ]     = dPK2StressdPlasticDeformationGradient[ i ][ j ];
                     floatOuts[ 4 ][ 45 * i + j ]     = dPK2StressdDeformationGradient[ i ][ j ];
-                    floatOuts[ 3 ][ 55 * i + j + 9 ] = dPK2StressdPlasticMicroDeformation[ i ][ j ];
+                    floatOuts[ 3 ][ 50 * i + j + 9 ] = dPK2StressdPlasticMicroDeformation[ i ][ j ];
                     floatOuts[ 4 ][ 45 * i + j + 9 ] = dPK2StressdMicroDeformation[ i ][ j ];
 
-                    floatOuts[ 3 ][ 55 * ( i + 9 ) + j ] = dReferenceMicroStressdPlasticDeformationGradient[ i ][ j ];
+                    floatOuts[ 3 ][ 50 * ( i + 9 ) + j ] = dReferenceMicroStressdPlasticDeformationGradient[ i ][ j ];
                     floatOuts[ 4 ][ 45 * ( i + 9 ) + j ] = dReferenceMicroStressdDeformationGradient[ i ][ j ];
-                    floatOuts[ 3 ][ 55 * ( i + 9 ) + j + 9 ] = dReferenceMicroStressdPlasticMicroDeformation[ i ][ j ];
+                    floatOuts[ 3 ][ 50 * ( i + 9 ) + j + 9 ] = dReferenceMicroStressdPlasticMicroDeformation[ i ][ j ];
                     floatOuts[ 4 ][ 45 * ( i + 9 ) + j + 9 ] = dReferenceMicroStressdMicroDeformation[ i ][ j ];
                 }
 
                 for ( unsigned int j = 0; j < 27; j++ ){
-                    floatOuts[ 3 ][ 55 * i + j + 18 ] = dPK2StressdPlasticGradientMicroDeformation[ i ][ j ];
+                    floatOuts[ 3 ][ 50 * i + j + 18 ] = dPK2StressdPlasticGradientMicroDeformation[ i ][ j ];
                     floatOuts[ 4 ][ 45 * i + j + 18 ] = dPK2StressdGradientMicroDeformation[ i ][ j ];
 
-                    floatOuts[ 3 ][ 55 * ( i + 9 ) + j + 18 ] = dReferenceMicroStressdPlasticGradientMicroDeformation[ i ][ j ];
+                    floatOuts[ 3 ][ 50 * ( i + 9 ) + j + 18 ] = dReferenceMicroStressdPlasticGradientMicroDeformation[ i ][ j ];
                     floatOuts[ 4 ][ 45 * ( i + 9 ) + j + 18 ] = dReferenceMicroStressdGradientMicroDeformation[ i ][ j ];
                 }
             }
@@ -3717,14 +3717,14 @@ namespace micromorphicElastoPlasticity{
             //Save the Jacobians of the reference higher order stress
             for ( unsigned int i = 0; i < 27; i++ ){
                 for ( unsigned int j = 0; j < 9; j++ ){
-                    floatOuts[ 3 ][ 55 * ( i + 18 ) + j ] = dReferenceHigherOrderStressdPlasticDeformationGradient[ i ][ j ];
+                    floatOuts[ 3 ][ 50 * ( i + 18 ) + j ] = dReferenceHigherOrderStressdPlasticDeformationGradient[ i ][ j ];
                     floatOuts[ 4 ][ 45 * ( i + 18 ) + j ] = dReferenceHigherOrderStressdDeformationGradient[ i ][ j ];
-                    floatOuts[ 3 ][ 55 * ( i + 18 ) + j + 9 ] = dReferenceHigherOrderStressdPlasticMicroDeformation[ i ][ j ];
+                    floatOuts[ 3 ][ 50 * ( i + 18 ) + j + 9 ] = dReferenceHigherOrderStressdPlasticMicroDeformation[ i ][ j ];
                     floatOuts[ 4 ][ 45 * ( i + 18 ) + j + 9 ] = dReferenceHigherOrderStressdMicroDeformation[ i ][ j ];
                 }
 
                 for ( unsigned int j = 0; j < 27; j++ ){
-                    floatOuts[ 3 ][ 55 * ( i + 18 ) + j + 18 ] = dReferenceHigherOrderStressdPlasticGradientMicroDeformation[ i ][ j ];
+                    floatOuts[ 3 ][ 50 * ( i + 18 ) + j + 18 ] = dReferenceHigherOrderStressdPlasticGradientMicroDeformation[ i ][ j ];
                     floatOuts[ 4 ][ 45 * ( i + 18 ) + j + 18 ] = dReferenceHigherOrderStressdGradientMicroDeformation[ i ][ j ];
                 }
             }
