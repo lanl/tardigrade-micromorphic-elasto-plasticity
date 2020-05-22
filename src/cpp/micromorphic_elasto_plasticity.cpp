@@ -3903,14 +3903,14 @@ namespace micromorphicElastoPlasticity{
         variableType   currentMacroCohesion, currentMicroCohesion;
         variableVector currentMicroGradientCohesion;
 
-        variableType   dMacroCohesiondMacroStrainISV, dMicroCohesiondMicroStrainISV;
-        variableMatrix dMicroGradientCohesiondMicroGradientStrainISV;
+        variableType   dCurrentMacroCohesiondMacroStrainISV, dCurrentMicroCohesiondMicroStrainISV;
+        variableMatrix dCurrentMicroGradientCohesiondMicroGradientStrainISV;
 
         error = computeCohesion(  currentMacroStrainISV, currentMicroStrainISV, currentMicroGradientStrainISV,
                                  *macroHardeningParameters, *microHardeningParameters, *microGradientHardeningParameters,
                                   currentMacroCohesion, currentMicroCohesion, currentMicroGradientCohesion,
-                                  dMacroCohesiondMacroStrainISV, dMicroCohesiondMicroStrainISV,
-                                  dMicroGradientCohesiondMicroGradientStrainISV );
+                                  dCurrentMacroCohesiondMacroStrainISV, dCurrentMicroCohesiondMicroStrainISV,
+                                  dCurrentMicroGradientCohesiondMicroGradientStrainISV );
         if ( error ){
             errorOut result = new errorNode( "computePlasticDeformationResidual",
                                              "Error in the computation of the cohesion values" );
@@ -3918,10 +3918,11 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        variableType dMacroCohesiondMacroGamma = dMacroCohesiondMacroStrainISV * dCurrentMacroStrainISVdMacroGamma;
-        variableType dMicroCohesiondMicroGamma = dMicroCohesiondMicroStrainISV * dCurrentMicroStrainISVdMicroGamma;
-        variableMatrix dMicroGradientCohesiondMicroGradientGamma
-            = vectorTools::dot( dMicroGradientCohesiondMicroGradientStrainISV, dCurrentMicroGradientStrainISVdMicroGradientGamma );
+        variableType dCurrentMacroCohesiondMacroGamma = dCurrentMacroCohesiondMacroStrainISV * dCurrentMacroStrainISVdMacroGamma;
+        variableType dCurrentMicroCohesiondMicroGamma = dCurrentMicroCohesiondMicroStrainISV * dCurrentMicroStrainISVdMicroGamma;
+        variableMatrix dCurrentMicroGradientCohesiondMicroGradientGamma
+            = vectorTools::dot( dCurrentMicroGradientCohesiondMicroGradientStrainISV,
+                                dCurrentMicroGradientStrainISVdMicroGradientGamma );
 
 //        std::cout << "\n  current cohesion values\n";
 //        std::cout << "    " << currentMacroCohesion << "\n";
@@ -3942,16 +3943,16 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "currentMicroGradientCohesion", currentMicroGradientCohesion );
 
         //Save the cohesion Jacobians
-        temp = { dMacroCohesiondMacroStrainISV };
+        temp = { dCurrentMacroCohesiondMacroGamma };
 
-        DEBUG.emplace( "dMacroCohesiondMacroStrainISV", temp );
+        DEBUG.emplace( "dCurrentMacroCohesiondMacroGamma", temp );
 
-        temp = { dMicroCohesiondMicroStrainISV };
+        temp = { dCurrentMicroCohesiondMicroGamma };
 
-        DEBUG.emplace( "dMicroCohesiondMicroStrainISV", temp );
+        DEBUG.emplace( "dCurrentMicroCohesiondMicroGamma", temp );
 
-        DEBUG.emplace( "dMicroGradientCohesiondMicroGradientStrainISV",
-                       vectorTools::appendVectors( dMicroGradientCohesiondMicroGradientStrainISV ) );
+        DEBUG.emplace( "dCurrentMicroGradientCohesiondMicroGradientGamma",
+                       vectorTools::appendVectors( dCurrentMicroGradientCohesiondMicroGradientGamma ) );
 
 #endif
 
@@ -4724,10 +4725,10 @@ namespace micromorphicElastoPlasticity{
                                 dReferenceHigherOrderStressdPlasticGradientMicroDeformation );
 
         //Construct the Jacobians w.r.t. the plastic multipliers
-        variableType dMacroYielddMacroGamma = dMacroYielddMacroCohesion * dMacroCohesiondMacroGamma;
-        variableType dMicroYielddMicroGamma = dMicroYielddMicroCohesion * dMicroCohesiondMicroGamma;
+        variableType dMacroYielddMacroGamma = dMacroYielddMacroCohesion * dCurrentMacroCohesiondMacroGamma;
+        variableType dMicroYielddMicroGamma = dMicroYielddMicroCohesion * dCurrentMicroCohesiondMicroGamma;
         variableMatrix dMicroGradientYielddMicroGradientGamma = vectorTools::dot( dMicroGradientYielddMicroGradientCohesion,
-                                                                                  dMicroGradientCohesiondMicroGradientGamma );
+                                                                                  dCurrentMicroGradientCohesiondMicroGradientGamma );
 
         variableVector dMacroYielddDeformationGradient, dMacroYielddMicroDeformation, dMacroYielddGradientMicroDeformation,
                        dMicroYielddDeformationGradient, dMicroYielddMicroDeformation, dMicroYielddGradientMicroDeformation;
@@ -4967,7 +4968,7 @@ namespace micromorphicElastoPlasticity{
 
         //The Jacobian terms w.r.t. the plastic multipliers
         jacobian[ 45 ][ 45 ] = yieldFunctionValues[ 0 ]
-                             + currentMacroGamma * ( 1 + dMacMacroYielddMacroYield ) * dMacroYielddMacroGamma;
+                             + ( currentMacroGamma + dMacMacroYielddMacroYield ) * dMacroYielddMacroGamma;
 
         //Set the residuals and Jacobians for the micro-scale terms
         variableType dMacMicroYielddMicroYield;
@@ -5001,7 +5002,7 @@ namespace micromorphicElastoPlasticity{
 
         //The Jacobian terms w.r.t. the plastic multipliers
         jacobian[ 46 ][ 46 ] = yieldFunctionValues[ 1 ]
-                             + currentMicroGamma * ( 1 + dMacMicroYielddMicroYield ) * dMicroYielddMicroGamma;
+                             + ( currentMicroGamma + dMacMicroYielddMicroYield ) * dMicroYielddMicroGamma;
 
         //Set the residuals and jacobians for the micro gradient terms
         variableType dMacMicroGradientYielddMicroGradientYield;
@@ -5037,7 +5038,7 @@ namespace micromorphicElastoPlasticity{
             //The Jacobian terms w.r.t. the plastic multipliers
             for ( unsigned int j = 0; j < 3; j++ ){
                 jacobian[ 47 + i ][ 47 + j ] = yieldFunctionValues[ 2 + i ]
-                                             + currentMicroGradientGamma[ i ] * ( 1 + dMacMicroGradientYielddMicroGradientYield )
+                                             + ( currentMicroGradientGamma[ i ] + dMacMicroGradientYielddMicroGradientYield )
                                              * dMicroGradientYielddMicroGradientGamma[ i ][ j ];
             }
         }
