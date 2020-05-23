@@ -4871,8 +4871,8 @@ namespace micromorphicElastoPlasticity{
             
             //The plastic multiplier residuals
             if ( evaluateFullDerivatives ){
-                floatOuts[ 9 ][ 3 * i + 0 ] -= dExpectedPlasticDeformationGradientdMacroGamma[ i ];
-                floatOuts[ 9 ][ 3 * i + 1 ] -= dExpectedPlasticDeformationGradientdMicroGamma[ i ];
+                floatOuts[ 9 ][ 5 * i + 0 ] -= dExpectedPlasticDeformationGradientdMacroGamma[ i ];
+                floatOuts[ 9 ][ 5 * i + 1 ] -= dExpectedPlasticDeformationGradientdMicroGamma[ i ];
             }
         }
 
@@ -4905,7 +4905,7 @@ namespace micromorphicElastoPlasticity{
             
             //The plastic multiplier residuals
             if ( evaluateFullDerivatives ){
-                floatOuts[ 9 ][ 3 * ( i + 9 ) + 1 ] -= dExpectedPlasticMicroDeformationdMicroGamma[ i ];
+                floatOuts[ 9 ][ 5 * ( i + 9 ) + 1 ] -= dExpectedPlasticMicroDeformationdMicroGamma[ i ];
             }
         }
 
@@ -4938,10 +4938,10 @@ namespace micromorphicElastoPlasticity{
 
             //The plastic multiplier residuals
             if ( evaluateFullDerivatives ){
-                floatOuts[ 9 ][ 3 * ( i + 18 ) + 0 ] -= dExpectedPlasticGradientMicroDeformationdMacroGamma[ i ];
-                floatOuts[ 9 ][ 3 * ( i + 18 ) + 1 ] -= dExpectedPlasticGradientMicroDeformationdMicroGamma[ i ]; 
+                floatOuts[ 9 ][ 5 * ( i + 18 ) + 0 ] -= dExpectedPlasticGradientMicroDeformationdMacroGamma[ i ];
+                floatOuts[ 9 ][ 5 * ( i + 18 ) + 1 ] -= dExpectedPlasticGradientMicroDeformationdMicroGamma[ i ]; 
                 for ( unsigned int j = 0; j < currentMicroGradientGamma->size(); j++ ){
-                    floatOuts[ 9 ][ 3 * ( i + 18 ) + 2 + j ] -= dExpectedPlasticGradientMicroDeformationdMicroGradientGamma[ i ][ j ];
+                    floatOuts[ 9 ][ 5 * ( i + 18 ) + 2 + j ] -= dExpectedPlasticGradientMicroDeformationdMicroGradientGamma[ i ][ j ];
                 }
             }
         }
