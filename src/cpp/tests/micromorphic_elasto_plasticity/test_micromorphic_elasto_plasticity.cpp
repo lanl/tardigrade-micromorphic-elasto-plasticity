@@ -7675,7 +7675,11 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
             currentReferenceHigherOrderStress,
             { currentMacroStrainISV },
             { currentMicroStrainISV },
-            currentMicroGradientStrainISV
+            currentMicroGradientStrainISV,
+            {},
+            {},
+            {},
+            {}
         };
 
     solverTools::floatMatrix floatArgs = floatArgsDefault;
@@ -7732,6 +7736,59 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
                                                                              , DEBUG
 #endif
                                                                              );
+
+#ifdef DEBUG_MODE
+    //Check if the floatOuts are what is expected.
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 0 ], DEBUG[ "currentPK2Stress" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 0 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 1 ], DEBUG[ "currentReferenceMicroStress" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 1 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 2 ], DEBUG[ "currentReferenceHigherOrderStress" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 2 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 3 ], DEBUG[ "currentMacroStrainISV" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 3 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 4 ], DEBUG[ "currentMicroStrainISV" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 4 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 5 ], DEBUG[ "currentMicroGradientStrainISV" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 5 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 6 ], DEBUG[ "currentMacroCohesion" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 6 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 7 ], DEBUG[ "currentMicroCohesion" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 7 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 8 ], DEBUG[ "currentMicroGradientCohesion" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 8 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 9 ], DEBUG[ "currentElasticRightCauchyGreen" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 9 ]) & False\n";
+        return 1;
+    }
+#endif
 
     if ( error ){
         error->print();
@@ -9445,7 +9502,9 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
             { currentMacroStrainISV },
             { currentMicroStrainISV },
             currentMicroGradientStrainISV,
-            {}, {}, {}, {}
+            {}, {}, {},
+            {},
+            {}, {}, {}, {}, {}, {}, {}
         };
 
     solverTools::floatMatrix floatArgs = floatArgsDefault;
@@ -9499,6 +9558,59 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
         results << "test_computePlasticDeformationResidual2 & False\n";
         return 1;
     }
+
+#ifdef DEBUG_MODE
+    //Check if the floatOuts are what is expected.
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 0 ], DEBUG[ "currentPK2Stress" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 0 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 1 ], DEBUG[ "currentReferenceMicroStress" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 1 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 2 ], DEBUG[ "currentReferenceHigherOrderStress" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 2 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 3 ], DEBUG[ "currentMacroStrainISV" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 3 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 4 ], DEBUG[ "currentMicroStrainISV" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 4 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 5 ], DEBUG[ "currentMicroGradientStrainISV" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 5 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 6 ], DEBUG[ "currentMacroCohesion" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 6 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 7 ], DEBUG[ "currentMicroCohesion" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 7 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 8 ], DEBUG[ "currentMicroGradientCohesion" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 8 ]) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( floatOuts[ 9 ], DEBUG[ "currentElasticRightCauchyGreen" ] ) ){
+        results << "test_computePlasticDeformationResidual (floatOuts[ 9 ]) & False\n";
+        return 1;
+    }
+#endif
 
     if ( !vectorTools::fuzzyEquals( residualAnswer, residual, 1e-5 ) ){
         std::cout << "residual:\n"; vectorTools::print( residual );
@@ -11034,13 +11146,24 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
         gradCol = vectorTools::appendVectors( { fO_P[ 0 ] - fO_M[ 0 ], fO_P[ 1 ] - fO_M[ 1 ], fO_P[ 2 ] - fO_M[ 2 ] } ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 6 ][ 45 * j + i ], 1e-5 ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 11 ][ 45 * j + i ], 1e-5 ) ){
                 std::cout << "i, j: " << i << ", " << j << "\n";
                 std::cout << "num:   " << gradCol[ j ] << "\n";
                 std::cout << "ana:   " << floatOuts[ 6 ][ 45 * j + i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - floatOuts[ 6 ][ 45 * j + i ] << "\n";
+                std::cout << "error: " << gradCol[ j ] - floatOuts[ 11 ][ 45 * j + i ] << "\n";
                 results << "test_computePlasticDeformationResidual2 (test 3) & False\n";
                 return 1;
+            }
+        }
+
+        //Test the partial derivative of the elastic Right Cauchy Green deformation tensor w.r.t. the plastic deformation gradient
+        if ( i < 9 ){
+            gradCol = ( fO_P[ 9 ] - fO_M[ 9 ] ) / ( 2 * delta[ i ] );
+            for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 10 ][ 9 * j + i ] ) ){
+                    results << "test_computePlasticDeformationResidual2 (test 4) & False\n";
+                    return 1;
+                }
             }
         }
     }
@@ -11996,11 +12119,11 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
         solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 8 ][ 45 * j + i ] ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 13 ][ 45 * j + i ] ) ){
                 std::cout << "i, j: " << i << ", " << j << "\n";
                 std::cout << "num : " << gradCol[ j ] << "\n";
-                std::cout << "ana : " << floatOuts[ 8 ][ 45 * j + i ] << "\n";
-                results << "test_computePlasticDeformationResidual2 (test 4) & False\n";
+                std::cout << "ana : " << floatOuts[ 13 ][ 45 * j + i ] << "\n";
+                results << "test_computePlasticDeformationResidual2 (test 5) & False\n";
                 return 1;
             }
         }
@@ -12009,9 +12132,20 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
         gradCol = vectorTools::appendVectors( { fO_P[ 0 ] - fO_M[ 0 ], fO_P[ 1 ] - fO_M[ 1 ], fO_P[ 2 ] - fO_M[ 2 ] } ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 7 ][ 45 * j + i ], 1e-5 ) ){
-                results << "test_computePlasticDeformationResidual2 (test 5) & False\n";
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 12 ][ 45 * j + i ], 1e-5 ) ){
+                results << "test_computePlasticDeformationResidual2 (test 6) & False\n";
                 return 1;
+            }
+        }
+
+        //Test the partial derivative of the Elastic Right Cauchy Green deformation tensor w.r.t. the deformation gradient
+        if ( i < 9 ) {
+            gradCol = ( fO_P[ 9 ] - fO_M[ 9 ] ) / ( 2 * delta[ i ] );
+            for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+                if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 14 ][ 9 * j + i ] ) ){
+                    results << "test_computePlasticDeformationResidual (test 7) & False\n";
+                    return 1;
+                }
             }
         }
     }
@@ -12625,11 +12759,26 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
         solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 9 ][ 5 * j + i ] ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 15 ][ 5 * j + i ] ) ){
                 std::cout << "row, col: " << j << ", " << i << "\n";
                 std::cout << "num     : " << gradCol[ j ] << "\n";
-                std::cout << "ana     : " << floatOuts[ 9 ][ 5 * j + i ] << "\n";
-                results << "test_computePlasticDeformationResidual2 (test 6) & False\n";
+                std::cout << "ana     : " << floatOuts[ 15 ][ 5 * j + i ] << "\n";
+                results << "test_computePlasticDeformationResidual2 (test 8) & False\n";
+                return 1;
+            }
+        }
+
+        //Check the Jacobians of the cohesions w.r.t. the Gammas
+        gradCol = vectorTools::appendVectors( 
+            {
+                ( fO_P[ 6 ] - fO_M[ 6 ] ) / ( 2 * delta[ i ] ),
+                ( fO_P[ 7 ] - fO_M[ 7 ] ) / ( 2 * delta[ i ] ),
+                ( fO_P[ 8 ] - fO_M[ 8 ] ) / ( 2 * delta[ i ] )
+            } );
+
+        for ( unsigned int j = 0; j < 5; j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 16 ][ 5 * j + i ] ) ){
+                results << "test_computePlasticDeformationResidual (test 9) & False\n";
                 return 1;
             }
         }

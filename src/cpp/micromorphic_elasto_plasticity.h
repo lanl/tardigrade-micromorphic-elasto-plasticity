@@ -503,6 +503,15 @@ namespace micromorphicElastoPlasticity{
 #endif
                                               );
 
+    errorOut computePlasticMultiplierResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
+                                               solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
+                                               solverTools::intMatrix &intOuts
+#ifdef DEBUG_MODE
+                                               , solverTools::debugMap &DEBUG
+#endif
+                                             );
+
     int evaluate_model( const std::vector< double > &time,            const std::vector< double > ( &fparams ),
                         const double ( &current_grad_u )[ 3 ][ 3 ],   const double ( &current_phi )[ 9 ],
                         const double ( &current_grad_phi )[ 9 ][ 3 ], const double ( &previous_grad_u )[ 3 ][ 3 ],
