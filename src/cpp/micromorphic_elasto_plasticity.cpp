@@ -3800,6 +3800,9 @@ namespace micromorphicElastoPlasticity{
         //TODO: This is currently assumed to be constant and is only valid for the Drucker-Prager model
         //      This could be expanded to account for non-linear or non-Drucker-Prager behavior in the
         //      future. This would require a non-linear solve for the cohesion.
+        //
+        //TODO: The computation of the cohesion values should be removed from this function as it has
+        //      no interaction with the rest of the function and only with the evolution of Gamma.
 
         parameterType currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion,
                       magnitudeCurrentdMicroGradientGdMicroGradientCohesion, tempFloat;
@@ -8398,6 +8401,12 @@ namespace micromorphicElastoPlasticity{
                 floatArgs[ 34 ], //alpha micro gradient
             };
 
+        /*==================================
+        | Compute the plastic deformations |
+        ==================================*/
+
+        //Assemble the values required for the non-linear solve
+
         solverTools::intMatrix intArgsPlasticDeformation = { { 1 } };
 
         solverTools::intMatrix intOutsPlasticDeformation = { };
@@ -8489,31 +8498,123 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "dStressdGammas", vectorTools::appendVectors( dStressdGammas ) );
 #endif
 
+        //Construct the Jacobian of the elastic RCG w.r.t. the gammas
+        variableMatrix dPlasticDeformationGradientdGammas =
+            {
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 0, dCurrentPlasticDeformationdGammas.begin() + 9 * 1 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 1, dCurrentPlasticDeformationdGammas.begin() + 9 * 2 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 2, dCurrentPlasticDeformationdGammas.begin() + 9 * 3 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 3, dCurrentPlasticDeformationdGammas.begin() + 9 * 4 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 4, dCurrentPlasticDeformationdGammas.begin() + 9 * 5 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 5, dCurrentPlasticDeformationdGammas.begin() + 9 * 6 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 6, dCurrentPlasticDeformationdGammas.begin() + 9 * 7 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 7, dCurrentPlasticDeformationdGammas.begin() + 9 * 8 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 8, dCurrentPlasticDeformationdGammas.begin() + 9 * 9 ),
+            };
+
+        variableMatrix dElasticRightCauchyGreendGammas
+            = vectorTools::dot( vectorTools::inflate( floatOutsPlasticDeformation[ 10 ], 9, 9 ), dPlasticDeformationGradientdGammas );
+
+#ifdef DEBUG_MODE
+        DEBUG.emplace( "currentElasticRightCauchyGreen", floatOutsPlasticDeformation[ 9 ] );
+        DEBUG.emplace( "dElasticRightCauchyGreendGammas", vectorTools::appendVectors( dElasticRightCauchyGreendGammas ) );
+#endif
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap yieldFunctionDEBUG;
+#endif
+
+        /*=============================
+        | Compute the cohesion values |
+        =============================*/
+
+        //TODO: Currently the cohesion values are computed in the plastic deformation gamma solve. They don't need to be.
+
+        variableMatrix dCohesiondGammas = vectorTools::inflate( floatOutsPlasticDeformation[ 16 ], 5, 5 );
+
+        /*===================================
+        | Compute the yield function values |
+        ===================================*/
+
         //Compute the yield function values
         variableVector yieldFunctionValues;
-        
-                    
-//        error = evaluateYieldFunctions( floatOutsPlasticDeformation[ 0 ], floatOutsPlasticDeformation[ 1 ],
-//                                        floatOutsPlasticDeformation[ 2 ],
-//                                        floatOutsPlasticDeformation[ 3 ], floatOutsPlasticDeformation[ 4 ],
-//                                        floatOutsPlasticDeforamtion[ 5 ],
-//                                        floatOutsPlasticDeformation[ 6 ],
-//                                       *macroYieldParameters, *microYieldParameters, *microGradientYieldParameters,
-//                                        yieldFunctionValues,
-//                                     variableVector &dMacroFdPK2, variableType &dMacroFdMacroC, variableVector &dMacroFdElasticRCG,
-//                                     variableVector &dMicroFdSigma, variableType &dMicroFdMicroC, variableVector &dMicroFdElasticRCG,
-//                                     variableMatrix &dMicroGradientFdM, variableMatrix &dMicroGradientFdMicroGradientC,
-//                                     variableMatrix &dMicroGradientFdElasticRCG
-//#ifdef DEBUG_MODE
-//                                     , solverTools::debugMap &DEBUG
-//#endif
-//                                    );
+        variableType   dMacroFdMacroC, dMicroFdMicroC;
+        variableVector dMacroFdPK2, dMacroFdElasticRCG, dMicroFdSigma, dMicroFdElasticRCG;
+        variableMatrix dMicroGradientFdM, dMGFdMGC, dMicroGradientFdElasticRCG;
+
+        error = evaluateYieldFunctions( floatOutsPlasticDeformation[ 0 ], floatOutsPlasticDeformation[ 1 ], //The stresses
+                                        floatOutsPlasticDeformation[ 2 ],
+                                        floatOutsPlasticDeformation[ 6 ][ 0 ], floatOutsPlasticDeformation[ 7 ][ 0 ], //The cohesions
+                                        floatOutsPlasticDeformation[ 8 ],
+                                        floatOutsPlasticDeformation[ 9 ], //The elastic right cauchy green deformation tensor
+                                       *macroYieldParameters, *microYieldParameters, *microGradientYieldParameters,
+                                        yieldFunctionValues,
+                                        dMacroFdPK2, dMacroFdMacroC, dMacroFdElasticRCG,
+                                        dMicroFdSigma, dMicroFdMicroC, dMicroFdElasticRCG,
+                                        dMicroGradientFdM, dMGFdMGC, dMicroGradientFdElasticRCG
+#ifdef DEBUG_MODE
+                                        , yieldFunctionDEBUG
+#endif
+                                      );
 
         if ( error ){
             errorOut result = new errorNode( "computePlasticMultiplierResidual", "Error in the computation of the yield functions" );
             result->addNext( error );
             fatalErrorFlag = true;
             return result;
+        }
+
+        //Construct the Jacobians of the yield functions
+        variableMatrix dYieldFunctionValuesdStresses = { dMacroFdPK2,
+                                                         dMicroFdSigma,
+                                                         dMicroGradientFdM[ 0 ],
+                                                         dMicroGradientFdM[ 1 ],
+                                                         dMicroGradientFdM[ 2 ] };
+
+        variableMatrix dYieldFunctionValuesdCohesion =
+            {
+                { dMacroFdMacroC,             0.,                 0.,                 0.,                 0. },
+                {             0., dMicroFdMicroC,                 0.,                 0.,                 0. },
+                {             0.,             0., dMGFdMGC[ 0 ][ 0 ], dMGFdMGC[ 0 ][ 1 ], dMGFdMGC[ 0 ][ 2 ] },
+                {             0.,             0., dMGFdMGC[ 1 ][ 0 ], dMGFdMGC[ 1 ][ 1 ], dMGFdMGC[ 1 ][ 2 ] },
+                {             0.,             0., dMGFdMGC[ 2 ][ 0 ], dMGFdMGC[ 2 ][ 1 ], dMGFdMGC[ 2 ][ 2 ] }
+            };
+
+        variableMatrix dYieldFunctionValuesdElasticRightCauchyGreen =
+            {
+                dMacroFdElasticRCG,
+                dMicroFdElasticRCG,
+                dMicroGradientFdElasticRCG[ 0 ],
+                dMicroGradientFdElasticRCG[ 1 ],
+                dMicroGradientFdElasticRCG[ 2 ]
+            };
+
+        variableMatrix dYieldFunctionValuesdGammas =
+            vectorTools::dot( dYieldFunctionValuesdStresses, dStressdGammas )
+          + vectorTools::dot( dYieldFunctionValuesdCohesion, dCohesiondGammas )
+          + vectorTools::dot( dYieldFunctionValuesdElasticRightCauchyGreen, dElasticRightCauchyGreendGammas );
+
+#ifdef DEBUG_MODE
+        DEBUG.emplace( "yieldFunctionValues", yieldFunctionValues );
+        DEBUG.emplace( "dYieldFunctionValuesdGammas", vectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
+#endif
+
+        //Construct the residual and the Jacobian
+        residual = solverTools::floatVector( 5, 0 );
+        jacobian = solverTools::floatMatrix( 5, solverTools::floatVector( 5, 0 ) );
+
+        variableType dMacYieldFunctionValuedYieldFunctionValue;
+        solverTools::floatVector rowEye;
+
+        for ( unsigned int i = 0; i < 5; i++ ){
+            residual[ i ] = constitutiveTools::mac( yieldFunctionValues[ i ], dMacYieldFunctionValuedYieldFunctionValue )
+                          + x[ i ] * yieldFunctionValues[ i ];
+
+            rowEye = solverTools::floatVector( 5, 0 );
+            rowEye[ i ] = 1.;
+
+            jacobian[ i ] = ( dMacYieldFunctionValuedYieldFunctionValue + x[ i ] ) * dYieldFunctionValuesdGammas[ i ]
+                          + yieldFunctionValues[ i ] * rowEye;
         }
 
         return NULL;
