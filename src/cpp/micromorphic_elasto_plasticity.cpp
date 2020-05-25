@@ -8460,7 +8460,8 @@ namespace micromorphicElastoPlasticity{
             dPDResidualdGammas( floatOutsPlasticDeformation[ 15 ].data(), 45, 5 );
 
         solverTools::floatVector dCurrentPlasticDeformationdGammas( 45 * 5, 0 );
-        Eigen::Map< Eigen::MatrixXd > dPDdG( dCurrentPlasticDeformationdGammas.data(), 45, 5 );
+        Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            dPDdG( dCurrentPlasticDeformationdGammas.data(), 45, 5 );
 
         solverTools::solverType linearSolver( dPDResidualdPD );
 
@@ -8468,7 +8469,7 @@ namespace micromorphicElastoPlasticity{
             return new errorNode( "computePlasticMultiplierResidual", "The plastic deformation Jacobian is not full rank" );
         }
 
-        dPDdG = linearSolver.solve( dPDdG );
+        dPDdG = -linearSolver.solve( dPDResidualdGammas );
 
 #ifdef DEBUG_MODE
         DEBUG.emplace( "currentPlasticDeformation", currentPlasticDeformation );
