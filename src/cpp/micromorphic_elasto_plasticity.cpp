@@ -8501,15 +8501,15 @@ namespace micromorphicElastoPlasticity{
         //Construct the Jacobian of the elastic RCG w.r.t. the gammas
         variableMatrix dPlasticDeformationGradientdGammas =
             {
-                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 0, dCurrentPlasticDeformationdGammas.begin() + 9 * 1 ),
-                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 1, dCurrentPlasticDeformationdGammas.begin() + 9 * 2 ),
-                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 2, dCurrentPlasticDeformationdGammas.begin() + 9 * 3 ),
-                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 3, dCurrentPlasticDeformationdGammas.begin() + 9 * 4 ),
-                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 4, dCurrentPlasticDeformationdGammas.begin() + 9 * 5 ),
-                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 5, dCurrentPlasticDeformationdGammas.begin() + 9 * 6 ),
-                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 6, dCurrentPlasticDeformationdGammas.begin() + 9 * 7 ),
-                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 7, dCurrentPlasticDeformationdGammas.begin() + 9 * 8 ),
-                variableVector( dCurrentPlasticDeformationdGammas.begin() + 9 * 8, dCurrentPlasticDeformationdGammas.begin() + 9 * 9 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 0, dCurrentPlasticDeformationdGammas.begin() + 5 * 1 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 1, dCurrentPlasticDeformationdGammas.begin() + 5 * 2 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 2, dCurrentPlasticDeformationdGammas.begin() + 5 * 3 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 3, dCurrentPlasticDeformationdGammas.begin() + 5 * 4 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 4, dCurrentPlasticDeformationdGammas.begin() + 5 * 5 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 5, dCurrentPlasticDeformationdGammas.begin() + 5 * 6 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 6, dCurrentPlasticDeformationdGammas.begin() + 5 * 7 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 7, dCurrentPlasticDeformationdGammas.begin() + 5 * 8 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 8, dCurrentPlasticDeformationdGammas.begin() + 5 * 9 ),
             };
 
         variableMatrix dElasticRightCauchyGreendGammas
@@ -8565,11 +8565,16 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Construct the Jacobians of the yield functions
-        variableMatrix dYieldFunctionValuesdStresses = { dMacroFdPK2,
-                                                         dMicroFdSigma,
-                                                         dMicroGradientFdM[ 0 ],
-                                                         dMicroGradientFdM[ 1 ],
-                                                         dMicroGradientFdM[ 2 ] };
+        variableVector zero9( 9, 0 );
+        variableVector zero27( 27, 0 );
+        variableMatrix dYieldFunctionValuesdStresses =
+            {
+                    vectorTools::appendVectors( { dMacroFdPK2,         zero9,                 zero27 } ),
+                    vectorTools::appendVectors( {       zero9, dMicroFdSigma,                 zero27 } ),
+                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 0 ] } ),
+                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 1 ] } ),
+                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 2 ] } )
+            };
 
         variableMatrix dYieldFunctionValuesdCohesion =
             {
@@ -8598,6 +8603,8 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "yieldFunctionValues", yieldFunctionValues );
         DEBUG.emplace( "dYieldFunctionValuesdGammas", vectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
 #endif
+
+        return NULL;
 
         //Construct the residual and the Jacobian
         residual = solverTools::floatVector( 5, 0 );

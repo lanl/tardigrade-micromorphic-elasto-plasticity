@@ -14523,11 +14523,11 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
         for ( unsigned int j = 0; j < numericGradients[ "currentPlasticDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticDeformation" ][ j ],
                                             DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "ana:   " << DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] << "\n";
-                std::cout << "num:   " << numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
-                std::cout << "error: " << DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ]
-                                         -numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
+                std::cout << "row, col:  " << j << ", " << i << "\n";
+                std::cout << "ana:       " << DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] << "\n";
+                std::cout << "num:       " << numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
+                std::cout << "error:     " << DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ]
+                                             -numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
 
                 std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "currentPlasticDeformation" ] );
 
@@ -14542,11 +14542,11 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
         for ( unsigned int j = 0; j < numericGradients[ "stresses" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "stresses" ][ j ],
                                             DEBUG[ "dStressdGammas" ][ 5 * j + i ] ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "ana:   " << DEBUG[ "dStressdGammas" ][ 5 * j + i ] << "\n";
-                std::cout << "num:   " << numericGradients[ "stresses" ][ j ] << "\n";
-                std::cout << "error: " << DEBUG[ "dStressdGammas" ][ 5 * j + i ]
-                                         -numericGradients[ "stresses" ][ j ] << "\n";
+                std::cout << "row, col:  " << j << ", " << i << "\n";
+                std::cout << "ana:       " << DEBUG[ "dStressdGammas" ][ 5 * j + i ] << "\n";
+                std::cout << "num:       " << numericGradients[ "stresses" ][ j ] << "\n";
+                std::cout << "error:     " << DEBUG[ "dStressdGammas" ][ 5 * j + i ]
+                                             -numericGradients[ "stresses" ][ j ] << "\n";
 
                 std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "stresses" ] );
 
@@ -14554,6 +14554,45 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
                 vectorTools::print( vectorTools::inflate( DEBUG[ "dStressdGammas" ], 45, 5 ) );
 
                 results << "test_computePlasticMultiplierResidual (dStressdGammas) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
+                                            DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ] ) ){
+                std::cout << "row, col:  " << j << ", " << i << "\n";
+                std::cout << "ana:       " << DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ] << "\n";
+                std::cout << "num:       " << numericGradients[ "currentElasticRightCauchyGreen" ][ j ] << "\n";
+                std::cout << "error:     " << DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ]
+                                             -numericGradients[ "currentElasticRightCauchyGreen" ][ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "currentElasticRightCauchyGreen" ] );
+
+                std::cout << "\nfull\n";
+                vectorTools::print( vectorTools::inflate( DEBUG[ "dElasticRightCauchyGreendGammas" ], 9, 5 ) );
+
+                results << "test_computePlasticMultiplierResidual (dElasticRightCauchyGreendGammas) & False\n";
+                return 1;
+            }
+        }
+
+        vectorTools::print( numericGradients[ "yieldFunctionValues" ] );
+        for ( unsigned int j = 0; j < numericGradients[ "yieldFunctionValues" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "yieldFunctionValues" ][ j ],
+                                            DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] ) ){
+                std::cout << "row, col:  " << j << ", " << i << "\n";
+                std::cout << "ana:       " << DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] << "\n";
+                std::cout << "num:       " << numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
+                std::cout << "error:     " << DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ]
+                                             -numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "yieldFunctionValues" ] );
+
+                std::cout << "\nfull\n";
+                vectorTools::print( vectorTools::inflate( DEBUG[ "dYieldFunctionValuesdGammas" ], 5, 5 ) );
+
+                results << "test_computePlasticMultiplerResidual (dYieldFunctionValuesdGammas) & False\n";
                 return 1;
             }
         }
