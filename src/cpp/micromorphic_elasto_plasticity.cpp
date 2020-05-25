@@ -3241,12 +3241,6 @@ namespace micromorphicElastoPlasticity{
          *     fundamental plastic multipliers.
          * floatOuts[ 16 ] = dCohesionsdGammas, The partial derivative of the residual w.r.t. the
          *     plastic multipliers
-         *
-         * Ordering of intOuts
-         * intOuts[ 0 ] = isYielding, The flags which indicate if a yield surface is yielding or not.
-         *     This activates different parts of the residual and can change during the solution if
-         *     different surfaces begin yielding. Once a surface has begun yielding it is assumed to 
-         *     continue yielding.
          */
 
         if ( x.size() != 45 ){
@@ -3287,9 +3281,9 @@ namespace micromorphicElastoPlasticity{
             }
         }
 
-        if ( intOuts.size() != 1 ){
+        if ( intOuts.size() != 0 ){
             return new errorNode( "computePlasticDeformationResidual",
-                                  "The integer output matrix intOuts must have a length of 1" );
+                                  "The integer output matrix intOuts must have a length of 0" );
         }
 
         /*=============================
@@ -3339,14 +3333,6 @@ namespace micromorphicElastoPlasticity{
         const parameterType   *alphaMacro                                    = &floatArgs[ ii++ ][ 0 ];
         const parameterType   *alphaMicro                                    = &floatArgs[ ii++ ][ 0 ];
         const parameterType   *alphaMicroGradient                            = &floatArgs[ ii++ ][ 0 ];
-
-        ii = 0;
-        solverTools::intVector isYielding                              = intOuts[ ii++ ];
-
-        if ( isYielding.size() != 5 ){
-            return new errorNode( "computePlasticDeformationResidual",
-                                  "The yielding flags vector (isYielding) must have a size of 5" );
-        }
 
 #ifdef DEBUG_MODE
         variableVector temp = { *currentMacroGamma };
@@ -5091,9 +5077,6 @@ namespace micromorphicElastoPlasticity{
         floatOuts[ 6 ] = { currentMacroCohesion };
         floatOuts[ 7 ] = { currentMicroCohesion };
         floatOuts[ 8 ] = currentMicroGradientCohesion;
-
-        //Save whether the function is yielding
-        intOuts[ 0 ] = isYielding;
 
 //        //Try conditioning the residual and jacobian matrix
 //        constantType norm;
@@ -8323,7 +8306,7 @@ namespace micromorphicElastoPlasticity{
             }
         }
 
-        if ( intOuts.size() != 2 ){
+        if ( intOuts.size() != 1 ){
             return new errorNode( "computePlasticMultiplierResidual",
                                   "The integer output matrix intOuts must have a length of 1" );
         }
@@ -8373,14 +8356,6 @@ namespace micromorphicElastoPlasticity{
         const parameterType   *alphaMicro                                    = &floatArgs[ ii++ ][ 0 ];
         const parameterType   *alphaMicroGradient                            = &floatArgs[ ii++ ][ 0 ];
 
-        ii = 0;
-        solverTools::intVector isYielding                                    = intOuts[ ii++ ];
-
-        if ( isYielding.size() != 5 ){
-            return new errorNode( "computePlasticMultiplierResidual",
-                                  "The yielding flags vector (isYielding) must have a size of 5" );
-        }
-
         //Construct the inputs for the solve for the plastic deformation measure
 
         ii = 0;
@@ -8423,18 +8398,19 @@ namespace micromorphicElastoPlasticity{
                 floatArgs[ 34 ], //alpha micro gradient
             };
 
-        solverTools::intMatrix intArgsPlasticDeformation = { { 0 } };
+        solverTools::intMatrix intArgsPlasticDeformation = { { 1 } };
 
         solverTools::intMatrix intOutsPlasticDeformation = { };
 
-        solverTools::floatMatrix floatOutsPlasticDeformation;
-
-        if ( intArgs[ 0 ][ 0 ] > 0 ){
-            floatOutsPlasticDeformation = { {}, {}, {}, {}, {}, {}, {}, {}, {} };
-        }
-        else{
-            floatOutsPlasticDeformation = { {}, {}, {}, {}, {}, {} };
-        }
+        solverTools::floatMatrix floatOutsPlasticDeformation =
+            {
+                {}, {}, {},
+                {}, {}, {},
+                {}, {}, {},
+                {}, {},
+                {}, {}, {}, {},
+                {}, {}
+            };
 
         //Wrap the plastic deformation measure function
         solverTools::stdFncNLFJ func
@@ -8457,7 +8433,8 @@ namespace micromorphicElastoPlasticity{
 #endif
 
         //Solve for the plastic deformation measures.
-        errorOut error = solverTools::newtonRaphson( func, plasticDeformationX0, currentPlasticDeformation, convergeFlag, fatalErrorFlag,
+        errorOut error = solverTools::newtonRaphson( func, plasticDeformationX0, currentPlasticDeformation,
+                                                     convergeFlag, fatalErrorFlag,
                                                      floatOutsPlasticDeformation, intOutsPlasticDeformation,
                                                      floatArgsPlasticDeformation, intArgsPlasticDeformation,
                                                      plasticDeformationLinearSolver, plasticDeformationJacobian,
@@ -8468,14 +8445,52 @@ namespace micromorphicElastoPlasticity{
 
         if ( error ){
             errorOut result = new errorNode( "computePlasticMultiplierResidual", "Error in solution of plastic deformation" );
-            intOuts[ 0 ] = { ( int )convergeFlag };
-            intOuts[ 1 ] = { ( int )fatalErrorFlag };
+            result->addNext( error );
+            intOuts[ 0 ] = { ( int )convergeFlag, ( int )fatalErrorFlag };
             return result;
         }
 
+        //Solve for the Jacobian of the plastic deformation w.r.t. the gammas
+        
+        solverTools::floatVector plasticDeformationJacobianVector = vectorTools::appendVectors( plasticDeformationJacobian );
+        Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > > 
+            dPDResidualdPD( plasticDeformationJacobianVector.data(), 45, 45 );
+
+        Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            dPDResidualdGammas( floatOutsPlasticDeformation[ 15 ].data(), 45, 5 );
+
+        solverTools::floatVector dCurrentPlasticDeformationdGammas( 45 * 5, 0 );
+        Eigen::Map< Eigen::MatrixXd > dPDdG( dCurrentPlasticDeformationdGammas.data(), 45, 5 );
+
+        solverTools::solverType linearSolver( dPDResidualdPD );
+
+        if ( linearSolver.rank() < 45 ){
+            return new errorNode( "computePlasticMultiplierResidual", "The plastic deformation Jacobian is not full rank" );
+        }
+
+        dPDdG = linearSolver.solve( dPDdG );
+
+#ifdef DEBUG_MODE
+        DEBUG.emplace( "currentPlasticDeformation", currentPlasticDeformation );
+        DEBUG.emplace( "dCurrentPlasticDeformationdGammas", dCurrentPlasticDeformationdGammas );
+#endif
+
+        //Solve for the Jacobian of the stresses w.r.t. the gammas
+
+        solverTools::floatMatrix dStressdGammas
+            = vectorTools::inflate( vectorTools::matrixMultiply( floatOutsPlasticDeformation[ 11 ],
+                                                                 dCurrentPlasticDeformationdGammas, 45, 45, 45, 5 ), 45, 5 );
+
+#ifdef DEBUG_MODE
+        DEBUG.emplace( "stresses", vectorTools::appendVectors( { floatOutsPlasticDeformation[ 0 ],
+                                                                 floatOutsPlasticDeformation[ 1 ],
+                                                                 floatOutsPlasticDeformation[ 2 ]  } ) );
+        DEBUG.emplace( "dStressdGammas", vectorTools::appendVectors( dStressdGammas ) );
+#endif
+
         //Compute the yield function values
         variableVector yieldFunctionValues;
-        variableVector dMacroFdPK2, dMacroFdMacroC, dMacroFdElasticRCG;
+        
                     
 //        error = evaluateYieldFunctions( floatOutsPlasticDeformation[ 0 ], floatOutsPlasticDeformation[ 1 ],
 //                                        floatOutsPlasticDeformation[ 2 ],

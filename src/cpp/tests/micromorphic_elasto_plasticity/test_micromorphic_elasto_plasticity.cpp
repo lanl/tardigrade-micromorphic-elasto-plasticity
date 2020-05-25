@@ -7686,7 +7686,7 @@ int test_computePlasticDeformationResidual( std::ofstream &results ){
     solverTools::floatMatrix floatOuts = floatOutsDefault;
 
     solverTools::intMatrix intArgs = { { 0 } };
-    solverTools::intMatrix intOutsDefault = { { 1, 1, 0, 0, 0 } };
+    solverTools::intMatrix intOutsDefault = { };
     
     solverTools::intMatrix intOuts = intOutsDefault;
 
@@ -9511,7 +9511,7 @@ int test_computePlasticDeformationResidual2( std::ofstream &results ){
     solverTools::floatMatrix floatOuts = floatOutsDefault;
 
     solverTools::intMatrix intArgs = { { 1 } };
-    solverTools::intMatrix intOutsDefault = { { 1, 1, 1, 1, 1 } };
+    solverTools::intMatrix intOutsDefault = { };
     
     solverTools::intMatrix intOuts = intOutsDefault;
 
@@ -14264,6 +14264,207 @@ int test_computeDruckerPragerInternalParameters( std::ofstream &results ){
     return 0;
 }
 
+int test_computePlasticMultiplierResidual( std::ofstream &results ){
+    /*!
+     * Test the computation of the plastic multiplier residual.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    std::vector< double > fparams = { 2, 1.0e2, 1.5e1,             //Macro hardening parameters
+                                      2, 1.5e2, 2.0e1,             //Micro hardening parameters
+                                      2, 2.0e2, 2.7e1,             //Micro gradient hardening parameters
+                                      2, 0.56, 0.2,                //Macro flow parameters
+                                      2, 0.15,-0.2,                //Micro flow parameters
+                                      2, 0.82, 0.1,                //Micro gradient flow parameters
+                                      2, 0.70, 0.3,                //Macro yield parameters
+                                      2, 0.40,-0.3,                //Micro yield parameters
+                                      2, 0.52, 0.4,                //Micro gradient yield parameters
+                                      2, 696.47, 65.84,            //A stiffness tensor parameters
+                                      5, -7.69, -51.92, 38.61, -27.31, 5.13,  //B stiffness tensor parameters
+                                      11, 1.85, -0.19, -1.08, -1.57, 2.29, -0.61, 5.97, -2.02, 2.38, -0.32, -3.25, //C stiffness tensor parameters
+                                      2, -51.92, 5.13,             //D stiffness tensor parameters
+                                      0.4, 0.3, 0.35, 1e-8, 1e-8   //Integration parameters
+                                    };
+
+    parameterVector macroHardeningParameters;
+    parameterVector microHardeningParameters;
+    parameterVector microGradientHardeningParameters;
+
+    parameterVector macroFlowParameters;
+    parameterVector microFlowParameters;
+    parameterVector microGradientFlowParameters;
+
+    parameterVector macroYieldParameters;
+    parameterVector microYieldParameters;
+    parameterVector microGradientYieldParameters;
+
+    parameterVector Amatrix, Bmatrix, Cmatrix, Dmatrix;
+    parameterType alphaMacro, alphaMicro, alphaMicroGradient;
+    parameterType relativeTolerance, absoluteTolerance;
+
+    errorOut error = micromorphicElastoPlasticity::extractMaterialParameters( fparams,
+                                                                              macroHardeningParameters, microHardeningParameters,
+                                                                              microGradientHardeningParameters,
+                                                                              macroFlowParameters, microFlowParameters,
+                                                                              microGradientFlowParameters,
+                                                                              macroYieldParameters, microYieldParameters,
+                                                                              microGradientYieldParameters,
+                                                                              Amatrix, Bmatrix, Cmatrix, Dmatrix,
+                                                                              alphaMacro, alphaMicro, alphaMicroGradient,
+                                                                              relativeTolerance, absoluteTolerance );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticDeformationResidual & False\n";
+        return 1;
+    }
+
+    constantType   Dt = 2.5;
+    variableType   currentMacroGamma = 0.01;
+    variableType   currentMicroGamma = 0.02;
+    variableVector currentMicroGradientGamma = {0.011, 0.021, 0.031};
+    variableType   previousMacroGamma = 0.;
+    variableType   previousMicroGamma = 0.;
+    variableVector previousMicroGradientGamma( 3, 0 );
+    variableType   previousMacroStrainISV = 0.;
+    variableType   previousMicroStrainISV = 0.;
+    variableVector previousMicroGradientStrainISV( 3., 0. );
+    variableVector currentDeformationGradient = { 0.04482969,  0.88562312, -0.38710144,
+                                                 -0.93722716,  0.19666568,  0.41677155,
+                                                  0.46929057,  0.33779672,  0.81392228 };
+    variableVector currentMicroDeformation = {  0.51930689,  0.27954023, -0.85955731,
+                                                0.09469279, -0.99381243, -0.23218079,
+                                               -0.82281393,  0.09643296, -0.54637704 };
+    variableVector currentGradientMicroDeformation = { 0.04176306, -0.0151958 , -0.00090558, -0.01844751,  0.04512391,
+                                                       0.02174263, -0.00508239, -0.01827377,  0.00541031, -0.01330239,
+                                                      -0.02479987,  0.02914825,  0.00168841,  0.00230506,  0.00994845,
+                                                       0.00413116,  0.04555686, -0.00431862, -0.0138286 , -0.04412473,
+                                                       0.02016718, -0.03868735,  0.03842166, -0.0009337 ,  0.02977617,
+                                                       0.02310445,  0.02827616 };
+    variableVector previousPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector previousPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector previousPlasticGradientMicroDeformation = variableVector( 27, 0 );
+    variableVector previousPlasticMacroVelocityGradient = variableVector( 9, 0 );
+    variableVector previousPlasticMicroVelocityGradient = variableVector( 9, 0 );
+    variableVector previousPlasticMicroGradientVelocityGradient = variableVector( 27, 0 );
+
+    variableVector currentElasticDeformationGradient = currentDeformationGradient;
+    variableVector currentElasticMicroDeformation = currentMicroDeformation;
+    variableVector currentElasticGradientMicroDeformation = currentGradientMicroDeformation;
+    variableVector currentPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector currentPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector currentPlasticGradientMicroDeformation = variableVector( 27, 0 );
+
+    variableType   previousdMacroGdMacroCohesion = 0;
+    variableType   previousdMicroGdMicroCohesion = 0;
+    variableMatrix previousdMicroGradientGdMicroGradientCohesion( 3, variableVector( 3, 0 ) );
+
+    variableType currentMacroStrainISV = 0;
+    variableType currentMicroStrainISV = 0;
+    variableVector currentMicroGradientStrainISV( 3, 0 );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticDeformationResidual & False\n";
+        return 1;
+    }
+
+    solverTools::floatMatrix floatArgsDefault =
+        {
+            { Dt },
+            currentDeformationGradient,
+            currentMicroDeformation,
+            currentGradientMicroDeformation,
+//            { currentMacroGamma },
+//            { currentMicroGamma },
+//            currentMicroGradientGamma,
+            { previousMacroGamma },
+            { previousMicroGamma },
+            previousMicroGradientGamma,
+            previousPlasticDeformationGradient,
+            previousPlasticMicroDeformation,
+            previousPlasticGradientMicroDeformation,
+            { previousMacroStrainISV },
+            { previousMicroStrainISV },
+            previousMicroGradientStrainISV,
+            { previousdMacroGdMacroCohesion },
+            { previousdMicroGdMicroCohesion },
+            vectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ),
+            previousPlasticMacroVelocityGradient,
+            previousPlasticMicroVelocityGradient,
+            previousPlasticMicroGradientVelocityGradient,
+            macroFlowParameters,
+            microFlowParameters,
+            microGradientFlowParameters,
+            macroHardeningParameters,
+            microHardeningParameters,
+            microGradientHardeningParameters,
+            macroYieldParameters,
+            microYieldParameters,
+            microGradientYieldParameters,
+            Amatrix,
+            Bmatrix,
+            Cmatrix,
+            Dmatrix,
+            { alphaMacro },
+            { alphaMicro },
+            { alphaMicroGradient }
+        };
+
+    variableVector currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress;
+
+    solverTools::floatMatrix floatOutsDefault = 
+        {
+            currentPK2Stress,
+            currentReferenceMicroStress,
+            currentReferenceHigherOrderStress,
+            { currentMacroStrainISV },
+            { currentMicroStrainISV },
+            currentMicroGradientStrainISV,
+        };
+
+    solverTools::floatMatrix floatArgs = floatArgsDefault;
+    solverTools::floatMatrix floatOuts = floatOutsDefault;
+
+    solverTools::intMatrix intArgs = { { 0 } };
+    solverTools::intMatrix intOutsDefault = { { 0, 0 } };
+    
+    solverTools::intMatrix intOuts = intOutsDefault;
+
+#ifdef DEBUG_MODE
+    std::map< std::string, solverTools::floatVector > DEBUG;
+#endif
+
+    solverTools::floatVector x =
+        {
+            currentMacroGamma,
+            currentMicroGamma,
+            currentMicroGradientGamma[ 0 ],
+            currentMicroGradientGamma[ 1 ],
+            currentMicroGradientGamma[ 2 ]
+        };
+
+    solverTools::floatVector residual;
+    solverTools::floatMatrix jacobian;
+
+    error = micromorphicElastoPlasticity::computePlasticMultiplierResidual( x, floatArgs, intArgs, residual, jacobian,
+                                                                            floatOuts, intOuts
+#ifdef DEBUG_MODE
+                                                                            , DEBUG
+#endif
+                                                                          );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMultiplierResidual & False\n";
+        return 1;
+    }
+
+    results << "test_computePlasticMultiplierResidual & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -14276,7 +14477,7 @@ int main(){
     std::ofstream results;
     results.open("results.tex");
 
-//    //Run the tests
+    //Run the tests
     test_computeDruckerPragerInternalParameters( results );
     test_computeSecondOrderDruckerPragerYieldEquation( results );
     test_computeHigherOrderDruckerPragerYieldEquation( results );
@@ -14300,6 +14501,7 @@ int main(){
     test_cout_redirect( results );
     test_cerr_redirect( results );
 
+    test_computePlasticMultiplierResidual( results );
 //    test_evaluate_model( results );
 //    test_evaluate_model_continuation( results );
 //
