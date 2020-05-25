@@ -14445,6 +14445,8 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
             currentMicroGradientGamma[ 2 ]
         };
 
+    solverTools::floatVector residualAnswer = { 322.54287276, 399.21241922, -2.92814884, -5.60537334, -8.29891331 };
+
     solverTools::floatVector residual;
     solverTools::floatMatrix jacobian;
 
@@ -14458,6 +14460,12 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
     if ( error ){
         error->print();
         results << "test_computePlasticMultiplierResidual & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( residual, residualAnswer ) ) {
+        std::cout << "error: "; vectorTools::print( residual - residualAnswer );
+        results << "test_computePlasticMultiplierResidual (test 1) & False\n";
         return 1;
     }
 
@@ -14577,7 +14585,6 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
             }
         }
 
-        vectorTools::print( numericGradients[ "yieldFunctionValues" ] );
         for ( unsigned int j = 0; j < numericGradients[ "yieldFunctionValues" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "yieldFunctionValues" ][ j ],
                                             DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] ) ){
@@ -14597,7 +14604,25 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
             }
         }
 #endif
+        //Test of the residual and comparison to the Jacobian
+        solverTools::floatVector gradCol = ( rP - rM ) / ( 2 * delta[ i ] );
 
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ] ) ){
+                std::cout << "row, col: " << j << ", " << i << "\n";
+                std::cout << "ana:      " << jacobian[ j ][ i ] << "\n";
+                std::cout << "num:      " << gradCol[ j ] << "\n";
+                std::cout << "error:    " << jacobian[ j ][ i ] - gradCol[ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( gradCol );
+
+                std::cout << "\nfull\n";
+                vectorTools::print( jacobian );
+
+                results << "test_computePlasticMultiplierResidual (test 2) & False\n";
+                return 1;
+            }
+        }
     }
 
     results << "test_computePlasticMultiplierResidual & True\n";

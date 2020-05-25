@@ -8604,8 +8604,6 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "dYieldFunctionValuesdGammas", vectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
 #endif
 
-        return NULL;
-
         //Construct the residual and the Jacobian
         residual = solverTools::floatVector( 5, 0 );
         jacobian = solverTools::floatMatrix( 5, solverTools::floatVector( 5, 0 ) );
