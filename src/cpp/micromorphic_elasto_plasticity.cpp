@@ -5886,64 +5886,43 @@ namespace micromorphicElastoPlasticity{
 //
 //            std::cout << "solutionVector:\n"; vectorTools::print( solutionVector );
 //            std::cout << "\n";
-#ifdef DEBUG_MODE
-            if ( error ){
-                //check the Jacobian
-                std::cout << "homotopy solver error message:\n"; error->print(); output_message = buffer.str();
-                std::cout << output_message;
-            
-                
-
-                std::cout << "FULL NEWTON INCREMENT:\n";
-                
-
-    
-                solverTools::floatType eps = 1e-6;
-                solverTools::floatVector rbase;
-                solverTools::floatMatrix jbase;
-    
-                solverTools::debugMap tempDEBUG;
-    
-                errorOut error2 = func( x0, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
-                solverTools::floatVector jflat = vectorTools::appendVectors( jbase );
-                Eigen::Map < const Eigen::Matrix<solverTools::floatType, -1, -1, Eigen::RowMajor> > jmat(jflat.data(), 50, 50);
-
-                std::ofstream jfile;
-                jfile.open( "jacobian.out" );
-                jfile << jmat << "\n";
-                jfile.close();
-
-                std::ofstream rfile;
-                rfile.open( "residual.out" );
-                for ( unsigned int i = 0; i < rbase.size(); i++ ){ rfile << rbase[ i ] << ", "; };
-                rfile.close();
-
-                std::ofstream x0file;
-                x0file.open( "x0.out" );
-                for ( unsigned int i = 0; i < x0.size(); i++ ){ x0file << x0[ i ] << ", "; };
-                x0file.close();
-
-                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
-                if ( error2 ){
-                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
-                    result->addNext( error2 );
-                    result->print();
-                    output_message = buffer.str();
-                    return 2;
-                }
-
-                unsigned int rank;
-//                solverTools::floatVector dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+//#ifdef DEBUG_MODE
+//            if ( error ){
+//                //check the Jacobian
+//                std::cout << "homotopy solver error message:\n"; error->print(); output_message = buffer.str();
+//                std::cout << output_message;
+//            
+//                
 //
-//                std::cout << "dx1:\n";
-//                vectorTools::print( dx1 );
+//                std::cout << "FULL NEWTON INCREMENT:\n";
+//                
 //
-////                solverTools::applyBoundaryLimitation( x0, boundVariableIndices, boundSigns, boundValues, dx1 );
+//    
+//                solverTools::floatType eps = 1e-6;
+//                solverTools::floatVector rbase;
+//                solverTools::floatMatrix jbase;
+//    
+//                solverTools::debugMap tempDEBUG;
+//    
+//                errorOut error2 = func( x0, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+//                solverTools::floatVector jflat = vectorTools::appendVectors( jbase );
+//                Eigen::Map < const Eigen::Matrix<solverTools::floatType, -1, -1, Eigen::RowMajor> > jmat(jflat.data(), 50, 50);
 //
-//                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
-//                solverTools::floatVector xn = x0 + dx1;
+//                std::ofstream jfile;
+//                jfile.open( "jacobian.out" );
+//                jfile << jmat << "\n";
+//                jfile.close();
 //
-//                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+//                std::ofstream rfile;
+//                rfile.open( "residual.out" );
+//                for ( unsigned int i = 0; i < rbase.size(); i++ ){ rfile << rbase[ i ] << ", "; };
+//                rfile.close();
+//
+//                std::ofstream x0file;
+//                x0file.open( "x0.out" );
+//                for ( unsigned int i = 0; i < x0.size(); i++ ){ x0file << x0[ i ] << ", "; };
+//                x0file.close();
+//
 //                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
 //                if ( error2 ){
 //                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
@@ -5953,185 +5932,206 @@ namespace micromorphicElastoPlasticity{
 //                    return 2;
 //                }
 //
-//                std::cout << "full increment dx1:\n";
-//                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+//                unsigned int rank;
+////                solverTools::floatVector dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+////
+////                std::cout << "dx1:\n";
+////                vectorTools::print( dx1 );
+////
+//////                solverTools::applyBoundaryLimitation( x0, boundVariableIndices, boundSigns, boundValues, dx1 );
+////
+////                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
+////                solverTools::floatVector xn = x0 + dx1;
+////
+////                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+////                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
+////                if ( error2 ){
+////                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
+////                    result->addNext( error2 );
+////                    result->print();
+////                    output_message = buffer.str();
+////                    return 2;
+////                }
+////
+////                std::cout << "full increment dx1:\n";
+////                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+////
+////                vectorTools::print( dx1 );
+////
+//////                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
+////
+////                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
+////                xn = x0 + dx1;
+////
+////                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+////                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
+////                if ( error2 ){
+////                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
+////                    result->addNext( error2 );
+////                    result->print();
+////                    output_message = buffer.str();
+////                    return 2;
+////                }
+////
+////                std::cout << "full increment dx1:\n";
+////                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+////
+////                vectorTools::print( dx1 );
+////
+//////                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
+////
+////                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
+////                xn += dx1;
+////
+////                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+////                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
+////                if ( error2 ){
+////                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
+////                    result->addNext( error2 );
+////                    result->print();
+////                    output_message = buffer.str();
+////                    return 2;
+////                }
+////
+////                std::cout << "full increment dx1:\n";
+////                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+////
+////                vectorTools::print( dx1 );
+////
+//////                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
+////
+////                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
+////                xn += dx1;
+////
+////                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+////                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
+////                if ( error2 ){
+////                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
+////                    result->addNext( error2 );
+////                    result->print();
+////                    output_message = buffer.str();
+////                    return 2;
+////                }
+////
+////                std::cout << "full increment dx1:\n";
+////                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+////
+////                vectorTools::print( dx1 );
+////
+//////                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
+////
+////                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
+////                xn += dx1;
+////
+////                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
+////                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
+////                assert( 1 == 0 );
+//    
+//                for ( unsigned int yerp = 0; yerp < solutionVector.size(); yerp++ ){
+//                    solverTools::floatVector delta( x0.size(), 0 );
+//                    solverTools::floatVector RP, RM;
+//                    solverTools::floatMatrix _J;
+//                    delta[ yerp ] = eps * fabs( x0[ yerp ] ) + eps;
+//                    solverTools::debugMap DEBUG_P, DEBUG_M;
+//    
+//                    error2 = func( x0 + delta, floatArgs, intArgs, RP, _J, floatOuts, intOuts, DEBUG_P );
 //
-//                vectorTools::print( dx1 );
+//                    if ( error2 ){
+//                        errorOut result = new errorNode( "evaluate_model", "Error in numeric jacobian test" );
+//                        result->addNext( error2 );
+//                        result->print();           //Print the error message
+//                        output_message = buffer.str(); //Save the output to enable message passing
+//                        return 2;
+//                    }
+//    
+//                    error2 = func( x0 - delta, floatArgs, intArgs, RM, _J, floatOuts, intOuts, DEBUG_M );
+//    
+//                    if ( error2 ){
+//                        errorOut result = new errorNode( "evaluate_model", "Error in numeric jacobian test" );
+//                        result->addNext( error2 );
+//                        result->print();           //Print the error message
+//                        output_message = buffer.str(); //Save the output to enable message passing
+//                        return 2;
+//                    }
+//    
+//                    solverTools::floatVector gradCol = ( RP - RM ) / ( 2 * delta[ yerp ] );
 //
-////                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
+//                    //Check Jacobians of the subterms
+//                    solverTools::debugMap numericGrad;
+//                    for ( auto dP = DEBUG_P.begin(); dP != DEBUG_P.end(); dP++ ){
+//                        auto dM = DEBUG_M.find( dP->first );
+//                        numericGrad.emplace( dP->first, ( dP->second - dM->second ) / ( 2 * delta[ yerp ] ) );
+//                    }
 //
-//                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
-//                xn = x0 + dx1;
+//                    for ( unsigned int derp = 0; derp < gradCol.size(); derp++ ){
+//                        if ( !vectorTools::fuzzyEquals( gradCol[ derp ], jbase[ derp ][ yerp ] ) ){
+//                            std::cout << "row, col: " << derp << ", " << yerp << "\n";
+//                            std::cout << "numeric:  " << gradCol[ derp ] << "\n";
+//                            std::cout << "analytic: " << jbase[ derp ][ yerp ] << "\n";
+//                            std::cout << "error:    " << gradCol[ derp ] - jbase[ derp ][ yerp ] << "\n";
+//                            assert( 1 == 0 );
+//                        }
+//                    }
+//                }
+//    
+//                //Output a map of the   vs the macro and micro gammas
+//                solverTools::floatType minMacroGamma = -1.;
+//                solverTools::floatType minMicroGamma = -1.;
+//                solverTools::floatType maxMacroGamma =  1.;
+//                solverTools::floatType maxMicroGamma =  1.;
+//                unsigned int nMacro = 10;
+//                unsigned int nMicro = 10;
 //
-//                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
-//                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
-//                if ( error2 ){
-//                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
-//                    result->addNext( error2 );
-//                    result->print();
-//                    output_message = buffer.str();
-//                    return 2;
+//                solverTools::floatType dMacro = ( maxMacroGamma - minMacroGamma ) / nMacro;
+//                solverTools::floatType dMicro = ( maxMicroGamma - minMicroGamma ) / nMicro;
+//
+//                solverTools::floatVector Rtmp;
+//                solverTools::floatMatrix Jtmp;
+//                solverTools::floatVector dxtmp;
+//
+//                std::string output_map_str;
+//    
+//                for ( unsigned int microi = 0; microi < ( nMicro + 1 ); microi++ ){
+//                    std::cout << "microi " << microi << "\n";
+//                    for ( unsigned int macroi = 0; macroi < ( nMacro + 1 ); macroi++ ){
+//                        std::cout << "macroi " << macroi << "\n";
+//                        solverTools::floatType trialMacroGamma = minMacroGamma + macroi * dMacro;
+//                        solverTools::floatType trialMicroGamma = minMicroGamma + microi * dMicro;
+//
+//                        x0[ 0 ] = trialMacroGamma;
+//                        x0[ 0 ] = trialMicroGamma;
+//
+//                        error2 = func( x0, floatArgs, intArgs, Rtmp, Jtmp, floatOuts, intOuts, tempDEBUG );
+//
+//                        if ( error2 ){
+//                            errorOut result = new errorNode( "evaluate_model", "Error in forming dgamma map" );
+//                            result->addNext( error2 );
+//                            result->print();
+//                            output_message = buffer.str();
+//                        }
+//
+//                        dxtmp = -vectorTools::solveLinearSystem( Jtmp, Rtmp, rank );
+//                        if ( rank != Rtmp.size() ){
+//                            std::cout << "oh noooooo!\n";
+//                            return 2;
+//                        }
+//
+//                        output_map_str += std::to_string( trialMacroGamma ) + ", "
+//                                        + std::to_string( trialMicroGamma ) + ", "
+//                                        + std::to_string( dxtmp[ 0 ] ) + ", "
+//                                        + std::to_string( dxtmp[ 1 ] ) + ", ";
+//                    }
+//                    output_map_str += "\n";
 //                }
 //
-//                std::cout << "full increment dx1:\n";
-//                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
+//                std::ofstream output_map_file;
+//                output_map_file.open( "output_map_t" + std::to_string( floatArgs[ 0 ][ 0 ] ) + ".out" );
+//                output_map_file << output_map_str;
+//                output_map_file.close();
 //
-//                vectorTools::print( dx1 );
-//
-////                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
-//
-//                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
-//                xn += dx1;
-//
-//                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
-//                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
-//                if ( error2 ){
-//                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
-//                    result->addNext( error2 );
-//                    result->print();
-//                    output_message = buffer.str();
-//                    return 2;
-//                }
-//
-//                std::cout << "full increment dx1:\n";
-//                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
-//
-//                vectorTools::print( dx1 );
-//
-////                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
-//
-//                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
-//                xn += dx1;
-//
-//                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
-//                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
-//                if ( error2 ){
-//                    errorOut result = new errorNode( "evaluate_model", "Error in test of analytic Jacobian" );
-//                    result->addNext( error2 );
-//                    result->print();
-//                    output_message = buffer.str();
-//                    return 2;
-//                }
-//
-//                std::cout << "full increment dx1:\n";
-//                dx1 = -vectorTools::solveLinearSystem( jbase, rbase, rank );
-//
-//                vectorTools::print( dx1 );
-//
-////                solverTools::applyBoundaryLimitation( xn, boundVariableIndices, boundSigns, boundValues, dx1 );
-//
-//                std::cout << "barrier dx:\n"; vectorTools::print( dx1 );
-//                xn += dx1;
-//
-//                error2 = func( xn, floatArgs, intArgs, rbase, jbase, floatOuts, intOuts, tempDEBUG );
-//                std::cout << "norm residual: " << vectorTools::l2norm( rbase ) << "\n";
-//                assert( 1 == 0 );
-    
-                for ( unsigned int yerp = 0; yerp < solutionVector.size(); yerp++ ){
-                    solverTools::floatVector delta( x0.size(), 0 );
-                    solverTools::floatVector RP, RM;
-                    solverTools::floatMatrix _J;
-                    delta[ yerp ] = eps * fabs( x0[ yerp ] ) + eps;
-                    solverTools::debugMap DEBUG_P, DEBUG_M;
-    
-                    error2 = func( x0 + delta, floatArgs, intArgs, RP, _J, floatOuts, intOuts, DEBUG_P );
-
-                    if ( error2 ){
-                        errorOut result = new errorNode( "evaluate_model", "Error in numeric jacobian test" );
-                        result->addNext( error2 );
-                        result->print();           //Print the error message
-                        output_message = buffer.str(); //Save the output to enable message passing
-                        return 2;
-                    }
-    
-                    error2 = func( x0 - delta, floatArgs, intArgs, RM, _J, floatOuts, intOuts, DEBUG_M );
-    
-                    if ( error2 ){
-                        errorOut result = new errorNode( "evaluate_model", "Error in numeric jacobian test" );
-                        result->addNext( error2 );
-                        result->print();           //Print the error message
-                        output_message = buffer.str(); //Save the output to enable message passing
-                        return 2;
-                    }
-    
-                    solverTools::floatVector gradCol = ( RP - RM ) / ( 2 * delta[ yerp ] );
-
-                    //Check Jacobians of the subterms
-                    solverTools::debugMap numericGrad;
-                    for ( auto dP = DEBUG_P.begin(); dP != DEBUG_P.end(); dP++ ){
-                        auto dM = DEBUG_M.find( dP->first );
-                        numericGrad.emplace( dP->first, ( dP->second - dM->second ) / ( 2 * delta[ yerp ] ) );
-                    }
-
-                    for ( unsigned int derp = 0; derp < gradCol.size(); derp++ ){
-                        if ( !vectorTools::fuzzyEquals( gradCol[ derp ], jbase[ derp ][ yerp ] ) ){
-                            std::cout << "row, col: " << derp << ", " << yerp << "\n";
-                            std::cout << "numeric:  " << gradCol[ derp ] << "\n";
-                            std::cout << "analytic: " << jbase[ derp ][ yerp ] << "\n";
-                            std::cout << "error:    " << gradCol[ derp ] - jbase[ derp ][ yerp ] << "\n";
-                            assert( 1 == 0 );
-                        }
-                    }
-                }
-    
-                //Output a map of the   vs the macro and micro gammas
-                solverTools::floatType minMacroGamma = -1.;
-                solverTools::floatType minMicroGamma = -1.;
-                solverTools::floatType maxMacroGamma =  1.;
-                solverTools::floatType maxMicroGamma =  1.;
-                unsigned int nMacro = 10;
-                unsigned int nMicro = 10;
-
-                solverTools::floatType dMacro = ( maxMacroGamma - minMacroGamma ) / nMacro;
-                solverTools::floatType dMicro = ( maxMicroGamma - minMicroGamma ) / nMicro;
-
-                solverTools::floatVector Rtmp;
-                solverTools::floatMatrix Jtmp;
-                solverTools::floatVector dxtmp;
-
-                std::string output_map_str;
-    
-                for ( unsigned int microi = 0; microi < ( nMicro + 1 ); microi++ ){
-                    std::cout << "microi " << microi << "\n";
-                    for ( unsigned int macroi = 0; macroi < ( nMacro + 1 ); macroi++ ){
-                        std::cout << "macroi " << macroi << "\n";
-                        solverTools::floatType trialMacroGamma = minMacroGamma + macroi * dMacro;
-                        solverTools::floatType trialMicroGamma = minMicroGamma + microi * dMicro;
-
-                        x0[ 0 ] = trialMacroGamma;
-                        x0[ 0 ] = trialMicroGamma;
-
-                        error2 = func( x0, floatArgs, intArgs, Rtmp, Jtmp, floatOuts, intOuts, tempDEBUG );
-
-                        if ( error2 ){
-                            errorOut result = new errorNode( "evaluate_model", "Error in forming dgamma map" );
-                            result->addNext( error2 );
-                            result->print();
-                            output_message = buffer.str();
-                        }
-
-                        dxtmp = -vectorTools::solveLinearSystem( Jtmp, Rtmp, rank );
-                        if ( rank != Rtmp.size() ){
-                            std::cout << "oh noooooo!\n";
-                            return 2;
-                        }
-
-                        output_map_str += std::to_string( trialMacroGamma ) + ", "
-                                        + std::to_string( trialMicroGamma ) + ", "
-                                        + std::to_string( dxtmp[ 0 ] ) + ", "
-                                        + std::to_string( dxtmp[ 1 ] ) + ", ";
-                    }
-                    output_map_str += "\n";
-                }
-
-                std::ofstream output_map_file;
-                output_map_file.open( "output_map_t" + std::to_string( floatArgs[ 0 ][ 0 ] ) + ".out" );
-                output_map_file << output_map_str;
-                output_map_file.close();
-
-//                assert( 1 == 0 );
-            }
-#endif
+////                assert( 1 == 0 );
+//            }
+//#endif
 
 
             if ( ( error ) && fatalErrorFlag ){ //Fatal error
@@ -8228,14 +8228,16 @@ namespace micromorphicElastoPlasticity{
          * floatOuts[ 3 ] = currentMacroStrainISV, The current value of the macro strain-like ISV
          * floatOuts[ 4 ] = currentMacroStrainISV, The current value of the micro strain-like ISV
          * floatOuts[ 5 ] = currentMacroStrainISV, The current value of the micro gradient strain-like ISV
-         * floatOuts[ 6 ] = dStressdx, The partial derivative of the stresses w.r.t. the 
+         * floatOuts[ 6 ] = currentPlasticDeformationGradient, The current value of the plastic deformation gradient.
+         * floatOuts[ 7 ] = currentPlasticMicroDeformation, The current value of the plastic micro deforamtion
+         * floatOuts[ 8 ] = currentPlasticGradientMicroDeformation, The current value of the plastic gradient of the
+         *     micro deformation.
+         * floatOuts[ 9 ] = dStressdx, The partial derivative of the stresses w.r.t. the 
          *     solution vector.
-         * floatOuts[ 7 ] = dStressdDeformation, The partial derivative of the stresses w.r.t.
+         * floatOuts[ 10 ] = dStressdDeformation, The partial derivative of the stresses w.r.t.
          *     the fundamental deformation measures.
-         * floatOuts[ 8 ] = dResidualdDeformation, The partial derivative of the residual w.r.t.
+         * floatOuts[ 11 ] = dResidualdDeformation, The partial derivative of the residual w.r.t.
          *     the fundamental deformation measures.
-         * floatOuts[ 9 ] = dResidualdGammas, The partial derivative of the residual w.r.t. the 
-         *     fundamental plastic multipliers.
          *
          * Ordering of intOuts
          * intOuts[ 0 ] = plasticDeformationConvergenceFlag, The convergence flag from the solution of the plastic
@@ -8270,9 +8272,9 @@ namespace micromorphicElastoPlasticity{
         }
 
         if ( evaluateFullDerivatives ){
-            if ( floatOuts.size() != 10 ){
+            if ( floatOuts.size() != 12 ){
                 return new errorNode( "computePlasticMultiplierResidual",
-                                      "The floating point output matrix floatOuts must have a length of 9" );
+                                      "The floating point output matrix floatOuts must have a length of 12" );
             }
         }
         else{ 
@@ -8470,6 +8472,10 @@ namespace micromorphicElastoPlasticity{
             = vectorTools::inflate( vectorTools::matrixMultiply( floatOutsPlasticDeformation[ 11 ],
                                                                  dCurrentPlasticDeformationdGammas, 45, 45, 45, 5 ), 45, 5 );
 
+        if ( evaluateFullDerivatives ){
+            floatOuts[  9 ] = vectorTools::appendVectors( dStressdGammas );
+            floatOuts[ 10 ] = floatOutsPlasticDeformation[ 12 ];
+        }
 #ifdef DEBUG_MODE
         DEBUG.emplace( "stresses", vectorTools::appendVectors( { floatOutsPlasticDeformation[ 0 ],
                                                                  floatOutsPlasticDeformation[ 1 ],
@@ -8578,6 +8584,22 @@ namespace micromorphicElastoPlasticity{
           + vectorTools::dot( dYieldFunctionValuesdCohesion, dCohesiondGammas )
           + vectorTools::dot( dYieldFunctionValuesdElasticRightCauchyGreen, dElasticRightCauchyGreendGammas );
 
+        variableVector dYieldFunctionValuesdDeformation;
+        if ( evaluateFullDerivatives ){
+
+            variableVector dElasticRightCauchyGreendDeformation( 9 * 45, 0 );
+            for ( unsigned int i = 0; i < 9; i++ ){
+                for ( unsigned int j = 0; j < 9; j++ ){
+                    dElasticRightCauchyGreendDeformation[ 45 * i + j ] = dElasticRightCauchyGreen[ 9 * i + j ];
+                }
+            }
+
+            dYieldFunctionValuesdDeformation = vectorTools::matrixMultiply( dYieldFunctionValuesdStresses,
+                                                                            dStressdDeforamtion, 5, 45, 45, 5 )
+                                             + vectorTools::matrixMultiply( dYieldFunctionValuesdElasticRightCauchyGreen,
+                                                                            dElasticRightCauchyGreendDeformation );
+        }
+
 #ifdef DEBUG_MODE
         DEBUG.emplace( "yieldFunctionValues", yieldFunctionValues );
         DEBUG.emplace( "dYieldFunctionValuesdGammas", vectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
@@ -8590,6 +8612,10 @@ namespace micromorphicElastoPlasticity{
         variableType dMacYieldFunctionValuedYieldFunctionValue;
         solverTools::floatVector rowEye;
 
+        if ( evaluateFullDerivatives ){
+            floatOuts[ 11 ].resize( 5 * 45 );
+        }
+
         for ( unsigned int i = 0; i < 5; i++ ){
             residual[ i ] = constitutiveTools::mac( yieldFunctionValues[ i ], dMacYieldFunctionValuedYieldFunctionValue )
                           + x[ i ] * yieldFunctionValues[ i ];
@@ -8599,6 +8625,13 @@ namespace micromorphicElastoPlasticity{
 
             jacobian[ i ] = ( dMacYieldFunctionValuedYieldFunctionValue + x[ i ] ) * dYieldFunctionValuesdGammas[ i ]
                           + yieldFunctionValues[ i ] * rowEye;
+
+            if ( evaluateFullDerivatives ){
+                for ( unsigned int j = 0; j < 45; j++ ){
+                    floatOuts[ 11 ][ 45 * i + j ] = ( dMacYieldFunctionValuedYieldFunctionValue + x[ i ] )
+                                                  * dYieldFunctionValuesdDeformation[ 45 * i + j ];
+                }
+            }
         }
 
         //Update the output vector
