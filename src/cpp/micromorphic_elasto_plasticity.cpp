@@ -8216,7 +8216,7 @@ namespace micromorphicElastoPlasticity{
          * floatArgs[ 34 ] = alphaMicroGradient, The micro gradient integration parameter.
          *
          * Ordering of intArgs
-         * intArgs[ 0 ] = computeFullDerivatives, Flag which indicates if the full derivatives should be
+         * intArgs[ 0 ] = evaluateFullDerivatives, Flag which indicates if the full derivatives should be
          *     computed.
          * 
          * Ordering of floatOuts
@@ -8240,10 +8240,9 @@ namespace micromorphicElastoPlasticity{
          *     the fundamental deformation measures.
          *
          * Ordering of intOuts
-         * intOuts[ 0 ] = plasticDeformationConvergenceFlag, The convergence flag from the solution of the plastic
-         *                deformation.
-         * intOuts[ 1 ] = plasticDeformationFatalErrorFlag, The fatal error flag from the solution of the plastic
-         *                deformation.
+         * intOuts[ 0 ] = flags from the sub-Newton-Raphson process. There are two values:
+         *     plasticDeformationConvergenceFlag, The convergence flag from the solution of the plastic deformation.
+         *     plasticDeformationFatalErrorFlag, The fatal error flag from the solution of the plastic deformation.
          */
 
         if ( x.size() != 5 ){
@@ -8461,6 +8460,24 @@ namespace micromorphicElastoPlasticity{
 
         dPDdG = -linearSolver.solve( dPDResidualdGammas );
 
+        solverTools::floatVector dCurrentPlasticDeformationdDeformation;
+        if ( evaluateFullDerivatives ){
+
+            //Map the derivative of the residual w.r.t. the deformation to an Eigen Matrix
+            Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+                dPDResidualdF( floatOutsPlasticDeformation[ 13 ].data(), 45, 45 );
+
+            //Map the derivative of the plastic deformation w.r.t. the total deformation to an Eigen Matrix
+            dCurrentPlasticDeformationdDeformation.resize( 45 * 45 );
+            Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+                dPDdF( dCurrentPlasticDeformationdDeformation.data(), 45, 45 );
+
+            //Solve for the gradient of the plastic deformation w.r.t. the total deformation
+            dPDdF = -linearSolver.solve( dPDResidualdF );
+
+            DEBUG.emplace( "dCurrentPlasticDeformationdDeformation", dCurrentPlasticDeformationdDeformation );
+        }
+
 #ifdef DEBUG_MODE
         DEBUG.emplace( "currentPlasticDeformation", currentPlasticDeformation );
         DEBUG.emplace( "dCurrentPlasticDeformationdGammas", dCurrentPlasticDeformationdGammas );
@@ -8499,6 +8516,27 @@ namespace micromorphicElastoPlasticity{
 
         variableMatrix dElasticRightCauchyGreendGammas
             = vectorTools::dot( vectorTools::inflate( floatOutsPlasticDeformation[ 10 ], 9, 9 ), dPlasticDeformationGradientdGammas );
+
+        solverTools::floatVector dElasticRightCauchyGreendDeformation;
+        if ( evaluateFullDerivatives ){
+
+            dElasticRightCauchyGreendDeformation = solverTools::floatVector( 9 * 45, 0 );
+            for ( unsigned int i = 0; i < 9; i++ ){
+                for ( unsigned int j = 0; j < 9; j++ ){
+                    dElasticRightCauchyGreendDeformation[ 45 * i + j ] = floatOutsPlasticDeformation[ 14 ][ 9 * i + j ];
+                }
+            }
+           
+            solverTools::floatVector temp( dCurrentPlasticDeformationdDeformation.begin(),
+                                           dCurrentPlasticDeformationdDeformation.begin() + 9 * 45 ); 
+
+            dElasticRightCauchyGreendDeformation +=
+                vectorTools::matrixMultiply( floatOutsPlasticDeformation[ 10 ], temp, 9, 9, 9, 45 );
+
+#ifdef DEBUG_MODE
+            DEBUG.emplace( "dElasticRightCauchyGreendDeformation", dElasticRightCauchyGreendDeformation );
+#endif
+        }
 
 #ifdef DEBUG_MODE
         DEBUG.emplace( "currentElasticRightCauchyGreen", floatOutsPlasticDeformation[ 9 ] );
@@ -8587,22 +8625,21 @@ namespace micromorphicElastoPlasticity{
         variableVector dYieldFunctionValuesdDeformation;
         if ( evaluateFullDerivatives ){
 
-            variableVector dElasticRightCauchyGreendDeformation( 9 * 45, 0 );
-            for ( unsigned int i = 0; i < 9; i++ ){
-                for ( unsigned int j = 0; j < 9; j++ ){
-                    dElasticRightCauchyGreendDeformation[ 45 * i + j ] = dElasticRightCauchyGreen[ 9 * i + j ];
-                }
-            }
-
-            dYieldFunctionValuesdDeformation = vectorTools::matrixMultiply( dYieldFunctionValuesdStresses,
-                                                                            dStressdDeforamtion, 5, 45, 45, 5 )
-                                             + vectorTools::matrixMultiply( dYieldFunctionValuesdElasticRightCauchyGreen,
-                                                                            dElasticRightCauchyGreendDeformation );
+            dYieldFunctionValuesdDeformation
+                = vectorTools::matrixMultiply( vectorTools::appendVectors( dYieldFunctionValuesdStresses ),
+                                                                           floatOutsPlasticDeformation[ 12 ], 5, 45, 45, 45 )
+                + vectorTools::matrixMultiply( vectorTools::appendVectors( dYieldFunctionValuesdElasticRightCauchyGreen ),
+                                                                           dElasticRightCauchyGreendDeformation, 5, 9, 9, 45 );
         }
 
 #ifdef DEBUG_MODE
         DEBUG.emplace( "yieldFunctionValues", yieldFunctionValues );
         DEBUG.emplace( "dYieldFunctionValuesdGammas", vectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
+
+        if ( evaluateFullDerivatives ){
+            DEBUG.emplace( "dElasticRightCauchyGreendDeformation", dElasticRightCauchyGreendDeformation );
+            DEBUG.emplace( "dYieldFunctionValuesdDeformation", dYieldFunctionValuesdDeformation );
+        }
 #endif
 
         //Construct the residual and the Jacobian

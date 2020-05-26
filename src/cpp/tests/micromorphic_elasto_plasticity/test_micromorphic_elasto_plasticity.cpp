@@ -14630,6 +14630,523 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
     return 0;
 }
 
+int test_computePlasticMultiplierResidual2( std::ofstream &results ){
+    /*!
+     * Test the computation of the plastic multiplier residual.
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    std::vector< double > fparams = { 2, 1.0e2, 1.5e1,             //Macro hardening parameters
+                                      2, 1.5e2, 2.0e1,             //Micro hardening parameters
+                                      2, 2.0e2, 2.7e1,             //Micro gradient hardening parameters
+                                      2, 0.56, 0.2,                //Macro flow parameters
+                                      2, 0.15,-0.2,                //Micro flow parameters
+                                      2, 0.82, 0.1,                //Micro gradient flow parameters
+                                      2, 0.70, 0.3,                //Macro yield parameters
+                                      2, 0.40,-0.3,                //Micro yield parameters
+                                      2, 0.52, 0.4,                //Micro gradient yield parameters
+                                      2, 696.47, 65.84,            //A stiffness tensor parameters
+                                      5, -7.69, -51.92, 38.61, -27.31, 5.13,  //B stiffness tensor parameters
+                                      11, 1.85, -0.19, -1.08, -1.57, 2.29, -0.61, 5.97, -2.02, 2.38, -0.32, -3.25, //C stiffness tensor parameters
+                                      2, -51.92, 5.13,             //D stiffness tensor parameters
+                                      0.4, 0.3, 0.35, 1e-8, 1e-8   //Integration parameters
+                                    };
+
+    parameterVector macroHardeningParameters;
+    parameterVector microHardeningParameters;
+    parameterVector microGradientHardeningParameters;
+
+    parameterVector macroFlowParameters;
+    parameterVector microFlowParameters;
+    parameterVector microGradientFlowParameters;
+
+    parameterVector macroYieldParameters;
+    parameterVector microYieldParameters;
+    parameterVector microGradientYieldParameters;
+
+    parameterVector Amatrix, Bmatrix, Cmatrix, Dmatrix;
+    parameterType alphaMacro, alphaMicro, alphaMicroGradient;
+    parameterType relativeTolerance, absoluteTolerance;
+
+    errorOut error = micromorphicElastoPlasticity::extractMaterialParameters( fparams,
+                                                                              macroHardeningParameters, microHardeningParameters,
+                                                                              microGradientHardeningParameters,
+                                                                              macroFlowParameters, microFlowParameters,
+                                                                              microGradientFlowParameters,
+                                                                              macroYieldParameters, microYieldParameters,
+                                                                              microGradientYieldParameters,
+                                                                              Amatrix, Bmatrix, Cmatrix, Dmatrix,
+                                                                              alphaMacro, alphaMicro, alphaMicroGradient,
+                                                                              relativeTolerance, absoluteTolerance );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticDeformationResidual & False\n";
+        return 1;
+    }
+
+    constantType   Dt = 2.5;
+    variableType   currentMacroGamma = 0.01;
+    variableType   currentMicroGamma = 0.02;
+    variableVector currentMicroGradientGamma = {0.011, 0.021, 0.031};
+    variableType   previousMacroGamma = 0.;
+    variableType   previousMicroGamma = 0.;
+    variableVector previousMicroGradientGamma( 3, 0 );
+    variableType   previousMacroStrainISV = 0.;
+    variableType   previousMicroStrainISV = 0.;
+    variableVector previousMicroGradientStrainISV( 3., 0. );
+    variableVector currentDeformationGradient = { 0.04482969,  0.88562312, -0.38710144,
+                                                 -0.93722716,  0.19666568,  0.41677155,
+                                                  0.46929057,  0.33779672,  0.81392228 };
+    variableVector currentMicroDeformation = {  0.51930689,  0.27954023, -0.85955731,
+                                                0.09469279, -0.99381243, -0.23218079,
+                                               -0.82281393,  0.09643296, -0.54637704 };
+    variableVector currentGradientMicroDeformation = { 0.04176306, -0.0151958 , -0.00090558, -0.01844751,  0.04512391,
+                                                       0.02174263, -0.00508239, -0.01827377,  0.00541031, -0.01330239,
+                                                      -0.02479987,  0.02914825,  0.00168841,  0.00230506,  0.00994845,
+                                                       0.00413116,  0.04555686, -0.00431862, -0.0138286 , -0.04412473,
+                                                       0.02016718, -0.03868735,  0.03842166, -0.0009337 ,  0.02977617,
+                                                       0.02310445,  0.02827616 };
+    variableVector previousPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector previousPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector previousPlasticGradientMicroDeformation = variableVector( 27, 0 );
+    variableVector previousPlasticMacroVelocityGradient = variableVector( 9, 0 );
+    variableVector previousPlasticMicroVelocityGradient = variableVector( 9, 0 );
+    variableVector previousPlasticMicroGradientVelocityGradient = variableVector( 27, 0 );
+
+    variableVector currentElasticDeformationGradient = currentDeformationGradient;
+    variableVector currentElasticMicroDeformation = currentMicroDeformation;
+    variableVector currentElasticGradientMicroDeformation = currentGradientMicroDeformation;
+    variableVector currentPlasticDeformationGradient = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector currentPlasticMicroDeformation = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+    variableVector currentPlasticGradientMicroDeformation = variableVector( 27, 0 );
+
+    variableType   previousdMacroGdMacroCohesion = 0;
+    variableType   previousdMicroGdMicroCohesion = 0;
+    variableMatrix previousdMicroGradientGdMicroGradientCohesion( 3, variableVector( 3, 0 ) );
+
+    variableType currentMacroStrainISV = 0;
+    variableType currentMicroStrainISV = 0;
+    variableVector currentMicroGradientStrainISV( 3, 0 );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticDeformationResidual & False\n";
+        return 1;
+    }
+
+    solverTools::floatMatrix floatArgsDefault =
+        {
+            { Dt },
+            currentDeformationGradient,
+            currentMicroDeformation,
+            currentGradientMicroDeformation,
+//            { currentMacroGamma },
+//            { currentMicroGamma },
+//            currentMicroGradientGamma,
+            { previousMacroGamma },
+            { previousMicroGamma },
+            previousMicroGradientGamma,
+            previousPlasticDeformationGradient,
+            previousPlasticMicroDeformation,
+            previousPlasticGradientMicroDeformation,
+            { previousMacroStrainISV },
+            { previousMicroStrainISV },
+            previousMicroGradientStrainISV,
+            { previousdMacroGdMacroCohesion },
+            { previousdMicroGdMicroCohesion },
+            vectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ),
+            previousPlasticMacroVelocityGradient,
+            previousPlasticMicroVelocityGradient,
+            previousPlasticMicroGradientVelocityGradient,
+            macroFlowParameters,
+            microFlowParameters,
+            microGradientFlowParameters,
+            macroHardeningParameters,
+            microHardeningParameters,
+            microGradientHardeningParameters,
+            macroYieldParameters,
+            microYieldParameters,
+            microGradientYieldParameters,
+            Amatrix,
+            Bmatrix,
+            Cmatrix,
+            Dmatrix,
+            { alphaMacro },
+            { alphaMicro },
+            { alphaMicroGradient }
+        };
+
+    variableVector currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress;
+
+    solverTools::floatMatrix floatOutsDefault = 
+        {
+            currentPK2Stress,
+            currentReferenceMicroStress,
+            currentReferenceHigherOrderStress,
+            { currentMacroStrainISV },
+            { currentMicroStrainISV },
+            currentMicroGradientStrainISV,
+            {}, {}, {},
+            {}, {}, {}
+        };
+
+    solverTools::floatMatrix floatArgs = floatArgsDefault;
+    solverTools::floatMatrix floatOuts = floatOutsDefault;
+
+    solverTools::intMatrix intArgs = { { 1 } };
+    solverTools::intMatrix intOutsDefault = { { 0, 0 } };
+    
+    solverTools::intMatrix intOuts = intOutsDefault;
+
+#ifdef DEBUG_MODE
+    solverTools::debugMap DEBUG;
+#endif
+
+    solverTools::floatVector x =
+        {
+            currentMacroGamma,
+            currentMicroGamma,
+            currentMicroGradientGamma[ 0 ],
+            currentMicroGradientGamma[ 1 ],
+            currentMicroGradientGamma[ 2 ]
+        };
+
+    solverTools::floatVector residualAnswer = { 322.54287276, 399.21241922, -2.92814884, -5.60537334, -8.29891331 };
+
+    solverTools::floatVector residual;
+    solverTools::floatMatrix jacobian;
+
+    error = micromorphicElastoPlasticity::computePlasticMultiplierResidual( x, floatArgs, intArgs, residual, jacobian,
+                                                                            floatOuts, intOuts
+#ifdef DEBUG_MODE
+                                                                            , DEBUG
+#endif
+                                                                          );
+
+    if ( error ){
+        error->print();
+        results << "test_computePlasticMultiplierResidual2 & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( residual, residualAnswer ) ) {
+        std::cout << "error: "; vectorTools::print( residual - residualAnswer );
+        results << "test_computePlasticMultiplierResidual2 (test 1) & False\n";
+        return 1;
+    }
+
+    //Tests of the Jacobians
+    solverTools::floatType eps = 1e-6;
+    for ( unsigned int i = 0; i < x.size(); i++ ){
+        solverTools::floatVector delta( x.size(), 0 );
+        delta[ i ] = eps * fabs( x[ i ] ) + eps;
+
+        solverTools::floatVector rP, rM;
+        solverTools::floatMatrix _J;
+
+        solverTools::floatMatrix fOP, fOM;
+        fOP = floatOutsDefault;
+        fOM = floatOutsDefault;
+
+        solverTools::intMatrix iOP, iOM;
+        iOP = intOutsDefault;
+        iOM = intOutsDefault;
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap DEBUG_P, DEBUG_M;
+#endif
+
+        error =  micromorphicElastoPlasticity::computePlasticMultiplierResidual( x + delta, floatArgs, intArgs, rP, _J,
+                                                                                 fOP, iOP
+#ifdef DEBUG_MODE
+                                                                                 , DEBUG_P
+#endif
+                                                                               );
+
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMultiplierResidual2 & False\n";
+            return 1;
+        }
+
+        error =  micromorphicElastoPlasticity::computePlasticMultiplierResidual( x - delta, floatArgs, intArgs, rM, _J,
+                                                                                 fOM, iOM
+#ifdef DEBUG_MODE
+                                                                                 , DEBUG_M
+#endif
+                                                                               );
+
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMultiplierResidual2 & False\n";
+            return 1;
+        }
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap numericGradients;
+        for ( auto itP = DEBUG_P.begin(); itP != DEBUG_P.end(); itP++ ){
+            auto itM = DEBUG_M.find( itP->first );
+            if ( itM == DEBUG_M.end() ){
+                results << "test_computePlasticMultiplierResidual2 (DEBUG) & False\n";
+                return 1;
+            }
+
+            numericGradients.emplace( itP->first, ( itP->second - itM->second ) / ( 2 * delta[ i ] ) );
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "currentPlasticDeformation" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticDeformation" ][ j ],
+                                            DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] ) ){
+                std::cout << "row, col:  " << j << ", " << i << "\n";
+                std::cout << "ana:       " << DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] << "\n";
+                std::cout << "num:       " << numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
+                std::cout << "error:     " << DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ]
+                                             -numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "currentPlasticDeformation" ] );
+
+                std::cout << "\nfull\n";
+                vectorTools::print( vectorTools::inflate( DEBUG[ "dCurrentPlasticDeformationdGammas" ], 45, 5 ) );
+
+                results << "test_computePlasticMultiplierResidual2 (dCurrentPlasticDeformationdGammas) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "stresses" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "stresses" ][ j ],
+                                            DEBUG[ "dStressdGammas" ][ 5 * j + i ] ) ){
+                std::cout << "row, col:  " << j << ", " << i << "\n";
+                std::cout << "ana:       " << DEBUG[ "dStressdGammas" ][ 5 * j + i ] << "\n";
+                std::cout << "num:       " << numericGradients[ "stresses" ][ j ] << "\n";
+                std::cout << "error:     " << DEBUG[ "dStressdGammas" ][ 5 * j + i ]
+                                             -numericGradients[ "stresses" ][ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "stresses" ] );
+
+                std::cout << "\nfull\n";
+                vectorTools::print( vectorTools::inflate( DEBUG[ "dStressdGammas" ], 45, 5 ) );
+
+                results << "test_computePlasticMultiplierResidual2 (dStressdGammas) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
+                                            DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ] ) ){
+                std::cout << "row, col:  " << j << ", " << i << "\n";
+                std::cout << "ana:       " << DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ] << "\n";
+                std::cout << "num:       " << numericGradients[ "currentElasticRightCauchyGreen" ][ j ] << "\n";
+                std::cout << "error:     " << DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ]
+                                             -numericGradients[ "currentElasticRightCauchyGreen" ][ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "currentElasticRightCauchyGreen" ] );
+
+                std::cout << "\nfull\n";
+                vectorTools::print( vectorTools::inflate( DEBUG[ "dElasticRightCauchyGreendGammas" ], 9, 5 ) );
+
+                results << "test_computePlasticMultiplierResidual2 (dElasticRightCauchyGreendGammas) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "yieldFunctionValues" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "yieldFunctionValues" ][ j ],
+                                            DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] ) ){
+                std::cout << "row, col:  " << j << ", " << i << "\n";
+                std::cout << "ana:       " << DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] << "\n";
+                std::cout << "num:       " << numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
+                std::cout << "error:     " << DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ]
+                                             -numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "yieldFunctionValues" ] );
+
+                std::cout << "\nfull\n";
+                vectorTools::print( vectorTools::inflate( DEBUG[ "dYieldFunctionValuesdGammas" ], 5, 5 ) );
+
+                results << "test_computePlasticMultiplerResidual2 (dYieldFunctionValuesdGammas) & False\n";
+                return 1;
+            }
+        }
+#endif
+        //Test of the residual and comparison to the Jacobian
+        solverTools::floatVector gradCol = ( rP - rM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ] ) ){
+                std::cout << "row, col: " << j << ", " << i << "\n";
+                std::cout << "ana:      " << jacobian[ j ][ i ] << "\n";
+                std::cout << "num:      " << gradCol[ j ] << "\n";
+                std::cout << "error:    " << jacobian[ j ][ i ] - gradCol[ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( gradCol );
+
+                std::cout << "\nfull\n";
+                vectorTools::print( jacobian );
+
+                results << "test_computePlasticMultiplierResidual2 (test 2) & False\n";
+                return 1;
+            }
+        }
+
+        //Test of the partial derivatives of the Jacobians w.r.t. the plastic multipliers
+        gradCol = vectorTools::appendVectors( { fOP[ 0 ] - fOM[ 0 ], fOP[ 1 ] - fOM[ 1 ], fOP[ 2 ] - fOM[ 2 ] } ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 9 ][ 5 * j + i ] ) ){
+                std::cout << "row, col: " << j << ", " << i << "\n";
+                std::cout << "ana:      " << floatOuts[ 9 ][ 5 * j + i ] << "\n";
+                std::cout << "num:      " << gradCol[ j ] << "\n";
+                std::cout << "error:    " << floatOuts[ 9 ][ 5 * j + i ] - gradCol[ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( gradCol );
+
+                std::cout << "\nfull\n";
+                vectorTools::print( vectorTools::inflate( floatOuts[ 9 ], 45, 5 ) );
+                results << "test_computePlasticMultiplierResidual2 (test 3) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    //Test the Jacobians w.r.t. the deformation measures
+    solverTools::floatVector deformation = vectorTools::appendVectors( { currentDeformationGradient,
+                                                                         currentMicroDeformation,
+                                                                         currentGradientMicroDeformation } );
+
+    for ( unsigned int i = 0; i < deformation.size(); i++ ){
+        solverTools::floatVector delta( deformation.size(), 0 );
+        delta[ i ] = eps * fabs( deformation[ i ] ) + eps;
+
+        solverTools::floatVector rP, rM;
+        solverTools::floatMatrix _J;
+
+        solverTools::floatMatrix fA_P, fA_M;
+        fA_P = floatArgs;
+        fA_M = floatArgs;
+
+        fA_P[ 1 ] += solverTools::floatVector( delta.begin() +  0, delta.begin() +  9 );
+        fA_P[ 2 ] += solverTools::floatVector( delta.begin() +  9, delta.begin() + 18 );
+        fA_P[ 3 ] += solverTools::floatVector( delta.begin() + 18, delta.begin() + 45 );
+
+        fA_M[ 1 ] -= solverTools::floatVector( delta.begin() +  0, delta.begin() +  9 );
+        fA_M[ 2 ] -= solverTools::floatVector( delta.begin() +  9, delta.begin() + 18 );
+        fA_M[ 3 ] -= solverTools::floatVector( delta.begin() + 18, delta.begin() + 45 );
+
+        solverTools::floatMatrix fOP, fOM;
+        fOP = floatOutsDefault;
+        fOM = floatOutsDefault;
+
+        solverTools::intMatrix iOP, iOM;
+        iOP = intOutsDefault;
+        iOM = intOutsDefault;
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap DEBUG_P, DEBUG_M;
+#endif
+
+        error =  micromorphicElastoPlasticity::computePlasticMultiplierResidual( x, fA_P, intArgs, rP, _J,
+                                                                                 fOP, iOP
+#ifdef DEBUG_MODE
+                                                                                 , DEBUG_P
+#endif
+                                                                               );
+
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMultiplierResidual2 & False\n";
+            return 1;
+        }
+
+        error =  micromorphicElastoPlasticity::computePlasticMultiplierResidual( x, fA_M, intArgs, rM, _J,
+                                                                                 fOM, iOM
+#ifdef DEBUG_MODE
+                                                                                 , DEBUG_M
+#endif
+                                                                               );
+
+        if ( error ){
+            error->print();
+            results << "test_computePlasticMultiplierResidual2 & False\n";
+            return 1;
+        }
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap numericGradients;
+        for ( auto itP = DEBUG_P.begin(); itP != DEBUG_P.end(); itP++ ){
+            auto itM = DEBUG_M.find( itP->first );
+
+            if ( itM == DEBUG_M.end() ){
+                results << "test_computePlasticMultiplierResidual2 (DEBUG) & False\n";
+                return 1;
+            }
+
+            numericGradients.emplace( itP->first, ( itP->second - itM->second ) / ( 2 * delta[ i ] ) );
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "currentPlasticDeformation" ].size(); j++ ){
+            
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticDeformation" ][ j ],
+                                            DEBUG[ "dCurrentPlasticDeformationdDeformation" ][ 45 * j + i ] ) ){
+                std::cout << "row, col: " << j << ", " << i << "\n";
+                std::cout << "ana:      " << DEBUG[ "dCurrentPlasticDeformationdDeformation" ][ 45 * j + i ] << "\n";
+                std::cout << "num:      " << numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
+                std::cout << "error:    " << DEBUG[ "dCurrentPlasticDeformationdDeformation" ][ 45 * j + i ]
+                                           - numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "currentPlasticDeformation" ] );
+                std::cout << "\nfull\n"; vectorTools::print( vectorTools::inflate( DEBUG[ "dCurrentPlasticDeformationdDeformation" ], 45, 45 ) );
+                results << "test_computePlasticMultiplierResidual2 (dCurrentPlasticDeformationdDeformation) & False\n";
+                return 1;
+            }
+        }
+        std::cout << "stresses\n";
+        vectorTools::print( numericGradients[ "stresses" ] );
+        std::cout << "\n";
+        std::cout << "current elastic right cauchy green\n";
+        vectorTools::print( numericGradients[ "currentElasticRightCauchyGreen" ] );
+        std::cout << "\n";
+        std::cout << "current yield function values\n";
+        vectorTools::print( numericGradients[ "yieldFunctionValues" ] );
+#endif
+
+//        //Check the gradient of the residual w.r.t. the deformation measures
+//        solverTools::floatVector gradCol = ( rP - rM ) / ( 2 * delta[ i ] );
+//
+//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 11 ][ 45 * j + i ] ) ){
+//                std::cout << "row, col: " << j << ", " << i << "\n";
+//                std::cout << "ana     : " << floatOuts[ 11 ][ 45 * j + i ] << "\n";
+//                std::cout << "num     : " << gradCol[ j ] << "\n";
+//                std::cout << "error   : " << floatOuts[ 11 ][ 45 * j + i ] - gradCol[ j ] << "\n";
+//
+//                std::cout << "\nrow\n"; vectorTools::print( gradCol );
+//                std::cout << "\nfull\n"; vectorTools::print( vectorTools::inflate( floatOuts[ 11 ], 5, 45 ) );
+//                results << "test_computePlasticMultiplierResidual2 (test 4) & False\n";
+//                return 1;
+//            }
+//        }
+//
+//        //Check the gradient of the stresses w.r.t. the deformation measures
+//        gradCol = vectorTools::appendVectors( { fOP[ 0 ] - fOM[ 0 ], fOP[ 1 ] - fOM[ 1 ], fOP[ 2 ] - fOM[ 2 ] } );
+//        gradCol /= 2 * delta[ i ];
+//
+//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 10 ][ 45 * j + i ] ) ){
+//                results << "test_computePlasticMultiplierResidual2 (test 5) & False\n";
+//                return 1;
+//            }
+//        }
+    }
+
+
+    results << "test_computePlasticMultiplierResidual2 & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -14666,13 +15183,14 @@ int main(){
 //    test_cout_redirect( results );
 //    test_cerr_redirect( results );
 //
-//    test_computePlasticMultiplierResidual( results );
+    test_computePlasticMultiplierResidual( results );
+    test_computePlasticMultiplierResidual2( results );
 //    test_evaluate_model( results );
 //    test_evaluate_model_continuation( results );
 //
 //    test_materialLibraryInterface( results );
 //
-    test_evaluate_model_history( results );
+//    test_evaluate_model_history( results );
 
     //Close the results file
     results.close();
