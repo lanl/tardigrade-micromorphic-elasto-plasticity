@@ -5432,7 +5432,6 @@ namespace micromorphicElastoPlasticity{
              ( previousMicroGradientGamma[ 1 ] > relativeTolerance * fabs( previousMicroGradientGamma[ 1 ] ) + absoluteTolerance ) ||
              ( previousMicroGradientGamma[ 2 ] > relativeTolerance * fabs( previousMicroGradientGamma[ 2 ] ) + absoluteTolerance ) ){
 
-            std::cout << "  previous yielding detected\n";
             //Compute the previous stress
             error = micromorphicLinearElasticity::linearElasticityReference( previousElasticDeformationGradient,
                                                                              previousElasticMicroDeformation,
@@ -5532,8 +5531,6 @@ namespace micromorphicElastoPlasticity{
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 2;
             }
-            std::cout << "previousMacroStrainISV: " << previousMacroStrainISV << "\n";
-            std::cout << "currentMacroStrainISV: " << currentMacroStrainISV << "\n";
 
 #ifdef DEBUG_MODE
             tmp = { currentMacroStrainISV };
@@ -5613,9 +5610,6 @@ namespace micromorphicElastoPlasticity{
                 output_message = buffer.str(); //Save the output to enable message passing
                 return 2;
             }
-
-            std::cout << "previousPlasticDeformationGradient:\n"; vectorTools::print( previousPlasticDeformationGradient );
-            std::cout << "currentPlasticDeformationGradient:\n"; vectorTools::print( currentPlasticDeformationGradient );
         }
 
         //Update the elastic deformation
@@ -5646,25 +5640,25 @@ namespace micromorphicElastoPlasticity{
         tempDEBUG.emplace( "currentPlasticGradientMicroDeformation", currentPlasticGradientMicroDeformation );
 #endif
 
-        std::cout << "\n\nDEFORMATION MEASURES\n";
-        std::cout << "  "; vectorTools::print( currentDeformationGradient );
-        std::cout << "  "; vectorTools::print( currentMicroDeformation );
-        std::cout << "  "; vectorTools::print( currentGradientMicroDeformation );
-
-        std::cout << "TRIAL ELASTIC DEFORMATION MEASURES\n";
-        std::cout << "  "; vectorTools::print( currentElasticDeformationGradient );
-        std::cout << "  "; vectorTools::print( currentElasticMicroDeformation );
-        std::cout << "  "; vectorTools::print( currentElasticGradientMicroDeformation );
-
-        std::cout << "TRIAL PLASTIC DEFORMATION MEASURES\n";
-        std::cout << "  "; vectorTools::print( currentPlasticDeformationGradient );
-        std::cout << "  "; vectorTools::print( currentPlasticMicroDeformation );
-        std::cout << "  "; vectorTools::print( currentPlasticGradientMicroDeformation );
-
-        std::cout << "PREVIOUS PLASTIC DEFORMATION MEASURES\n";
-        std::cout << "  "; vectorTools::print( previousPlasticDeformationGradient );
-        std::cout << "  "; vectorTools::print( previousPlasticMicroDeformation );
-        std::cout << "  "; vectorTools::print( previousPlasticGradientMicroDeformation );
+//        std::cout << "\n\nDEFORMATION MEASURES\n";
+//        std::cout << "  "; vectorTools::print( currentDeformationGradient );
+//        std::cout << "  "; vectorTools::print( currentMicroDeformation );
+//        std::cout << "  "; vectorTools::print( currentGradientMicroDeformation );
+//
+//        std::cout << "TRIAL ELASTIC DEFORMATION MEASURES\n";
+//        std::cout << "  "; vectorTools::print( currentElasticDeformationGradient );
+//        std::cout << "  "; vectorTools::print( currentElasticMicroDeformation );
+//        std::cout << "  "; vectorTools::print( currentElasticGradientMicroDeformation );
+//
+//        std::cout << "TRIAL PLASTIC DEFORMATION MEASURES\n";
+//        std::cout << "  "; vectorTools::print( currentPlasticDeformationGradient );
+//        std::cout << "  "; vectorTools::print( currentPlasticMicroDeformation );
+//        std::cout << "  "; vectorTools::print( currentPlasticGradientMicroDeformation );
+//
+//        std::cout << "PREVIOUS PLASTIC DEFORMATION MEASURES\n";
+//        std::cout << "  "; vectorTools::print( previousPlasticDeformationGradient );
+//        std::cout << "  "; vectorTools::print( previousPlasticMicroDeformation );
+//        std::cout << "  "; vectorTools::print( previousPlasticGradientMicroDeformation );
 
         //Compute the right Cauchy-Green deformation gradient
         variableVector currentElasticRightCauchyGreen;
@@ -5699,10 +5693,10 @@ namespace micromorphicElastoPlasticity{
             return 2;
         }
 
-        std::cout << "TRIAL STRESSES\n";
-        std::cout << "  "; vectorTools::print( currentPK2Stress );
-        std::cout << "  "; vectorTools::print( currentReferenceMicroStress );
-        std::cout << "  "; vectorTools::print( currentReferenceHigherOrderStress );
+//        std::cout << "TRIAL STRESSES\n";
+//        std::cout << "  "; vectorTools::print( currentPK2Stress );
+//        std::cout << "  "; vectorTools::print( currentReferenceMicroStress );
+//        std::cout << "  "; vectorTools::print( currentReferenceHigherOrderStress );
 
 #ifdef DEBUG_MODE
         tempDEBUG.emplace( "intermediatePK2Stress", currentPK2Stress );
@@ -5746,8 +5740,8 @@ namespace micromorphicElastoPlasticity{
             return 2;
         }
 
-        std::cout << "TRIAL YIELD VALUES\n";
-        std::cout << "  "; vectorTools::print( currentYieldFunctionValues );
+//        std::cout << "TRIAL YIELD VALUES\n";
+//        std::cout << "  "; vectorTools::print( currentYieldFunctionValues );
 
 //        std::cout << "initial yield function values:\n"; vectorTools::print( currentYieldFunctionValues );
 
@@ -5769,7 +5763,7 @@ namespace micromorphicElastoPlasticity{
                 activePlasticity[ i ] = 1;
             }
         }
-        std::cout << "convergenceFlag: " << convergenceFlag << "\n";
+//        std::cout << "convergenceFlag: " << convergenceFlag << "\n";
 //        std::cout << "activePlasticity: "; vectorTools::print( activePlasticity );
 
         if ( !convergenceFlag ){
@@ -5819,38 +5813,25 @@ namespace micromorphicElastoPlasticity{
                     currentReferenceHigherOrderStress,
                     { currentMacroStrainISV },
                     { currentMicroStrainISV },
-                    currentMicroGradientStrainISV
+                    currentMicroGradientStrainISV,
+                    {}, //The plastic deformation gradient
+                    {}, //The plastic micro deformation
+                    {}  //The gradient of plastic micro deformation
                 };
 
-            solverTools::intMatrix intOuts = { activePlasticity };
+            solverTools::intMatrix intOuts = { { } };
 
             solverTools::stdFncNLFJ func
-                = static_cast< solverTools::NonLinearFunctionWithJacobian >( computePlasticDeformationResidual );
+                = static_cast< solverTools::NonLinearFunctionWithJacobian >( computePlasticMultiplierResidual );
 
             solverTools::floatVector x0 =
                 {
-//                    currentMacroStrainISV,
-//                    currentMicroStrainISV,
-//                    currentMicroGradientStrainISV[ 0 ],
-//                    currentMicroGradientStrainISV[ 1 ],
-//                    currentMicroGradientStrainISV[ 2 ],
                     currentMacroGamma,
                     currentMicroGamma,
                     currentMicroGradientGamma[ 0 ],
                     currentMicroGradientGamma[ 1 ],
                     currentMicroGradientGamma[ 2 ]
-//                    previousMacroGamma,
-//                    previousMicroGamma,
-//                    previousMicroGradientGamma[ 0 ],
-//                    previousMicroGradientGamma[ 1 ],
-//                    previousMicroGradientGamma[ 2 ]
                 };
-
-            x0 = vectorTools::appendVectors( { currentPlasticDeformationGradient,
-                                               currentPlasticMicroDeformation,
-                                               currentPlasticGradientMicroDeformation, x0 } );
-
-            std::cout << "x0 pre solver:\n"; vectorTools::print( x0 );
 
             solverTools::floatVector solutionVector;
 
@@ -5864,7 +5845,7 @@ namespace micromorphicElastoPlasticity{
 
             solverTools::solverType linearSolver;
             solverTools::floatMatrix J;
-            solverTools::intVector boundVariableIndices = { 45, 46, 47, 48, 49 };
+            solverTools::intVector boundVariableIndices = {  0,  1,  2,  3,  4 };
             solverTools::intVector boundSigns           = {  0,  0,  0,  0,  0 };
             solverTools::floatVector boundValues        = {  0,  0,  0,  0,  0 };
 //            solverTools::intVector boundVariableIndices = {  50, 51, 52, 53, 54 };
@@ -5874,12 +5855,12 @@ namespace micromorphicElastoPlasticity{
 
             error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
                                                  floatOuts, intOuts, floatArgs, intArgs, linearSolver, J,
-//                                                 boundVariableIndices, boundSigns, boundValues,
+                                                 boundVariableIndices, boundSigns, boundValues, true,
 #ifdef DEBUG_MODE
                                                  DEBUG,
 #endif
                                                  20, relativeTolerance, absoluteTolerance,
-                                                 1e-4, 5, 0.1, .01 );
+                                                 1e-4, 5, 1.0, .01 );
 
 //            solverTools::intVector variableIndices = { 50, 51, 52, 53, 54 };
 //            solverTools::intVector residualIndices = { 50, 51, 52, 53, 54 };
@@ -5908,6 +5889,9 @@ namespace micromorphicElastoPlasticity{
 #ifdef DEBUG_MODE
             if ( error ){
                 //check the Jacobian
+                std::cout << "homotopy solver error message:\n"; error->print(); output_message = buffer.str();
+                std::cout << output_message;
+            
                 
 
                 std::cout << "FULL NEWTON INCREMENT:\n";
@@ -6095,8 +6079,8 @@ namespace micromorphicElastoPlasticity{
                 solverTools::floatType minMicroGamma = -1.;
                 solverTools::floatType maxMacroGamma =  1.;
                 solverTools::floatType maxMicroGamma =  1.;
-                unsigned int nMacro = 40;
-                unsigned int nMicro = 40;
+                unsigned int nMacro = 10;
+                unsigned int nMicro = 10;
 
                 solverTools::floatType dMacro = ( maxMacroGamma - minMacroGamma ) / nMacro;
                 solverTools::floatType dMicro = ( maxMicroGamma - minMicroGamma ) / nMicro;
@@ -6114,8 +6098,8 @@ namespace micromorphicElastoPlasticity{
                         solverTools::floatType trialMacroGamma = minMacroGamma + macroi * dMacro;
                         solverTools::floatType trialMicroGamma = minMicroGamma + microi * dMicro;
 
-                        x0[ 45 ] = trialMacroGamma;
-                        x0[ 46 ] = trialMicroGamma;
+                        x0[ 0 ] = trialMacroGamma;
+                        x0[ 0 ] = trialMicroGamma;
 
                         error2 = func( x0, floatArgs, intArgs, Rtmp, Jtmp, floatOuts, intOuts, tempDEBUG );
 
@@ -6134,8 +6118,8 @@ namespace micromorphicElastoPlasticity{
 
                         output_map_str += std::to_string( trialMacroGamma ) + ", "
                                         + std::to_string( trialMicroGamma ) + ", "
-                                        + std::to_string( dxtmp[ 45 ] ) + ", "
-                                        + std::to_string( dxtmp[ 46 ] ) + ", ";
+                                        + std::to_string( dxtmp[ 0 ] ) + ", "
+                                        + std::to_string( dxtmp[ 1 ] ) + ", ";
                     }
                     output_map_str += "\n";
                 }
@@ -6168,23 +6152,12 @@ namespace micromorphicElastoPlasticity{
             }
 
             //Extract the deformation measures
-//            std::cout << "solutionVector:\n"; vectorTools::print( solutionVector );
-            currentPlasticDeformationGradient      = variableVector( solutionVector.begin() +  0, solutionVector.begin() +  9 );
-            currentPlasticMicroDeformation         = variableVector( solutionVector.begin() +  9, solutionVector.begin() + 18 );
-            currentPlasticGradientMicroDeformation = variableVector( solutionVector.begin() + 18, solutionVector.begin() + 45 );
-            currentMacroGamma                      = solutionVector[ 45 ];
-            currentMicroGamma                      = solutionVector[ 46 ];
-            currentMicroGradientGamma              = variableVector( solutionVector.begin() + 47, solutionVector.begin() + 50 );
-
-//            std::cout << "currentPlasticDeformationGradient:\n"; vectorTools::print( currentPlasticDeformationGradient );
-//            std::cout << "currentPlasticMicroDeformation:\n"; vectorTools::print( currentPlasticMicroDeformation );
-//            std::cout << "currentPlasticGradientMicroDeformation:\n"; vectorTools::print( currentPlasticGradientMicroDeformation );
-//            std::cout << "currentMacroStrainISV:\n" << currentMacroStrainISV << "\n";
-//            std::cout << "currentMicroStrainISV:\n" << currentMicroStrainISV << "\n";
-//            std::cout << "currentMicroGradientStrainISV:\n"; vectorTools::print( currentMicroGradientStrainISV );
-//            std::cout << "currentMacroGamma:\n" << currentMacroGamma << "\n";
-//            std::cout << "currentMicroStrainISV:\n" << currentMicroGamma << "\n";
-//            std::cout << "currentMicroGradientStrainISV:\n"; vectorTools::print( currentMicroGradientGamma );
+            currentPlasticDeformationGradient      = floatOuts[ 6 ];
+            currentPlasticMicroDeformation         = floatOuts[ 7 ];
+            currentPlasticGradientMicroDeformation = floatOuts[ 8 ];
+            currentMacroGamma                      = solutionVector[ 0 ];
+            currentMicroGamma                      = solutionVector[ 1 ];
+            currentMicroGradientGamma              = variableVector( solutionVector.begin() + 2, solutionVector.begin() + 5 );
 
             if ( currentMacroGamma < -absoluteTolerance ){
                 errorOut result = new errorNode( "evaluate_model", "The macro-scale plastic multiplier is negative" );
@@ -6209,7 +6182,7 @@ namespace micromorphicElastoPlasticity{
                 }
             }
 
-            //Extract the stresses
+            //Extract the stresses and state variables
             currentPK2Stress                       = floatOuts[ 0 ];
             currentReferenceMicroStress            = floatOuts[ 1 ];
             currentReferenceHigherOrderStress      = floatOuts[ 2 ];
@@ -7107,7 +7080,7 @@ namespace micromorphicElastoPlasticity{
             solverTools::floatVector boundValues        = {  0,  0,  0,  0,  0 };
             error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
                                                  floatOuts, intOuts, floatArgs, intArgs, finalSolver, J,
-                                                 boundVariableIndices, boundSigns, boundValues,
+                                                 boundVariableIndices, boundSigns, boundValues, true,
 #ifdef DEBUG_MODE
                                                  DEBUG,
 #endif
@@ -8303,9 +8276,9 @@ namespace micromorphicElastoPlasticity{
             }
         }
         else{ 
-            if ( floatOuts.size() != 6 ){
+            if ( floatOuts.size() != 9 ){
                 return new errorNode( "computePlasticMultiplierResidual",
-                                      "The floating point output matrix floatOuts must have a length of 6" );
+                                      "The floating point output matrix floatOuts must have a length of 9" );
             }
         }
 
@@ -8348,20 +8321,19 @@ namespace micromorphicElastoPlasticity{
         const parameterVector *macroHardeningParameters                      = &floatArgs[ ii++ ];
         const parameterVector *microHardeningParameters                      = &floatArgs[ ii++ ];
         const parameterVector *microGradientHardeningParameters              = &floatArgs[ ii++ ];
-        const parameterVector *macroYieldParameters                          = &floatArgs[ ii++ ];
-        const parameterVector *microYieldParameters                          = &floatArgs[ ii++ ];
-        const parameterVector *microGradientYieldParameters                  = &floatArgs[ ii++ ];
-        const parameterVector *Amatrix                                       = &floatArgs[ ii++ ];
-        const parameterVector *Bmatrix                                       = &floatArgs[ ii++ ];
-        const parameterVector *Cmatrix                                       = &floatArgs[ ii++ ];
-        const parameterVector *Dmatrix                                       = &floatArgs[ ii++ ];
-        const parameterType   *alphaMacro                                    = &floatArgs[ ii++ ][ 0 ];
-        const parameterType   *alphaMicro                                    = &floatArgs[ ii++ ][ 0 ];
-        const parameterType   *alphaMicroGradient                            = &floatArgs[ ii++ ][ 0 ];
+        const parameterVector *macroYieldParameters                          = &floatArgs[ 25 ];
+        const parameterVector *microYieldParameters                          = &floatArgs[ 26 ];
+        const parameterVector *microGradientYieldParameters                  = &floatArgs[ 27 ];
+//        const parameterVector *Amatrix                                       = &floatArgs[ ii++ ];
+//        const parameterVector *Bmatrix                                       = &floatArgs[ ii++ ];
+//        const parameterVector *Cmatrix                                       = &floatArgs[ ii++ ];
+//        const parameterVector *Dmatrix                                       = &floatArgs[ ii++ ];
+//        const parameterType   *alphaMacro                                    = &floatArgs[ ii++ ][ 0 ];
+//        const parameterType   *alphaMicro                                    = &floatArgs[ ii++ ][ 0 ];
+//        const parameterType   *alphaMicroGradient                            = &floatArgs[ ii++ ][ 0 ];
 
         //Construct the inputs for the solve for the plastic deformation measure
 
-        ii = 0;
         solverTools::floatMatrix floatArgsPlasticDeformation =
             {
                 floatArgs[  0 ], //Dt
@@ -8404,6 +8376,8 @@ namespace micromorphicElastoPlasticity{
         /*==================================
         | Compute the plastic deformations |
         ==================================*/
+
+//        std::cout << "    x: "; vectorTools::print( x );
 
         //Assemble the values required for the non-linear solve
 
@@ -8456,6 +8430,11 @@ namespace micromorphicElastoPlasticity{
             errorOut result = new errorNode( "computePlasticMultiplierResidual", "Error in solution of plastic deformation" );
             result->addNext( error );
             intOuts[ 0 ] = { ( int )convergeFlag, ( int )fatalErrorFlag };
+            if ( ( !fatalErrorFlag ) && ( !convergeFlag ) ){
+                //Alert the Newton-Raphson solver that there is a sub-level convergence problem.
+                residual.resize( 101 );
+                jacobian.resize( 212 );
+            }
             return result;
         }
 
@@ -8621,6 +8600,17 @@ namespace micromorphicElastoPlasticity{
             jacobian[ i ] = ( dMacYieldFunctionValuedYieldFunctionValue + x[ i ] ) * dYieldFunctionValuesdGammas[ i ]
                           + yieldFunctionValues[ i ] * rowEye;
         }
+
+        //Update the output vector
+        floatOuts[ 0 ] = floatOutsPlasticDeformation[ 0 ];
+        floatOuts[ 1 ] = floatOutsPlasticDeformation[ 1 ];
+        floatOuts[ 2 ] = floatOutsPlasticDeformation[ 2 ];
+        floatOuts[ 3 ] = floatOutsPlasticDeformation[ 3 ];
+        floatOuts[ 4 ] = floatOutsPlasticDeformation[ 4 ];
+        floatOuts[ 5 ] = floatOutsPlasticDeformation[ 5 ];
+        floatOuts[ 6 ] = solverTools::floatVector( currentPlasticDeformation.begin() +  0, currentPlasticDeformation.begin() + 9 );
+        floatOuts[ 7 ] = solverTools::floatVector( currentPlasticDeformation.begin() +  9, currentPlasticDeformation.begin() + 18 );
+        floatOuts[ 8 ] = solverTools::floatVector( currentPlasticDeformation.begin() + 18, currentPlasticDeformation.begin() + 45 );
 
         return NULL;
     }

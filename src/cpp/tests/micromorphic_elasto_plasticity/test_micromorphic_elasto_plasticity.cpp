@@ -13801,7 +13801,7 @@ int test_evaluate_model_history( std::ofstream &results ){
                                                         { 0, 0, 0},
                                                         { 0, 0, 0} };
 
-    double dt = 0.001;
+    double dt = 0.05;
     double t0 = 0.;
     double tf = 1.0;
 
@@ -13821,7 +13821,7 @@ int test_evaluate_model_history( std::ofstream &results ){
                                       5, 1000, 400, -1500, -1400, -3000,
                                       11, 0, 0, 0, 0, 0, 0, 1e+06, 0, 0, 0, 0,
                                       2, 400, -3000,
-                                      0.0, 0.0, 0.0, 1e-09, 1e-09 };
+                                      0.5, 0.5, 0.5, 1e-09, 1e-09 };
 //                                      0.0, 0.0, 0.0, 1e-09, 1e-09 };
 
     //Initialize the state variable vector
@@ -14048,69 +14048,69 @@ int test_evaluate_model_history( std::ofstream &results ){
 #endif
                                                 );
 
-        std::cout << "SDVS:\n"; vectorTools::print( SDVS );
+//        std::cout << "SDVS:\n"; vectorTools::print( SDVS );
 
 #ifdef DEBUG_MODE
 
-        if ( ( fabs( SDVS[ 0 ] ) > 1e-8 ) || ( errorCode != 0 ) ){
-            for ( auto inc = DEBUG.begin(); inc != DEBUG.end(); inc++ ){
-                std::cout << inc->first << "\n";
-                for ( auto itr = inc->second.begin(); itr != inc->second.end(); itr++ ){
-                    if ( itr->first.compare( "converged_values" ) != 0 ){
-                        std::cout << "    " << itr->first << "\n";
-                        std::cout << "        currentMacroGamma:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentMacroGamma" ] );
-                        std::cout << "        currentMicroGamma:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroGamma" ] );
-                        std::cout << "        currentMicroGradientGamma:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroGradientGamma" ] );
-                        std::cout << "        currentDeformationGradient:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentDeformationGradient" ] );
-                        std::cout << "        currentElasticDeformationGradient:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentElasticDeformationGradient" ] );
-                        std::cout << "        currentPlasticDeformationGradient:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentPlasticDeformationGradient" ] );
-                        std::cout << "        currentPK2Stress:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentPK2Stress" ] );
-                        std::cout << "        currentMacroCohesion:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentMacroCohesion" ] );
-                        std::cout << "        dMacroCohesiondMacroStrainISV:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "dMacroCohesiondMacroStrainISV" ] );
-                        std::cout << "        previousMacroFlowDirection:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "previousMacroFlowDirection" ] );
-                        std::cout << "        previousMicroFlowDirection:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "previousMicroFlowDirection" ] );
-                        std::cout << "        previousMicroGradientFlowDirection:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "previousMicroGradientFlowDirection" ] );
-                        std::cout << "        currentMacroFlowDirection:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentMacroFlowDirection" ] );
-                        std::cout << "        currentMicroFlowDirection:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroFlowDirection" ] );
-                        std::cout << "        currentMicroGradientFlowDirection:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroGradientFlowDirection" ] );
-                        std::cout << "        currentMacroStrainISV\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentMacroStrainISV" ] );
-                        std::cout << "        currentMicroStrainISV\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroStrainISV" ] );
-                        std::cout << "        currentMicroGradientStrainISV\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroGradientStrainISV" ] );
-                        std::cout << "        macroYieldFunction:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "macroYieldFunction" ] );
-                        std::cout << "        microYieldFunction:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "microYieldFunction" ] );
-                        std::cout << "        microGradientYieldFunction:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "microGradientYieldFunction" ] );
-                    }
-                    else{
-                        std::cout << "        convergedPlasticDeformationGradient:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "convergedPlasticDeformationGradient" ] );
-                        std::cout << "        convergedPlasticMicroDeformation:\n";
-                        std::cout << "        "; vectorTools::print( itr->second[ "convergedPlasticMicroDeformation" ] );
-                    }
-                }
-            }
-        }
-
+//        if ( ( fabs( SDVS[ 0 ] ) > 1e-8 ) || ( errorCode != 0 ) ){
+//            for ( auto inc = DEBUG.begin(); inc != DEBUG.end(); inc++ ){
+//                std::cout << inc->first << "\n";
+//                for ( auto itr = inc->second.begin(); itr != inc->second.end(); itr++ ){
+//                    if ( itr->first.compare( "converged_values" ) != 0 ){
+//                        std::cout << "    " << itr->first << "\n";
+//                        std::cout << "        currentMacroGamma:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentMacroGamma" ] );
+//                        std::cout << "        currentMicroGamma:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroGamma" ] );
+//                        std::cout << "        currentMicroGradientGamma:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroGradientGamma" ] );
+//                        std::cout << "        currentDeformationGradient:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentDeformationGradient" ] );
+//                        std::cout << "        currentElasticDeformationGradient:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentElasticDeformationGradient" ] );
+//                        std::cout << "        currentPlasticDeformationGradient:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentPlasticDeformationGradient" ] );
+//                        std::cout << "        currentPK2Stress:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentPK2Stress" ] );
+//                        std::cout << "        currentMacroCohesion:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentMacroCohesion" ] );
+//                        std::cout << "        dMacroCohesiondMacroStrainISV:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "dMacroCohesiondMacroStrainISV" ] );
+//                        std::cout << "        previousMacroFlowDirection:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "previousMacroFlowDirection" ] );
+//                        std::cout << "        previousMicroFlowDirection:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "previousMicroFlowDirection" ] );
+//                        std::cout << "        previousMicroGradientFlowDirection:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "previousMicroGradientFlowDirection" ] );
+//                        std::cout << "        currentMacroFlowDirection:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentMacroFlowDirection" ] );
+//                        std::cout << "        currentMicroFlowDirection:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroFlowDirection" ] );
+//                        std::cout << "        currentMicroGradientFlowDirection:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroGradientFlowDirection" ] );
+//                        std::cout << "        currentMacroStrainISV\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentMacroStrainISV" ] );
+//                        std::cout << "        currentMicroStrainISV\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroStrainISV" ] );
+//                        std::cout << "        currentMicroGradientStrainISV\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "currentMicroGradientStrainISV" ] );
+//                        std::cout << "        macroYieldFunction:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "macroYieldFunction" ] );
+//                        std::cout << "        microYieldFunction:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "microYieldFunction" ] );
+//                        std::cout << "        microGradientYieldFunction:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "microGradientYieldFunction" ] );
+//                    }
+//                    else{
+//                        std::cout << "        convergedPlasticDeformationGradient:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "convergedPlasticDeformationGradient" ] );
+//                        std::cout << "        convergedPlasticMicroDeformation:\n";
+//                        std::cout << "        "; vectorTools::print( itr->second[ "convergedPlasticMicroDeformation" ] );
+//                    }
+//                }
+//            }
+//        }
+//
         output_file << "NEW_INCREMENT\n";
 
         //Output the time
@@ -14216,7 +14216,7 @@ int test_evaluate_model_history( std::ofstream &results ){
         grad_phi_prev = grad_phi_curr;
 
 #ifdef DEBUG_MODE    
-        if ( t > 0.12 ){ output_file.close(); return 1; }
+        if ( t > 0.25 ){ output_file.close(); return 1; }
 #endif
     }
     
@@ -14422,6 +14422,7 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
             { currentMacroStrainISV },
             { currentMicroStrainISV },
             currentMicroGradientStrainISV,
+            {}, {}, {}
         };
 
     solverTools::floatMatrix floatArgs = floatArgsDefault;
@@ -14642,36 +14643,36 @@ int main(){
     results.open("results.tex");
 
     //Run the tests
-    test_computeDruckerPragerInternalParameters( results );
-    test_computeSecondOrderDruckerPragerYieldEquation( results );
-    test_computeHigherOrderDruckerPragerYieldEquation( results );
-    test_computeElasticPartOfDeformation( results );
-    test_computeElasticDeformationMeasures( results );
-    test_computePlasticMacroVelocityGradient( results );
-    test_computePlasticMicroVelocityGradient( results );
-    test_computePlasticMicroGradientVelocityGradient( results );
-    test_computePlasticVelocityGradients( results );
-    test_evolvePlasticMicroGradChi( results );
-    test_evolvePlasticDeformation( results );
-    test_evolveStrainStateVariables( results );
-    test_computeFlowDirections( results );
-    test_computePlasticDeformationResidual( results );
-    test_computePlasticDeformationResidual2( results );
-    test_extractMaterialParameters( results );
-    test_extractStateVariables( results );
-    test_assembleFundamentalDeformationMeasures( results );
-    test_evaluateYieldFunctions( results );
-    test_computeCohesion( results );
-    test_cout_redirect( results );
-    test_cerr_redirect( results );
-
-    test_computePlasticMultiplierResidual( results );
+//    test_computeDruckerPragerInternalParameters( results );
+//    test_computeSecondOrderDruckerPragerYieldEquation( results );
+//    test_computeHigherOrderDruckerPragerYieldEquation( results );
+//    test_computeElasticPartOfDeformation( results );
+//    test_computeElasticDeformationMeasures( results );
+//    test_computePlasticMacroVelocityGradient( results );
+//    test_computePlasticMicroVelocityGradient( results );
+//    test_computePlasticMicroGradientVelocityGradient( results );
+//    test_computePlasticVelocityGradients( results );
+//    test_evolvePlasticMicroGradChi( results );
+//    test_evolvePlasticDeformation( results );
+//    test_evolveStrainStateVariables( results );
+//    test_computeFlowDirections( results );
+//    test_computePlasticDeformationResidual( results );
+//    test_computePlasticDeformationResidual2( results );
+//    test_extractMaterialParameters( results );
+//    test_extractStateVariables( results );
+//    test_assembleFundamentalDeformationMeasures( results );
+//    test_evaluateYieldFunctions( results );
+//    test_computeCohesion( results );
+//    test_cout_redirect( results );
+//    test_cerr_redirect( results );
+//
+//    test_computePlasticMultiplierResidual( results );
 //    test_evaluate_model( results );
 //    test_evaluate_model_continuation( results );
 //
 //    test_materialLibraryInterface( results );
 //
-//    test_evaluate_model_history( results );
+    test_evaluate_model_history( results );
 
     //Close the results file
     results.close();
