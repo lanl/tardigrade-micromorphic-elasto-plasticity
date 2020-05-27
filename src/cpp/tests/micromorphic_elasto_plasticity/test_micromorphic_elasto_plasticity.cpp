@@ -15087,6 +15087,7 @@ int test_computePlasticMultiplierResidual2( std::ofstream &results ){
             numericGradients.emplace( itP->first, ( itP->second - itM->second ) / ( 2 * delta[ i ] ) );
         }
 
+        //Test the gradient of the plastic deformation w.r.t. the deformation
         for ( unsigned int j = 0; j < numericGradients[ "currentPlasticDeformation" ].size(); j++ ){
             
             if ( !vectorTools::fuzzyEquals( numericGradients[ "currentPlasticDeformation" ][ j ],
@@ -15103,43 +15104,60 @@ int test_computePlasticMultiplierResidual2( std::ofstream &results ){
                 return 1;
             }
         }
-        std::cout << "stresses\n";
-        vectorTools::print( numericGradients[ "stresses" ] );
-        std::cout << "\n";
-        std::cout << "current elastic right cauchy green\n";
-        vectorTools::print( numericGradients[ "currentElasticRightCauchyGreen" ] );
-        std::cout << "\n";
-        std::cout << "current yield function values\n";
-        vectorTools::print( numericGradients[ "yieldFunctionValues" ] );
+
+        for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
+                                            DEBUG[ "dElasticRightCauchyGreendDeformation" ][ 45 * j + i ] ) ){
+                results << "test_computePlasticMultiplierResidual2 (dElasticRightCauchyGreendDeformation) & False\n";
+                return 1;
+            }
+        }
+
+        for ( unsigned int j = 0; j < numericGradients[ "yieldFunctionValues" ].size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( numericGradients[ "yieldFunctionValues" ][ j ],
+                                            DEBUG[ "dYieldFunctionValuesdDeformation" ][ 45 * j + i ] ) ){
+                std::cout << "row, col: " << j << ", " << i << "\n";
+                std::cout << "ana:      " << DEBUG[ "dYieldFunctionValuesdDeformation" ][ 45 * j + i ] << "\n";
+                std::cout << "num:      " << numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
+                std::cout << "error:    " << DEBUG[ "dYieldFunctionValuesdDeformation" ][ 45 * j + i ]
+                                           - numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "yieldFunctionValues" ] );
+                std::cout << "\nfull\n"; vectorTools::print( vectorTools::inflate( DEBUG[ "dYieldFunctionValuesdDeformation" ], 5, 45 ) );
+                results << "test_computePlasticMultiplierResidual2 (dYieldFunctionValuesdDeformation) & False\n";
+                return 1;
+            }
+        }
 #endif
 
-//        //Check the gradient of the residual w.r.t. the deformation measures
-//        solverTools::floatVector gradCol = ( rP - rM ) / ( 2 * delta[ i ] );
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 11 ][ 45 * j + i ] ) ){
-//                std::cout << "row, col: " << j << ", " << i << "\n";
-//                std::cout << "ana     : " << floatOuts[ 11 ][ 45 * j + i ] << "\n";
-//                std::cout << "num     : " << gradCol[ j ] << "\n";
-//                std::cout << "error   : " << floatOuts[ 11 ][ 45 * j + i ] - gradCol[ j ] << "\n";
-//
-//                std::cout << "\nrow\n"; vectorTools::print( gradCol );
-//                std::cout << "\nfull\n"; vectorTools::print( vectorTools::inflate( floatOuts[ 11 ], 5, 45 ) );
-//                results << "test_computePlasticMultiplierResidual2 (test 4) & False\n";
-//                return 1;
-//            }
-//        }
-//
-//        //Check the gradient of the stresses w.r.t. the deformation measures
-//        gradCol = vectorTools::appendVectors( { fOP[ 0 ] - fOM[ 0 ], fOP[ 1 ] - fOM[ 1 ], fOP[ 2 ] - fOM[ 2 ] } );
-//        gradCol /= 2 * delta[ i ];
-//
-//        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-//            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 10 ][ 45 * j + i ] ) ){
-//                results << "test_computePlasticMultiplierResidual2 (test 5) & False\n";
-//                return 1;
-//            }
-//        }
+        solverTools::floatVector gradCol;
+        //Check the gradient of the residual w.r.t. the deformation measures
+        gradCol = ( rP - rM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 11 ][ 45 * j + i ] ) ){
+                std::cout << "row, col: " << j << ", " << i << "\n";
+                std::cout << "ana     : " << floatOuts[ 11 ][ 45 * j + i ] << "\n";
+                std::cout << "num     : " << gradCol[ j ] << "\n";
+                std::cout << "error   : " << floatOuts[ 11 ][ 45 * j + i ] - gradCol[ j ] << "\n";
+
+                std::cout << "\nrow\n"; vectorTools::print( gradCol );
+                std::cout << "\nfull\n"; vectorTools::print( vectorTools::inflate( floatOuts[ 11 ], 5, 45 ) );
+                results << "test_computePlasticMultiplierResidual2 (test 4) & False\n";
+                return 1;
+            }
+        }
+
+        //Check the gradient of the stresses w.r.t. the deformation measures
+        gradCol = vectorTools::appendVectors( { fOP[ 0 ] - fOM[ 0 ], fOP[ 1 ] - fOM[ 1 ], fOP[ 2 ] - fOM[ 2 ] } );
+        gradCol /= 2 * delta[ i ];
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 10 ][ 45 * j + i ] ) ){
+                results << "test_computePlasticMultiplierResidual2 (test 5) & False\n";
+                return 1;
+            }
+        }
     }
 
 

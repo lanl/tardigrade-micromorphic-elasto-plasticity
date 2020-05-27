@@ -8475,7 +8475,9 @@ namespace micromorphicElastoPlasticity{
             //Solve for the gradient of the plastic deformation w.r.t. the total deformation
             dPDdF = -linearSolver.solve( dPDResidualdF );
 
+#ifdef DEBUG_MODE
             DEBUG.emplace( "dCurrentPlasticDeformationdDeformation", dCurrentPlasticDeformationdDeformation );
+#endif
         }
 
 #ifdef DEBUG_MODE
@@ -8491,8 +8493,12 @@ namespace micromorphicElastoPlasticity{
 
         if ( evaluateFullDerivatives ){
             floatOuts[  9 ] = vectorTools::appendVectors( dStressdGammas );
-            floatOuts[ 10 ] = floatOutsPlasticDeformation[ 12 ];
+            floatOuts[ 10 ] = floatOutsPlasticDeformation[ 12 ]
+                            + vectorTools::matrixMultiply( floatOutsPlasticDeformation[ 11 ],
+                                                           dCurrentPlasticDeformationdDeformation,
+                                                           45, 45, 45, 45 );
         }
+
 #ifdef DEBUG_MODE
         DEBUG.emplace( "stresses", vectorTools::appendVectors( { floatOutsPlasticDeformation[ 0 ],
                                                                  floatOutsPlasticDeformation[ 1 ],
@@ -8627,7 +8633,7 @@ namespace micromorphicElastoPlasticity{
 
             dYieldFunctionValuesdDeformation
                 = vectorTools::matrixMultiply( vectorTools::appendVectors( dYieldFunctionValuesdStresses ),
-                                                                           floatOutsPlasticDeformation[ 12 ], 5, 45, 45, 45 )
+                                                                           floatOuts[ 10 ], 5, 45, 45, 45 )
                 + vectorTools::matrixMultiply( vectorTools::appendVectors( dYieldFunctionValuesdElasticRightCauchyGreen ),
                                                                            dElasticRightCauchyGreendDeformation, 5, 9, 9, 45 );
         }
@@ -8637,7 +8643,6 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "dYieldFunctionValuesdGammas", vectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
 
         if ( evaluateFullDerivatives ){
-            DEBUG.emplace( "dElasticRightCauchyGreendDeformation", dElasticRightCauchyGreendDeformation );
             DEBUG.emplace( "dYieldFunctionValuesdDeformation", dYieldFunctionValuesdDeformation );
         }
 #endif
