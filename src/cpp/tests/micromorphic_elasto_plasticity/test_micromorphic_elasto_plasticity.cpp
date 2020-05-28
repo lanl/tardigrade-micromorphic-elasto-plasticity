@@ -14237,7 +14237,7 @@ int test_evaluate_model_history( std::ofstream &results ){
 
     double dt = 0.05;
     double t0 = 0.;
-    double tf = 1.0;
+    double tf = 0.25;
 
     double t = t0;
 
@@ -14288,6 +14288,33 @@ int test_evaluate_model_history( std::ofstream &results ){
     std::vector< double > SDVS = SDVSDefault;
 
     std::vector< double > PK2_result, SIGMA_result, M_result;
+
+    std::vector< double > PK2Answer = {  5160.16,     2.22976e-18, -7.71042e-19,
+                                         2.26883e-18, 4052.3,       2.76178e-18,
+                                        -7.91421e-19, 2.81096e-18,  4052.3 };
+
+    std::vector< double > SIGMAAnswer = { 5048.67,     9.00988e-19, 1.53323e-19,
+                                          9.00988e-19, 4115.89,     2.55272e-18,
+                                          1.53323e-19, 2.55272e-18, 4115.89 };
+
+    std::vector< double > MAnswer = {  1.0019e-46,  -9.52574e-49,  1.00995e-48, -8.8467e-25,   8.11869e-46,
+                                      -5.63453e-34, -1.10865e-32,  2.44433e-34,  1.6875e-49,  -9.38296e-38,
+                                       4.14595e-47, -6.23442e-59, -1.42808e-16,  1.31056e-37, -9.48874e-38,
+                                      -8.77566e-16,  8.05349e-37, -5.83091e-37, -1.10003e-37, -1.80712e-47,
+                                       3.77743e-56, -1.06975e-37,  9.81714e-59, -1.63467e-56, -8.77566e-16,
+                                       8.05349e-37, -1.05373e-36 };
+
+    std::vector< double > SDVSAnswer = { 0.0537348,     0.0316876,    0,            0,            0,
+                                         0.439099,      1.07512e-09,  0,            0,            0,
+                                         0.0407065,     1.77556e-23,  1.96059e-23, -5.10353e-23, -0.0197271,
+                                         7.85642e-23,  -2.99603e-23, -1.77725e-22, -0.0197271,    0.0161358,
+                                         1.48243e-22,  -1.21893e-22,  7.58973e-22, -0.00757347,   8.69363e-24,
+                                         -5.34604e-22,  3.76103e-23, -0.00757347,   2.60093e-59, -8.56459e-49,
+                                         -2.0316e-53,   9.76826e-55, -4.00462e-53,  1.74552e-53, -1.03567e-54,
+                                         1.78063e-73,  -3.66142e-62,  9.06532e-31,  1.37839e-22, -6.15938e-49,
+                                         -2.59588e-59, -4.51106e-50, -6.28935e-75,  5.50748e-40,  2.71555e-50,
+                                         -9.10366e-64,  1.13605e-38,  8.47033e-22,  8.47033e-22, -2.38921e-40,
+                                         9.94762e-50,  -2.45012e-53, -1.64952e-55, -5.98625e-50,  4.33317e-43 };
 
     std::vector< std::vector< double > > grad_u_prev   = grad_u_0;
     std::vector< double > phi_prev                     = phi_0;
@@ -14438,7 +14465,6 @@ int test_evaluate_model_history( std::ofstream &results ){
     //Begin iteration
     while ( t + dt < tf ){
 
-        std::cout << "t: " << t + dt << "\n";
         time = { t + dt, dt };
 
         //Increment the displacements
@@ -14652,6 +14678,26 @@ int test_evaluate_model_history( std::ofstream &results ){
 #ifdef DEBUG_MODE    
         if ( t > 0.25 ){ output_file.close(); return 1; }
 #endif
+    }
+
+    if ( !vectorTools::fuzzyEquals( SDVSAnswer, SDVS ) ){
+        results << "test_evaluate_model_history (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( PK2Answer, PK2_result ) ){
+        results << "test_evaluate_model_history (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SIGMAAnswer, SIGMA_result ) ){
+        results << "test_evaluate_model_history (test 3) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( MAnswer, M_result ) ){
+        results << "test_evaluate_model_history (test 4) & False\n";
+        return 1;
     }
     
 #ifdef DEBUG_MODE
@@ -15672,7 +15718,7 @@ int main(){
 
     test_materialLibraryInterface( results );
 
-//    test_evaluate_model_history( results );
+    test_evaluate_model_history( results );
 
     //Close the results file
     results.close();
