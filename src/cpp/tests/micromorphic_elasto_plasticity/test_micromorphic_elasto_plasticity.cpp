@@ -6694,17 +6694,20 @@ int test_evaluate_model( std::ofstream &results){
                                         -0.751885,  1.22189,  -0.0145255, -2.24607,  -0.728836,
                                          0.741248,  0.91458 };
 
-    solverTools::floatVector SDVSAnswer = { -3.16497e-23,  0.0234751,    0.0462373,    0.0243877,   0.0243846,
-                                            -1.57904e-23,  0.00822511,   0.0462373,    0.0243877,   0.0243846,
-                                             0.00716275,   0.00483255,  -0.00028478,   0.00481901, -0.00251626,
-                                             0.000274046, -0.000352614,  0.000214654, -0.0014993,   0.0153377,
-                                             0.00670194,  -0.000323801,  0.00972063,  -0.00187954,  0.000302467,
-                                            -0.000612623,  0.000221399, -0.00176115,   0.0399769,  -0.0243389,
-                                            -0.0101036,    0.0103193,    0.000468357,  0.0235499,   0.0183613,
-                                            -0.0148282,   -0.00942407,   0.0432182,    0.0278712,   0.0229169,
-                                             0.0111276,    0.0159333,    0.00235383,   0.0146006,   0.00508511,
-                                            -0.0248065,    0.0100951,   -0.032525,     0.0251286,  -0.0247363,
-                                             0.00982055,   0.0221357,    0.0167985,    0.0176831,   0.0202663 };
+    solverTools::floatVector SDVSAnswer = { -3.16497079e-23,  2.34751402e-02,  8.17142000e-02,  4.30998000e-02,
+                                             4.30944000e-02, -1.57904043e-23,  8.22510879e-03,  4.62372587e-02,
+                                             2.43876567e-02,  2.43846059e-02,  7.16275175e-03,  4.83254827e-03,
+                                            -2.84779985e-04,  4.81901065e-03, -2.51626408e-03,  2.74045526e-04,
+                                            -3.52613558e-04,  2.14654272e-04, -1.49929794e-03,  1.53376754e-02,
+                                             6.70193648e-03, -3.23800878e-04,  9.72063456e-03, -1.87954370e-03,
+                                             3.02466620e-04, -6.12623472e-04,  2.21399329e-04, -1.76115191e-03,
+                                             3.99768737e-02, -2.43389328e-02, -1.01035770e-02,  1.03192994e-02,
+                                             4.68357360e-04,  2.35499168e-02,  1.83613384e-02, -1.48281796e-02,
+                                            -9.42406504e-03,  4.32181823e-02,  2.78711972e-02,  2.29169395e-02,
+                                             1.11275811e-02,  1.59333222e-02,  2.35383222e-03,  1.46005599e-02,
+                                             5.08511435e-03, -2.48065038e-02,  1.00951014e-02, -3.25250071e-02,
+                                             2.51285914e-02, -2.47363010e-02,  9.82054909e-03,  2.21356962e-02,
+                                             1.67985316e-02,  1.76831352e-02,  2.02663286e-02 };
 
     std::vector< double > SDVS = SDVSDefault;
 
@@ -6729,6 +6732,7 @@ int test_evaluate_model( std::ofstream &results){
     }
 
     if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) ){
+        std::cout << "error: "; vectorTools::print( SDVS - SDVSAnswer );
         results << "test_evaluate_model (test 1) & False\n";
         return 1;
     }
@@ -12926,30 +12930,35 @@ int test_materialLibraryInterface( std::ofstream &results ){
     solverTools::homotopyMap DEBUG;
 #endif
 
-    solverTools::floatVector PK2_answer = { 177.067  , 13.287 ,  -0.577489,
-                                             10.7222 , 152.621,  -0.288668,
-                                             -1.38898, 1.61632, 150.85 };
-    solverTools::floatVector SIGMA_answer = { 178.961  ,  13.5623 ,  -2.43027,
-                                               13.5623 , 151.785  ,   1.62465,
-                                               -2.43027,   1.62465, 149.31 };
-    solverTools::floatVector M_answer = { 0.541081, -0.533639,  0.640843,  2.92886 ,  1.1505  ,
-                                          1.14946 ,  0.605546, -2.62366 ,  1.54942 , -2.40585 ,
-                                         -0.670181, -0.848562,  0.678723,  0.433934, -0.206886,
-                                         -2.7026  ,  0.964407,  1.68227 , -0.480138,  2.68016 ,
-                                         -0.628373,  1.14616 , -0.10665 , -2.2393  , -0.765349,
-                                          0.746722,  0.994415 };
+    solverTools::floatVector PK2_answer = { 172.787,    15.5239,    -0.924036,
+                                             13.5121,  143.024,    -0.0244211,
+                                             -1.74929,   1.77948, 141.292 };
 
-    solverTools::floatVector SDVS_answer = { -0.0394628  ,  0.102019   ,  0.0453858  ,  0.0262009 ,  0.0232167 ,
-                                             -0.0196885  ,  0.0357449  ,  0.0453858  ,  0.0262009 ,  0.0232167 ,
-                                              0.00813011 ,  0.00956498 , -0.000691731,  0.00885806, -0.0103998 ,
-                                              0.000451969, -0.00115188 ,  0.00088041 , -0.00882951,  0.0622934 ,
-                                              0.0274584  , -0.00113356 ,  0.0403186  , -0.00945181,  0.00119733,
-                                             -0.00227071 ,  0.000880704, -0.00792983 ,  0.0554737 , -0.0202861 ,
-                                             -0.0208186  ,  0.0122486  ,  0.0119279  ,  0.037049  ,  0.0168925 ,
-                                             -0.0430597  , -0.0242213  ,  0.0244271  , -0.00880588,  0.0383104 ,
-                                              0.00423276 ,  0.0111449  ,  0.0155982  ,  0.0136987 , -0.00813611,
-                                             -0.0305008  ,  0.0171903  , -0.0126259  ,  0.0500443 , -0.0276203 ,
-                                              0.0193062  ,  0.0310543  ,  0.0157931  ,  0.0168109 ,  0.0196658 };
+    solverTools::floatVector SIGMA_answer = { 176.77,    15.9881,   -2.8251,
+                                               15.9881, 144.272,     1.85406,
+                                               -2.8251,   1.85406, 141.777 };
+
+    solverTools::floatVector M_answer = { 0.591321, -0.511457,  0.620715,   3.18917,   1.15964,
+                                          1.19986,   0.563253, -2.52518,    1.61892,  -2.58268,
+                                         -0.61105,  -1.00557,   0.665297,   0.489595, -0.234683,
+                                         -2.75464,   0.7724,    1.71083,   -0.495148,  2.62498,
+                                         -0.751885,  1.22189,  -0.0145255, -2.24607,  -0.728836,
+                                          0.741248,  0.91458 };
+
+    solverTools::floatVector SDVS_answer = { -3.16497079e-23,  2.34751402e-02,  8.17142000e-02,  4.30998000e-02,
+                                              4.30944000e-02, -1.57904043e-23,  8.22510879e-03,  4.62372587e-02,
+                                              2.43876567e-02,  2.43846059e-02,  7.16275175e-03,  4.83254827e-03,
+                                             -2.84779985e-04,  4.81901065e-03, -2.51626408e-03,  2.74045526e-04,
+                                             -3.52613558e-04,  2.14654272e-04, -1.49929794e-03,  1.53376754e-02,
+                                              6.70193648e-03, -3.23800878e-04,  9.72063456e-03, -1.87954370e-03,
+                                              3.02466620e-04, -6.12623472e-04,  2.21399329e-04, -1.76115191e-03,
+                                              3.99768737e-02, -2.43389328e-02, -1.01035770e-02,  1.03192994e-02,
+                                              4.68357360e-04,  2.35499168e-02,  1.83613384e-02, -1.48281796e-02,
+                                             -9.42406504e-03,  4.32181823e-02,  2.78711972e-02,  2.29169395e-02,
+                                              1.11275811e-02,  1.59333222e-02,  2.35383222e-03,  1.46005599e-02,
+                                              5.08511435e-03, -2.48065038e-02,  1.00951014e-02, -3.25250071e-02,
+                                              2.51285914e-02, -2.47363010e-02,  9.82054909e-03,  2.21356962e-02,
+                                              1.67985316e-02,  1.76831352e-02,  2.02663286e-02 };
 
     std::vector< double > SDVS = SDVSDefault;
 
@@ -12995,6 +13004,7 @@ int test_materialLibraryInterface( std::ofstream &results ){
 
     if ( !vectorTools::fuzzyEquals( SDVS, SDVS_answer ) ){
         results << "test_materialLibraryInterface (test 4) & False\n";
+        vectorTools::print( SDVS - SDVS_answer );
         return 1;
     }
 
@@ -13757,7 +13767,6 @@ int test_evaluate_model_continuation( std::ofstream &results){
         results << "test_evaluate_model_continuation (test 12) & False\n";
         return 1;
     }
-     
 
     results << "test_evaluate_model_continuation & True\n";
     return 0;
@@ -14173,7 +14182,6 @@ int test_evaluate_model_continuation2( std::ofstream &results){
         results << "test_evaluate_model_continuation2 (test 12) & False\n";
         return 1;
     }
-     
 
     results << "test_evaluate_model_continuation2 & True\n";
     return 0;
@@ -15633,37 +15641,37 @@ int main(){
     results.open("results.tex");
 
     //Run the tests
-//    test_computeDruckerPragerInternalParameters( results );
-//    test_computeSecondOrderDruckerPragerYieldEquation( results );
-//    test_computeHigherOrderDruckerPragerYieldEquation( results );
-//    test_computeElasticPartOfDeformation( results );
-//    test_computeElasticDeformationMeasures( results );
-//    test_computePlasticMacroVelocityGradient( results );
-//    test_computePlasticMicroVelocityGradient( results );
-//    test_computePlasticMicroGradientVelocityGradient( results );
-//    test_computePlasticVelocityGradients( results );
-//    test_evolvePlasticMicroGradChi( results );
-//    test_evolvePlasticDeformation( results );
-//    test_evolveStrainStateVariables( results );
-//    test_computeFlowDirections( results );
-//    test_computePlasticDeformationResidual( results );
-//    test_computePlasticDeformationResidual2( results );
-//    test_extractMaterialParameters( results );
-//    test_extractStateVariables( results );
-//    test_assembleFundamentalDeformationMeasures( results );
-//    test_evaluateYieldFunctions( results );
-//    test_computeCohesion( results );
-//    test_cout_redirect( results );
-//    test_cerr_redirect( results );
-//
-//    test_computePlasticMultiplierResidual( results );
-//    test_computePlasticMultiplierResidual2( results );
-//    test_evaluate_model( results );
+    test_computeDruckerPragerInternalParameters( results );
+    test_computeSecondOrderDruckerPragerYieldEquation( results );
+    test_computeHigherOrderDruckerPragerYieldEquation( results );
+    test_computeElasticPartOfDeformation( results );
+    test_computeElasticDeformationMeasures( results );
+    test_computePlasticMacroVelocityGradient( results );
+    test_computePlasticMicroVelocityGradient( results );
+    test_computePlasticMicroGradientVelocityGradient( results );
+    test_computePlasticVelocityGradients( results );
+    test_evolvePlasticMicroGradChi( results );
+    test_evolvePlasticDeformation( results );
+    test_evolveStrainStateVariables( results );
+    test_computeFlowDirections( results );
+    test_computePlasticDeformationResidual( results );
+    test_computePlasticDeformationResidual2( results );
+    test_extractMaterialParameters( results );
+    test_extractStateVariables( results );
+    test_assembleFundamentalDeformationMeasures( results );
+    test_evaluateYieldFunctions( results );
+    test_computeCohesion( results );
+    test_cout_redirect( results );
+    test_cerr_redirect( results );
+
+    test_computePlasticMultiplierResidual( results );
+    test_computePlasticMultiplierResidual2( results );
+    test_evaluate_model( results );
     test_evaluate_model_continuation( results );
     test_evaluate_model_continuation2( results );
 
-//    test_materialLibraryInterface( results );
-//
+    test_materialLibraryInterface( results );
+
 //    test_evaluate_model_history( results );
 
     //Close the results file
