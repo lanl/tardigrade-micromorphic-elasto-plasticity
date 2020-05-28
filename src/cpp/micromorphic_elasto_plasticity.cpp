@@ -5868,6 +5868,28 @@ namespace micromorphicElastoPlasticity{
                 result->addNext( error );
                 result->print();          //Print the error message
                 output_message = buffer.str(); //Save the output to enable message passing
+
+                //Additional messages
+                output_message += "\ncurrentDeformationGradient:\n";
+                for ( unsigned int kk = 0; kk < currentDeformationGradient.size(); kk++ ){
+                    output_message += std::to_string( currentDeformationGradient[ kk ] ) + ", ";
+                }
+                output_message += "\n";
+                output_message += "\ncurrentMicroDeformation:\n";
+                for ( unsigned int kk = 0; kk < currentMicroDeformation.size(); kk++ ){
+                    output_message += std::to_string( currentMicroDeformation[ kk ] ) + ", ";
+                }
+                output_message += "\n";
+                output_message += "\ncurrentMicroGradientDeformation:\n";
+                for ( unsigned int kk = 0; kk < currentGradientMicroDeformation.size(); kk++ ){
+                    output_message += std::to_string( currentGradientMicroDeformation[ kk ] ) + ", ";
+                }
+                output_message += "\n";
+                output_message += "\nSDVS:\n";
+                for ( unsigned int kk = 0; kk < SDVS.size(); kk++ ){
+                    output_message += std::to_string( SDVS[ kk ] ) + ", ";
+                }
+                output_message += "\n";
                 return 1;
             }
 
@@ -6823,6 +6845,32 @@ namespace micromorphicElastoPlasticity{
                 result->addNext( error );
                 result->print();          //Print the error message
                 output_message = buffer.str(); //Save the output to enable message passing
+
+                //Additional messages
+                output_message += "\nx0\n{ ";
+                for ( unsigned int kk = 0; kk < x0.size(); kk++ ){
+                    output_message += std::to_string( x0[ kk ] ) + ", ";
+                }
+                output_message += "} \n";
+
+                output_message += "\nfloatArgs\n";
+                for ( unsigned int kk = 0; kk < floatArgs.size(); kk++ ){
+                    output_message += "{ ";
+                    for ( unsigned int ll = 0; ll < floatArgs[ kk ].size(); ll++ ){
+                        output_message += std::to_string( floatArgs[ kk ][ ll ] ) + ", ";
+                    }
+                    output_message += "},\n";
+                }
+
+                output_message += "\nintArgs\n";
+                for ( unsigned int kk = 0; kk < intArgs.size(); kk++ ){
+                    output_message += "{ ";
+                    for ( unsigned int ll = 0; ll < intArgs[ kk ].size(); ll++ ){
+                        output_message += std::to_string( intArgs[ kk ][ ll ] ) + ", ";
+                    }
+                    output_message += "}\n";
+                }
+                
                 return 1;
             }
 
@@ -7993,7 +8041,7 @@ namespace micromorphicElastoPlasticity{
 
         if ( x.size() != 5 ){
             return new errorNode( "computePlasticMultiplierResidual",
-                                  "The x vector must have a length of 45" );
+                                  "The x vector must have a length of 5" );
         }
 
         if ( floatArgs.size() != 35 ){
@@ -8124,7 +8172,7 @@ namespace micromorphicElastoPlasticity{
         | Compute the plastic deformations |
         ==================================*/
 
-//        std::cout << "    x: "; vectorTools::print( x );
+        std::cout << "    x: "; vectorTools::print( x );
 
         //Assemble the values required for the non-linear solve
 
@@ -8184,6 +8232,9 @@ namespace micromorphicElastoPlasticity{
             }
             return result;
         }
+
+        std::cout << "    plasticDeformationX0: "; vectorTools::print( plasticDeformationX0 );
+        std::cout << "    currentPlasticDeformation: "; vectorTools::print( currentPlasticDeformation );
 
         //Solve for the Jacobian of the plastic deformation w.r.t. the gammas
         
@@ -8341,6 +8392,8 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
+        std::cout << "    yieldFunctionValues: "; vectorTools::print( yieldFunctionValues );
+
         //Construct the Jacobians of the yield functions
         variableVector zero9( 9, 0 );
         variableVector zero27( 27, 0 );
@@ -8434,6 +8487,477 @@ namespace micromorphicElastoPlasticity{
         floatOuts[ 6 ] = solverTools::floatVector( currentPlasticDeformation.begin() +  0, currentPlasticDeformation.begin() + 9 );
         floatOuts[ 7 ] = solverTools::floatVector( currentPlasticDeformation.begin() +  9, currentPlasticDeformation.begin() + 18 );
         floatOuts[ 8 ] = solverTools::floatVector( currentPlasticDeformation.begin() + 18, currentPlasticDeformation.begin() + 45 );
+
+        std::cout << "    residual: "; vectorTools::print( residual );
+        std::cout << "    jacobian:\n";
+        for ( unsigned int i = 0; i < jacobian.size(); i++ ){
+            std::cout << "        "; vectorTools::print( jacobian[ i ] );
+        }
+
+        return NULL;
+    }
+
+    errorOut computePlasticMultiplierLagrangian( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
+                                                 const solverTools::intMatrix &intArgs, solverTools::floatType &lagrangian,
+                                                 solverTools::floatVector &jacobian, solverTools::floatMatrix &floatOuts,
+                                                 solverTools::intMatrix &intOuts
+#ifdef DEBUG_MODE
+                                                 , solverTools::debugMap &DEBUG
+#endif
+                                             ){
+        /*!
+         * Compute the lagrangian of the plastic multiplier
+         * 
+         * :param solverTools::floatVector &x: The unknown vector. Organized as
+         *     [ macroGamma, microGamma, microGradientGamma, lambda1, lambda2, lambda3, lambda4, lambda5 ]
+         * :param const solverTools::floatMatrix &floatArgs: The floating point arguments which do not vary
+         *     during the solve.
+         * :param const solverTools::intMatrix &intArgs: The integer arguments which do not vary during 
+         *     the solve.
+         * :param solverTools::floatType &lagrangian: The value of the lagrangian. 
+         * :param solverTools::floatVector &jacobian: The jacobian matrix
+         * :param solverTools::floatMatrix &floatOuts: The floating point values that do change during the solve.
+         * :param solverTools::intMatrix &intOuts: The integer values that do change during the solve.
+         * :param std::map< std::string, solverTools::floatVector > &DEBUG: The debug map. Only available if
+         *     DEBUG_MODE is defined.
+         *
+         * Ordering of floatArgs
+         * floatArgs[  0 ] = Dt, The change in time
+         * floatArgs[  1 ] = currentDeformationGradient, The current value of the deformation gradient
+         * floatArgs[  2 ] = currentMicroDeformation, The current value of the micro-deformation
+         * floatArgs[  3 ] = currentGradientMicroDeformation, The current value of the gradient of the
+         *     micro deformation in the reference configuration.
+         *     multipliers
+         * floatArgs[  4 ] = previousMacroGamma, The previous value of the macro plastic multiplier
+         * floatArgs[  5 ] = previousMicroGamma, The previous value of the micro plastic multiplier
+         * floatArgs[  6 ] = previousMicroGradientGamma, The previous values of the micro plastic
+         *     multipliers
+         * floatArgs[  7 ] = previousPlasticDeformationGradient, The previous value of the plastic
+         *     deformation gradient.
+         * floatArgs[  8 ] = previousPlasticMicroDeformation, The previous value of the plastic micro
+         *     deforamtion.
+         * floatArgs[  9 ] = previousPlasticGradientMicroDeformation, The previous value of the plastic
+         *     intermediate configuration gradient of the micro deformation.
+         * floatArgs[ 10 ] = previousMacroStrainISV, The previous value of the macro strain-like ISV.
+         * floatArgs[ 11 ] = previousMicroStrainISV, The previous value of the micro strain-like ISV.
+         * floatArgs[ 12 ] = previousMicroGradientStrainISV, The previous values of the micro gradient
+         *     strain-like ISVs.
+         * floatArgs[ 13 ] = previousdMacroGdMicroCohesion, The previous value of the Jacobian of the
+         *     macro flow direction w.r.t. the macro cohesion value.
+         * floatArgs[ 14 ] = previousdMicroGdMicroCohesion, The previous value of the Jacobian of the
+         *     micro flow direction w.r.t. the micro cohesion value.
+         * floatArgs[ 15 ] = previousdMicroGradientGdMicroGradientCohesion, The previous value of the
+         *     Jacobian of the micro gradient flow direction w.r.t. the micro gradient cohesion value.
+         * floatArgs[ 16 ] = previousPlasticMacroVelocityGradient, The previous plastic macro velocity
+         *     gradient.
+         * floatArgs[ 17 ] = previousPlasticMicroVelocityGradient, The previous plastic micro velocity
+         *     gradient.
+         * floatArgs[ 18 ] = previousPlasticMicroGradientVelocityGradient, The previous plastic micro
+         *     gradient velocity gradient.
+         * floatArgs[ 19 ] = macroFlowParameters, The macro flow parameters.
+         * floatArgs[ 20 ] = microFlowParameters, The micro flow parameters.
+         * floatArgs[ 21 ] = microGradientFlowParameters, The micro gradient flow parameters.
+         * floatArgs[ 22 ] = macroHardeningParameters, The macro hardening parameters.
+         * floatArgs[ 23 ] = microHardeningParameters, The micro hardening parameters.
+         * floatArgs[ 24 ] = microGradientHardeningParameters, The micro gradient hardening parameters.
+         * floatArgs[ 25 ] = macroYieldParameters, The yield parameters for the macro yield surface
+         * floatArgs[ 26 ] = microYieldParameters, The yield parameters for the micro yield surface
+         * floatArgs[ 27 ] = microGradientYieldParameters, The yield parameters for the micro gradient yield surface
+         * floatArgs[ 28 ] = Amatrix, The A stiffness tensor.
+         * floatArgs[ 29 ] = Bmatrix, The B stiffness tensor.
+         * floatArgs[ 30 ] = Cmatrix, The C stiffness tensor.
+         * floatArgs[ 31 ] = Dmatrix, The D stiffness tensor.
+         * floatArgs[ 32 ] = alphaMacro, The macro integration parameter.
+         * floatArgs[ 33 ] = alphaMicro, The micro integration parameter.
+         * floatArgs[ 34 ] = alphaMicroGradient, The micro gradient integration parameter.
+         *
+         * Ordering of intArgs
+         * intArgs[ 0 ] = evaluateFullDerivatives, Flag which indicates if the full derivatives should be
+         *     computed.
+         * 
+         * Ordering of floatOuts
+         * floatOuts[  0 ] = currentPK2Stress, The current value of the second Piola-Kirchoff stress
+         * floatOuts[  1 ] = currentReferenceMicroStress, The current value of the reference micro
+         *     stress.
+         * floatOuts[  2 ] = currentReferenceHigherOrderStress, The current value of the reference
+         *     higher order stress.
+         * floatOuts[  3 ] = currentMacroStrainISV, The current value of the macro strain-like ISV
+         * floatOuts[  4 ] = currentMacroStrainISV, The current value of the micro strain-like ISV
+         * floatOuts[  5 ] = currentMacroStrainISV, The current value of the micro gradient strain-like ISV
+         * floatOuts[  6 ] = currentPlasticDeformationGradient, The current value of the plastic deformation gradient.
+         * floatOuts[  7 ] = currentPlasticMicroDeformation, The current value of the plastic micro deforamtion
+         * floatOuts[  8 ] = currentPlasticGradientMicroDeformation, The current value of the plastic gradient of the
+         *     micro deformation.
+         * floatOuts[  9 ] = dPlasticDeformationdx, The partial derivative of the plastic deformation
+         *     w.r.t. the solution vector.
+         * floatOuts[ 10 ] = dStressdx, The partial derivative of the stresses w.r.t. the 
+         *     solution vector.
+         * floatOuts[ 11 ] = dPlasticDeformationdDeformation, The partial derivative of the 
+         *     plastic deformation w.r.t. the fundamental deformation measures.
+         * floatOuts[ 12 ] = dStressdDeformation, The partial derivative of the stresses w.r.t.
+         *     the fundamental deformation measures.
+         * floatOuts[ 13 ] = dResidualdDeformation, The partial derivative of the residual w.r.t.
+         *     the fundamental deformation measures.
+         *
+         * Ordering of intOuts
+         * intOuts[ 0 ] = flags from the sub-Newton-Raphson process. There are two values:
+         *     plasticDeformationConvergenceFlag, The convergence flag from the solution of the plastic deformation.
+         *     plasticDeformationFatalErrorFlag, The fatal error flag from the solution of the plastic deformation.
+         */
+
+        if ( x.size() != 10 ){
+            return new errorNode( "computePlasticMultiplierLagrangian",
+                                  "The x vector must have a length of 10" );
+        }
+
+        if ( floatArgs.size() != 35 ){
+            return new errorNode( "computePlasticMultiplierLagrangian",
+                                  "The floating point argument matrix floatArgs must have a length of 35" );
+        }
+
+        if ( intArgs.size() != 0 ){
+            return new errorNode( "computePlasticMultiplierLagrangian",
+                                  "The integer argument matrix intArgs must have a length of 0" );
+        }
+
+        if ( floatOuts.size() != 0 ){
+            return new errorNode( "computePlasticMultiplierLagrangian",
+                                  "The floating point output matrix floatOuts must have a length of 0" );
+        }
+
+        if ( intOuts.size() != 1 ){
+            return new errorNode( "computePlasticMultiplierLagrangian",
+                                  "The integer output matrix intOuts must have a length of 1" );
+        }
+
+        /*=============================
+        | Extract the incoming values |
+        =============================*/
+
+        const variableVector currentMacroGamma( x.begin(), x.begin() + 1 );
+        const variableVector currentMicroGamma( x.begin() + 1, x.begin() + 2 );
+        const variableVector currentMicroGradientGamma( x.begin() + 2, x.begin() + 5 );
+        const variableVector macroLambda( x.begin() + 5, x.begin() + 6 );
+        const variableVector microLambda( x.begin() + 6, x.begin() + 7 );
+        const variableVector microGradientLambda( x.begin() + 7, x.begin() + 10 );
+
+//        unsigned int ii = 0;
+//        const constantType    *Dt                                            = &floatArgs[ ii++ ][ 0 ];
+//        const variableVector  *currentDeformationGradient                    = &floatArgs[ ii++ ];
+//        const variableVector  *currentMicroDeformation                       = &floatArgs[ ii++ ];
+//        const variableVector  *currentGradientMicroDeformation               = &floatArgs[ ii++ ];
+//        const variableType    *previousMacroGamma                            = &floatArgs[ ii++ ][ 0 ];
+//        const variableType    *previousMicroGamma                            = &floatArgs[ ii++ ][ 0 ];
+//        const variableVector  *previousMicroGradientGamma                    = &floatArgs[ ii++ ];
+        const variableVector  *previousPlasticDeformationGradient            = &floatArgs[ 7 ];
+        const variableVector  *previousPlasticMicroDeformation               = &floatArgs[ 8 ];
+        const variableVector  *previousPlasticGradientMicroDeformation       = &floatArgs[ 9 ];
+//        const variableType    *previousMacroStrainISV                        = &floatArgs[ ii++ ][ 0 ];
+//        const variableType    *previousMicroStrainISV                        = &floatArgs[ ii++ ][ 0 ];
+//        const variableVector  *previousMicroGradientStrainISV                = &floatArgs[ ii++ ];
+//        const variableType    *previousdMacroGdMacroCohesion                 = &floatArgs[ ii++ ][ 0 ];
+//        const variableType    *previousdMicroGdMicroCohesion                 = &floatArgs[ ii++ ][ 0 ];
+//        const variableMatrix   previousdMicroGradientGdMicroGradientCohesion = vectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
+//        const variableVector  *previousPlasticMacroVelocityGradient          = &floatArgs[ ii++ ];
+//        const variableVector  *previousPlasticMicroVelocityGradient          = &floatArgs[ ii++ ];
+//        const variableVector  *previousPlasticMicroGradientVelocityGradient  = &floatArgs[ ii++ ];
+//        const parameterVector *macroFlowParameters                           = &floatArgs[ ii++ ];
+//        const parameterVector *microFlowParameters                           = &floatArgs[ ii++ ];
+//        const parameterVector *microGradientFlowParameters                   = &floatArgs[ ii++ ];
+//        const parameterVector *macroHardeningParameters                      = &floatArgs[ ii++ ];
+//        const parameterVector *microHardeningParameters                      = &floatArgs[ ii++ ];
+//        const parameterVector *microGradientHardeningParameters              = &floatArgs[ ii++ ];
+        const parameterVector *macroYieldParameters                          = &floatArgs[ 25 ];
+        const parameterVector *microYieldParameters                          = &floatArgs[ 26 ];
+        const parameterVector *microGradientYieldParameters                  = &floatArgs[ 27 ];
+//        const parameterVector *Amatrix                                       = &floatArgs[ ii++ ];
+//        const parameterVector *Bmatrix                                       = &floatArgs[ ii++ ];
+//        const parameterVector *Cmatrix                                       = &floatArgs[ ii++ ];
+//        const parameterVector *Dmatrix                                       = &floatArgs[ ii++ ];
+//        const parameterType   *alphaMacro                                    = &floatArgs[ ii++ ][ 0 ];
+//        const parameterType   *alphaMicro                                    = &floatArgs[ ii++ ][ 0 ];
+//        const parameterType   *alphaMicroGradient                            = &floatArgs[ ii++ ][ 0 ];
+
+        //Construct the inputs for the solve for the plastic deformation measure
+
+        solverTools::floatMatrix floatArgsPlasticDeformation =
+            {
+                floatArgs[  0 ], //Dt
+                floatArgs[  1 ], //Current deformation gradient
+                floatArgs[  2 ], //Current micro deformation
+                floatArgs[  3 ], //Current gradient micro deformation
+                { currentMacroGamma },
+                { currentMicroGamma },
+                currentMicroGradientGamma,
+                floatArgs[  4 ], //previous macro gamma
+                floatArgs[  5 ], //previous micro gamma
+                floatArgs[  6 ], //previous micro gradient gamma
+                floatArgs[  7 ], //Previous plastic deformation gradient
+                floatArgs[  8 ], //Previous plastic micro deformation
+                floatArgs[  9 ], //Previous plastic gradient micro deformation
+                floatArgs[ 10 ], //Previous macro strain ISV
+                floatArgs[ 11 ], //Previous micro strain ISV
+                floatArgs[ 12 ], //Previous micro gradient strain ISV
+                floatArgs[ 13 ], //Previous dMacroGdMacroCohesion
+                floatArgs[ 14 ], //Previous dMicroGdMicroCohesion
+                floatArgs[ 15 ], //Previous dMicroGradientGdMicroGradientCohesion
+                floatArgs[ 16 ], //PreviousPlasticMacroVelocityGradient
+                floatArgs[ 17 ], //PreviousPlasticMicroVelocityGradient
+                floatArgs[ 18 ], //PreviousPlasticMicroGradientVelocityGradient
+                floatArgs[ 19 ], //macro flow parameters
+                floatArgs[ 20 ], //micro flow parameters
+                floatArgs[ 21 ], //micro gradient flow parameters
+                floatArgs[ 22 ], //macro hardening parameters
+                floatArgs[ 23 ], //micro hardening parameters
+                floatArgs[ 24 ], //micro gradient hardening parameters
+                floatArgs[ 28 ], //A matrix
+                floatArgs[ 29 ], //B matrix
+                floatArgs[ 30 ], //C matrix
+                floatArgs[ 31 ], //D matrix
+                floatArgs[ 32 ], //alpha macro
+                floatArgs[ 33 ], //alpha micro
+                floatArgs[ 34 ], //alpha micro gradient
+            };
+
+        /*==================================
+        | Compute the plastic deformations |
+        ==================================*/
+
+        //Assemble the values required for the non-linear solve
+
+        solverTools::intMatrix intArgsPlasticDeformation = { { 1 } };
+
+        solverTools::intMatrix intOutsPlasticDeformation = { };
+
+        solverTools::floatMatrix floatOutsPlasticDeformation =
+            {
+                {}, {}, {},
+                {}, {}, {},
+                {}, {}, {},
+                {}, {},
+                {}, {}, {}, {},
+                {}, {}
+            };
+
+        //Wrap the plastic deformation measure function
+        solverTools::stdFncNLFJ func
+                = static_cast< solverTools::NonLinearFunctionWithJacobian >( computePlasticDeformationResidual );
+
+        solverTools::floatVector plasticDeformationX0
+            = vectorTools::appendVectors( { *previousPlasticDeformationGradient,
+                                            *previousPlasticMicroDeformation,
+                                            *previousPlasticGradientMicroDeformation } );
+
+        solverTools::floatVector currentPlasticDeformation( 45, 0 );
+
+        bool convergeFlag, fatalErrorFlag;
+
+        solverTools::solverType plasticDeformationLinearSolver;
+        solverTools::floatMatrix plasticDeformationJacobian;
+
+#ifdef DEBUG_MODE
+        solverTools::iterationMap plasticDeformationDEBUG;
+#endif
+
+        //Solve for the plastic deformation measures.
+        errorOut error = solverTools::newtonRaphson( func, plasticDeformationX0, currentPlasticDeformation,
+                                                     convergeFlag, fatalErrorFlag,
+                                                     floatOutsPlasticDeformation, intOutsPlasticDeformation,
+                                                     floatArgsPlasticDeformation, intArgsPlasticDeformation,
+                                                     plasticDeformationLinearSolver, plasticDeformationJacobian,
+#ifdef DEBUG_MODE
+                                                     plasticDeformationDEBUG,
+#endif
+                                                     20, 1e-9, 1e-9, 1e-4, 5, false );
+
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticMultiplierLagrangian", "Error in solution of plastic deformation" );
+            result->addNext( error );
+            intOuts[ 0 ] = { ( int )convergeFlag, ( int )fatalErrorFlag };
+            if ( ( !fatalErrorFlag ) && ( !convergeFlag ) ){
+                //Alert the Newton-Raphson solver that there is a sub-level convergence problem.
+                lagrangian = -101;
+                jacobian.resize( 212 );
+            }
+            return result;
+        }
+
+//        std::cout << "    plasticDeformationX0: "; vectorTools::print( plasticDeformationX0 );
+//        std::cout << "    currentPlasticDeformation: "; vectorTools::print( currentPlasticDeformation );
+
+        //Solve for the Jacobian of the plastic deformation w.r.t. the gammas
+        
+        solverTools::floatVector plasticDeformationJacobianVector = vectorTools::appendVectors( plasticDeformationJacobian );
+        Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > > 
+            dPDResidualdPD( plasticDeformationJacobianVector.data(), 45, 45 );
+
+        Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            dPDResidualdGammas( floatOutsPlasticDeformation[ 15 ].data(), 45, 5 );
+
+        solverTools::floatVector dCurrentPlasticDeformationdGammas( 45 * 5, 0 );
+        Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            dPDdG( dCurrentPlasticDeformationdGammas.data(), 45, 5 );
+
+        solverTools::solverType linearSolver( dPDResidualdPD );
+
+        if ( linearSolver.rank() < 45 ){
+            return new errorNode( "computePlasticMultiplierLagrangian", "The plastic deformation Jacobian is not full rank" );
+        }
+
+        dPDdG = -linearSolver.solve( dPDResidualdGammas );
+
+#ifdef DEBUG_MODE
+        DEBUG.emplace( "currentPlasticDeformation", currentPlasticDeformation );
+        DEBUG.emplace( "dCurrentPlasticDeformationdGammas", dCurrentPlasticDeformationdGammas );
+#endif
+
+        //Solve for the Jacobian of the stresses w.r.t. the gammas
+
+        solverTools::floatMatrix dStressdGammas
+            = vectorTools::inflate( vectorTools::matrixMultiply( floatOutsPlasticDeformation[ 11 ],
+                                                                 dCurrentPlasticDeformationdGammas, 45, 45, 45, 5 ), 45, 5 );
+
+#ifdef DEBUG_MODE
+        DEBUG.emplace( "stresses", vectorTools::appendVectors( { floatOutsPlasticDeformation[ 0 ],
+                                                                 floatOutsPlasticDeformation[ 1 ],
+                                                                 floatOutsPlasticDeformation[ 2 ]  } ) );
+        DEBUG.emplace( "dStressdGammas", vectorTools::appendVectors( dStressdGammas ) );
+#endif
+
+        //Construct the Jacobian of the elastic RCG w.r.t. the gammas
+        variableMatrix dPlasticDeformationGradientdGammas =
+            {
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 0, dCurrentPlasticDeformationdGammas.begin() + 5 * 1 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 1, dCurrentPlasticDeformationdGammas.begin() + 5 * 2 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 2, dCurrentPlasticDeformationdGammas.begin() + 5 * 3 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 3, dCurrentPlasticDeformationdGammas.begin() + 5 * 4 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 4, dCurrentPlasticDeformationdGammas.begin() + 5 * 5 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 5, dCurrentPlasticDeformationdGammas.begin() + 5 * 6 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 6, dCurrentPlasticDeformationdGammas.begin() + 5 * 7 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 7, dCurrentPlasticDeformationdGammas.begin() + 5 * 8 ),
+                variableVector( dCurrentPlasticDeformationdGammas.begin() + 5 * 8, dCurrentPlasticDeformationdGammas.begin() + 5 * 9 ),
+            };
+
+        variableMatrix dElasticRightCauchyGreendGammas
+            = vectorTools::dot( vectorTools::inflate( floatOutsPlasticDeformation[ 10 ], 9, 9 ), dPlasticDeformationGradientdGammas );
+
+#ifdef DEBUG_MODE
+        DEBUG.emplace( "currentElasticRightCauchyGreen", floatOutsPlasticDeformation[ 9 ] );
+        DEBUG.emplace( "dElasticRightCauchyGreendGammas", vectorTools::appendVectors( dElasticRightCauchyGreendGammas ) );
+#endif
+
+#ifdef DEBUG_MODE
+        solverTools::debugMap yieldFunctionDEBUG;
+#endif
+
+        /*=============================
+        | Compute the cohesion values |
+        =============================*/
+
+        //TODO: Currently the cohesion values are computed in the plastic deformation gamma solve. They don't need to be.
+
+        variableMatrix dCohesiondGammas = vectorTools::inflate( floatOutsPlasticDeformation[ 16 ], 5, 5 );
+
+        /*===================================
+        | Compute the yield function values |
+        ===================================*/
+
+        //Compute the yield function values
+        variableVector yieldFunctionValues;
+        variableType   dMacroFdMacroC, dMicroFdMicroC;
+        variableVector dMacroFdPK2, dMacroFdElasticRCG, dMicroFdSigma, dMicroFdElasticRCG;
+        variableMatrix dMicroGradientFdM, dMGFdMGC, dMicroGradientFdElasticRCG;
+
+        error = evaluateYieldFunctions( floatOutsPlasticDeformation[ 0 ], floatOutsPlasticDeformation[ 1 ], //The stresses
+                                        floatOutsPlasticDeformation[ 2 ],
+                                        floatOutsPlasticDeformation[ 6 ][ 0 ], floatOutsPlasticDeformation[ 7 ][ 0 ], //The cohesions
+                                        floatOutsPlasticDeformation[ 8 ],
+                                        floatOutsPlasticDeformation[ 9 ], //The elastic right cauchy green deformation tensor
+                                       *macroYieldParameters, *microYieldParameters, *microGradientYieldParameters,
+                                        yieldFunctionValues,
+                                        dMacroFdPK2, dMacroFdMacroC, dMacroFdElasticRCG,
+                                        dMicroFdSigma, dMicroFdMicroC, dMicroFdElasticRCG,
+                                        dMicroGradientFdM, dMGFdMGC, dMicroGradientFdElasticRCG
+#ifdef DEBUG_MODE
+                                        , yieldFunctionDEBUG
+#endif
+                                      );
+
+        if ( error ){
+            errorOut result = new errorNode( "computePlasticMultiplierLagrangian", "Error in the computation of the yield functions" );
+            result->addNext( error );
+            fatalErrorFlag = true;
+            return result;
+        }
+
+//        std::cout << "    yieldFunctionValues: "; vectorTools::print( yieldFunctionValues );
+
+        //Construct the Jacobians of the yield functions
+        variableVector zero9( 9, 0 );
+        variableVector zero27( 27, 0 );
+        variableMatrix dYieldFunctionValuesdStresses =
+            {
+                    vectorTools::appendVectors( { dMacroFdPK2,         zero9,                 zero27 } ),
+                    vectorTools::appendVectors( {       zero9, dMicroFdSigma,                 zero27 } ),
+                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 0 ] } ),
+                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 1 ] } ),
+                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 2 ] } )
+            };
+
+        variableMatrix dYieldFunctionValuesdCohesion =
+            {
+                { dMacroFdMacroC,             0.,                 0.,                 0.,                 0. },
+                {             0., dMicroFdMicroC,                 0.,                 0.,                 0. },
+                {             0.,             0., dMGFdMGC[ 0 ][ 0 ], dMGFdMGC[ 0 ][ 1 ], dMGFdMGC[ 0 ][ 2 ] },
+                {             0.,             0., dMGFdMGC[ 1 ][ 0 ], dMGFdMGC[ 1 ][ 1 ], dMGFdMGC[ 1 ][ 2 ] },
+                {             0.,             0., dMGFdMGC[ 2 ][ 0 ], dMGFdMGC[ 2 ][ 1 ], dMGFdMGC[ 2 ][ 2 ] }
+            };
+
+        variableMatrix dYieldFunctionValuesdElasticRightCauchyGreen =
+            {
+                dMacroFdElasticRCG,
+                dMicroFdElasticRCG,
+                dMicroGradientFdElasticRCG[ 0 ],
+                dMicroGradientFdElasticRCG[ 1 ],
+                dMicroGradientFdElasticRCG[ 2 ]
+            };
+
+        variableMatrix dYieldFunctionValuesdGammas =
+            vectorTools::dot( dYieldFunctionValuesdStresses, dStressdGammas )
+          + vectorTools::dot( dYieldFunctionValuesdCohesion, dCohesiondGammas )
+          + vectorTools::dot( dYieldFunctionValuesdElasticRightCauchyGreen, dElasticRightCauchyGreendGammas );
+
+#ifdef DEBUG_MODE
+        DEBUG.emplace( "yieldFunctionValues", yieldFunctionValues );
+        DEBUG.emplace( "dYieldFunctionValuesdGammas", vectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
+#endif
+
+        //Construct the lagrangian and the Jacobian
+        lagrangian = 0;
+        jacobian   = solverTools::floatVector( 10, 0 );
+
+        variableType macF;
+        variableType dMacYieldFunctionValuedYieldFunctionValue;
+        solverTools::floatVector rowEye;
+        solverTools::floatVector term1( 5 ), term2( 5 );
+
+        for ( unsigned int i = 0; i < 5; i++ ){
+
+            macF = constitutiveTools::mac( yieldFunctionValues[ i ], dMacYieldFunctionValuedYieldFunctionValue );
+
+            lagrangian += 0.5 * macF * macF + x[ i + 5 ] * x[ i ] * yieldFunctionValues[ i ];
+
+            rowEye = solverTools::floatVector( 5, 0 );
+            rowEye[ i ] = 1.;
+
+            term1 = dMacYieldFunctionValuedYieldFunctionValue * dYieldFunctionValuesdGammas[ i ] * macF
+                  + x[ i + 5 ] * ( yieldFunctionValues[ i ] * rowEye + x[ i ] * dYieldFunctionValuesdGammas[ i ] );
+            term2 = solverTools::floatVector( 5, 0 );
+            term2[ i ] = x[ i ] * yieldFunctionValues[ i ];
+
+            jacobian += vectorTools::appendVectors( { term1, term2 } );
+
+        }
 
         return NULL;
     }
