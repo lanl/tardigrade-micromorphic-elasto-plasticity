@@ -1,3 +1,5 @@
 *.o
 test_micromorphic_elasto_plasticity
 results.tex
+*.ipynb*
+output_file.txt
