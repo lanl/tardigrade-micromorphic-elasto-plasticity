@@ -5949,7 +5949,7 @@ namespace micromorphicElastoPlasticity{
         
         //Assemble the SDV vector
         std::vector< double > currentStrainISVS = { currentMacroStrainISV, currentMicroStrainISV };
-        currentStrainISVS = vectorTools::appendVectors( { currentStrainISVS, currentMicroGradientGamma } );
+        currentStrainISVS = vectorTools::appendVectors( { currentStrainISVS, currentMicroGradientStrainISV } );
 
         std::vector< double > currentGammas = { currentMacroGamma, currentMicroGamma };
         currentGammas = vectorTools::appendVectors( { currentGammas, currentMicroGradientGamma } );
@@ -6893,7 +6893,7 @@ namespace micromorphicElastoPlasticity{
 
             tempDEBUG.emplace( "convergedMicroGradientGamma", currentMicroGradientGamma );
 
-            tempDEBUG.emplace( "intermediatedPK2Stress", currentPK2Stress );
+            tempDEBUG.emplace( "intermediatePK2Stress", currentPK2Stress );
             tempDEBUG.emplace( "intermediateReferenceMicroStress", currentReferenceMicroStress );
             tempDEBUG.emplace( "intermediateReferenceHigherOrderStress", currentReferenceHigherOrderStress );
 #endif
@@ -7093,7 +7093,7 @@ namespace micromorphicElastoPlasticity{
         
         //Assemble the SDV vector
         std::vector< double > currentStrainISVS = { currentMacroStrainISV, currentMicroStrainISV };
-        currentStrainISVS = vectorTools::appendVectors( { currentStrainISVS, currentMicroGradientGamma } );
+        currentStrainISVS = vectorTools::appendVectors( { currentStrainISVS, currentMicroGradientStrainISV } );
 
         std::vector< double > currentGammas = { currentMacroGamma, currentMicroGamma };
         currentGammas = vectorTools::appendVectors( { currentGammas, currentMicroGradientGamma } );

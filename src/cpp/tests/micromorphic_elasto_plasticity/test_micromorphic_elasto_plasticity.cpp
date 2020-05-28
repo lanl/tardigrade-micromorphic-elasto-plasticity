@@ -13497,30 +13497,32 @@ int test_evaluate_model_continuation( std::ofstream &results){
     solverTools::homotopyMap homotopyDEBUG0;
 #endif
 
-    solverTools::floatVector PK2Answer0 = { 177.067  , 13.287 ,  -0.577489,
-                                             10.7222 , 152.621,  -0.288668,
-                                             -1.38898, 1.61632, 150.85 };
-    solverTools::floatVector SigmaAnswer0 = { 178.961  ,  13.5623 ,  -2.43027,
-                                              13.5623 , 151.785  ,   1.62465,
-                                              -2.43027,   1.62465, 149.31 };
-    solverTools::floatVector MAnswer0 = { 0.541081, -0.533639,  0.640843,  2.92886 ,  1.1505  ,
-                                          1.14946 ,  0.605546, -2.62366 ,  1.54942 , -2.40585 ,
-                                         -0.670181, -0.848562,  0.678723,  0.433934, -0.206886,
-                                         -2.7026  ,  0.964407,  1.68227 , -0.480138,  2.68016 ,
-                                         -0.628373,  1.14616 , -0.10665 , -2.2393  , -0.765349,
-                                          0.746722,  0.994415 };
+    solverTools::floatVector PK2Answer0 = { 172.787,    15.5239,    -0.924036,
+                                             13.5121,  143.024,    -0.0244211,
+                                             -1.74929,   1.77948, 141.292 };
 
-    solverTools::floatVector SDVSAnswer0 = { -0.0394628  ,  0.102019   ,  0.0453858  ,  0.0262009 ,  0.0232167 ,
-                                             -0.0196885  ,  0.0357449  ,  0.0453858  ,  0.0262009 ,  0.0232167 ,
-                                              0.00813011 ,  0.00956498 , -0.000691731,  0.00885806, -0.0103998 ,
-                                              0.000451969, -0.00115188 ,  0.00088041 , -0.00882951,  0.0622934 ,
-                                              0.0274584  , -0.00113356 ,  0.0403186  , -0.00945181,  0.00119733,
-                                             -0.00227071 ,  0.000880704, -0.00792983 ,  0.0554737 , -0.0202861 ,
-                                             -0.0208186  ,  0.0122486  ,  0.0119279  ,  0.037049  ,  0.0168925 ,
-                                             -0.0430597  , -0.0242213  ,  0.0244271  , -0.00880588,  0.0383104 ,
-                                              0.00423276 ,  0.0111449  ,  0.0155982  ,  0.0136987 , -0.00813611,
-                                             -0.0305008  ,  0.0171903  , -0.0126259  ,  0.0500443 , -0.0276203 ,
-                                              0.0193062  ,  0.0310543  ,  0.0157931  ,  0.0168109 ,  0.0196658 };
+    solverTools::floatVector SigmaAnswer0 = { 176.77,    15.9881,   -2.8251,
+                                               15.9881, 144.272,     1.85406,
+                                               -2.8251,   1.85406, 141.777 };
+
+    solverTools::floatVector MAnswer0 = { 0.591321, -0.511457,  0.620715,   3.18917,   1.15964,
+                                          1.19986,   0.563253, -2.52518,    1.61892,  -2.58268,
+                                         -0.61105,  -1.00557,   0.665297,   0.489595, -0.234683,
+                                         -2.75464,   0.7724,    1.71083,   -0.495148,  2.62498,
+                                         -0.751885,  1.22189,  -0.0145255, -2.24607,  -0.728836,
+                                          0.741248,  0.91458 };
+
+    solverTools::floatVector SDVSAnswer0 = { -3.16497e-23,  0.0234751,    0.0817142,    0.0430998,   0.0430944,
+                                             -1.57904e-23,  0.00822511,   0.0462373,    0.0243877,   0.0243846,
+                                              0.00716275,   0.00483255,  -0.00028478,   0.00481901, -0.00251626,
+                                              0.000274046, -0.000352614,  0.000214654, -0.0014993,   0.0153377,
+                                              0.00670194,  -0.000323801,  0.00972063,  -0.00187954,  0.000302467,
+                                             -0.000612623,  0.000221399, -0.00176115,   0.0399769,  -0.0243389,
+                                             -0.0101036,    0.0103193,    0.000468357,  0.0235499,   0.0183613,
+                                             -0.0148282,   -0.00942407,   0.0432182,    0.0278712,   0.0229169,
+                                              0.0111276,    0.0159333,    0.00235383,   0.0146006,   0.00508511,
+                                             -0.0248065,    0.0100951,   -0.032525,     0.0251286,  -0.0247363,
+                                              0.00982055,   0.0221357,    0.0167985,    0.0176831,   0.0202663 };
 
     std::vector< double > SDVS = SDVSDefault;
 
@@ -13595,38 +13597,32 @@ int test_evaluate_model_continuation( std::ofstream &results){
 
     std::vector< double > current_M1( 27, 0 );
 
-    std::vector< double  > SDVSAnswer1 = { -0.0657714, 0.145741, 0, 0, 0,
-                                            0, 0, 0, 0, 0,
-                                            0.0135502 , 0.0159416  , -0.00115289 ,
-                                            0.0147634 , -0.017333  ,  0.000753281,
-                                           -0.0019198 ,  0.00146735, -0.0147159  ,
-                                            0.0889905 ,  0.0392263 , -0.00161937 ,
-                                            0.057598  , -0.0135026 ,  0.00171046 ,
-                                           -0.00324386, 0.00125815 , -0.0113283  ,
-                                            0.0853441 , -0.0312094 , -0.0320287  ,
-                                            0.018844  , 0.0183506  ,  0.0569985  ,
-                                            0.0259884 , -0.0662456 , -0.0372635  ,
-                                            0.0375801 , -0.0135475 ,  0.0589391  ,
-                                            0.00651194, 0.0171461  ,  0.0239973  ,
-                                            0.0210749 , -0.0125171 , -0.0469244  ,
-                                            0.0264467 , -0.0194244 ,  0.0769913  ,
-                                           -0.0424927 , 0.0297019  ,  0.0477759  ,
-                                            0.0242971 , 0.0258629  ,  0.030255 };
+    std::vector< double  > SDVSAnswer1 = { -5.27495e-23,  0.0335359,    0.125714,     0.0663074,   0.0662991,
+                                            0,            0,            0,            0,           0,
+                                            0.0119379,    0.00805425,  -0.000474633,  0.00803168, -0.00419377,
+                                            0.000456743, -0.000587689,  0.000357757, -0.00249883,  0.021911,
+                                            0.00957419,  -0.000462573,  0.0138866,   -0.00268506,  0.000432095,
+                                           -0.000875176,  0.000316285, -0.00251593,   0.0615029,  -0.0374445,
+                                           -0.015544,     0.0158758,    0.00072055,   0.0362306,   0.0282482,
+                                           -0.0228126,   -0.0144986,    0.0664895,    0.0428788,   0.0352568,
+                                            0.0171194,    0.0245128,    0.00362128,   0.0224624,   0.00782325,
+                                           -0.0381639,    0.0155309,   -0.0500385,    0.0386594,  -0.0380558,
+                                            0.0151085,    0.0340549,    0.0258439,    0.0272048,   0.031179 };
 
-    std::vector< double > PK2Answer1 = { 1.74594528e+02,  9.90357506e+00, -1.16456128e-01,
-                                         7.35100585e+00,  1.57060509e+02, -4.68051721e-01,
-                                        -8.40302786e-01,  1.28400640e+00,  1.55106125e+02 };
+    std::vector< double > PK2Answer1 = { 1.66978152e+02,  1.37043777e+01, -6.79250939e-01,
+                                         1.19801844e+01,  1.40625053e+02, -3.55055182e-03,
+                                        -1.41418688e+00,  1.58554786e+00,  1.38879758e+02 };
 
-    std::vector< double > SIGMAAnswer1 = { 175.50856348,  10.16163404,  -1.73547912,
-                                            10.16163404, 155.38685738,   1.3379937 ,
-                                            -1.73547912,   1.3379937 , 152.87515001 };
+    std::vector< double > SIGMAAnswer1 = { 170.59087565,  14.21733604,  -2.34117992,
+                                            14.21733604, 141.73261282,   1.74697055,
+                                            -2.34117992,   1.74697055, 139.34694752 };
 
-    std::vector< double > MAnswer1 = { 0.37220031, -0.51491634,  0.60588705,  2.5117993 ,  1.15120688,
-                                       1.01073726,  0.54881061, -2.49187357,  1.42408148, -2.15103266,
-                                      -0.81552364, -0.72425736,  0.6621303 ,  0.29584242, -0.22199834,
-                                      -2.4997514 ,  1.02467573,  1.50571566, -0.43582018,  2.57530701,
-                                      -0.56574275,  0.94510996, -0.17195943, -2.08860752, -0.83703857,
-                                       0.6563958 ,  0.94868265 };
+    std::vector< double > MAnswer1 = {  0.40690578, -0.49587229,  0.57675373,  2.81377637,  1.12715818,
+                                        1.0826284 ,  0.49631826, -2.34838025,  1.5301981 , -2.35981967,
+                                       -0.70849601, -0.96124795,  0.61565138,  0.36304544, -0.25784849,
+                                       -2.53616738,  0.74822612,  1.53649759, -0.46626434,  2.49126799,
+                                       -0.7748629 ,  1.03874281, -0.04280188, -2.08914494, -0.78502363,
+                                        0.63691323,  0.83210239 };
 
     errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
                                                               current_grad_u1, current_phi1, current_grad_phi1,
@@ -13642,6 +13638,17 @@ int test_evaluate_model_continuation( std::ofstream &results){
 #endif
                                                               );
     std::vector< double > SDVS1 = SDVS;
+
+    //Make sure that the state variables are monotonically increasing
+    solverTools::floatVector ISVsDelta = solverTools::floatVector( SDVS.begin(), SDVS.begin() + 5 )
+                                       - solverTools::floatVector( SDVSAnswer0.begin(), SDVSAnswer0.begin() + 5 );
+
+    for ( unsigned int i = 0; i < ISVsDelta.size(); i++ ){
+        if ( ISVsDelta[ i ] < -1e-9 ){
+            results << "test_evaluate_model_continuation (ISVs decreasing) & False\n";
+            return 1;
+        }
+    }
 
     if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer1 ) ){
         results << "test_evaluate_model_continuation (test 9) & False\n";
@@ -13753,6 +13760,422 @@ int test_evaluate_model_continuation( std::ofstream &results){
      
 
     results << "test_evaluate_model_continuation & True\n";
+    return 0;
+}
+
+int test_evaluate_model_continuation2( std::ofstream &results){
+    /*!
+     * Test the evaluation of the constitutive model when being
+     * continued from a previous plastic deformation
+     *
+     * :param std::ofstream &results: The output file.
+     */
+
+    //Initialize the time
+    std::vector< double > time = { 10., 2.5 };
+
+    //Initialize the material parameters
+    std::vector< double > fparams = { 2, 2.4e2, 1.5e1,             //Macro hardening parameters
+                                      2, 1.4e2, 2.0e1,             //Micro hardening parameters
+                                      2, 2.0e0, 2.7e1,             //Micro gradient hardening parameters
+                                      2, 0.56, 0.2,                //Macro flow parameters
+                                      2, 0.15,-0.2,                //Micro flow parameters
+                                      2, 0.82, 0.1,                //Micro gradient flow parameters
+                                      2, 0.70, 0.3,                //Macro yield parameters
+                                      2, 0.40,-0.3,                //Micro yield parameters
+                                      2, 0.52, 0.4,                //Micro gradient yield parameters
+                                      2, 696.47, 65.84,            //A stiffness tensor parameters
+                                      5, -7.69, -51.92, 38.61, -27.31, 5.13,  //B stiffness tensor parameters
+                                      11, 1.85, -0.19, -1.08, -1.57, 2.29, -0.61, 5.97, -2.02, 2.38, -0.32, -3.25, //C stiffness tensor parameters
+                                      2, -51.92, 5.13,             //D stiffness tensor parameters
+                                      0.4, 0.3, 0.35, 1e-8, 1e-8   //Integration parameters
+                                    };
+
+    //Initialize the gradient of the macro displacement
+//    double current_grad_u[ 3 ][ 3 ] = { { -1.83182277, -0.66558173,  0.23458272 },
+//                                        { -0.56632666, -0.21399259,  0.16367238 },
+//                                        { -0.29129789, -0.22367825, -2.0632945  } };
+//
+//    double previous_grad_u[ 3 ][ 3 ] = { { -1.89906429,  0.20890208, -0.39814132 },
+//                                         {  0.31303067, -1.23910631, -0.93837662 },
+//                                         { -0.32571524, -0.95306342, -0.93025257 } };
+
+    double current_grad_u0[ 3 ][ 3 ] = { {0.200, 0.100, 0.000 },
+                                         {0.100, 0.001, 0.000 },
+                                         {0.000, 0.000, 0.000 } };
+
+    double previous_grad_u[ 3 ][ 3 ] = { {0, 0, 0},
+                                         {0, 0, 0},
+                                         {0, 0, 0} };
+    //Initialize the micro displacement
+//    double current_phi[ 9 ] = { 0.84729289,  0.40617104,  0.59534561,  
+//                                0.44195587,  0.34121966, -0.79098944, 
+//                               -0.43965428,  0.88466225,  0.1684519 };
+//
+//    double previous_phi[ 9 ] = { -0.99935855, -0.21425717,  0.0668254 ,
+//                                 -0.11111872, -0.07416114, -1.01048108,
+//                                  0.1804018 , -1.01116291,  0.03248007 };
+
+    double current_phi0[ 9 ] = { 0.100, 0.000, 0.000,
+                                 0.000, 0.000, 0.000,
+                                 0.000, 0.000, 0.000 };
+
+    double previous_phi[ 9 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    //Initialize the gradient of the micro displacement
+    double current_grad_phi0[ 9 ][ 3 ] = { {  0.13890017, -0.3598602 , -0.08048856 },
+                                           { -0.18572739,  0.06847269,  0.22931628 },
+                                           { -0.01829735, -0.48731265, -0.25277529 },
+                                           {  0.26626212,  0.4844646 , -0.31965177 },
+                                           {  0.49197846,  0.19051656, -0.0365349  },
+                                           { -0.06607774, -0.33526875, -0.15803078 },
+                                           {  0.09738707, -0.49482218, -0.39584868 },
+                                           { -0.45599864,  0.08585038, -0.09432794 },
+                                           {  0.23055539,  0.07564162,  0.24051469 } };
+
+//    double previous_grad_phi[ 9 ][ 3 ] = { { -0.47850242,  0.36472234,  0.37071411 },
+//                                           {  0.00294417,  0.34480654, -0.34450988 },
+//                                           {  0.21056511, -0.28113967, -0.45726839 },
+//                                           { -0.26431286, -0.09985721,  0.47322301 },
+//                                           { -0.18156887, -0.32226199, -0.37295847 },
+//                                           {  0.15062371,  0.09439471,  0.09167948 },
+//                                           { -0.46869859,  0.018301  ,  0.45013866 },
+//                                           { -0.15455446,  0.40552715, -0.4216042  },
+//                                           { -0.38930237,  0.10974753, -0.31188239 } };
+
+//    double current_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0},
+//                                          {0, 0, 0} };
+
+    double previous_grad_phi[ 9 ][ 3 ] = { {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0},
+                                           {0, 0, 0} };
+                                           
+
+    //Initialize the state variable vector
+    std::vector< double > SDVSDefault( 55, 0 );
+
+    //Initialize the additional degree of freedom vectors
+    std::vector< double > current_ADD_DOF;
+    std::vector< std::vector< double > > current_ADD_grad_DOF;
+
+    std::vector< double > previous_ADD_DOF;
+    std::vector< std::vector< double > > previous_ADD_grad_DOF;
+
+    //Initialize the stress measures
+    std::vector< double > current_PK20( 9, 0 );
+
+    std::vector< double > current_SIGMA0( 9, 0 );
+
+    std::vector< double > current_M0( 27, 0 );
+
+    std::vector< std::vector< double > > DPK2Dgrad_u,   DPK2Dphi,   DPK2Dgrad_phi,
+                                         DSIGMADgrad_u, DSIGMADphi, DSIGMADgrad_phi,
+                                         DMDgrad_u,     DMDphi,     DMDgrad_phi;
+
+    //Initialize the additional terms vector
+    std::vector< std::vector< double > > ADD_TERMS;
+    std::vector< std::vector< std::vector< double > > > ADD_JACOBIANS;
+
+    //Initialize the output message string
+    std::string output_message;
+
+#ifdef DEBUG_MODE
+    solverTools::homotopyMap homotopyDEBUG0;
+#endif
+
+    solverTools::floatVector PK2Answer0 = { 172.787,    15.5239,    -0.924036,
+                                             13.5121,  143.024,    -0.0244211,
+                                             -1.74929,   1.77948, 141.292 };
+
+    solverTools::floatVector SigmaAnswer0 = { 176.77,    15.9881,   -2.8251,
+                                               15.9881, 144.272,     1.85406,
+                                               -2.8251,   1.85406, 141.777 };
+
+    solverTools::floatVector MAnswer0 = { 0.591321, -0.511457,  0.620715,   3.18917,   1.15964,
+                                          1.19986,   0.563253, -2.52518,    1.61892,  -2.58268,
+                                         -0.61105,  -1.00557,   0.665297,   0.489595, -0.234683,
+                                         -2.75464,   0.7724,    1.71083,   -0.495148,  2.62498,
+                                         -0.751885,  1.22189,  -0.0145255, -2.24607,  -0.728836,
+                                          0.741248,  0.91458 };
+
+    solverTools::floatVector SDVSAnswer0 = { -3.16497e-23,  0.0234751,    0.0817142,    0.0430998,   0.0430944,
+                                             -1.57904e-23,  0.00822511,   0.0462373,    0.0243877,   0.0243846,
+                                              0.00716275,   0.00483255,  -0.00028478,   0.00481901, -0.00251626,
+                                              0.000274046, -0.000352614,  0.000214654, -0.0014993,   0.0153377,
+                                              0.00670194,  -0.000323801,  0.00972063,  -0.00187954,  0.000302467,
+                                             -0.000612623,  0.000221399, -0.00176115,   0.0399769,  -0.0243389,
+                                             -0.0101036,    0.0103193,    0.000468357,  0.0235499,   0.0183613,
+                                             -0.0148282,   -0.00942407,   0.0432182,    0.0278712,   0.0229169,
+                                              0.0111276,    0.0159333,    0.00235383,   0.0146006,   0.00508511,
+                                             -0.0248065,    0.0100951,   -0.032525,     0.0251286,  -0.0247363,
+                                              0.00982055,   0.0221357,    0.0167985,    0.0176831,   0.0202663 };
+
+    std::vector< double > SDVS = SDVSDefault;
+
+    int errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                                  current_grad_u0,  current_phi0,  current_grad_phi0,
+                                                                  previous_grad_u, previous_phi, previous_grad_phi,
+                                                                  SDVS,
+                                                                  current_ADD_DOF,  current_ADD_grad_DOF,
+                                                                  previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                                  current_PK20, current_SIGMA0, current_M0,
+                                                                  DPK2Dgrad_u,   DPK2Dphi,   DPK2Dgrad_phi,
+                                                                  DSIGMADgrad_u, DSIGMADphi, DSIGMADgrad_phi,
+                                                                  DMDgrad_u,     DMDphi,     DMDgrad_phi,
+                                                                  ADD_TERMS, ADD_JACOBIANS,
+                                                                  output_message
+#ifdef DEBUG_MODE
+                                                                  , homotopyDEBUG0
+#endif
+                                                                  );
+
+    if ( errorCode != 0 ){
+        std::cout << output_message;
+        results << "test_evaluate_model_continuation2 & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer0 ) ){
+        results << "test_evaluate_model_continuation2 (test 1) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( PK2Answer0, current_PK20, 1e-5, 1e-5 ) ){
+        std::cout << "error: "; vectorTools::print( PK2Answer0 - current_PK20 );
+        results << "test_evaluate_model_continuation2 (test 2) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( SigmaAnswer0, current_SIGMA0, 1e-5, 1e-5 ) ){
+        results << "test_evaluate_model_continuation2 (test 3) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( MAnswer0, current_M0, 1e-5 ) ){
+        results << "test_evaluate_model_continuation2 (test 4) & False\n";
+        return 1;
+    }
+
+#ifdef DEBUG_MODE
+    solverTools::homotopyMap homotopyDEBUG1;
+#endif
+
+    double current_grad_u1[ 3 ][ 3 ];
+    for ( unsigned int i = 0; i < 3; i++ ){
+        for ( unsigned int j = 0; j < 3; j++ ){
+            current_grad_u1[ i ][ j ] = current_grad_u0[ i ][ j ];
+        }
+    }
+
+    double current_phi1[ 9 ];
+    for ( unsigned int i = 0; i < 9; i++ ){
+        current_phi1[ i ] = current_phi0[ i ];
+    }
+
+    double current_grad_phi1[ 9 ][ 3 ];
+    for ( unsigned int i = 0; i < 9; i++ ){
+        for ( unsigned int j = 0; j < 3; j++ ){
+            current_grad_phi1[ i ][ j ] = current_grad_phi0[ i ][ j ];
+        }
+    }
+
+    //Compute the new stress
+    std::vector< double > current_PK21( 9, 0 );
+
+    std::vector< double > current_SIGMA1( 9, 0 );
+
+    std::vector< double > current_M1( 27, 0 );
+
+    std::vector< double  > SDVSAnswer1 = { -5.27495e-23,  0.0335359,    0.125714,     0.0663074,   0.0662991,
+                                            0,            0,            0,            0,           0,
+                                            0.0119379,    0.00805425,  -0.000474633,  0.00803168, -0.00419377,
+                                            0.000456743, -0.000587689,  0.000357757, -0.00249883,  0.021911,
+                                            0.00957419,  -0.000462573,  0.0138866,   -0.00268506,  0.000432095,
+                                           -0.000875176,  0.000316285, -0.00251593,   0.0615029,  -0.0374445,
+                                           -0.015544,     0.0158758,    0.00072055,   0.0362306,   0.0282482,
+                                           -0.0228126,   -0.0144986,    0.0664895,    0.0428788,   0.0352568,
+                                            0.0171194,    0.0245128,    0.00362128,   0.0224624,   0.00782325,
+                                           -0.0381639,    0.0155309,   -0.0500385,    0.0386594,  -0.0380558,
+                                            0.0151085,    0.0340549,    0.0258439,    0.0272048,   0.031179 };
+
+    std::vector< double > PK2Answer1 = { 1.66978152e+02,  1.37043777e+01, -6.79250939e-01,
+                                         1.19801844e+01,  1.40625053e+02, -3.55055182e-03,
+                                        -1.41418688e+00,  1.58554786e+00,  1.38879758e+02 };
+
+    std::vector< double > SIGMAAnswer1 = { 170.59087565,  14.21733604,  -2.34117992,
+                                            14.21733604, 141.73261282,   1.74697055,
+                                            -2.34117992,   1.74697055, 139.34694752 };
+
+    std::vector< double > MAnswer1 = {  0.40690578, -0.49587229,  0.57675373,  2.81377637,  1.12715818,
+                                        1.0826284 ,  0.49631826, -2.34838025,  1.5301981 , -2.35981967,
+                                       -0.70849601, -0.96124795,  0.61565138,  0.36304544, -0.25784849,
+                                       -2.53616738,  0.74822612,  1.53649759, -0.46626434,  2.49126799,
+                                       -0.7748629 ,  1.03874281, -0.04280188, -2.08914494, -0.78502363,
+                                        0.63691323,  0.83210239 };
+
+    std::vector< std::vector< double > > DPK2Dgrad_u1,   DPK2Dphi1,   DPK2Dgrad_phi1,
+                                         DSIGMADgrad_u1, DSIGMADphi1, DSIGMADgrad_phi1,
+                                         DMDgrad_u1,     DMDphi1,     DMDgrad_phi1;
+
+    errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                              current_grad_u1, current_phi1, current_grad_phi1,
+                                                              current_grad_u0, current_phi0, current_grad_phi0,
+                                                              SDVS,
+                                                              current_ADD_DOF,  current_ADD_grad_DOF,
+                                                              previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                              current_PK21, current_SIGMA1, current_M1,
+                                                              DPK2Dgrad_u1,   DPK2Dphi1,   DPK2Dgrad_phi1,
+                                                              DSIGMADgrad_u1, DSIGMADphi1, DSIGMADgrad_phi1,
+                                                              DMDgrad_u1,     DMDphi1,     DMDgrad_phi1,
+                                                              ADD_TERMS, ADD_JACOBIANS,
+                                                              output_message
+#ifdef DEBUG_MODE
+                                                              , homotopyDEBUG1
+#endif
+                                                              );
+    std::vector< double > SDVS1 = SDVS;
+
+    //Make sure that the state variables are monotonically increasing
+    solverTools::floatVector ISVsDelta = solverTools::floatVector( SDVS.begin(), SDVS.begin() + 5 )
+                                       - solverTools::floatVector( SDVSAnswer0.begin(), SDVSAnswer0.begin() + 5 );
+
+    for ( unsigned int i = 0; i < ISVsDelta.size(); i++ ){
+        if ( ISVsDelta[ i ] < -1e-9 ){
+            results << "test_evaluate_model_continuation2 (ISVs decreasing) & False\n";
+            return 1;
+        }
+    }
+
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVSAnswer1 ) ){
+        results << "test_evaluate_model_continuation2 (test 9) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_PK21, PK2Answer1 ) ){
+        std::cout << "error: "; vectorTools::print( current_PK21 - PK2Answer1 );
+        results << "test_evaluate_model_continuation2 (test 10) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_SIGMA1, SIGMAAnswer1 ) ){
+        std::cout << "error: "; vectorTools::print( current_SIGMA1 - SIGMAAnswer1 );
+        results << "test_evaluate_model_continuation2 (test 11) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_M1, MAnswer1 ) ){
+        std::cout << "error: "; vectorTools::print( current_M1 - MAnswer1 );
+        results << "test_evaluate_model_continuation2 (test 12) & False\n";
+        return 1;
+    }
+
+#ifdef DEBUG_MODE
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPK2Stress" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediatePK2Stress" ] ) ){
+        results << "test_evaluate_model_continuation2 (intermediatePK2Stress) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousReferenceMicroStress" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceMicroStress" ] ) ){
+        results << "test_evaluate_model_continuation2 (intermediateReferenceMicroStress) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousReferenceHigherOrderStress" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceHigherOrderStress" ] ) ){
+        results << "test_evaluate_model_continuation2 (intermediateReferenceHigherOrderStress) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticDeformationGradient" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticDeformationGradient" ] ) ){
+        results << "test_evaluate_model_continuation2 (previousElasticDeformationGradient) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticMicroDeformation" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticMicroDeformation" ] ) ){
+        results << "test_evaluate_model_continuation2 (previousPlasticMicroDeformation) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticGradientMicroDeformation" ],
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticGradientMicroDeformation" ] ) ){
+        results << "test_evaluate_model_continuation2 (previousPlasticGradientMicroDeformation) & False\n";
+        return 1;
+    }
+
+#endif
+    
+    //Compute the new stress
+    std::vector< double > current_PK22( 9, 0 );
+
+    std::vector< double > current_SIGMA2( 9, 0 );
+
+    std::vector< double > current_M2( 27, 0 );
+
+    std::vector< std::vector< double > > DPK2Dgrad_u2,   DPK2Dphi2,   DPK2Dgrad_phi2,
+                                         DSIGMADgrad_u2, DSIGMADphi2, DSIGMADgrad_phi2,
+                                         DMDgrad_u2,     DMDphi2,     DMDgrad_phi2;
+
+#ifdef DEBUG_MODE
+    solverTools::homotopyMap homotopyDEBUG2;
+#endif
+
+    errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
+                                                              current_grad_u1, current_phi1, current_grad_phi1,
+                                                              current_grad_u1, current_phi1, current_grad_phi1,
+                                                              SDVS,
+                                                              current_ADD_DOF,  current_ADD_grad_DOF,
+                                                              previous_ADD_DOF, previous_ADD_grad_DOF,
+                                                              current_PK22, current_SIGMA2, current_M2,
+                                                              DPK2Dgrad_u2,   DPK2Dphi2,   DPK2Dgrad_phi2,
+                                                              DSIGMADgrad_u2, DSIGMADphi2, DSIGMADgrad_phi2,
+                                                              DMDgrad_u2,     DMDphi2,     DMDgrad_phi2,
+                                                              ADD_TERMS, ADD_JACOBIANS,
+                                                              output_message
+#ifdef DEBUG_MODE
+                                                              , homotopyDEBUG2
+#endif
+                                                              );
+
+    if ( !vectorTools::fuzzyEquals( SDVS, SDVS1 ) ){
+        results << "test_evaluate_model_continuation2 (test 9) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_PK21, current_PK22 ) ){
+        results << "test_evaluate_model_continuation2 (test 10) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_SIGMA1, current_SIGMA2 ) ){
+        results << "test_evaluate_model_continuation2 (test 11) & False\n";
+        return 1;
+    }
+
+    if ( !vectorTools::fuzzyEquals( current_M1, current_M2 ) ){
+        results << "test_evaluate_model_continuation2 (test 12) & False\n";
+        return 1;
+    }
+     
+
+    results << "test_evaluate_model_continuation2 & True\n";
     return 0;
 }
 
@@ -15235,9 +15658,10 @@ int main(){
 //
 //    test_computePlasticMultiplierResidual( results );
 //    test_computePlasticMultiplierResidual2( results );
-    test_evaluate_model( results );
-//    test_evaluate_model_continuation( results );
-//
+//    test_evaluate_model( results );
+    test_evaluate_model_continuation( results );
+    test_evaluate_model_continuation2( results );
+
 //    test_materialLibraryInterface( results );
 //
 //    test_evaluate_model_history( results );
