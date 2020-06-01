@@ -1274,7 +1274,7 @@ namespace micromorphicElastoPlasticity{
                                 += microGamma
                                  * inverseElasticPsi[ dim * Bb + Lb ]
                                  * microFlowDirection[ dim * Eb + Lb ]
-                                 * elasticPsi[ dim * Nb + Eb ]
+                                 * inverseElasticPsi[ dim * Eb + Nb ]
                                  * elasticMicroRightCauchyGreen[ dim * Nb + Kb ];
                         }
                     }
@@ -1342,7 +1342,7 @@ namespace micromorphicElastoPlasticity{
                             dPlasticMicroLdMicroGamma[ dim * Bb + Kb ]
                                 += inverseElasticPsi[ dim * Bb + Lb ]
                                  * microFlowDirection[ dim * Eb + Lb ]
-                                 * elasticPsi[ dim * Nb + Eb ]
+                                 * inverseElasticPsi[ dim * Eb + Nb ]
                                  * elasticMicroRightCauchyGreen[ dim * Nb + Kb ];
                         }
                     }
@@ -1408,29 +1408,30 @@ namespace micromorphicElastoPlasticity{
         dPlasticMicroLdElasticPsi = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
         dPlasticMicroLdMicroFlowDirection = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
 
-        for ( unsigned int Eb = 0; Eb < dim; Eb++ ){
-            for ( unsigned int Fb = 0; Fb < dim; Fb++ ){
+        for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+            for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
                 for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
                     for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
-                        dPlasticMicroLdElasticPsi[ dim * Eb + Fb ][ dim * Ob + Pb ]
-                            -= inverseElasticPsi[ dim * Eb + Ob ] * plasticMicroVelocityGradient[ dim * Pb + Fb ];
+                        dPlasticMicroLdElasticPsi[ dim * Bb + Kb ][ dim * Ob + Pb ]
+                            -= inverseElasticPsi[ dim * Bb + Ob ] * plasticMicroVelocityGradient[ dim * Pb + Kb ];
 
                         for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-                            dPlasticMicroLdElasticPsi[ dim * Eb + Fb ][ dim * Ob + Pb ]
-                                += microGamma * inverseElasticPsi[ dim * Eb + Lb ]
-                                 * microFlowDirection[ dim * Pb + Lb ]
-                                 * elasticMicroRightCauchyGreen[ dim * Ob + Fb ];
 
-                            dPlasticMicroLdMicroFlowDirection[ dim * Eb + Fb ][ dim * Ob + Pb ]
-                                += microGamma * inverseElasticPsi[ dim * Eb + Pb ]
-                                 * elasticPsi[ dim * Lb + Ob ]
-                                 * elasticMicroRightCauchyGreen[ dim * Lb + Fb ];
+                            dPlasticMicroLdMicroFlowDirection[ dim * Bb + Kb ][ dim * Ob + Pb ]
+                                += microGamma * inverseElasticPsi[ dim * Bb + Pb ]
+                                 * inverseElasticPsi[ dim * Ob + Lb ]
+                                 * elasticMicroRightCauchyGreen[ dim * Lb + Kb ];
 
-                            for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-                                dPlasticMicroLdElasticMicroRCG[ dim * Eb + Fb ][ dim * Ob + Pb ]
-                                    += microGamma * inverseElasticPsi[ dim * Eb + Lb ]
-                                     * microFlowDirection[ dim * Kb + Lb ] * elasticPsi[ dim * Ob + Kb ]
-                                     * eye[ dim * Fb + Pb ];
+                            for ( unsigned int Eb = 0; Eb < dim; Eb++ ){
+                                dPlasticMicroLdElasticMicroRCG[ dim * Bb + Kb ][ dim * Ob + Pb ]
+                                    += microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Eb + Lb ]
+                                     * inverseElasticPsi[ dim * Eb + Ob ] * eye[ dim * Kb + Pb ];
+                                for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
+                                    dPlasticMicroLdElasticPsi[ dim * Bb + Kb ][ dim * Ob + Pb ]
+                                        -= microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Eb + Lb ]
+                                         * inverseElasticPsi[ dim * Eb + Ob ] * inverseElasticPsi[ dim * Pb + Nb ]
+                                         * elasticMicroRightCauchyGreen[ dim * Nb + Kb ];
+                                }
                             }
                         }
                     }
@@ -8172,7 +8173,7 @@ namespace micromorphicElastoPlasticity{
         | Compute the plastic deformations |
         ==================================*/
 
-        std::cout << "    x: "; vectorTools::print( x );
+//        std::cout << "    x: "; vectorTools::print( x );
 
         //Assemble the values required for the non-linear solve
 
@@ -8232,9 +8233,6 @@ namespace micromorphicElastoPlasticity{
             }
             return result;
         }
-
-        std::cout << "    plasticDeformationX0: "; vectorTools::print( plasticDeformationX0 );
-        std::cout << "    currentPlasticDeformation: "; vectorTools::print( currentPlasticDeformation );
 
         //Solve for the Jacobian of the plastic deformation w.r.t. the gammas
         
@@ -8392,8 +8390,6 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        std::cout << "    yieldFunctionValues: "; vectorTools::print( yieldFunctionValues );
-
         //Construct the Jacobians of the yield functions
         variableVector zero9( 9, 0 );
         variableVector zero27( 27, 0 );
@@ -8487,12 +8483,6 @@ namespace micromorphicElastoPlasticity{
         floatOuts[ 6 ] = solverTools::floatVector( currentPlasticDeformation.begin() +  0, currentPlasticDeformation.begin() + 9 );
         floatOuts[ 7 ] = solverTools::floatVector( currentPlasticDeformation.begin() +  9, currentPlasticDeformation.begin() + 18 );
         floatOuts[ 8 ] = solverTools::floatVector( currentPlasticDeformation.begin() + 18, currentPlasticDeformation.begin() + 45 );
-
-        std::cout << "    residual: "; vectorTools::print( residual );
-        std::cout << "    jacobian:\n";
-        for ( unsigned int i = 0; i < jacobian.size(); i++ ){
-            std::cout << "        "; vectorTools::print( jacobian[ i ] );
-        }
 
         return NULL;
     }
