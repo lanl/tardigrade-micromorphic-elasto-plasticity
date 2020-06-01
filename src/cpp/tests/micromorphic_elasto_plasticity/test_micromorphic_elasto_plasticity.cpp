@@ -6941,7 +6941,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
                                             DEBUG[ "totaldPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ],
-                                            1e-6, 1e-8 ) ){
+                                            1e-6, 1e-6 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ] << "\n";
@@ -6955,7 +6955,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
                                             DEBUG[ "totaldPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ],
-                                            1e-6, 1e-8 ) ){
+                                            1e-6, 1e-6 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
@@ -6969,7 +6969,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
                                             DEBUG[ "totaldPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ],
-                                            1e-6, 1e-8 ) ){
+                                            1e-6, 1e-6 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
@@ -6984,7 +6984,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "intermediatePK2Stress" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediatePK2Stress" ][ j ],
                                             DEBUG[ "totaldPK2StressdDeformationGradient" ][ 9 * j + i ],
-                                            1e-5, 1e-8 ) ){
+                                            1e-5, 1e-5 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "intermediatePK2Stress" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldPK2StressdDeformationGradient" ][ 9 * j + i ] << "\n";
@@ -6999,7 +6999,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceMicroStress" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceMicroStress" ][ j ],
                                             DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ][ 9 * j + i ],
-                                            1e-5, 1e-8 ) ){
+                                            1e-5, 1e-5 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ][ 9 * j + i ] << "\n";
@@ -7013,11 +7013,11 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceHigherOrderStress" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ],
                                             DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ],
-                                            1e-5, 1e-8 ) ){
+                                            1e-5, 1e-5 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
+                std::cout << "num:   " << numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "intermediateReferenceMicroStress" ][ j ]
+                std::cout << "error: " << numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ]
                                         - DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ] << "\n";
                 std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ], 27, 9 ) );
                 results << "test_evaluate_model (dReferenceHigherOrderStressdDeformationGradient) & False\n";
@@ -7028,7 +7028,7 @@ int test_evaluate_model( std::ofstream &results){
         solverTools::floatVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dgrad_u[ j ][ i ], 1e-5 ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dgrad_u[ j ][ i ], 1e-4, 1e-5 ) ){
                 std::cout << "row, column: " << j << ", " << i << "\n";
                 std::cout << "num:   " << gradCol[ j ] << "\n";
                 std::cout << "ana:   " << DPK2Dgrad_u[ j ][ i ] << "\n";
@@ -7041,7 +7041,7 @@ int test_evaluate_model( std::ofstream &results){
         gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADgrad_u[ j ][ i ], 1e-5 ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADgrad_u[ j ][ i ], 1e-4, 1e-5 ) ){
                 std::cout << "row, column: " << j << ", " << i << "\n";
                 std::cout << "num:   " << gradCol[ j ] << "\n";
                 std::cout << "ana:   " << DSIGMADgrad_u[ j ][ i ] << "\n";
@@ -7054,7 +7054,7 @@ int test_evaluate_model( std::ofstream &results){
         gradCol = ( M_P - M_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DMDgrad_u[ j ][ i ], 1e-5 ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DMDgrad_u[ j ][ i ], 1e-4, 1e-5 ) ){
                 std::cout << "row, column: " << j << ", " << i << "\n";
                 std::cout << "num:   " << gradCol[ j ] << "\n";
                 std::cout << "ana:   " << DSIGMADgrad_u[ j ][ i ] << "\n";
@@ -7170,7 +7170,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
                                             DEBUG[ "totaldPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ],
-                                            1e-6, 1e-8 ) ){
+                                            1e-6, 1e-6 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ] << "\n";
@@ -7184,7 +7184,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
                                             DEBUG[ "totaldPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ],
-                                            1e-6, 1e-8 ) ){
+                                            1e-6, 1e-6 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
@@ -7198,7 +7198,7 @@ int test_evaluate_model( std::ofstream &results){
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
             if ( !vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
                                             DEBUG[ "totaldPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ],
-                                            1e-6, 1e-8 ) ){
+                                            1e-6, 1e-6 ) ){
                 std::cout << "i, j:  " << i << ", " << j << "\n";
                 std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
                 std::cout << "ana:   " << DEBUG[ "totaldPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
@@ -7260,7 +7260,7 @@ int test_evaluate_model( std::ofstream &results){
         solverTools::floatVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dphi[ j ][ i ], 1e-5, 1e-4 ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dphi[ j ][ i ], 1e-4 ) ){
                 std::cout << "row, column: " << j << ", " << i << "\n";
                 std::cout << "num:   " << gradCol[ j ] << "\n";
                 std::cout << "ana:   " << DPK2Dphi[ j ][ i ] << "\n";
@@ -7273,7 +7273,7 @@ int test_evaluate_model( std::ofstream &results){
         gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADphi[ j ][ i ], 1e-5, 1e-4 ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADphi[ j ][ i ], 1e-4 ) ){
                 std::cout << "row, column: " << j << ", " << i << "\n";
                 std::cout << "num:   " << gradCol[ j ] << "\n";
                 std::cout << "ana:   " << DSIGMADphi[ j ][ i ] << "\n";
@@ -7286,7 +7286,7 @@ int test_evaluate_model( std::ofstream &results){
         gradCol = ( M_P - M_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DMDphi[ j ][ i ], 1e-5, 1e-4 ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DMDphi[ j ][ i ], 1e-4 ) ){
                 std::cout << "row, column: " << j << ", " << i << "\n";
                 std::cout << "num:   " << gradCol[ j ] << "\n";
                 std::cout << "ana:   " << DMDphi[ j ][ i ] << "\n";
@@ -7519,7 +7519,10 @@ int test_evaluate_model( std::ofstream &results){
 
         gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADgrad_phi[ j ][ i ] ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADgrad_phi[ j ][ i ], 1e-5 ) ){
+                std::cout << "num: " << gradCol[ j ] << "\n";
+                std::cout << "ana: " << DSIGMADgrad_phi[ j ][ i ] << "\n";
+                std::cout << "error: " << gradCol[ j ] - DSIGMADgrad_phi[ j ][ i ] << "\n";
                 results << "test_evaluate_model (test 16) & False\n";
                 return 1;
             }
@@ -7529,7 +7532,7 @@ int test_evaluate_model( std::ofstream &results){
 
         gradCol = ( M_P - M_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DMDgrad_phi[ j ][ i ] ) ){
+            if ( !vectorTools::fuzzyEquals( gradCol[ j ], DMDgrad_phi[ j ][ i ], 1e-5 ) ){
                 results << "test_evaluate_model (test 17) & False\n";
                 return 1;
             }
@@ -12984,7 +12987,7 @@ int test_materialLibraryInterface( std::ofstream &results ){
 #endif
                                             );
 
-    if ( errorCode > 0 ){
+    if ( errorCode != 0 ){
         std::cout << output_message << "\n";
         results << "test_materialLibraryInterface & False\n";
         return 1;
@@ -13166,6 +13169,7 @@ int test_materialLibraryInterface( std::ofstream &results ){
                                                             1e-6 );
 
     if ( errorCode > 0 ){
+        std::cout << "output_message:\n" << output_message << "\n";
         results << "test_materialLibraryInterface & False\n";
         return 1;
     }
@@ -13191,49 +13195,51 @@ int test_materialLibraryInterface( std::ofstream &results ){
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( DPK2Dgrad_u_result, DPK2Dgrad_u_answer ) ){
+    if ( !vectorTools::fuzzyEquals( DPK2Dgrad_u_result, DPK2Dgrad_u_answer, 1e-4 ) ){
         std::cout << "num:\n"; vectorTools::print( DPK2Dgrad_u_result );
         std::cout << "ana:\n"; vectorTools::print( DPK2Dgrad_u_answer );
         results << "test_materialLibraryInterface (test 22) & False\n";
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( DPK2Dphi_result, DPK2Dphi_answer ) ){
+    if ( !vectorTools::fuzzyEquals( DPK2Dphi_result, DPK2Dphi_answer, 1e-4 ) ){
         results << "test_materialLibraryInterface (test 23) & False\n";
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( DPK2Dgrad_phi_result, DPK2Dgrad_phi_answer ) ){
+    if ( !vectorTools::fuzzyEquals( DPK2Dgrad_phi_result, DPK2Dgrad_phi_answer, 1e-4, 1e-5 ) ){
+        std::cout << "num:\n"; vectorTools::print( DPK2Dgrad_phi_result );
+        std::cout << "ana:\n"; vectorTools::print( DPK2Dgrad_phi_answer );
         results << "test_materialLibraryInterface (test 24) & False\n";
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( DSIGMADgrad_u_result, DSIGMADgrad_u_answer ) ){
+    if ( !vectorTools::fuzzyEquals( DSIGMADgrad_u_result, DSIGMADgrad_u_answer, 1e-4 ) ){
         results << "test_materialLibraryInterface (test 25) & False\n";
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( DSIGMADphi_result, DSIGMADphi_answer ) ){
+    if ( !vectorTools::fuzzyEquals( DSIGMADphi_result, DSIGMADphi_answer, 1e-4 ) ){
         results << "test_materialLibraryInterface (test 26) & False\n";
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( DSIGMADgrad_phi_result, DSIGMADgrad_phi_answer ) ){
+    if ( !vectorTools::fuzzyEquals( DSIGMADgrad_phi_result, DSIGMADgrad_phi_answer, 1e-4 ) ){
         results << "test_materialLibraryInterface (test 27) & False\n";
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( DMDgrad_u_result, DMDgrad_u_answer ) ){
+    if ( !vectorTools::fuzzyEquals( DMDgrad_u_result, DMDgrad_u_answer, 1e-4 ) ){
         results << "test_materialLibraryInterface (test 28) & False\n";
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( DMDphi_result, DMDphi_answer ) ){
+    if ( !vectorTools::fuzzyEquals( DMDphi_result, DMDphi_answer, 1e-4 ) ){
         results << "test_materialLibraryInterface (test 29) & False\n";
         return 1;
     }
 
-    if ( !vectorTools::fuzzyEquals( DMDgrad_phi_result, DMDgrad_phi_answer ) ){
+    if ( !vectorTools::fuzzyEquals( DMDgrad_phi_result, DMDgrad_phi_answer, 1e-4 ) ){
         results << "test_materialLibraryInterface (test 30) & False\n";
         return 1;
     }
@@ -14835,7 +14841,7 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
 
     if ( error ){
         error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
+        results << "test_computePlasticMultiplierResidual & False\n";
         return 1;
     }
 
@@ -14885,7 +14891,7 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
 
     if ( error ){
         error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
+        results << "test_computePlasticMultiplierResidual & False\n";
         return 1;
     }
 
@@ -14965,7 +14971,7 @@ int test_computePlasticMultiplierResidual( std::ofstream &results ){
             currentMicroGradientGamma[ 2 ]
         };
 
-    solverTools::floatVector residualAnswer = { 322.88750276, 398.99609498, -2.92818166, -5.60542895, -8.29895044 };
+    solverTools::floatVector residualAnswer = { 319.6905968 , 391.17264214, -2.92818166, -5.60542895, -8.29895044 };
 
     solverTools::floatVector residual;
     solverTools::floatMatrix jacobian;
@@ -15200,7 +15206,7 @@ int test_computePlasticMultiplierResidual2( std::ofstream &results ){
 
     if ( error ){
         error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
+        results << "test_computePlasticMultiplierResidual2 & False\n";
         return 1;
     }
 
@@ -15250,7 +15256,7 @@ int test_computePlasticMultiplierResidual2( std::ofstream &results ){
 
     if ( error ){
         error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
+        results << "test_computePlasticMultipliernResidual2 & False\n";
         return 1;
     }
 
@@ -15331,7 +15337,7 @@ int test_computePlasticMultiplierResidual2( std::ofstream &results ){
             currentMicroGradientGamma[ 2 ]
         };
 
-    solverTools::floatVector residualAnswer = { 322.88750276, 398.99609498, -2.92818166, -5.60542895, -8.29895044 };
+    solverTools::floatVector residualAnswer = { 319.6905968 , 391.17264214, -2.92818166, -5.60542895, -8.29895044 };
 
     solverTools::floatVector residual;
     solverTools::floatMatrix jacobian;
@@ -15792,6 +15798,8 @@ int test_homotopySolve( std::ofstream &results ){
     solverTools::homotopyMap DEBUG;
 #endif
 
+    solverTools::floatVector answer = { 0, 2.91946515, 0, 0, 0 };
+
     errorOut error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
                                                   floatOuts, intOuts, floatArgs, intArgs, linearSolver, J,
                                                   boundVariableIndices, boundSigns, boundValues, true,
@@ -15806,7 +15814,12 @@ int test_homotopySolve( std::ofstream &results ){
         results << "test_homotopySolve & False\n";
         return 1;
     }
-    std::cout << "solutionVector: "; vectorTools::print( solutionVector );
+
+    if ( !vectorTools::fuzzyEquals( answer, solutionVector ) ){
+        std::cout << "error: "; vectorTools::print( solutionVector - answer );
+        results << "test_homotopySolve (test 1) & False\n";
+        return 1;
+    }
 
     results << "test_homotopySolve & True\n";
     return 0;
@@ -15983,10 +15996,10 @@ int main(){
 
     test_materialLibraryInterface( results );
 
-//    test_evaluate_model_history( results );
-//
-//      test_computePlasticMultiplierLagrangian( results );
-//    test_homotopySolve( results );
+    test_evaluate_model_history( results );
+
+//    test_computePlasticMultiplierLagrangian( results );
+    test_homotopySolve( results );
 
     //Close the results file
     results.close();

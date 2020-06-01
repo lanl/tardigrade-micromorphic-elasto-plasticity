@@ -2289,6 +2289,18 @@ namespace micromorphicElastoPlasticity{
         currentPlasticMicroGradient = vectorTools::solveLinearSystem( LHS, RHS, rank );
 
         if ( rank != LHS.size() ){
+            std::cout << "rank: " << rank << "\n";
+//            const variableType &Dt,
+//            const variableVector &currentPlasticMicroDeformation,
+//            const variableVector &currentPlasticMacroVelocityGradient,
+//            const variableVector &currentPlasticMicroVelocityGradient,
+//            const variableVector &currentPlasticMicroGradientVelocityGradient,
+//            const variableVector &previousPlasticMicroDeformation,
+//            const variableVector &previousPlasticMicroGradient,
+//            const variableVector &previousPlasticMacroVelocityGradient,
+//            const variableVector &previousPlasticMicroVelocityGradient,
+//            const variableVector &previousPlasticMicroGradientVelocityGradient,
+//            variableVector &currentPlasticMicroGradient
             return new errorNode( "evolvePlasticMicroGradChi",
                                   "The left hand side matrix is not full rank" );
         }
@@ -8448,7 +8460,8 @@ namespace micromorphicElastoPlasticity{
         residual = solverTools::floatVector( 5, 0 );
         jacobian = solverTools::floatMatrix( 5, solverTools::floatVector( 5, 0 ) );
 
-        variableType dMacYieldFunctionValuedYieldFunctionValue;
+        variableType dMacYieldFunctionValuedYieldFunctionValue_positive,
+                     dMacYieldFunctionValuedYieldFunctionValue_negative;
         solverTools::floatVector rowEye;
 
         if ( evaluateFullDerivatives ){
@@ -8456,18 +8469,25 @@ namespace micromorphicElastoPlasticity{
         }
 
         for ( unsigned int i = 0; i < 5; i++ ){
-            residual[ i ] = constitutiveTools::mac( yieldFunctionValues[ i ], dMacYieldFunctionValuedYieldFunctionValue )
-                          + x[ i ] * yieldFunctionValues[ i ];
+            residual[ i ] = constitutiveTools::mac( yieldFunctionValues[ i ], dMacYieldFunctionValuedYieldFunctionValue_positive )
+                          - x[ i ] * constitutiveTools::mac( -yieldFunctionValues[ i ] );
+
+            if ( vectorTools::fuzzyEquals( dMacYieldFunctionValuedYieldFunctionValue_positive,  0. ) ){
+                dMacYieldFunctionValuedYieldFunctionValue_negative = 1;
+            }
+            else{
+                dMacYieldFunctionValuedYieldFunctionValue_negative = 0;
+            }
 
             rowEye = solverTools::floatVector( 5, 0 );
             rowEye[ i ] = 1.;
 
-            jacobian[ i ] = ( dMacYieldFunctionValuedYieldFunctionValue + x[ i ] ) * dYieldFunctionValuesdGammas[ i ]
-                          + yieldFunctionValues[ i ] * rowEye;
+            jacobian[ i ] = ( dMacYieldFunctionValuedYieldFunctionValue_positive + x[ i ] * dMacYieldFunctionValuedYieldFunctionValue_negative ) * dYieldFunctionValuesdGammas[ i ]
+                          - constitutiveTools::mac( -yieldFunctionValues[ i ] ) * rowEye;
 
             if ( evaluateFullDerivatives ){
                 for ( unsigned int j = 0; j < 45; j++ ){
-                    floatOuts[ 13 ][ 45 * i + j ] = ( dMacYieldFunctionValuedYieldFunctionValue + x[ i ] )
+                    floatOuts[ 13 ][ 45 * i + j ] = ( dMacYieldFunctionValuedYieldFunctionValue_positive + x[ i ] * dMacYieldFunctionValuedYieldFunctionValue_negative )
                                                   * dYieldFunctionValuesdDeformation[ 45 * i + j ];
                 }
             }
