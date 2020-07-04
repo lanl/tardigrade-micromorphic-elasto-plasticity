@@ -1,4 +1,5 @@
-# Micromorphic tools, a collection of tools for micromorphic continuum theory
+# Micromorphic Elasto Plasticity, a implementation of a finite deformation Elasto-Plastic
+# Material model in micromorphic theory.
 #
 # Author: Nathan A. Miller (LANL / CU Boulder)
 # Email:  nathanm@lanl.gov
