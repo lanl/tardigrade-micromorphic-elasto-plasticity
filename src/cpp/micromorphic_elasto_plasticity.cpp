@@ -6132,7 +6132,9 @@ namespace micromorphicElastoPlasticity{
          *     w.r.t. the gradient of the micro displacement.
          * :param std::vector< std::vector< double > > &ADD_TERMS: Additional terms ( unused )
          * :param std::vector< std::vector< std::vector< double > > > &ADD_JACOBIANS: The jacobians of the additional
-         *     terms w.r.t. the deformation ( unused )
+         *     terms w.r.t. the deformation. This is currently being used to support the gradient enhanced damage work
+         *     by returning the Jacobians of the plastic deformation gradients w.r.t. the deformation measures. The
+         *     ordering is: DFpDgrad_u, DFpDphi, DFpDgrad_phi, DchipDgrad_u, DchipDphi, DchipDgrad_phi, Dgrad_chipDgrad_u, Dgrad_chipDchi, Dgrad_chipDgrad_chi
          * :param std::string &output_message: The output message string.
          * :param solverTools::homotopyMap DEBUG: The debugging map ( only available if DEBUG_MODE is defined )
          *
@@ -7262,6 +7264,23 @@ namespace micromorphicElastoPlasticity{
         DMDgrad_u   = vectorTools::dot( dMStressdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
         DMDphi      = vectorTools::dot( dMStressdMicroDeformation, dMicroDeformationdMicroDisplacement );
         DMDgrad_phi = vectorTools::dot( dMStressdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
+
+        //Assemble the additional Jacobian terms
+        ADD_JACOBIANS.resize(9);
+        // Macro plastic deformation gradient terms
+        ADD_JACOBIANS[0] = vectorTools::dot( dPlasticDeformationGradientdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
+        ADD_JACOBIANS[1] = vectorTools::dot( dPlasticDeformationGradientdMicroDeformation, dMicroDeformationdMicroDisplacement );
+        ADD_JACOBIANS[2] = vectorTools::dot( dPlasticDeformationGradientdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
+
+        // Micro plastic displacement terms
+        ADD_JACOBIANS[3] = vectorTools::dot( dPlasticMicroDeformationdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
+        ADD_JACOBIANS[4] = vectorTools::dot( dPlasticMicroDeformationdMicroDeformation, dMicroDeformationdMicroDisplacement );
+        ADD_JACOBIANS[5] = vectorTools::dot( dPlasticMicroDeformationdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
+
+        // Micro plastic displacement terms
+        ADD_JACOBIANS[6] = vectorTools::dot( dPlasticGradientMicroDeformationdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
+        ADD_JACOBIANS[7] = vectorTools::dot( dPlasticGradientMicroDeformationdMicroDeformation, dMicroDeformationdMicroDisplacement );
+        ADD_JACOBIANS[8] = vectorTools::dot( dPlasticGradientMicroDeformationdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
 
         //Model evaluation successful. Return.
         return 0;
