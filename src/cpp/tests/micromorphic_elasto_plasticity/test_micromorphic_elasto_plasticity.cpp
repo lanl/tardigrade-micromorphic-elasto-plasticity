@@ -5645,7 +5645,7 @@ int test_assembleFundamentalDeformationMeasures( std::ofstream &results ){
         unsigned int ii, ij;
         ii = ( int )( i / 3 );
         ij = i % 3;
-        delta[ ii ][ ij ] = eps * fabs( grad_u[ ii ][ ij ] ) + eps;
+        delta[ ii ][ ij ] = eps * fabs( grad_phi[ ii ][ ij ] ) + eps;
 
         variableVector FP, chiP, gradChiP;
         variableVector FM, chiM, gradChiM;
