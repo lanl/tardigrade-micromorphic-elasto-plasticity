@@ -5361,9 +5361,10 @@ namespace micromorphicElastoPlasticity{
         variableVector previousMicroGradientFlowDirection( dim * dim * dim, 0 );
 
         //Initialize the previous ISV flow directions
-        variableType previousdMacroGdMacroCohesion, previousdMicroGdMicroCohesion;
+        variableType previousdMacroGdMacroCohesion = 0;
+        variableType previousdMicroGdMicroCohesion = 0;
         variableMatrix previousdMicroGradientGdMicroGradientCohesion( previousMicroGradientStrainISV.size(),
-                                                                      variableVector( previousMicroGradientStrainISV.size() ) );
+                                                                      variableVector( previousMicroGradientStrainISV.size(), 0 ) );
 
         //Set the current macro cohesion values to zero ( if required this will be updated )
         variableType currentdMacroGdMacroC = 0;
