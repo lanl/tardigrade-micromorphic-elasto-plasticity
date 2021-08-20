@@ -7300,7 +7300,7 @@ int test_evaluate_model( std::ofstream &results){
     //Test the jacobians w.r.t. the gradient of the micro displacement
     for ( unsigned int i = 0; i < 27; i++ ){
         constantMatrix delta( 9, constantVector( 3, 0 ) );
-        delta[ i / 3 ][ i % 3 ] = eps * fabs( current_grad_u[ i / 3 ][ i % 3 ] ) + eps;
+        delta[ i / 3 ][ i % 3 ] = eps * fabs( current_grad_phi[ i / 3 ][ i % 3 ] ) + eps;
 
         constantMatrix gradPhi =
         { 
