@@ -2729,6 +2729,54 @@ namespace micromorphicElastoPlasticity{
                                       "The previous derivative of the plastic potential function w.r.t. the micro gradient cohesion is not a square matrix" ); 
             }
         }
+        
+        if ( std::isnan( currentMacroGamma ) ){
+
+            return new errorNode( __func__, "The current macro plastic multiplier (gamma) is nan" );
+
+        }
+
+        if ( std::isnan( currentMicroGamma ) ){
+
+            return new errorNode( __func__, "The current micro plastic multiplier (gamma) is nan" );
+
+        }
+
+        for ( auto cMGG = currentMicroGradientGamma.begin( ); cMGG != currentMicroGradientGamma.end( ); cMGG++ ){
+
+            if ( std::isnan( *cMGG ) ){
+    
+                return new errorNode( __func__, "The " + std::to_string( cMGG - currentMicroGradientGamma.begin( ) ) + "th index of the current micro gradient plastic multiplier (gamma) is nan" );
+    
+            }
+
+        }
+
+        if ( std::isnan( currentdMacroGdMacroC ) ){
+
+            return new errorNode( __func__, "The current gradient of the macro plastic potential w.r.t. the macro cohesion is nan" );
+
+        }
+
+        if ( std::isnan( currentdMicroGdMicroC ) ){
+
+            return new errorNode( __func__, "The current gradient of the micro plastic potential w.r.t. the micro cohesion is nan" );
+
+        }
+
+        for ( auto cMGG = currentdMicroGradientGdMicroGradientC.begin( ); cMGG != currentdMicroGradientGdMicroGradientC.end( ); cMGG++ ){
+
+            for ( auto cMGG2 = cMGG->begin( ); cMGG2 != cMGG->end( ); cMGG2++ ){
+
+                if ( std::isnan( *cMGG2 ) ){
+        
+                    return new errorNode( __func__, "The " + std::to_string( cMGG - currentdMicroGradientGdMicroGradientC.begin( ) ) + "," + std::to_string( cMGG2 - cMGG->begin( ) ) + "th index of the current micro gradient plastic potential w.r.t. the micro-gradient cohesion is nan" );
+        
+                }
+
+            }
+
+        }
 
         //Evolve the macro-scale internal strain-like state variable
         currentMacroStrainISV = previousMacroStrainISV + Dt * (         - alphaMacro * previousMacroGamma * previousdMacroGdMacroC
@@ -3078,7 +3126,6 @@ namespace micromorphicElastoPlasticity{
         parameterType microFrictionAngle = microFlowParameters[ 0 ];
         parameterType microBeta          = microFlowParameters[ 1 ];
         parameterType microFlowPotential;
-
 
         error = computeSecondOrderDruckerPragerYieldEquation( referenceMicroStress, microCohesion, elasticRightCauchyGreen,
                                                               microFrictionAngle, microBeta, microFlowPotential, 
@@ -4024,18 +4071,40 @@ namespace micromorphicElastoPlasticity{
 
         //TODO: This error section exists for debugging. May not be required once the code is in production.
         if ( !vectorTools::fuzzyEquals( _currentdMacroGdMacroCohesion, currentdMacroGdMacroCohesion ) ){
-            return new errorNode( "computePlasticDeformationResidual",
-                                  "The derivative of the macro plastic flow potential w.r.t. the cohesion are not consistent. Report this to Nathan Miller" );
+            std::string message     = "The derivative of the macro plastic flow potential w.r.t. the cohesion are not consistent. Report this to Nathan Miller";
+            std::string errorValues = "_currentdMacroGdMacroCohesion: " + std::to_string( _currentdMacroGdMacroCohesion ) + "\n"
+                                    + " currentdMacroGdMacroCohesion: " + std::to_string( currentdMacroGdMacroCohesion );
+            return new errorNode( __func__, message + errorValues );
         }
 
         if ( !vectorTools::fuzzyEquals( _currentdMicroGdMicroCohesion, currentdMicroGdMicroCohesion ) ){
-            return new errorNode( "computePlasticDeformationResidual",
-                                  "The derivative of the micro plastic flow potential w.r.t. the cohesion are not consistent. Report this to Nathan Miller" );
+            std::string message     = "The derivative of the micro plastic flow potential w.r.t. the cohesion are not consistent. Report this to Nathan Miller";
+            std::string errorValues = "_currentdMicroGdMicroCohesion: " + std::to_string( _currentdMicroGdMicroCohesion ) + "\n"
+                                    + " currentdMicroGdMicroCohesion: " + std::to_string( currentdMicroGdMicroCohesion );
+            return new errorNode( __func__, message + errorValues );
         }
 
         if ( !vectorTools::fuzzyEquals( _currentdMicroGradientGdMicroGradientCohesion, currentdMicroGradientGdMicroGradientCohesion ) ){
-            return new errorNode( "computePlasticDeformationResidual",
-                                  "The derivative of the micro gradient plastic flow potential w.r.t. the cohesion are not consistent. Report this to Nathan Miller" );
+            std::string message     = "The derivative of the micro gradient plastic flow potential w.r.t. the cohesion are not consistent. Report this to Nathan Miller";
+            std::string errorValues = "    _currentdMicroGradientGdMicroGradientCohesion:\n";
+            for ( auto iter = _currentdMicroGradientGdMicroGradientCohesion.begin( ); iter != _currentdMicroGradientGdMicroGradientCohesion.end( ); iter++ ){
+                errorValues += "        ";
+                for ( auto iter2 = iter->begin( ); iter2 != iter->end( ); iter2++ ){
+                    errorValues += std::to_string( *iter2 ) + " ";
+                }
+                errorValues += "\n";
+            }
+            errorValues += "\n";
+            errorValues += "     currentdMicroGradientGdMicroGradientCohesion:";
+            for ( auto iter = currentdMicroGradientGdMicroGradientCohesion.begin( ); iter != currentdMicroGradientGdMicroGradientCohesion.end( ); iter++ ){
+                errorValues += "        ";
+                for ( auto iter2 = iter->begin( ); iter2 != iter->end( ); iter2++ ){
+                    errorValues += std::to_string( *iter2 ) + " ";
+                }
+                errorValues += "\n";
+            }
+            errorValues += "\n";
+            return new errorNode( __func__, message + errorValues );
         }
         //TODO: End of debugging section
 
@@ -7883,6 +7952,20 @@ namespace micromorphicElastoPlasticity{
         if ( microGradientHardeningParameters.size() != 2 ){
             return new errorNode( "computeCohesion",
                                   "The micro gradient hardening parameters must have a size of 2" );
+        }
+
+        if ( std::isnan( macroStrainISV ) ){
+            return new errorNode( __func__, "The macro-strain ISV is nan" );
+        }
+
+        if ( std::isnan( microStrainISV ) ){
+            return new errorNode( __func__, "The micro-strain ISV is nan" );
+        }
+
+        for ( auto mGISV = microGradientStrainISV.begin( ); mGISV != microGradientStrainISV.end( ); mGISV++ ){
+            if ( std::isnan( *mGISV ) ){
+                return new errorNode( __func__, "The " + std::to_string( mGISV - microGradientStrainISV.begin( ) ) + "th index of the micro gradient strain ISV is nan" );
+            }
         }
 
         macroCohesion = macroHardeningParameters[ 0 ] + macroHardeningParameters[ 1 ] * macroStrainISV;
