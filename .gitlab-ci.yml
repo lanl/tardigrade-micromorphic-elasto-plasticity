@@ -1,0 +1,117 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: always
+
+stages:
+  - version
+  - test
+  - deploy
+
+before_script:
+  # Set the AEA compute environment deployment directory by host
+  - aea_projects="/projects"
+  - if [[ $(hostname) == sn-rfe?.lanl.gov ]] || [[ $(hostname) == sn???.localdomain ]]; then aea_projects="/usr/projects/ea"; fi
+  - aea_deploy_directory="${aea_projects}/python"
+  - aea_conda_channel="${aea_deploy_directory}/aea-conda"
+  # Pick the AEA compute environment according to Gitlab CI environment
+  - environment="aea-release"
+  - if [[ ${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} == dev ]] || [[ ${CI_COMMIT_BRANCH} == dev ]]; then environment='aea-beta'; fi
+  # Add the AEA compute environment modules to MODULEPATH and load
+  - module use --append "${aea_deploy_directory}/modulefiles"
+  - echo "${environment}"
+  - module help "${environment}"
+  - module load "${environment}"
+  # Determine the CMake3 command
+  - cmake_program='cmake'
+  - if [[ "$(command -v cmake3)" ]]; then cmake_program='cmake3'; fi
+  - echo ${cmake_program}
+  # Environment troubleshooting information
+  - echo $PATH
+  - echo $PYTHONPATH
+  - echo $MANPATH
+  - echo $LD_LIBRARY_PATH
+  - conda info
+  - env | grep -i proxy
+  # FIXME: (1) Without setting this to false, Git webserver API calls to re-git.lanl.gov will throw errors about
+  # self-signed certificates. Work on CI server and Gitlab webserver configurations so that this is no longer
+  # necessary. There is a matching "FIXME: (1)" tag where the process is reversed that must also be removed when this
+  # is fixed.
+  - git config --local http.sslVerify false
+
+after_script:
+  # FIXME: (1) Reset the repository Git configuration to preserve ssl verifications. Remove when the server(s)
+  # configurations no longer require us to drop ssl verifications.
+  - git config --local http.sslVerify true
+
+microbump:
+  stage: version
+  variables:
+    GIT_STRATEGY: clone
+  script:
+    # Build VERSION file from GetVersionFromGit.cmake without a full CMake configuration
+    - ${cmake_program} -D PROJECT_NAME=cpp_stub -D VERSION_UPDATE_FROM_GIT=True -P src/cmake/GetVersionFromGitTag.cmake
+    # GetVersionFromGit.cmake bumps micro/patch version. Retrieve next release from VERSION
+    - production_version=$(cut -f 1 -d '*' VERSION)
+    - developer_version=${production_version}+dev
+    # Tag production commit and previous developer commit. Continue if already tagged.
+    - git config user.name "${GITLAB_USER_NAME}"
+    - git config user.email "${GITLAB_USER_EMAIL}"
+    - git remote add oauth2-origin https://gitlab-ci-token:${GITLAB_ACCESS_TOKEN}@re-git.lanl.gov/${CI_PROJECT_PATH}.git
+    - git tag -a ${production_version} -m "production release ${production_version}" || true
+    - last_merge_hash=$(git log --pretty=format:"%H" --merges -n 2 | tail -n 1)  # Assume last merge was dev->main. Pick previous
+    - git tag -a ${developer_version} -m "developer release ${developer_version}" ${last_merge_hash} || true
+    - git push oauth2-origin --tags
+  tags:
+    - sstelmo-shell-aea
+  only:
+    - main
+
+test_build:
+  stage: test
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  variables:
+    GIT_STRATEGY: clone
+  script:
+    - ./BUILD.sh
+    - ./TEST.sh
+  artifacts:
+    when: always
+    paths:
+      - build/results.tex
+  tags:
+    - sstelmo-shell-aea
+
+# It MUST be called pages
+pages:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: clone
+  script:
+    - rm -rf public && mkdir -p public
+    - cp docs/html/index.html public
+    # Every documentation version must be re-built for *every* gitlab-pages job execution
+    # Reference: https://gitlab.com/gitlab-org/gitlab/-/issues/33822
+    - git fetch origin
+    - git branch -a
+    - documentation_branches="main dev"
+    - |
+        for ref in ${documentation_branches}; do
+            git checkout $ref
+            git reset --hard origin/$ref
+            mkdir -p public/$ref/doxygen
+            ./BUILD.sh
+            cp -r build/docs/sphinx/html/* public/$ref
+            cp -r build/docs/doxygen/html/* public/$ref/doxygen
+        done
+  artifacts:
+    paths:
+      # It MUST be called public
+      - public
+  tags:
+    - sstelmo-shell-aea
+  only:
+    - main
+    - dev
