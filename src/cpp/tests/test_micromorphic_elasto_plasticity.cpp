@@ -48,10 +48,7 @@ BOOST_AUTO_TEST_CASE( testcomputeSecondOrderDruckerPragerYieldEquation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( result, answer ) ){
-        results << "test_computeSecondOrderDruckerPragerYieldEquation (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( result, answer ) );
 
     //Test the Jacobian
     variableType resultJ, dFdCohesion;
@@ -63,11 +60,7 @@ BOOST_AUTO_TEST_CASE( testcomputeSecondOrderDruckerPragerYieldEquation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultJ, answer ) ){
-        results << "test_computeSecondOrderDruckerPragerYieldEquation (test 2) & False\n";
-        return 1;
-    }
-
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultJ, answer ) );
 
     //Test the Jacobian
     variableType resultJ2, dFdcohesionJ2;
@@ -83,10 +76,7 @@ BOOST_AUTO_TEST_CASE( testcomputeSecondOrderDruckerPragerYieldEquation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultJ2, answer ) ){
-        results << "test_computeSecondOrderDruckerPragerYieldEquation (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultJ2, answer ) );
 
     //Test dFdStress
     constantType eps = 1e-6;
@@ -101,15 +91,9 @@ BOOST_AUTO_TEST_CASE( testcomputeSecondOrderDruckerPragerYieldEquation ){
 
         constantType gradCol = ( resultJ - result ) / delta[i];
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dFdS[i] ) ){
-            results << "test_computeSecondOrderDruckerPragerYieldEquation (test 4) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dFdS[i] ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dFdSJ2[i] ) ){
-            results << "test_computeSecondOrderDruckerPragerYieldEquation (test 5) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dFdSJ2[i] ) );
     }
 
     //Test dFdC
@@ -124,15 +108,9 @@ BOOST_AUTO_TEST_CASE( testcomputeSecondOrderDruckerPragerYieldEquation ){
 
         constantType gradCol = ( resultJ - result ) / delta[i];
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dFdC[i], 1e-4 ) ){
-            results << "test_computeSecondOrderDruckerPragerYieldEquation (test 6) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dFdC[i], 1e-4 ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dFdCJ2[i], 1e-4 ) ){
-            results << "test_computeSecondOrderDruckerPragerYieldEquation (test 7) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dFdCJ2[i], 1e-4 ) );
     }
 
     //Test dFdcohesion
@@ -143,10 +121,7 @@ BOOST_AUTO_TEST_CASE( testcomputeSecondOrderDruckerPragerYieldEquation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( ( resultJ - result ) / deltas, dFdcohesionJ2 ) ){
-        results << "test_computeSecondOrderDruckerPragerYieldEquation (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( ( resultJ - result ) / deltas, dFdcohesionJ2 ) );
 
     //Test d2FdStress2
     for ( unsigned int i = 0; i < S.size(); i++ ){
@@ -171,10 +146,7 @@ BOOST_AUTO_TEST_CASE( testcomputeSecondOrderDruckerPragerYieldEquation ){
         constantVector gradCol = ( dFdSp - dFdSm ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], d2FdS2J2[j][i] ) ){
-                results << "test_computeSecondOrderDruckerPragerYieldEquation (test 9) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], d2FdS2J2[j][i] ) );
         }
     }
 
@@ -201,10 +173,7 @@ BOOST_AUTO_TEST_CASE( testcomputeSecondOrderDruckerPragerYieldEquation ){
         constantVector gradCol = ( dFdSp - dFdSm ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], d2FdSdCJ2[j][i] ) ){
-                results << "test_computeSecondOrderDruckerPragerYieldEquation (test 10) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], d2FdSdCJ2[j][i] ) );
         }
     }
 
@@ -242,10 +211,7 @@ BOOST_AUTO_TEST_CASE( testcomputeHigherOrderDruckerPragerYieldEquation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( result, answer ) ){
-        results << "test_computeHigherOrderDruckerPragerYieldEquation (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( result, answer ) );
 
     //Test the Jacobians
 
@@ -258,10 +224,7 @@ BOOST_AUTO_TEST_CASE( testcomputeHigherOrderDruckerPragerYieldEquation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultJ, answer ) ){
-        results << "test_computeHigherOrderDruckerPragerYieldEquation (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultJ, answer ) );
 
     variableVector resultJ2;
     variableMatrix dFdStressJ2, dFdcJ2, dFdRCGJ2;
@@ -274,10 +237,7 @@ BOOST_AUTO_TEST_CASE( testcomputeHigherOrderDruckerPragerYieldEquation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultJ2, answer ) ){
-        results << "test_computeHigherOrderDruckerPragerYieldEquation (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultJ2, answer ) );
     
     //Test derivatives w.r.t stress
     constantType eps = 1e-6;
@@ -300,20 +260,11 @@ BOOST_AUTO_TEST_CASE( testcomputeHigherOrderDruckerPragerYieldEquation ){
         constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdStress[j][i] ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
-                std::cout << "dFdStress:\n"; vectorTools::print( dFdStress );
-                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 4) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdStress[j][i] ) );
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdStressJ2[j][i] ) ){
-                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 5) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdStressJ2[j][i] ) );
         }
 
         variableMatrix dFdStressP, dFdcP, dFdRCGP;
@@ -344,10 +295,7 @@ BOOST_AUTO_TEST_CASE( testcomputeHigherOrderDruckerPragerYieldEquation ){
                         o = ( int )( (i - 9 * n ) / 3 );
                         p = ( i - 9 * n - 3 * o ) % 3;
                         BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ 9 * k + 3 * l + m ],
-                                                        d2FdStress2J2[ j ][ 243 * k + 81 * l + 27 * m + 9 * n + 3 * o + p ] ) ){
-                            results << "test_computeHigherOrderDruckerPragerYieldEquation (test 6) & False\n";
-                            return 1;
-                        }
+                                                        d2FdStress2J2[ j ][ 243 * k + 81 * l + 27 * m + 9 * n + 3 * o + p ] ) );
                     }
                 }
             }
@@ -374,17 +322,11 @@ BOOST_AUTO_TEST_CASE( testcomputeHigherOrderDruckerPragerYieldEquation ){
         constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdc[j][i] ) ){
-                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 7) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdc[j][i] ) );
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdcJ2[j][i] ) ){
-                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 8) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdcJ2[j][i] ) );
         }
     }
 
@@ -408,17 +350,11 @@ BOOST_AUTO_TEST_CASE( testcomputeHigherOrderDruckerPragerYieldEquation ){
         constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdRCG[j][i] ) ){
-                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 9) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdRCG[j][i] ) );
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdRCG[j][i] ) ){
-                results << "test_computeHigherOrderDruckerPragerYieldEquation (test 10) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dFdRCG[j][i] ) );
         }
 
         variableMatrix dFdStressP, dFdcP, dFdRCGP;
@@ -447,10 +383,7 @@ BOOST_AUTO_TEST_CASE( testcomputeHigherOrderDruckerPragerYieldEquation ){
                         n = ( int )( i / 3 );
                         o = ( i % 3 );
                         BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ 9 * k + 3 * l + m ],
-                                                        d2FdStressdRCGJ2[ j ][ 81 * k + 27 * l + 9 * m + 3 * n + o ] ) ){
-                            results << "test_computeHigherOrderDruckerPragerYieldEquation (test 11) & False\n";
-                            return 1;
-                        }
+                                                        d2FdStressdRCGJ2[ j ][ 81 * k + 27 * l + 9 * m + 3 * n + o ] ) );
                     }
                 }
             }
@@ -525,20 +458,11 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultFe, answerFe ) ){
-        results << "test_computeElasticPartOfDeformation (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultFe, answerFe ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultChie, answerChie ) ){
-        results << "test_computeElasticPartOfDeformation (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultChie, answerChie ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultGradChie, answerGradChie ) ){
-        results << "test_computeElasticPartOfDeformation (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultGradChie, answerGradChie ) );
 
     variableVector resultFe2, resultChie2, resultGradChie2, resultInvFp, resultInvChip;
 
@@ -550,30 +474,15 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultFe2, answerFe ) ){
-        results << "test_computeElasticPartOfDeformation (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultFe2, answerFe ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultChie2, answerChie ) ){
-        results << "test_computeElasticPartOfDeformation (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultChie2, answerChie ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultGradChie2, answerGradChie ) ){
-        results << "test_computeElasticPartOfDeformation (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultGradChie2, answerGradChie ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultInvFp, vectorTools::inverse( Fp, 3, 3 ) ) ){
-        results << "test_computeElasticPartOfDeformation (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultInvFp, vectorTools::inverse( Fp, 3, 3 ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultInvChip, vectorTools::inverse( chip, 3, 3 ) ) ){
-        results << "test_computeElasticPartOfDeformation (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultInvChip, vectorTools::inverse( chip, 3, 3 ) ) );
 
     //Test the computation of the jacobians
 
@@ -592,20 +501,11 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultFeJ, answerFe ) ){
-        results << "test_computeElasticPartOfDeformation (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultFeJ, answerFe ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultChieJ, answerChie ) ){
-        results << "test_computeElasticPartOfDeformation (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultChieJ, answerChie ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultGradChieJ, answerGradChie ) ){
-        results << "test_computeElasticPartOfDeformation (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultGradChieJ, answerGradChie ) );
 
     //Test the Jacobians w.r.t. the deformation gradient
     constantType eps = 1e-6;
@@ -635,27 +535,18 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
         variableVector gradCol = ( resultFeP - resultFeM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dFedF[ j ][ i ] ) ){
-                results << "test_computeElasticPartOfDeformation (test 12) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dFedF[ j ][ i ] ) );
         }
 
         //Test dChiedF
         gradCol = ( resultChieP - resultChieM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticPartOfDeformation (test 13) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         //Test dGradChiedF
         gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticPartOfDeformation (test 14) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
     }
 
     //Test the Jacobians w.r.t. the plastic deformation gradient
@@ -684,28 +575,19 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
         variableVector gradCol = ( resultFeP - resultFeM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dFedFp[ j ][ i ] ) ){
-                results << "test_computeElasticPartOfDeformation (test 15) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dFedFp[ j ][ i ] ) );
         }
 
         //Test dChiedFp
         gradCol = ( resultChieP - resultChieM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticPartOfDeformation (test 16) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         //Test dGradChiedFp
         gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGradChiedFp[j][i] ) ){
-                results << "test_computeElasticPartOfDeformation (test 17) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGradChiedFp[j][i] ) );
         }
     }
 
@@ -736,28 +618,19 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
         variableVector gradCol = ( resultChieP - resultChieM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dChiedChi[ j ][ i ] ) ){
-                results << "test_computeElasticPartOfDeformation (test 18) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dChiedChi[ j ][ i ] ) );
         }
 
         //Test dFedChi
         gradCol = ( resultFeP - resultFeM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticPartOfDeformation (test 19) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         //Test dGradChiedChi
         gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGradChiedChi[j][i] ) ){
-                results << "test_computeElasticPartOfDeformation (test 20) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGradChiedChi[j][i] ) );
         }
     }
 
@@ -787,28 +660,19 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
         variableVector gradCol = ( resultChieP - resultChieM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dChiedChip[ j ][ i ] ) ){
-                results << "test_computeElasticPartOfDeformation (test 21) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dChiedChip[ j ][ i ] ) );
         }
 
         //Test dFedFp
         gradCol = ( resultFeP - resultFeM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticPartOfDeformation (test 22) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         //Test dGradChiedChip
         gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGradChiedChip[j][i] ) ){
-                results << "test_computeElasticPartOfDeformation (test 23) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGradChiedChip[j][i] ) );
         }
     }
 
@@ -838,27 +702,18 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
         //Test dFedGradChi
         variableVector gradCol = ( resultFeP - resultFeM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticPartOfDeformation (test 24) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         //Test dChiedGradChi
         gradCol = ( resultChieP - resultChieM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticPartOfDeformation (test 25) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         //Test dGradChiedGradChi
         gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGradChiedGradChi[j][i] ) ){
-                results << "test_computeElasticPartOfDeformation (test 26) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGradChiedGradChi[j][i] ) );
         }
     }
 
@@ -888,27 +743,18 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
         //Test dFedGradChi
         variableVector gradCol = ( resultFeP - resultFeM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticPartOfDeformation (test 27) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         //Test dChiedGradChi
         gradCol = ( resultChieP - resultChieM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticPartOfDeformation (test 28) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         //Test dGradChiedGradChi
         gradCol = ( resultGradChieP - resultGradChieM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGradChiedGradChip[j][i] ) ){
-                results << "test_computeElasticPartOfDeformation (test 29) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGradChiedGradChip[j][i] ) );
         }
     }
 
@@ -966,25 +812,13 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticDeformationMeasures ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultCe, answerCe ) ){
-        results << "test_computeElasticDeformationMeasures (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultCe, answerCe ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultCChie, answerCChie ) ){
-        results << "test_computeElasticDeformationMeasures (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultCChie, answerCChie ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultPsie, answerPsie ) ){
-        results << "test_computeElasticDeformationMeasures (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultPsie, answerPsie ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultGammae, answerGammae ) ){
-        results << "test_computeElasticDeformationMeasures (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultGammae, answerGammae ) );
 
     //Tests of Jacobians
     variableVector resultCeJ, resultCChieJ, resultPsieJ, resultGammaeJ;
@@ -998,25 +832,13 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticDeformationMeasures ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultCeJ, answerCe ) ){
-        results << "test_computeElasticDeformationMeasures (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultCeJ, answerCe ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultCChieJ, answerCChie ) ){
-        results << "test_computeElasticDeformationMeasures (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultCChieJ, answerCChie ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultPsieJ, answerPsie ) ){
-        results << "test_computeElasticDeformationMeasures (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultPsieJ, answerPsie ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultGammaeJ, answerGammae ) ){
-        results << "test_computeElasticDeformationMeasures (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultGammaeJ, answerGammae ) );
 
     //Test jacobians w.r.t. the elastic deformation meaure
     constantType eps = 1e-6;
@@ -1040,35 +862,23 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticDeformationMeasures ){
         variableVector gradCol = ( resultCeP - resultCeM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dRCGedFe[j][i] ) ){
-                results << "test_computeElasticDeformationMeasures (test 9) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dRCGedFe[j][i] ) );
         }
 
         gradCol = ( resultCChieP - resultCChieM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticDeformationMeasures (test 10) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultPsieP - resultPsieM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dPsiedFe[j][i] ) ){
-                results << "test_computeElasticDeformationMeasures (test 11) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dPsiedFe[j][i] ) );
         }
 
         gradCol = ( resultGammaeP - resultGammaeM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGammaedFe[j][i] ) ){
-                results << "test_computeElasticDeformationMeasures (test 12) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGammaedFe[j][i] ) );
         }
     }
 
@@ -1092,35 +902,23 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticDeformationMeasures ){
 
         variableVector gradCol = ( resultCeP - resultCeM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticDeformationMeasures (test 13) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultCChieP - resultCChieM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dMicroRCGedChie[j][i] ) ){
-                results << "test_computeElasticDeformationMeasures (test 14) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dMicroRCGedChie[j][i] ) );
         }
 
         gradCol = ( resultPsieP - resultPsieM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dPsiedChie[j][i] ) ){
-                results << "test_computeElasticDeformationMeasures (test 15) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dPsiedChie[j][i] ) );
         }
 
         gradCol = ( resultGammaeP - resultGammaeM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticDeformationMeasures (test 16) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
     }
 
     for ( unsigned int i = 0; i < gradChie.size(); i++ ){
@@ -1142,32 +940,20 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticDeformationMeasures ){
 
         variableVector gradCol = ( resultCeP - resultCeM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticDeformationMeasures (test 17) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultCChieP - resultCChieM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticDeformationMeasures (test 18) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultPsieP - resultPsieM ) / ( 2 * delta[i] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computeElasticDeformationMeasures (test 19) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultGammaeP - resultGammaeM ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGammaedGradChie[j][i] ) ){
-                results << "test_computeElasticDeformationMeasures (test 20) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dGammaedGradChie[j][i] ) );
         }
     }
 
@@ -1255,20 +1041,11 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultLp, answerLp ) ){
-        results << "test_computePlasticVelocityGradients (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultLp, answerLp ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroLp, answerMicroLp ) ){
-        results << "test_computePlasticVelocityGradients (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroLp, answerMicroLp ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradientLp, answerMicroGradientLp ) ){
-        results << "test_computePlasticVelocityGradients (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradientLp, answerMicroGradientLp ) );
 
     //Tests of the Jacobians
     variableVector resultLpJ, resultMicroLpJ, resultMicroGradientLpJ;
@@ -1289,20 +1066,11 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultLpJ, answerLp ) ){
-        results << "test_computePlasticVelocityGradients (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultLpJ, answerLp ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroLpJ, answerMicroLp ) ){
-        results << "test_computePlasticVelocityGradients (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroLpJ, answerMicroLp ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradientLpJ, answerMicroGradientLp ) ){
-        results << "test_computePlasticVelocityGradients (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradientLpJ, answerMicroGradientLp ) );
 
     variableVector resultLpJ2, resultMicroLpJ2, resultMicroGradientLpJ2;
 
@@ -1344,20 +1112,11 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultLpJ2, answerLp ) ){
-        results << "test_computePlasticVelocityGradients (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultLpJ2, answerLp ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroLpJ2, answerMicroLp ) ){
-        results << "test_computePlasticVelocityGradients (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroLpJ2, answerMicroLp ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradientLpJ2, answerMicroGradientLp ) ){
-        results << "test_computePlasticVelocityGradients (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradientLpJ2, answerMicroGradientLp ) );
 
     //Tests of Jacobians w.r.t. macroGamma
     constantType eps = 1e-6;
@@ -1382,29 +1141,17 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
 
     variableVector gradCol = ( resultLpP - resultLpM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLpdMacroGammaJ ) ){
-        results << "test_computePlasticVelocityGradients (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLpdMacroGammaJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLpdMacroGammaJ2 ) ){
-        results << "test_computePlasticVelocityGradients (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLpdMacroGammaJ2 ) );
 
     gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-        results << "test_computePlasticVelocityGradients (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
     gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-        results << "test_computePlasticVelocityGradients (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
     //Test of Jacobians w.r.t. microGamma
     scalarDelta = eps * fabs( microGamma ) + eps;
@@ -1425,39 +1172,21 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
 
     gradCol = ( resultLpP - resultLpM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol,  dMacroLpdMicroGammaJ ) ){
-        results << "test_computePlasticVelocityGradients (test 13) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol,  dMacroLpdMicroGammaJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol,  dMacroLpdMicroGammaJ2 ) ){
-        results << "test_computePlasticVelocityGradients (test 14) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol,  dMacroLpdMicroGammaJ2 ) );
 
     gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMicroLpdMicroGammaJ ) ){
-        results << "test_computePlasticVelocityGradients (test 14) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMicroLpdMicroGammaJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMicroLpdMicroGammaJ2 ) ){
-        results << "test_computePlasticVelocityGradients (test 15) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMicroLpdMicroGammaJ2 ) );
 
     gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol,  dMicroGradientLpdMicroGammaJ ) ){
-        results << "test_computePlasticVelocityGradients (test 15) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol,  dMicroGradientLpdMicroGammaJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol,  dMicroGradientLpdMicroGammaJ2 ) ){
-        results << "test_computePlasticVelocityGradients (test 16) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol,  dMicroGradientLpdMicroGammaJ2 ) );
 
     //Test of Jacobians w.r.t. the microGradientGamma
     for ( unsigned int i = 0; i < microGradientGamma.size(); i++ ){
@@ -1480,30 +1209,18 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computePlasticVelocityGradients (test 16) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computePlasticVelocityGradients (test 17) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientLpdMicroGradientGammaJ[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 18) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientLpdMicroGradientGammaJ[ j ][ i ] ) );
 
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientLpdMicroGradientGammaJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 19) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientLpdMicroGradientGammaJ2[ j ][ i ] ) );
         }
     }
 
@@ -1529,25 +1246,16 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMacroLdElasticRCGJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 20) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMacroLdElasticRCGJ2[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computePlasticVelocityGradients (test 21) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computePlasticVelocityGradients (test 22) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
     }
 
     //Test of Jacobians w.r.t. the micro right Cauchy-Green deformation tensor
@@ -1571,27 +1279,18 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computePlasticVelocityGradients (test 23) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroElasticRCGJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 24) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroElasticRCGJ2[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroElasticRCGJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 25) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroElasticRCGJ2[ j ][ i ] ) );
         }
     }
 
@@ -1616,27 +1315,18 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computePlasticVelocityGradients (test 26) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdElasticPsiJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 27) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdElasticPsiJ2[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdElasticPsiJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 28) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdElasticPsiJ2[ j ][ i ] ) );
         }
     }
 
@@ -1661,27 +1351,18 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) ){
-            results << "test_computePlasticVelocityGradients (test 29) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, variableVector( gradCol.size(), 0 ) ) );
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computePlasticVelocityGradients (test 30) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdElasticGammaJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 31) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdElasticGammaJ2[ j ][ i ] ) );
         }
     }
 
@@ -1707,28 +1388,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMacroLdMacroFlowDirectionJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 32) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMacroLdMacroFlowDirectionJ2[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computePlasticVelocityGradients (test 33) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computePlasticVelocityGradients (test 34) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
     }
 
@@ -1754,28 +1426,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMacroLdMicroFlowDirectionJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 35) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMacroLdMicroFlowDirectionJ2[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroFlowDirectionJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 36) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroLdMicroFlowDirectionJ2[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroFlowDirectionJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 37) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroFlowDirectionJ2[ j ][ i ] ) );
         }
     }
 
@@ -1801,28 +1464,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computePlasticVelocityGradients (test 38) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computePlasticVelocityGradients (test 39) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroGradientLpP - resultMicroGradientLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientFlowDirectionJ2[ j ][ i ] ) ){
-                results << "test_computePlasticVelocityGradients (test 40) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientFlowDirectionJ2[ j ][ i ] ) );
         }
     }
 
@@ -1866,10 +1520,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroLp, resultMacroLp ) ){
-        results << "test_computePlasticMacroVelocityGradient (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroLp, resultMacroLp ) );
 
     //Tests of the Jacobians
     variableVector resultMacroLpJ;
@@ -1882,10 +1533,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroLp, resultMacroLpJ ) ){
-        results << "test_computePlasticMacroVelocityGradient (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroLp, resultMacroLpJ ) );
 
     variableVector resultMacroLpJ2;
     variableVector dMacroLdMacroGammaJ2, dMacroLdMicroGammaJ2;
@@ -1900,10 +1548,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroLp, resultMacroLpJ2 ) ){
-        results << "test_computePlasticMacroVelocityGradient (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroLp, resultMacroLpJ2 ) );
 
     //Tests Jacobians w.r.t. macroGamma
     constantType eps = 1e-6;
@@ -1925,15 +1570,9 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
 
     variableVector gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLdMacroGammaJ ) ){
-        results << "test_computePlasticMacroVelocityGradient (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLdMacroGammaJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLdMacroGammaJ2 ) ){
-        results << "test_computePlasticMacroVelocityGradient (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLdMacroGammaJ2 ) );
 
     //Test Jacobians w.r.t. microGamma
     scalarDelta = eps * fabs( microGamma) + eps;
@@ -1952,15 +1591,9 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
 
     gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLdMicroGammaJ ) ){
-        results << "test_computePlasticMacroVelocityGradient (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLdMicroGammaJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLdMicroGammaJ2 ) ){
-        results << "test_computePlasticMacroVelocityGradient (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMacroLdMicroGammaJ2 ) );
 
     //Test Jacobians w.r.t. the right Cauchy-Green deformation tensor
     for ( unsigned int i = 0; i < Ce.size(); i++ ){
@@ -1986,10 +1619,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
         gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMacroLdElasticRCG[ j ][ i ] ) ){
-                results << "test_computePlasticMacroVelocityGradient (test 8) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMacroLdElasticRCG[ j ][ i ] ) );
         }
     }
 
@@ -2013,10 +1643,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
         gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMacroLdMacroFlowDirection[ j ][ i ] ) ){
-                results << "test_computePlasticMacroVelocityGradient (test 9) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMacroLdMacroFlowDirection[ j ][ i ] ) );
         }
     }
 
@@ -2040,10 +1667,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
         gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMacroLdMicroFlowDirection[ j ][ i ] ) ){
-                results << "test_computePlasticMacroVelocityGradient (test 10) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMacroLdMicroFlowDirection[ j ][ i ] ) );
         }
     }
 
@@ -2086,10 +1710,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLp ) ){
-        results << "test_computePlasticMicroVelocityGradient (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLp ) );
 
     //Test the Jacobians
     variableVector resultMicroLpJ;
@@ -2101,10 +1722,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLpJ ) ){
-        results << "test_computePlasticMicroVelocityGradient (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLpJ ) );
 
     variableVector resultMicroLpJ2;
     variableVector dMicroLpdMicroGamma2;
@@ -2118,15 +1736,9 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLpJ ) ){
-        results << "test_computePlasticMicroVelocityGradient (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLpJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLpJ2 ) ){
-        results << "test_computePlasticMicroVelocityGradient (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLpJ2 ) );
 
     constantType eps = 1e-6;
     constantType scalarDelta = eps * fabs( microGamma ) + eps;
@@ -2145,15 +1757,9 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
 
     variableVector gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMicroLpdMicroGamma ) ){
-        results << "test_computePlasticMicroVelocityGradient (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMicroLpdMicroGamma ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMicroLpdMicroGamma2 ) ){
-        results << "test_computePlasticMicroVelocityGradient (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradCol, dMicroLpdMicroGamma2 ) );
 
     //Test Jacobian w.r.t. the elastic micro right Cauchy-Green deformation tensor
     for ( unsigned int i = 0; i < Ce.size(); i++ ){
@@ -2173,10 +1779,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dMicroLpdMicroRCG[ j ][ i ] ) ){
-                results << "test_computePlasticMicroVelocityGradient (test 6) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dMicroLpdMicroRCG[ j ][ i ] ) );
         }
     }
 
@@ -2204,10 +1807,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dMicroLpdPsie[ j ][ i ] ) ){
-                results << "test_computePlasticMicroVelocityGradient (test 8) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dMicroLpdPsie[ j ][ i ] ) );
         }
     }
 
@@ -2228,10 +1828,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dMicroLpdMicroFlowDirection[ j ][ i ] ) ){
-                results << "test_computePlasticMicroVelocityGradient (test 9) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[j], dMicroLpdMicroFlowDirection[ j ][ i ] ) );
         }
     }
 
@@ -2307,10 +1904,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLp ) ){
-        results << "test_computePlasticMicroGradientVelocityGradient (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLp ) );
 
     variableVector resultMicroGradLp1;
     variableVector resultSkewTerm;
@@ -2322,15 +1916,9 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLp1 ) ){
-        results << "test_computePlasticMicroGradientVelocityGradient (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLp1 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerSkewTerm, resultSkewTerm ) ){
-        results << "test_computePlasticMicroGradientVelocityGradient (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerSkewTerm, resultSkewTerm ) );
 
     //Test the Jacobians
     variableVector resultMicroGradLpJ;
@@ -2344,10 +1932,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                        dPlasticMicroGradientLdPlasticMicroL );
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ ) ){
-        results << "test_computePlasticMicroGradientVelocityGradient (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ ) );
 
     variableVector resultMicroGradLpJ2, resultSkewTerm2;
     variableMatrix dPlasticMicroGradientLdMicroGradientGamma2;
@@ -2360,15 +1945,9 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                        dPlasticMicroGradientLdPlasticMicroL2 );
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ2 ) ){
-        results << "test_computePlasticMicroGradientVelocityGradient (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ2 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerSkewTerm, resultSkewTerm2 ) ){
-        results << "test_computePlasticMicroGradientVelocityGradient (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerSkewTerm, resultSkewTerm2 ) );
 
     variableVector resultMicroGradLpJ3;
     variableMatrix dPlasticMicroGradientLdMicroGradientGamma3;
@@ -2387,10 +1966,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                        dPlasticMicroGradientLdMicroGradientFlowDirection );
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ3 ) ){
-        results << "test_computePlasticMicroGradientVelocityGradient (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ3 ) );
 
     //Test computation of Jacobians w.r.t. microGradientGamma
     constantType eps = 1e-6;
@@ -2415,24 +1991,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientGamma[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 7) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientGamma[ j ][ i ] ) );
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientGamma2[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 8) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientGamma2[ j ][ i ] ) );
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientGamma3[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 9) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientGamma3[ j ][ i ] ) );
         }
     }
 
@@ -2458,24 +2025,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 10) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL[ j ][ i ] ) );
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL2[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 11) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL2[ j ][ i ] ) );
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL3[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 12) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL3[ j ][ i ] ) );
         }
     }
 
@@ -2507,10 +2065,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdElasticPsi[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 13) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdElasticPsi[ j ][ i ] ) );
         }
     }
 
@@ -2538,10 +2093,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdElasticGamma[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 14) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdElasticGamma[ j ][ i ] ) );
         }
     }
 
@@ -2569,10 +2121,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientFlowDirection[ j ][ i ] ) ){
-                results << "test_computePlasticMicroGradientVelocityGradient (test 15) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dPlasticMicroGradientLdMicroGradientFlowDirection[ j ][ i ] ) );
         }
     }
 
@@ -2690,10 +2239,7 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradient ) ){
-        results << "test_evolvePlasticMicroGradChi (test 1)  & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradient ) );
 
     variableVector resultCurrentPlasticMicroGradient2;
     variableMatrix LHS2;
@@ -2711,15 +2257,9 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradient2 ) ){
-        results << "test_evolvePlasticMicroGradChi (test 2)  & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradient2 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerLHS, LHS2 ) ){
-        results << "test_evolvePlasticMicroGradChi (test 3)  & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerLHS, LHS2 ) );
 
     //Test the Jacobians
     variableVector resultCurrentPlasticMicroGradientJ;
@@ -2747,10 +2287,7 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradientJ ) ){
-        results << "test_evolvePlasticMicroGradChi (test 4)  & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradientJ ) );
 
     //Test the jacobian w.r.t. the current plastic macro deformation
     constantType eps = 1e-6;
@@ -2789,10 +2326,7 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroDeformation[ j ][ i ] ) ){
-                results << "tet_evolvePlasticMicroGradChi (test 5) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroDeformation[ j ][ i ] ) );
         }
     }
 
@@ -2832,10 +2366,7 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient[ j ][ i ] ) ){
-                results << "tet_evolvePlasticMicroGradChi (test 6) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient[ j ][ i ] ) );
         }
     }
 
@@ -2875,10 +2406,7 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient[ j ][ i ] ) ){
-                results << "tet_evolvePlasticMicroGradChi (test 7) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient[ j ][ i ] ) );
         }
     }
 
@@ -2918,10 +2446,7 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient[ j ][ i ] ) ){
-                results << "tet_evolvePlasticMicroGradChi (test 8) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient[ j ][ i ] ) );
         }
     }
 
@@ -3017,20 +2542,11 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
                                                                              alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMacro, answerMacro ) ){
-        results << "test_evolvePlasticDeformation (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMacro, answerMacro ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicro, answerMicro ) ){
-        results << "test_evolvePlasticDeformation (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicro, answerMicro ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGrad, answerMicroGrad ) ){
-        results << "test_evolvePlasticDeformation (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGrad, answerMicroGrad ) );
 
     //Test the computation of the Jacobians
     variableVector resultMacroJ, resultMicroJ, resultMicroGradJ;
@@ -3052,20 +2568,11 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMacroJ, answerMacro ) ){
-        results << "test_evolvePlasticDeformation (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMacroJ, answerMacro ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroJ, answerMicro ) ){
-        results << "test_evolvePlasticDeformation (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroJ, answerMicro ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradJ, answerMicroGrad ) ){
-        results << "test_evolvePlasticDeformation (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradJ, answerMicroGrad ) );
 
     //Test jacobians w.r.t. the current plastic macro velocity gradient
     constantType eps = 1e-6;
@@ -3107,28 +2614,19 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dFdMacroL[ j ][ i ] ) ){
-                results << "test_evolvePlasticDeformation (test 7) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dFdMacroL[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_evolvePlasticDeformation (test 8) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dGradChidMacroL[ j ][ i ] ) ){
-                results << "test_evolvePlasticDeformation (test 9) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dGradChidMacroL[ j ][ i ] ) );
         }
     }
 
@@ -3170,28 +2668,19 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_evolvePlasticDeformation (test 10) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dChidMicroL[ j ][ i ] ) ){
-                results << "test_evolvePlasticDeformation (test 11) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dChidMicroL[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dGradChidMicroL[ j ][ i ] ) ){
-                results << "test_evolvePlasticDeformation (test 12) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dGradChidMicroL[ j ][ i ] ) );
         }
     }
 
@@ -3233,28 +2722,19 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_evolvePlasticDeformation (test 13) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_evolvePlasticDeformation (test 14) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dGradChidMicroGradL[ j ][ i ] ) ){
-                results << "test_evolvePlasticDeformation (test 15) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dGradChidMicroGradL[ j ][ i ] ) );
         }
     }
 
@@ -3319,20 +2799,11 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMacroISV, answerMacroISV ) ){
-        results << "test_evolveStrainStateVariables (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMacroISV, answerMacroISV ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroISV, answerMicroISV ) ){
-        results << "test_evolveStrainStateVariables (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroISV, answerMicroISV ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradISV, answerMicroGradISV ) ){
-        results << "test_evolveStrainStateVariables (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradISV, answerMicroGradISV ) );
 
     variableType resultMacroISVJ, resultMicroISVJ;
     variableVector resultMicroGradISVJ;
@@ -3359,20 +2830,11 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMacroISVJ, answerMacroISV ) ){
-        results << "test_evolveStrainStateVariables (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMacroISVJ, answerMacroISV ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroISVJ, answerMicroISV ) ){
-        results << "test_evolveStrainStateVariables (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroISVJ, answerMicroISV ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradISVJ, answerMicroGradISV ) ){
-        results << "test_evolveStrainStateVariables (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultMicroGradISVJ, answerMicroGradISV ) );
 
     //Test the Jacobians w.r.t. the current macro gamma
     constantType eps = 1e-6;
@@ -3413,25 +2875,16 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
 
     variableType gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, dMacroISVdMacroGamma ) ){
-        results << "test_evolveStrainStateVariables (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, dMacroISVdMacroGamma ) );
 
     gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) ){
-        results << "test_evolveStrainStateVariables (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) );
 
     variableVector gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * scalarDelta );
 
     for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-            results << "test_evolveStrainStateVariables (test 9) * False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
     }
 
     //Test the Jacobians w.r.t. the current micro gamma
@@ -3465,25 +2918,16 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
 
     gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) ){
-        results << "test_evolveStrainStateVariables (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) );
 
     gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, dMicroISVdMicroGamma ) ){
-        results << "test_evolveStrainStateVariables (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, dMicroISVdMicroGamma ) );
 
     gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * scalarDelta );
 
     for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-            results << "test_evolveStrainStateVariables (test 12) * False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
     }
 
     //Test the Jacobians w.r.t. the current derivative of the macro plastic flow direction w.r.t. the macro cohesion
@@ -3517,25 +2961,16 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
 
     gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, dMacroISVddGdMacroC ) ){
-        results << "test_evolveStrainStateVariables (test 13) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, dMacroISVddGdMacroC ) );
 
     gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) ){
-        results << "test_evolveStrainStateVariables (test 14) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) );
 
     gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * scalarDelta );
 
     for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-            results << "test_evolveStrainStateVariables (test 15) * False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
     }
 
     //Test the Jacobians w.r.t. the current derivative of the micro plastic flow direction w.r.t. the micro cohesion
@@ -3569,25 +3004,16 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
 
     gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) ){
-        results << "test_evolveStrainStateVariables (test 16) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) );
 
     gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * scalarDelta );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, dMicroISVddGdMicroC ) ){
-        results << "test_evolveStrainStateVariables (test 17) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradS, dMicroISVddGdMicroC ) );
 
     gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * scalarDelta );
 
     for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-            results << "test_evolveStrainStateVariables (test 18) * False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
     }
 
     //Test the Jacobians w.r.t. the micro gradient gamma
@@ -3623,25 +3049,16 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
     
         gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * delta[ i ] );
     
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) ){
-            results << "test_evolveStrainStateVariables (test 19) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) );
     
         gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * delta[ i ] );
     
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) ){
-            results << "test_evolveStrainStateVariables (test 20) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) );
     
         gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * delta[ i ] );
     
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientISVdMicroGradGamma[ j ][ i ] ) ){
-                results << "test_evolveStrainStateVariables (test 21) * False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientISVdMicroGradGamma[ j ][ i ] ) );
         }
     }
 
@@ -3678,25 +3095,16 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
     
         gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * delta[ ( int )( i / 3 ) ][ i % 3 ] );
     
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) ){
-            results << "test_evolveStrainStateVariables (test 22) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) );
     
         gradS = ( resultMicroISVP - resultMicroISVM ) / ( 2 * delta[ ( int )( i / 3 ) ][ i % 3 ] );
     
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) ){
-            results << "test_evolveStrainStateVariables (test 23) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradS, 0. ) );
     
         gradCol = ( resultMicroGradISVP - resultMicroGradISVM ) / ( 2 * delta[ ( int )( i / 3 ) ][ i % 3 ] );
     
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientISVddGdMicroGradGamma[ j ][ i ] ) ){
-                results << "test_evolveStrainStateVariables (test 24) * False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientISVddGdMicroGradGamma[ j ][ i ] ) );
         }
     }
 
@@ -3785,35 +3193,17 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroFlowDirection, resultMacroFlowDirection ) ){
-        results << "test_computeFlowDirections (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroFlowDirection, resultMacroFlowDirection ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroFlowDirection, resultMicroFlowDirection ) ){
-        results << "test_computeFlowDirections (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroFlowDirection, resultMicroFlowDirection ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradientFlowDirection, resultMicroGradientFlowDirection ) ){
-        results << "test_computeFlowDirections (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradientFlowDirection, resultMicroGradientFlowDirection ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMacroCohesion, resultdGdMacroCohesion ) ){
-        results << "test_computeFlowDirection (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMacroCohesion, resultdGdMacroCohesion ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMicroCohesion, resultdGdMicroCohesion ) ){
-        results << "test_computeFlowDirection (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMicroCohesion, resultdGdMicroCohesion ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMicroGradientCohesion, resultdGdMicroGradientCohesion ) ){
-        results << "test_computeFlowDirection (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMicroGradientCohesion, resultdGdMicroGradientCohesion ) );
 
     //Tests of the Jacobian
     variableVector resultMacroFlowDirectionJ, resultMicroFlowDirectionJ, resultMicroGradientFlowDirectionJ;
@@ -3839,35 +3229,17 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroFlowDirection, resultMacroFlowDirectionJ ) ){
-        results << "test_computeFlowDirections (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroFlowDirection, resultMacroFlowDirectionJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroFlowDirection, resultMicroFlowDirectionJ ) ){
-        results << "test_computeFlowDirections (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroFlowDirection, resultMicroFlowDirectionJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradientFlowDirection, resultMicroGradientFlowDirectionJ ) ){
-        results << "test_computeFlowDirections (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradientFlowDirection, resultMicroGradientFlowDirectionJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMacroCohesion, resultdGdMacroCohesionJ ) ){
-        results << "test_computeFlowDirection (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMacroCohesion, resultdGdMacroCohesionJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMicroCohesion, resultdGdMicroCohesionJ ) ){
-        results << "test_computeFlowDirection (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMicroCohesion, resultdGdMicroCohesionJ ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMicroGradientCohesion, resultdGdMicroGradientCohesionJ ) ){
-        results << "test_computeFlowDirection (test 12) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerdGdMicroGradientCohesion, resultdGdMicroGradientCohesionJ ) );
 
     //Test the Jacobians w.r.t. the PK2 stress
     constantType eps = 1e-6;
@@ -3907,55 +3279,34 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
         variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMacroFlowDirectiondPK2Stress[ j ][ i ] ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                std::cout << "result:\n"; vectorTools::print( dMacroFlowDirectiondPK2Stress );
-                std::cout << "answer:\n"; vectorTools::print( gradCol );
-                results << "test_computeFlowDirections (test 13) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMacroFlowDirectiondPK2Stress[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroFlowDirectionP - resultMicroFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeFlowDirections (test 14) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroGradientFlowDirectionP - resultMicroGradientFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeFlowDirections (test 15) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         variableType gradScalar = ( resultdGdMacroCohesionP - resultdGdMacroCohesionM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-            results << "test_computeFlowDirections (test 16) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
         gradScalar = ( resultdGdMicroCohesionP - resultdGdMicroCohesionM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-            results << "test_computeFlowDirections (test 17) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
         variableMatrix gradMat = ( resultdGdMicroGradientCohesionP - resultdGdMicroGradientCohesionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradMat.size(); j++ ){
             for ( unsigned int k = 0; k < gradMat[ j ].size(); k++ ){
-                BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) ){
-                    results << "test_computeFlowDirections (test 18) & False\n";
-                    return 1;
-                }
+                BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) );
             }
         }
     }
@@ -3997,55 +3348,34 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
         variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeFlowDirections (test 19) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroFlowDirectionP - resultMicroFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroFlowDirectiondSigma[ j ][ i ] ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                std::cout << "result:\n"; vectorTools::print( dMicroFlowDirectiondSigma );
-                std::cout << "answer:\n"; vectorTools::print( gradCol );
-                results << "test_computeFlowDirections (test 20) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroFlowDirectiondSigma[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroGradientFlowDirectionP - resultMicroGradientFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeFlowDirections (test 21) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         variableType gradScalar = ( resultdGdMacroCohesionP - resultdGdMacroCohesionM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-            results << "test_computeFlowDirections (test 22) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
         gradScalar = ( resultdGdMicroCohesionP - resultdGdMicroCohesionM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-            results << "test_computeFlowDirections (test 23) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
         variableMatrix gradMat = ( resultdGdMicroGradientCohesionP - resultdGdMicroGradientCohesionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradMat.size(); j++ ){
             for ( unsigned int k = 0; k < gradMat[ j ].size(); k++ ){
-                BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) ){
-                    results << "test_computeFlowDirections (test 24) & False\n";
-                    return 1;
-                }
+                BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) );
             }
         }
     }
@@ -4087,52 +3417,34 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
         variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeFlowDirections (test 25) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroFlowDirectionP - resultMicroFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeFlowDirections (test 26) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroGradientFlowDirectionP - resultMicroGradientFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFlowDirectiondM[ j ][ i ] ) ){
-                results << "test_computeFlowDirections (test 27) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFlowDirectiondM[ j ][ i ] ) );
         }
 
         variableType gradScalar = ( resultdGdMacroCohesionP - resultdGdMacroCohesionM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-            results << "test_computeFlowDirections (test 28) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
         gradScalar = ( resultdGdMicroCohesionP - resultdGdMicroCohesionM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-            results << "test_computeFlowDirections (test 29) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
         variableMatrix gradMat = ( resultdGdMicroGradientCohesionP - resultdGdMicroGradientCohesionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradMat.size(); j++ ){
             for ( unsigned int k = 0; k < gradMat[ j ].size(); k++ ){
-                BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) ){
-                    results << "test_computeFlowDirections (test 30) & False\n";
-                    return 1;
-                }
+                BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) );
             }
         }
     }
@@ -4174,52 +3486,34 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
         variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMacroFlowDirectiondElasticRCG[ j ][ i ] ) ){
-                results << "test_computeFlowDirections (test 31) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMacroFlowDirectiondElasticRCG[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroFlowDirectionP - resultMicroFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroFlowDirectiondElasticRCG[ j ][ i ] ) ){
-                results << "test_computeFlowDirections (test 32) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroFlowDirectiondElasticRCG[ j ][ i ] ) );
         }
 
         gradCol = ( resultMicroGradientFlowDirectionP - resultMicroGradientFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFlowDirectiondElasticRCG[ j ][ i ] ) ){
-                results << "test_computeFlowDirections (test 33) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFlowDirectiondElasticRCG[ j ][ i ] ) );
         }
 
         variableType gradScalar = ( resultdGdMacroCohesionP - resultdGdMacroCohesionM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-            results << "test_computeFlowDirections (test 34) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
         gradScalar = ( resultdGdMicroCohesionP - resultdGdMicroCohesionM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-            results << "test_computeFlowDirections (test 35) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
         variableMatrix gradMat = ( resultdGdMicroGradientCohesionP - resultdGdMicroGradientCohesionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradMat.size(); j++ ){
             for ( unsigned int k = 0; k < gradMat[ j ].size(); k++ ){
-                BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) ){
-                    results << "test_computeFlowDirections (test 36) & False\n";
-                    return 1;
-                }
+                BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) );
             }
         }
     }
@@ -4259,52 +3553,34 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
     variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * deltaScalar );
 
     for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-            results << "test_computeFlowDirections (test 37) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
     }
 
     gradCol = ( resultMicroFlowDirectionP - resultMicroFlowDirectionM ) / ( 2 * deltaScalar );
 
     for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-            results << "test_computeFlowDirections (test 38) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
     }
 
     gradCol = ( resultMicroGradientFlowDirectionP - resultMicroGradientFlowDirectionM ) / ( 2 * deltaScalar );
 
     for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-            results << "test_computeFlowDirections (test 39) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
     }
 
     variableType gradScalar = ( resultdGdMacroCohesionP - resultdGdMacroCohesionM ) / ( 2 * deltaScalar );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-        results << "test_computeFlowDirections (test 40) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
     gradScalar = ( resultdGdMicroCohesionP - resultdGdMicroCohesionM ) / ( 2 * deltaScalar );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-        results << "test_computeFlowDirections (test 41) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
     variableMatrix gradMat = ( resultdGdMicroGradientCohesionP - resultdGdMicroGradientCohesionM ) / ( 2 * deltaScalar );
 
     for ( unsigned int j = 0; j < gradMat.size(); j++ ){
         for ( unsigned int k = 0; k < gradMat[ j ].size(); k++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) ){
-                results << "test_computeFlowDirections (test 42) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) );
         }
     }
 
@@ -4334,52 +3610,34 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
     gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * deltaScalar );
 
     for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-            results << "test_computeFlowDirections (test 43) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
     }
 
     gradCol = ( resultMicroFlowDirectionP - resultMicroFlowDirectionM ) / ( 2 * deltaScalar );
 
     for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-            results << "test_computeFlowDirections (test 44) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
     }
 
     gradCol = ( resultMicroGradientFlowDirectionP - resultMicroGradientFlowDirectionM ) / ( 2 * deltaScalar );
 
     for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-            results << "test_computeFlowDirections (test 45) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
     }
 
     gradScalar = ( resultdGdMacroCohesionP - resultdGdMacroCohesionM ) / ( 2 * deltaScalar );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-        results << "test_computeFlowDirections (test 46) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
     gradScalar = ( resultdGdMicroCohesionP - resultdGdMicroCohesionM ) / ( 2 * deltaScalar );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-        results << "test_computeFlowDirections (test 47) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
     gradMat = ( resultdGdMicroGradientCohesionP - resultdGdMicroGradientCohesionM ) / ( 2 * deltaScalar );
 
     for ( unsigned int j = 0; j < gradMat.size(); j++ ){
         for ( unsigned int k = 0; k < gradMat[ j ].size(); k++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) ){
-                results << "test_computeFlowDirections (test 48) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) );
         }
     }
 
@@ -4411,52 +3669,34 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
         gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeFlowDirections (test 49) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroFlowDirectionP - resultMicroFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeFlowDirections (test 50) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( resultMicroGradientFlowDirectionP - resultMicroGradientFlowDirectionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeFlowDirections (test 51) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradScalar = ( resultdGdMacroCohesionP - resultdGdMacroCohesionM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-            results << "test_computeFlowDirections (test 52) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
         gradScalar = ( resultdGdMicroCohesionP - resultdGdMicroCohesionM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) ){
-            results << "test_computeFlowDirections (test 53) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradScalar, 0. ) );
 
         variableMatrix gradMat = ( resultdGdMicroGradientCohesionP - resultdGdMicroGradientCohesionM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradMat.size(); j++ ){
             for ( unsigned int k = 0; k < gradMat[ j ].size(); k++ ){
-                BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) ){
-                    results << "test_computeFlowDirections (test 54) & False\n";
-                    return 1;
-                }
+                BOOST_CHECK( vectorTools::fuzzyEquals( gradMat[ j ][ k ], 0. ) );
             }
         }
     }
@@ -4549,94 +3789,43 @@ BOOST_AUTO_TEST_CASE( testextractMaterialParameters ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( macroHardeningParameters, answerMacroHardeningParameters ) ){
-        results << "test_extractMaterialParameters (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( macroHardeningParameters, answerMacroHardeningParameters ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( microHardeningParameters, answerMicroHardeningParameters ) ){
-        results << "test_extractMaterialParameters (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( microHardeningParameters, answerMicroHardeningParameters ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( microGradientHardeningParameters, answerMicroGradientHardeningParameters ) ){
-        results << "test_extractMaterialParameters (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( microGradientHardeningParameters, answerMicroGradientHardeningParameters ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( macroFlowParameters, answerMacroFlowParameters ) ){
-        results << "test_extractMaterialParameters (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( macroFlowParameters, answerMacroFlowParameters ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( microFlowParameters, answerMicroFlowParameters ) ){
-        results << "test_extractMaterialParameters (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( microFlowParameters, answerMicroFlowParameters ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( microGradientFlowParameters, answerMicroGradientFlowParameters ) ){
-        results << "test_extractMaterialParameters (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( microGradientFlowParameters, answerMicroGradientFlowParameters ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( macroYieldParameters, answerMacroYieldParameters ) ){
-        results << "test_extractMaterialParameters (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( macroYieldParameters, answerMacroYieldParameters ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( microYieldParameters, answerMicroYieldParameters ) ){
-        results << "test_extractMaterialParameters (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( microYieldParameters, answerMicroYieldParameters ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( microGradientYieldParameters, answerMicroGradientYieldParameters ) ){
-        results << "test_extractMaterialParameters (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( microGradientYieldParameters, answerMicroGradientYieldParameters ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( Amatrix, answerAmatrix ) ){
-        results << "test_extractMaterialParameters (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( Amatrix, answerAmatrix ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( Bmatrix, answerBmatrix ) ){
-        results << "test_extractMaterialParameters (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( Bmatrix, answerBmatrix ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( Cmatrix, answerCmatrix ) ){
-        results << "test_extractMaterialParameters (test 12) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( Cmatrix, answerCmatrix ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( Dmatrix, answerDmatrix ) ){
-        results << "test_extractMaterialParameters (test 13) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( Dmatrix, answerDmatrix ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( alphaMacro, answerAlphaMacro ) ){
-        results << "test_extractMaterialParameters (test 14) & False\n";
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( alphaMacro, answerAlphaMacro ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( alphaMicro, answerAlphaMicro ) ){
-        results << "test_extractMaterialParameters (test 15) & False\n";
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( alphaMicro, answerAlphaMicro ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( alphaMicroGradient, answerAlphaMicroGradient ) ){
-        results << "test_extractMaterialParameters (test 16) & False\n";
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( alphaMicroGradient, answerAlphaMicroGradient ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( alphaMicro, answerAlphaMicro ) ){
-        results << "test_extractMaterialParameters (test 16) & False\n";
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( alphaMicro, answerAlphaMicro ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( relativeTolerance, answerRelativeTolerance ) ){
-        results << "test_extractMaterialParameters (test 17) & False\n";
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( relativeTolerance, answerRelativeTolerance ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( absoluteTolerance, answerAbsoluteTolerance ) ){
-        results << "test_extractMaterialParameters (test 18) & False\n";
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( absoluteTolerance, answerAbsoluteTolerance ) );
 
     results << "test_extractMaterialParameters & True\n";
     return 0;
@@ -4687,52 +3876,23 @@ BOOST_AUTO_TEST_CASE( testextractStateVariables ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMacroStrainISV, previousMacroStrainISV ) ){
-        results << "test_extractStateVariables (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMacroStrainISV, previousMacroStrainISV ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMicroStrainISV, previousMicroStrainISV ) ){
-        results << "test_extractStateVariables (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMicroStrainISV, previousMicroStrainISV ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMicroGradientStrainISV, previousMicroGradientStrainISV ) ){
-        results << "test_extractStateVariables (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMicroGradientStrainISV, previousMicroGradientStrainISV ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMacroGamma, previousMacroGamma ) ){
-        results << "test_extractStateVariables (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMacroGamma, previousMacroGamma ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMicroGamma, previousMicroGamma ) ){
-        results << "test_extractStateVariables (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMicroGamma, previousMicroGamma ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMicroGradientGamma, previousMicroGradientGamma ) ){
-        results << "test_extractStateVariables (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMicroGradientGamma, previousMicroGradientGamma ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousPlasticDeformationGradient, previousPlasticDeformationGradient ) ){
-        vectorTools::print( answerPreviousPlasticDeformationGradient );
-        vectorTools::print( previousPlasticDeformationGradient );
-        results << "test_extractStateVariables (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousPlasticDeformationGradient, previousPlasticDeformationGradient ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousPlasticMicroDeformation, previousPlasticMicroDeformation ) ){
-        results << "test_extractStateVariables (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousPlasticMicroDeformation, previousPlasticMicroDeformation ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousPlasticGradientMicroDeformation, previousPlasticGradientMicroDeformation ) ){
-        results << "test_extractStateVariables (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousPlasticGradientMicroDeformation, previousPlasticGradientMicroDeformation ) );
 
     results << "test_extractStateVariables & True\n";
     return 0;
@@ -4822,20 +3982,11 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultF, answerDeformationGradient ) ){
-        results << "test_assembleFundamentalDeformationMeasures (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultF, answerDeformationGradient ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultChi, answerMicroDeformation ) ){
-        results << "test_assembleFundamentalDeformationMeasures (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultChi, answerMicroDeformation ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultGradChi, answerGradientMicroDeformation ) ){
-        results << "test_assembleFundamentalDeformationMeasures (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultGradChi, answerGradientMicroDeformation ) );
 
     //Test the Jacobians
     variableVector resultFJ, resultChiJ, resultGradChiJ;
@@ -4847,20 +3998,11 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultFJ, answerDeformationGradient ) ){
-        results << "test_assembleFundamentalDeformationMeasures (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultFJ, answerDeformationGradient ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultChiJ, answerMicroDeformation ) ){
-        results << "test_assembleFundamentalDeformationMeasures (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultChiJ, answerMicroDeformation ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultGradChiJ, answerGradientMicroDeformation ) ){
-        results << "test_assembleFundamentalDeformationMeasures (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultGradChiJ, answerGradientMicroDeformation ) );
 
     //Test the jacobians w.r.t. the gradient of the displacement
     constantType eps = 1e-6;
@@ -4901,26 +4043,19 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
         variableVector gradCol = ( FP - FM ) / ( 2 * delta[ ii ][ ij ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dFdGradU[ j ][ i ] ) ){
-                results << "test_assembleFundamentalDeformationMeasures (test 7) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dFdGradU[ j ][ i ] ) );
         }
 
         gradCol = ( chiP - chiM ) / ( 2 * delta[ ii ][ ij ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_assembleFundamentalDeformationMeasures (test 8) & False\n";
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( gradChiP - gradChiM ) / ( 2 * delta[ ii ][ ij ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_assembleFundamentalDeformationMeasures (test 9) & False\n";
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
     }
 
@@ -4953,26 +4088,19 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
         variableVector gradCol = ( FP - FM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_assembleFundamentalDeformationMeasures (test 10) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( chiP - chiM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dChidPhi[ j ][ i ] ) ){
-                results << "test_assembleFundamentalDeformationMeasures (test 11) & False\n";
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dChidPhi[ j ][ i ] ) );
         }
 
         gradCol = ( gradChiP - gradChiM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_assembleFundamentalDeformationMeasures (test 12) & False\n";
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
     }
 
@@ -5026,26 +4154,19 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
         variableVector gradCol = ( FP - FM ) / ( 2 * delta[ ii ][ ij ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_assembleFundamentalDeformationMeasures (test 13) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( chiP - chiM ) / ( 2 * delta[ ii ][ ij ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_assembleFundamentalDeformationMeasures (test 14) & False\n";
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
 
         gradCol = ( gradChiP - gradChiM ) / ( 2 * delta[ ii ][ ij ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dGradChidGradPhi[ j ][ i ] ) ){
-                results << "test_assembleFundamentalDeformationMeasures (test 15) & False\n";
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dGradChidGradPhi[ j ][ i ] ) );
         }
     }
 
@@ -5119,10 +4240,7 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( result, answer ) ){
-        results << "test_evaluateYieldFunctions (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( result, answer ) );
 
     //Test the jacobians
     variableVector resultJ;
@@ -5161,10 +4279,7 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( resultJ, answer ) ){
-        results << "test_evaluateYieldFunctions (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( resultJ, answer ) );
 
     //Test Jacobians w.r.t. the PK2 stress
     constantType eps = 1e-6;
@@ -5206,21 +4321,12 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], dMacroFdPK2[ i ] ) ){
-            results << "test_evaluateYieldFunctions (test 3) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], dMacroFdPK2[ i ] ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], 0. ) ){
-            results << "test_evaluateYieldFunctions (test 4) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], 0. ) );
 
         for ( unsigned int j = 2; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_evaluateYieldFunctions (test 5) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
     }
 
@@ -5263,21 +4369,12 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], 0. ) ){
-            results << "test_evaluateYieldFunctions (test 6) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], 0. ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], dMicroFdSigma[ i ] ) ){
-            results << "test_evaluateYieldFunctions (test 7) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], dMicroFdSigma[ i ] ) );
 
         for ( unsigned int j = 2; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_evaluateYieldFunctions (test 8) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
     }
 
@@ -5320,21 +4417,12 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], 0. ) ){
-            results << "test_evaluateYieldFunctions (test 9) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], 0. ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], 0. ) ){
-            results << "test_evaluateYieldFunctions (test 10) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], 0. ) );
 
         for ( unsigned int j = 2; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFdM[ j - 2 ][ i ] ) ){
-                results << "test_evaluateYieldFunctions (test 11) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFdM[ j - 2 ][ i ] ) );
         }
     }
 
@@ -5377,21 +4465,12 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], dMacroFdMacroC ) ){
-            results << "test_evaluateYieldFunctions (test 12) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], dMacroFdMacroC ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], 0. ) ){
-            results << "test_evaluateYieldFunctions (test 13) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], 0. ) );
 
         for ( unsigned int j = 2; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_evaluateYieldFunctions (test 14) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
     }
 
@@ -5434,21 +4513,12 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], 0. ) ){
-            results << "test_evaluateYieldFunctions (test 15) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], 0. ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], dMicroFdMicroC ) ){
-            results << "test_evaluateYieldFunctions (test 16) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], dMicroFdMicroC ) );
 
         for ( unsigned int j = 2; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_evaluateYieldFunctions (test 17) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
     }
 
@@ -5491,21 +4561,12 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], 0. ) ){
-            results << "test_evaluateYieldFunctions (test 18) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], 0. ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], 0. ) ){
-            results << "test_evaluateYieldFunctions (test 19) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], 0. ) );
 
         for ( unsigned int j = 2; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFdMicroGradientC[ j - 2 ][ i ] ) ){
-                results << "test_evaluateYieldFunctions (test 20) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFdMicroGradientC[ j - 2 ][ i ] ) );
         }
     }
 
@@ -5547,21 +4608,12 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], dMacroFdElasticRCG[ i ] ) ){
-            results << "test_evaluateYieldFunctions (test 21) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 0 ], dMacroFdElasticRCG[ i ] ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], dMicroFdElasticRCG[ i ] ) ){
-            results << "test_evaluateYieldFunctions (test 22) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ 1 ], dMicroFdElasticRCG[ i ] ) );
 
         for ( unsigned int j = 2; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFdElasticRCG[ j - 2 ][ i ] ) ){
-                results << "test_evaluateYieldFunctions (test 23) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientFdElasticRCG[ j - 2 ][ i ] ) );
         }
     }
 
@@ -5598,20 +4650,11 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( macroC, answerMacroC ) ){
-        results << "test_computeCohesion (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( macroC, answerMacroC ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( microC, answerMicroC ) ){
-        results << "test_computeCohesion (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( microC, answerMicroC ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( microGradientC, answerMicroGradientC ) ){
-        results << "test_computeCohesion (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( microGradientC, answerMicroGradientC ) );
 
     //Test the Jacobians
     variableType   macroCJ, microCJ;
@@ -5628,20 +4671,11 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( macroCJ, answerMacroC ) ){
-        results << "test_computeCohesion (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( macroCJ, answerMacroC ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( microCJ, answerMicroC ) ){
-        results << "test_computeCohesion (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( microCJ, answerMicroC ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( microGradientCJ, answerMicroGradientC ) ){
-        results << "test_computeCohesion (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( microGradientCJ, answerMicroGradientC ) );
 
     //Test Jacobian w.r.t. the macro strain ISV
     constantType eps = 1e-6;
@@ -5670,25 +4704,16 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
 
         variableType grad = ( macroCP - macroCM ) / ( 2 * delta );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( grad, dMacroCdMacroStrainISV ) ){
-            results << "test_computeCohesion (test 7) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( grad, dMacroCdMacroStrainISV ) );
 
         grad = ( microCP - microCM ) / ( 2 * delta );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( grad, 0. ) ){
-            results << "test_computeCohesion (test 8) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( grad, 0. ) );
 
         variableVector gradCol = ( microGradientCP - microGradientCM ) / ( 2 * delta );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeCohesion (test 9) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
     }
 
@@ -5718,25 +4743,16 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
 
         variableType grad = ( macroCP - macroCM ) / ( 2 * delta );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( grad, 0. ) ){
-            results << "test_computeCohesion (test 10) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( grad, 0. ) );
 
         grad = ( microCP - microCM ) / ( 2 * delta );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( grad, dMicroCdMicroStrainISV ) ){
-            results << "test_computeCohesion (test 11) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( grad, dMicroCdMicroStrainISV ) );
 
         variableVector gradCol = ( microGradientCP - microGradientCM ) / ( 2 * delta );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) ){
-                results << "test_computeCohesion (test 12) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
         }
     }
 
@@ -5767,25 +4783,16 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
 
         variableType grad = ( macroCP - macroCM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( grad, 0. ) ){
-            results << "test_computeCohesion (test 13) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( grad, 0. ) );
 
         grad = ( microCP - microCM ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( grad, 0. ) ){
-            results << "test_computeCohesion (test 14) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( grad, 0. ) );
 
         variableVector gradCol = ( microGradientCP - microGradientCM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientCdMicroStrainISV[ j ][ i ] ) ){
-                results << "test_computeCohesion (test 15) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], dMicroGradientCdMicroStrainISV[ j ][ i ] ) );
         }
     }
 
@@ -5969,49 +4976,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
         return 1;
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) ){
-        std::cout << "SDVS:\n";
-        for ( unsigned int i = 0; i < SDVS.size(); i++ ){
-            std::cout << SDVS[ i ] << ", ";
-        }
-        std::cout << "\n";
-        std::cout << "error: "; vectorTools::print( SDVS - SDVSAnswer );
-        results << "test_evaluate_model (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer, current_PK2, 1e-5, 1e-5 ) ){
-        std::cout << "PK2:\n";
-        for ( unsigned int i = 0; i < current_PK2.size(); i++ ){
-            std::cout << current_PK2[ i ] << ", ";
-        }
-        std::cout << "\n";
-        std::cout << "error: "; vectorTools::print( PK2Answer - current_PK2 );
-        results << "test_evaluate_model (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer, current_PK2, 1e-5, 1e-5 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SigmaAnswer, current_SIGMA, 1e-5, 1e-5 ) ){
-        std::cout << "SIGMA:\n";
-        for ( unsigned int i = 0; i < current_SIGMA.size(); i++ ){
-            std::cout << current_SIGMA[ i ] << ", ";
-        }
-        std::cout << "\n";
-        std::cout << "error: "; vectorTools::print( SigmaAnswer - current_SIGMA );
-        results << "test_evaluate_model (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SigmaAnswer, current_SIGMA, 1e-5, 1e-5 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( MAnswer, current_M, 1e-5 ) ){
-        std::cout << "M:\n";
-        for ( unsigned int i = 0; i < current_M.size(); i++ ){
-            std::cout << current_M[ i ] << ", ";
-        }
-        std::cout << "\n";
-        std::cout << "error: "; vectorTools::print( MAnswer - current_M );
-        results << "test_evaluate_model (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( MAnswer, current_M, 1e-5 ) );
 
     //Test the Jacobians
     std::vector< std::vector< double > > DPK2Dgrad_u, DPK2Dphi, DPK2Dgrad_phi, DSIGMADgrad_u, DSIGMADphi, DSIGMADgrad_phi,
@@ -6057,25 +5028,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
         return 1;
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) ){
-        results << "test_evaluate_model (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer, current_PK2, 1e-5, 1e-5 ) ){
-        results << "test_evaluate_model (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer, current_PK2, 1e-5, 1e-5 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SigmaAnswer, current_SIGMA, 1e-5, 1e-5 ) ){
-        results << "test_evaluate_model (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SigmaAnswer, current_SIGMA, 1e-5, 1e-5 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( MAnswer, current_M, 1e-5 ) ){
-        results << "test_evaluate_model (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( MAnswer, current_M, 1e-5 ) );
 
     //Test the jacobians w.r.t. the gradient of the macro displacement
     constantType eps = 1e-6;
@@ -6183,127 +5142,57 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
                                             DEBUG[ "totaldPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ],
-                                            1e-6, 1e-6 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "totaldPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ] << "\n";
-                results << "test_evaluate_model (dPlasticDeformationGradientdDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-6 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
                                             DEBUG[ "totaldPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ],
-                                            1e-6, 1e-6 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "totaldPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
-                results << "test_evaluate_model (dPlasticMicroDeformationdDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-6 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
                                             DEBUG[ "totaldPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ],
-                                            1e-6, 1e-6 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "convergedPlasticGradientDeformationGradient" ][ j ]
-                                        - DEBUG[ "totaldPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ] << "\n";
-                results << "test_evaluate_model (dPlasticGradientMicroDeformationdDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-6 ) );
         }
 
         //Check the total Jacobians of the intermediate stresses
         for ( unsigned int j = 0; j < numericGradients[ "intermediatePK2Stress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "intermediatePK2Stress" ][ j ],
                                             DEBUG[ "totaldPK2StressdDeformationGradient" ][ 9 * j + i ],
-                                            1e-5, 1e-5 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "intermediatePK2Stress" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPK2StressdDeformationGradient" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "intermediatePK2Stress" ][ j ]
-                                        - DEBUG[ "totaldPK2StressdDeformationGradient" ][ 9 * j + i ] << "\n";
-                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldPK2StressdDeformationGradient" ], 9, 9 ) );
-                results << "test_evaluate_model (dPK2StressdDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-5, 1e-5 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceMicroStress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceMicroStress" ][ j ],
                                             DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ][ 9 * j + i ],
-                                            1e-5, 1e-5 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "intermediateReferenceMicroStress" ][ j ]
-                                        - DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ][ 9 * j + i ] << "\n";
-                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceMicroStressdDeformationGradient" ], 9, 9 ) );
-                results << "test_evaluate_model (dReferenceMicroStressdDeformationGradient) & False\n";
-            }
+                                            1e-5, 1e-5 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceHigherOrderStress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ],
                                             DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ],
-                                            1e-5, 1e-5 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ]
-                                        - DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ] << "\n";
-                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceHigherOrderStressdDeformationGradient" ], 27, 9 ) );
-                results << "test_evaluate_model (dReferenceHigherOrderStressdDeformationGradient) & False\n";
-            }
+                                            1e-5, 1e-5 ) );
         }
 #endif
 
         solverTools::floatVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dgrad_u[ j ][ i ], 1e-4, 1e-5 ) ){
-                std::cout << "row, column: " << j << ", " << i << "\n";
-                std::cout << "num:   " << gradCol[ j ] << "\n";
-                std::cout << "ana:   " << DPK2Dgrad_u[ j ][ i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - DPK2Dgrad_u[ j ][ i ] << "\n";
-                results << "test_evaluate_model (test 9) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dgrad_u[ j ][ i ], 1e-4, 1e-5 ) );
         }
 
         gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADgrad_u[ j ][ i ], 1e-4, 1e-5 ) ){
-                std::cout << "row, column: " << j << ", " << i << "\n";
-                std::cout << "num:   " << gradCol[ j ] << "\n";
-                std::cout << "ana:   " << DSIGMADgrad_u[ j ][ i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - DSIGMADgrad_u[ j ][ i ] << "\n";
-                results << "test_evaluate_model (test 10) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADgrad_u[ j ][ i ], 1e-4, 1e-5 ) );
         }
 
         gradCol = ( M_P - M_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DMDgrad_u[ j ][ i ], 1e-4, 1e-5 ) ){
-                std::cout << "row, column: " << j << ", " << i << "\n";
-                std::cout << "num:   " << gradCol[ j ] << "\n";
-                std::cout << "ana:   " << DSIGMADgrad_u[ j ][ i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - DMDgrad_u[ j ][ i ] << "\n";
-                results << "test_evaluate_model (test 11) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DMDgrad_u[ j ][ i ], 1e-4, 1e-5 ) );
         }
     }
 
@@ -6412,89 +5301,38 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
                                             DEBUG[ "totaldPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ],
-                                            1e-6, 1e-6 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "totaldPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i ] << "\n";
-                results << "test_evaluate_model (dPlasticDeformationGradientdMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-6 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
                                             DEBUG[ "totaldPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ],
-                                            1e-6, 1e-6 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "totaldPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
-                results << "test_evaluate_model (dPlasticMicroDeformationdMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-6 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
                                             DEBUG[ "totaldPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ],
-                                            1e-6, 1e-6 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "convergedPlasticGradientDeformationGradient" ][ j ]
-                                        - DEBUG[ "totaldPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i ] << "\n";
-                results << "test_evaluate_model (dPlasticGradientMicroDeformationdMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-6 ) );
         }
 
         //Check the total Jacobians of the intermediate stresses
         for ( unsigned int j = 0; j < numericGradients[ "intermediatePK2Stress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "intermediatePK2Stress" ][ j ],
                                             DEBUG[ "totaldPK2StressdMicroDeformation" ][ 9 * j + i ],
-                                            1e-5, 1e-5 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "intermediatePK2Stress" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPK2StressdMicroDeformation" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "intermediatePK2Stress" ][ j ]
-                                        - DEBUG[ "totaldPK2StressdMicroDeformation" ][ 9 * j + i ] << "\n";
-                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldPK2StressdMicroDeformation" ], 9, 9 ) );
-                results << "test_evaluate_model (dPK2StressdMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-5, 1e-5 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceMicroStress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceMicroStress" ][ j ],
                                             DEBUG[ "totaldReferenceMicroStressdMicroDeformation" ][ 9 * j + i ],
-                                            1e-5, 1e-5 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldReferenceMicroStressdMicroDeformation" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "intermediateReferenceMicroStress" ][ j ]
-                                        - DEBUG[ "totaldReferenceMicroStressdMicroDeformation" ][ 9 * j + i ] << "\n";
-                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceMicroStressdMicroDeformation" ], 9, 9 ) );
-                results << "test_evaluate_model (dReferenceMicroStressdMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-5, 1e-5 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceHigherOrderStress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ],
                                             DEBUG[ "totaldReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i ],
-                                            1e-5, 1e-5 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "intermediateReferenceMicroStress" ][ j ]
-                                        - DEBUG[ "totaldReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i ] << "\n";
-                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceHigherOrderStressdMicroDeformation" ], 27, 9 ) );
-                results << "test_evaluate_model (dReferenceHigherOrderStressdMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-5, 1e-5 ) );
         }
 
 #endif
@@ -6502,40 +5340,19 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
         solverTools::floatVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dphi[ j ][ i ], 1e-4 ) ){
-                std::cout << "row, column: " << j << ", " << i << "\n";
-                std::cout << "num:   " << gradCol[ j ] << "\n";
-                std::cout << "ana:   " << DPK2Dphi[ j ][ i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - DPK2Dphi[ j ][ i ] << "\n";
-                results << "test_evaluate_model (test 12) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dphi[ j ][ i ], 1e-4 ) );
         }
 
         gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADphi[ j ][ i ], 1e-4 ) ){
-                std::cout << "row, column: " << j << ", " << i << "\n";
-                std::cout << "num:   " << gradCol[ j ] << "\n";
-                std::cout << "ana:   " << DSIGMADphi[ j ][ i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - DSIGMADphi[ j ][ i ] << "\n";
-                results << "test_evaluate_model (test 13) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADphi[ j ][ i ], 1e-4 ) );
         }
 
         gradCol = ( M_P - M_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DMDphi[ j ][ i ], 1e-4 ) ){
-                std::cout << "row, column: " << j << ", " << i << "\n";
-                std::cout << "num:   " << gradCol[ j ] << "\n";
-                std::cout << "ana:   " << DMDphi[ j ][ i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - DMDphi[ j ][ i ] << "\n";
-                results << "test_evaluate_model (test 14) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DMDphi[ j ][ i ], 1e-4 ) );
         }
     }
 
@@ -6662,122 +5479,58 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticDeformationGradient" ][ j ],
                                             DEBUG[ "totaldPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ],
-                                            1e-6, 1e-8 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "totaldPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                results << "test_evaluate_model (dPlasticDeformationGradientdGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-8 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticMicroDeformation" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticMicroDeformation" ][ j ],
                                             DEBUG[ "totaldPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ],
-                                            1e-6, 1e-8 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "convergedPlasticMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "convergedPlasticDeformationGradient" ][ j ]
-                                        - DEBUG[ "totaldPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                results << "test_evaluate_model (dPlasticMicroDeformationdGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-8 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticGradientMicroDeformation" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ],
                                             DEBUG[ "totaldPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ],
-                                            1e-6, 1e-8 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "convergedPlasticGradientMicroDeformation" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "convergedPlasticGradientDeformationGradient" ][ j ]
-                                        - DEBUG[ "totaldPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                results << "test_evaluate_model (dPlasticGradientMicroDeformationdDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-8 ) );
         }
 
         //Check the total Jacobians of the intermediate stresses
         for ( unsigned int j = 0; j < numericGradients[ "intermediatePK2Stress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "intermediatePK2Stress" ][ j ],
                                             DEBUG[ "totaldPK2StressdGradientMicroDeformation" ][ 27 * j + i ],
-                                            1e-5, 1e-5 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "intermediatePK2Stress" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldPK2StressdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "intermediatePK2Stress" ][ j ]
-                                        - DEBUG[ "totaldPK2StressdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldPK2StressdGradientMicroDeformation" ], 9, 27 ) );
-                results << "test_evaluate_model (dPK2StressdGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-5, 1e-5 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceMicroStress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceMicroStress" ][ j ],
                                             DEBUG[ "totaldReferenceMicroStressdGradientMicroDeformation" ][ 27 * j + i ],
-                                            1e-5, 1e-5 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "intermediateReferenceMicroStress" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldReferenceMicroStressdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "intermediateReferenceMicroStress" ][ j ]
-                                        - DEBUG[ "totaldReferenceMicroStressdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceMicroStressdGradientMicroDeformation" ], 9, 27 ) );
-                results << "test_evaluate_model (dReferenceMicroStressdGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-5, 1e-5 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "intermediateReferenceHigherOrderStress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ],
                                             DEBUG[ "totaldReferenceHigherOrderStressdGradientMicroDeformation" ][ 27 * j + i ],
-                                            1e-5, 1e-5 ) ){
-                std::cout << "i, j:  " << i << ", " << j << "\n";
-                std::cout << "num:   " << numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ] << "\n";
-                std::cout << "ana:   " << DEBUG[ "totaldReferenceHigherOrderStressdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                std::cout << "error: " << numericGradients[ "intermediateReferenceHigherOrderStress" ][ j ]
-                                        - DEBUG[ "totaldReferenceHigherOrderStressdGradientMicroDeformation" ][ 27 * j + i ] << "\n";
-                std::cout << "numeric:  "; vectorTools::print( numericGradients[ "intermediateReferenceHigherOrderStress" ] );
-                std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "totaldReferenceHigherOrderStressdGradientMicroDeformation" ], 27, 27 ) );
-                results << "test_evaluate_model (dReferenceHigherOrderStressdGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-5, 1e-5 ) );
         }
 #endif
 
         solverTools::floatVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dgrad_phi[ j ][ i ] ) ){
-                results << "test_evaluate_model (test 15) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DPK2Dgrad_phi[ j ][ i ] ) );
         }
 
 //        std::cout << "numeric DPK2Dgrad_u:\n"; vectorTools::print( gradCol );
 
         gradCol = ( SIGMA_P - SIGMA_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADgrad_phi[ j ][ i ], 1e-5 ) ){
-                std::cout << "num: " << gradCol[ j ] << "\n";
-                std::cout << "ana: " << DSIGMADgrad_phi[ j ][ i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - DSIGMADgrad_phi[ j ][ i ] << "\n";
-                results << "test_evaluate_model (test 16) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DSIGMADgrad_phi[ j ][ i ], 1e-5 ) );
         }
 
 //        std::cout << "numeric DSIGMADphi:\n"; vectorTools::print( gradCol );
 
         gradCol = ( M_P - M_M ) / ( 2 * delta[ i / 3 ][ i % 3 ] );
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DMDgrad_phi[ j ][ i ], 1e-5 ) ){
-                results << "test_evaluate_model (test 17) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], DMDgrad_phi[ j ][ i ], 1e-5 ) );
         }
 
 //        std::cout << "numeric DMDgrad_phi:\n"; vectorTools::print( gradCol );
@@ -6994,65 +5747,30 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 
 #ifdef DEBUG_MODE
     //Check if the floatOuts are what is expected.
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 0 ], DEBUG[ "currentPK2Stress" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 0 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 0 ], DEBUG[ "currentPK2Stress" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 1 ], DEBUG[ "currentReferenceMicroStress" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 1 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 1 ], DEBUG[ "currentReferenceMicroStress" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 2 ], DEBUG[ "currentReferenceHigherOrderStress" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 2 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 2 ], DEBUG[ "currentReferenceHigherOrderStress" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 3 ], DEBUG[ "currentMacroStrainISV" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 3 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 3 ], DEBUG[ "currentMacroStrainISV" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 4 ], DEBUG[ "currentMicroStrainISV" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 4 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 4 ], DEBUG[ "currentMicroStrainISV" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 5 ], DEBUG[ "currentMicroGradientStrainISV" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 5 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 5 ], DEBUG[ "currentMicroGradientStrainISV" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 6 ], DEBUG[ "currentMacroCohesion" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 6 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 6 ], DEBUG[ "currentMacroCohesion" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 7 ], DEBUG[ "currentMicroCohesion" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 7 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 7 ], DEBUG[ "currentMicroCohesion" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 8 ], DEBUG[ "currentMicroGradientCohesion" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 8 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 8 ], DEBUG[ "currentMicroGradientCohesion" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 9 ], DEBUG[ "currentElasticRightCauchyGreen" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 9 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 9 ], DEBUG[ "currentElasticRightCauchyGreen" ] ) );
 #endif
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( residualAnswer, residual ) ){
-        std::cout << "residual error\n";
-        vectorTools::print( residualAnswer - residual );
-        results << "test_computePlasticDeformationResidual (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( residualAnswer, residual ) );
 
     //Test the plastic deformation jacobians
     constantType eps = 1e-6;
@@ -7125,28 +5843,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dElasticDeformationGradientdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticDeformationGradientdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticMicroDeformationdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticGradientMicroDeformationdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticGradientMicroDeformationdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!=====================================
@@ -7156,37 +5865,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
                                                 DEBUG[ "dElasticRightCauchyGreendPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticRightCauchyGreendPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticMicroRightCauchyGreendPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
                                                 DEBUG[ "dElasticPsidPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticPsidPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
                                                 DEBUG[ "dElasticGammadPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticGammadPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!================
@@ -7196,28 +5893,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
                                                 DEBUG[ "dPK2StressdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual (dPK2StressdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
                                                 DEBUG[ "dReferenceMicroStressdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual (dReferenceMicroStressdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
                                                 DEBUG[ "dReferenceHigherOrderStressdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual (dReferenceHigherOrderStressdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             /*!=================
@@ -7225,24 +5913,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             ==================*/
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!================
             | Cohesion values |
@@ -7250,24 +5929,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*=================
             | Flow Directions |
@@ -7276,28 +5946,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
                                                 DEBUG[ "dMacroFlowDirectiondPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dMacroFlowDirectiondPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroFlowDirectiondPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dMicroFlowDirectiondPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroGradientFlowDirectiondPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-8, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual (dMicroGradientFlowDirectiondPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-8, 1e-8 ) );
             }
 
             /*!===========================
@@ -7307,30 +5968,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dPlasticMacroVelocityGradientdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroVelocityGradientdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dPlasticMicroVelocityGradientdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-8 ) ){
-                    std::cout << "ana: " << DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient" ][ 9 * j + i ] << "\n";
-                    std::cout << "res: " << numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] << "\n";
-                    results << "test_computePlasticDeformationResidual (dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-8 ) );
             }
 
             /*!======================================
@@ -7340,28 +5990,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticMicroDeformationdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dExpectedPlasticMicroDeformationdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient ) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
 //            /*!====================
@@ -7370,25 +6011,16 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMacroYielddPlasticDeformationGradient" ][ i ],
-//                                            1e-5, 1e-8 ) ){
-//                results << "test_computePlasticDeformationResidual (dMacroYielddPlasticDeformationGradient) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-8 ) );
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMicroYielddPlasticDeformationGradient" ][ i ],
-//                                            1e-5, 1e-8 ) ){
-//                results << "test_computePlasticDeformationResidual (dMicroYielddPlasticDeformationGradient) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-8 ) );
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroGradientYielddPlasticDeformationGradient" ][ 9 * j + i ],
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMicroGradientYielddPlasticDeformationGradient ) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //            }
         }
 
@@ -7401,31 +6033,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticDeformationGradientdPlasticMicroDeformation) & False\n";
-
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticMicroDeformationdPlasticMicroDeformation) & False\n";
-
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticGradientMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticGradientMicroDeformationdPlasticMicroDeformation) & False\n";
-
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!=====================================
@@ -7435,39 +6055,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticRightCauchyGreendPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
                                                 DEBUG[ "dElasticMicroRightCauchyGreendPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticMicroRightCauchyGreendPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
                                                 DEBUG[ "dElasticPsidPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticPsidPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
                                                 DEBUG[ "dElasticGammadPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    std::cout << "i, j: " << i << ", " << j << "\n";
-                    vectorTools::print( numericGradients[ "currentElasticGamma" ] );
-                    results << "test_computePlasticDeformationResidual (dElasticGammadPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!================
@@ -7477,28 +6083,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
                                                 DEBUG[ "dPK2StressdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual (dPK2StressdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
                                                 DEBUG[ "dReferenceMicroStressdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual (dReferenceMicroStressdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
                                                 DEBUG[ "dReferenceHigherOrderStressdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual (dReferenceHigherOrderStressdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             /*!=================
@@ -7506,24 +6103,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             ==================*/
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!================
             | Cohesion values |
@@ -7531,24 +6119,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*=================
             | Flow Directions |
@@ -7557,28 +6136,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
                                                 DEBUG[ "dMacroFlowDirectiondPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dMacroFlowDirectiondPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroFlowDirectiondPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dMicroFlowDirectiondPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroGradientFlowDirectiondPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-8, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual (dMicroGradientFlowDirectiondPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-8, 1e-8 ) );
             }
 
             /*!===========================
@@ -7588,30 +6158,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dPlasticMacroVelocityGradientdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroVelocityGradientdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dPlasticMicroVelocityGradientdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMicroVelocityGradient" ] );
-                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation" ], 27, 9 ) );
-                    results << "test_computePlasticDeformationResidual (dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!======================================
@@ -7621,30 +6180,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dExpectedPlasticMicroDeformationdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-8 ) ){
-                    std::cout << "num: " << numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ] << "\n";
-                    std::cout << "ana: " << DEBUG[ "dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
-                    results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-8 ) );
             }
 
 //            /*!====================
@@ -7653,25 +6201,16 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMacroYielddPlasticMicroDeformation" ][ i - 9 ],
-//                                            1e-5, 1e-8 ) ){
-//                results << "test_computePlasticDeformationResidual (dMacroYielddPlasticMicroDeformation) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-8 ) );
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMicroYielddPlasticMicroDeformation" ][ i - 9 ],
-//                                            1e-5, 1e-8 ) ){
-//                results << "test_computePlasticDeformationResidual (dMicroYielddPlasticMicroDeformation) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-8 ) );
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroGradientYielddPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-//                                                1e-5, 1e-7 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMacroGradientYielddPlasticMicroDeformation) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-7 ) );
 //            }
         }
 
@@ -7684,29 +6223,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticDeformationGradientdPlasticGradientMicroDeformation) & False\n";
-
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticMicroDeformationdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticGradientMicroDeformationdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticGradientMicroDeformationdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!=====================================
@@ -7716,37 +6245,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticRightCauchyGreendPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticMicroRightCauchyGreendPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticPsidPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
                                                 DEBUG[ "dElasticGammadPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dElasticGammadPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!================
@@ -7756,30 +6273,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
                                                 DEBUG[ "dPK2StressdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-5, 1e-9 ) ){
-                    vectorTools::print( numericGradients[ "currentPK2Stress" ] );
-                    vectorTools::print( vectorTools::inflate( DEBUG[ "dPK2StressdPlasticGradientMicroDeformation" ], 27, 9 ) );
-                    results << "test_computePlasticDeformationResidual (dPK2StressdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-5, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
                                                 DEBUG[ "dReferenceMicroStressdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-5, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dReferenceMicroStressdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-5, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
                                                 DEBUG[ "dReferenceHigherOrderStressdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-5, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dReferenceHigherOrderStressdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-5, 1e-9 ) );
             }
 
             /*!=================
@@ -7788,24 +6294,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!================
             | Cohesion values |
@@ -7813,24 +6310,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*=================
             | Flow Directions |
@@ -7839,28 +6327,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
                                                 DEBUG[ "dMacroFlowDirectiondPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-6, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dMacroFlowDirectiondPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroFlowDirectiondPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-6, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dMicroFlowDirectiondPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroGradientFlowDirectiondPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-6, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dMicroGradientFlowDirectiondPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             /*!===========================
@@ -7870,31 +6349,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-7 ) ){
-                    std::cout << "ana: " << DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ] << "\n";
-                    std::cout << "num: " << numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] << "\n";
-                    std::cout << "error: " << DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ] - numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] << "\n";
-                    results << "test_computePlasticDeformationResidual (dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-7 ) );
             }
 
             /*!======================================
@@ -7904,28 +6371,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual (dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-8 ) );
             }
 
 //            /*!====================
@@ -7934,28 +6392,16 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMacroYielddPlasticGradientMicroDeformation" ][ i - 18 ],
-//                                            1e-5, 1e-8 ) ){
-//                results << "test_computePlasticDeformationResidual (dMacroYielddPlasticGradientMicroDeformation) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-8 ) );
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMicroYielddPlasticGradientMicroDeformation" ][ i - 18 ],
-//                                            1e-5, 1e-8 ) ){
-//                std::cout << "i, j: " << i << "\n";
-//                std::cout << numericGradients[ "microYieldFunction" ][ 0 ] << "\n";
-//                std::cout << DEBUG[ "dMicroYielddPlasticGradientMicroDeformation" ][ i - 18 ] << "\n";
-//                results << "test_computePlasticDeformationResidual (dMicroYielddPlasticGradientMicroDeformation) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-8 ) );
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroGradientYielddPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMacroGradientYielddPlasticGradientMicroDeformation) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //            }
         }
 //
@@ -7969,31 +6415,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dElasticDeformationGradientdGammas) & False\n";
-//
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dElasticMicroDeformationdGammas) & False\n";
-//
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dElasticGradientMicroDeformationdGammas) & False\n";
-//
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            /*!=====================================
@@ -8003,39 +6437,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dElasticRightCauchyGreendGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dElasticMicroRightCauchyGreendGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dElasticPsidGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    std::cout << "i, j: " << i << ", " << j << "\n";
-//                    vectorTools::print( numericGradients[ "currentElasticGamma" ] );
-//                    results << "test_computePlasticDeformationResidual (dElasticGammadGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            /*!================
@@ -8045,28 +6465,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //            for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
 //                                                0.,
-//                                                1e-6, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dPK2StressdGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
 //                                                0.,
-//                                                1e-6, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dReferenceMicroStressdGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
 //                                                0.,
-//                                                1e-6, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dReferenceHigherOrderStressdGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-9 ) );
 //            }
 //
 //            /*!=================
@@ -8076,77 +6487,44 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //            if ( i == 45 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
 //                                                DEBUG[ "dCurrentMacroStrainISVdMacroGamma" ],
-//                                                1e-9, 1e-9 ) ){
-//                    vectorTools::print( numericGradients[ "currentMacroStrainISV" ] );
-//                    vectorTools::print( DEBUG[ "dCurrentMacroISVdMacroGamma" ] );
-//                    vectorTools::print( numericGradients[ "currentMacroStrainISV" ] - DEBUG[ "dCurrentMacroStrainISVdMacroGamma" ] );
-//                    results << "test_computePlasticDeformationResidual (dCurrentMacroStrainISVdMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMicroStrainISVdMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
 //                                                variableVector( 3, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMicroGradientStrainISVdMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            if ( i == 46 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMacroStrainISVdMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
 //                                                DEBUG[ "dCurrentMicroStrainISVdMicroGamma" ],
-//                                                1e-9, 1e-9 ) ){
-//                    std::cout << "ana: " << DEBUG[ "dCurrentMicroISVdMicroGamma" ][ 0 ] << "\n";
-//                    std::cout << "num: " << numericGradients[ "currentMicroStrainISV" ][ 0 ] << "\n";
-//                    std::cout << "err: " << DEBUG[ "dCurrentMicroStrainISVdMicroGamma" ][ 0 ] - numericGradients[ "currentMicroStrainISV" ][ 0 ] << "\n";
-//                    results << "test_computePlasticDeformationResidual (dCurrentMicroStrainISVdMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
 //                                                variableVector( 3, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMicroGradientStrainISVdMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            if ( i >= 47 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMacroStrainISVdMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMicroStrainISVdMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                for ( unsigned int j = 0; j < 3; j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ][ j ],
 //                                                    DEBUG[ "dCurrentMicroGradientStrainISVdMicroGradientGamma" ][ 3 * j + i - 47 ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dCurrentMicroGradientStrainISVdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -8157,74 +6535,44 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //            if ( i == 45 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
 //                                                DEBUG[ "dCurrentMacroCohesiondMacroGamma" ],
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
 //                                                variableVector( 3, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            if ( i == 46 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
 //                                                DEBUG[ "dCurrentMicroCohesiondMicroGamma" ],
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
 //                                                variableVector( 3, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            if ( i >= 47 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMacroCohesiondMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dCurrentMicroCohesiondMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                for ( unsigned int j = 0; j < 3; j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ][ j ],
 //                                                    DEBUG[ "dCurrentMicroGradientCohesiondMicroGradientGamma" ][ 3 * j + i - 47 ],
-//                                                    1e-9, 1e-9 ) ){
-//                        vectorTools::print( numericGradients[ "currentMicroGradientCohesion" ] );
-//                        vectorTools::print( DEBUG[ "dCurrentMicroGradientCohesiondMicroGradientGamma" ] );
-//                        vectorTools::print( numericGradients[ "currentMicroGradientCohesion" ] - DEBUG[ "dCurrentMicroGradientCohesiondMicroGradientGamma" ] );
-//                        results << "test_computePlasticDeformationResidual (dCurrentMicroGradientCohesiondMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -8235,28 +6583,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //            for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMacroFlowDirectiondGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMicroFlowDirectiondGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMicroGradientFlowDirectiondGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            /*!===========================
@@ -8268,28 +6607,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
 //                                                    DEBUG[ "dPlasticMacroVelocityGradientdMacroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dPlasticMacroVelocityGradientdMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dPlasticMicroVelocityGradientdMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dPlasticGradientMicroVelocityGradientdMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -8298,34 +6628,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
 //                                                    DEBUG[ "dPlasticMacroVelocityGradientdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-8 ) ){
-//                        std::cout << "num: " << numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ] << "\n";
-//                        std::cout << "ana: " << DEBUG[ "dPlasticMacroVelocityGradientdMicroGamma" ][ j ] << "\n";
-//                        std::cout << "err: " << numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ] - DEBUG[ "dPlasticMacroVelocityGradientdMicroGamma" ][ j ] << "\n";
-//                        results << "test_computePlasticDeformationResidual (dPlasticMacroVelocityGradientdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-8 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
 //                                                    DEBUG[ "dPlasticMicroVelocityGradientdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        std::cout << "num: " << numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ] << "\n";
-//                        std::cout << "ana: " << DEBUG[ "dPlasticMicroVelocityGradientdMicroGamma" ][ j ] << "\n";
-//                        std::cout << "err: " << numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ] - DEBUG[ "dPlasticMicroVelocityGradientdMicroGamma" ][ j ] << "\n";
-//                        results << "test_computePlasticDeformationResidual (dPlasticMicroVelocityGradientdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
 //                                                    DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dPlasticGradientMicroVelocityGradientdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -8334,31 +6649,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dPlasticMacroVelocityGradientdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dPlasticMicroVelocityGradientdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
 //                                                    DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGradientGamma" ][ 3 * j + i - 47 ],
-//                                                    1e-9, 1e-9 ) ){
-//                        std::cout << "num1: " << numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] << "\n";
-//                        std::cout << "ana1: " << DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGradientGamma" ][ 3 * j + i - 47 ] << "\n";
-//                        std::cout << "err1: " << numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] - DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGradientGamma" ][ 3 * j + i - 47 ] << "\n";
-//                        results << "test_computePlasticDeformationResidual (dPlasticGradientMicroVelocityGradientdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -8371,28 +6674,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticDeformationGradientdMacroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroVelocityGradientdMacroGamma & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dExpectedPlasticMicroDeformationdMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticGradientMicroDeformationdMacroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroDeformationdMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -8401,30 +6695,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticDeformationGradientdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroVelocityGradientdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticMicroDeformationdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dExpectedPlasticMicroDeformationdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticGradientMicroDeformationdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        std::cout << "numeric:  "; vectorTools::print( numericGradients[ "expectedPlasticGradientMicroDeformation" ] );
-//                        std::cout << "analytic: "; vectorTools::print( DEBUG[ "dExpectedPlasticGradientMicroDeformationdMicroGamma" ] );
-//                        results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroDeformationdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -8433,28 +6716,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroVelocityGradientdMicroGradientGamma & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dExpectedPlasticMicroDeformationdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticGradientMicroDeformationdMicroGradientGamma" ][ 3 * j + i - 47 ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual (dExpectedPlasticGradientMicroDeformationdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -8465,76 +6739,47 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 //            if ( i == 45 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ],
 //                                                DEBUG[ "dMacroYielddMacroGamma" ],
-//                                                1e-5, 1e-8 ) ){
-//                    std::cout << "numeric:  "; vectorTools::print( numericGradients[ "macroYieldFunction" ] );
-//                    std::cout << "analytic: "; vectorTools::print( DEBUG[ "dMacroYielddMacroGamma" ] );
-//                    results << "test_computePlasticDeformationResidual (dMacroYielddMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMicroYielddMacroMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                    0.,
-//                                                    1e-5, 1e-8 ) ){
-//                        results << "test_computePlasticDeformationResidual (dMacroGradientYielddMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-5, 1e-8 ) );
 //                }
 //            }
 //            else if ( i == 46 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ],
 //                                                variableVector( 1, 0. ),
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMacroYielddMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ],
 //                                                DEBUG[ "dMicroYielddMicroGamma" ],
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMicroYielddMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                    0.,
-//                                                    1e-5, 1e-8 ) ){
-//                        results << "test_computePlasticDeformationResidual (dMacroGradientYielddMicroStrainISV) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-5, 1e-8 ) );
 //                }
 //            }
 //            else if ( i >= 47 ){
 //
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ],
 //                                                variableVector( 1, 0. ),
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMacroYielddMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ],
 //                                                variableVector( 1, 0. ),
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual (dMicroYielddMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                    DEBUG[ "dMicroGradientYielddMicroGradientGamma" ][ 3 * ( i - 47 ) + j ],
-//                                                    1e-5, 1e-8 ) ){
-//                        results << "test_computePlasticDeformationResidual (dMacroGradientYielddMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-5, 1e-8 ) );
 //                }
 //            } 
 //        }
@@ -8551,16 +6796,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
         solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ], 1e-5, 1e-7 ) ){
-                std::cout << "i, j: " << j << ", " << i << "\n";
-                std::cout << "gradCol[ j ]: " << gradCol[ j ] << "\n";
-                std::cout << "jacobian[ j ][ i ]: " << jacobian[ j ][ i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - jacobian[ j ][ i ] << "\n";
-                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
-                std::cout << "jacobian:\n"; vectorTools::print( jacobian );
-                results << "test_computePlasticDeformationResidual (test 2) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ], 1e-5, 1e-7 ) );
         }
     }
 
@@ -8789,64 +7025,28 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
 #ifdef DEBUG_MODE
     //Check if the floatOuts are what is expected.
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 0 ], DEBUG[ "currentPK2Stress" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 0 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 0 ], DEBUG[ "currentPK2Stress" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 1 ], DEBUG[ "currentReferenceMicroStress" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 1 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 1 ], DEBUG[ "currentReferenceMicroStress" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 2 ], DEBUG[ "currentReferenceHigherOrderStress" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 2 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 2 ], DEBUG[ "currentReferenceHigherOrderStress" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 3 ], DEBUG[ "currentMacroStrainISV" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 3 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 3 ], DEBUG[ "currentMacroStrainISV" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 4 ], DEBUG[ "currentMicroStrainISV" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 4 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 4 ], DEBUG[ "currentMicroStrainISV" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 5 ], DEBUG[ "currentMicroGradientStrainISV" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 5 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 5 ], DEBUG[ "currentMicroGradientStrainISV" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 6 ], DEBUG[ "currentMacroCohesion" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 6 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 6 ], DEBUG[ "currentMacroCohesion" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 7 ], DEBUG[ "currentMicroCohesion" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 7 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 7 ], DEBUG[ "currentMicroCohesion" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 8 ], DEBUG[ "currentMicroGradientCohesion" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 8 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 8 ], DEBUG[ "currentMicroGradientCohesion" ] ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 9 ], DEBUG[ "currentElasticRightCauchyGreen" ] ) ){
-        results << "test_computePlasticDeformationResidual (floatOuts[ 9 ]) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( floatOuts[ 9 ], DEBUG[ "currentElasticRightCauchyGreen" ] ) );
 #endif
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( residualAnswer, residual, 1e-5 ) ){
-        std::cout << "residual:\n"; vectorTools::print( residual );
-        std::cout << "error:\n";
-        vectorTools::print( residualAnswer - residual );
-        results << "test_computePlasticDeformationResidual2 (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( residualAnswer, residual, 1e-5 ) );
 
     //Test the plastic deformation jacobians
     constantType eps = 1e-6;
@@ -8919,28 +7119,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dElasticDeformationGradientdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticDeformationGradientdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroDeformationdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticGradientMicroDeformationdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGradientMicroDeformationdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!=====================================
@@ -8950,37 +7141,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
                                                 DEBUG[ "dElasticRightCauchyGreendPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
                                                 DEBUG[ "dElasticPsidPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticPsidPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
                                                 DEBUG[ "dElasticGammadPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGammadPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!================
@@ -8990,28 +7169,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
                                                 DEBUG[ "dPK2StressdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPK2StressdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
                                                 DEBUG[ "dReferenceMicroStressdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
                                                 DEBUG[ "dReferenceHigherOrderStressdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             /*!=================
@@ -9019,24 +7189,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             ==================*/
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!================
             | Cohesion values |
@@ -9044,24 +7205,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondPlasticDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*=================
             | Flow Directions |
@@ -9070,28 +7222,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
                                                 DEBUG[ "dMacroFlowDirectiondPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMacroFlowDirectiondPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroFlowDirectiondPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroFlowDirectiondPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroGradientFlowDirectiondPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-8, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroGradientFlowDirectiondPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-8, 1e-8 ) );
             }
 
             /*!===========================
@@ -9101,30 +7244,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroVelocityGradientdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-8 ) ){
-                    std::cout << "ana: " << DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient" ][ 9 * j + i ] << "\n";
-                    std::cout << "res: " << numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] << "\n";
-                    results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-8 ) );
             }
 
             /*!======================================
@@ -9134,28 +7266,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticMicroDeformationdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdPlasticDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient ) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
 //            /*!====================
@@ -9164,25 +7287,16 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMacroYielddPlasticDeformationGradient" ][ i ],
-//                                            1e-5, 1e-8 ) ){
-//                results << "test_computePlasticDeformationResidual2 (dMacroYielddPlasticDeformationGradient) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-8 ) );
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMicroYielddPlasticDeformationGradient" ][ i ],
-//                                            1e-5, 1e-8 ) ){
-//                results << "test_computePlasticDeformationResidual2 (dMicroYielddPlasticDeformationGradient) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-8 ) );
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroGradientYielddPlasticDeformationGradient" ][ 9 * j + i ],
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroGradientYielddPlasticDeformationGradient ) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //            }
         }
 
@@ -9195,31 +7309,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticDeformationGradientdPlasticMicroDeformation) & False\n";
-
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroDeformationdPlasticMicroDeformation) & False\n";
-
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticGradientMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGradientMicroDeformationdPlasticMicroDeformation) & False\n";
-
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!=====================================
@@ -9229,39 +7331,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
                                                 DEBUG[ "dElasticMicroRightCauchyGreendPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
                                                 DEBUG[ "dElasticPsidPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticPsidPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
                                                 DEBUG[ "dElasticGammadPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    std::cout << "i, j: " << i << ", " << j << "\n";
-                    vectorTools::print( numericGradients[ "currentElasticGamma" ] );
-                    results << "test_computePlasticDeformationResidual2 (dElasticGammadPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!================
@@ -9271,28 +7359,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
                                                 DEBUG[ "dPK2StressdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPK2StressdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
                                                 DEBUG[ "dReferenceMicroStressdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
                                                 DEBUG[ "dReferenceHigherOrderStressdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-6, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-8 ) );
             }
 
             /*!=================
@@ -9300,24 +7379,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             ==================*/
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!================
             | Cohesion values |
@@ -9325,24 +7395,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondPlasticMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*=================
             | Flow Directions |
@@ -9351,28 +7412,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
                                                 DEBUG[ "dMacroFlowDirectiondPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMacroFlowDirectiondPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroFlowDirectiondPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroFlowDirectiondPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroGradientFlowDirectiondPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-8, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroGradientFlowDirectiondPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-8, 1e-8 ) );
             }
 
             /*!===========================
@@ -9382,30 +7434,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroVelocityGradientdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    std::cout << "numeric: "; vectorTools::print( numericGradients[ "currentPlasticMicroVelocityGradient" ] );
-                    std::cout << "analytic: "; vectorTools::print( vectorTools::inflate( DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation" ], 27, 9 ) );
-                    results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!======================================
@@ -9415,30 +7456,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-8 ) ){
-                    std::cout << "num: " << numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ] << "\n";
-                    std::cout << "ana: " << DEBUG[ "dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-8 ) );
             }
 
 //            /*!====================
@@ -9447,25 +7477,16 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMacroYielddPlasticMicroDeformation" ][ i - 9 ],
-//                                            1e-5, 1e-8 ) ){
-//                results << "test_computePlasticDeformationResidual2 (dMacroYielddPlasticMicroDeformation) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-8 ) );
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMicroYielddPlasticMicroDeformation" ][ i - 9 ],
-//                                            1e-5, 1e-8 ) ){
-//                results << "test_computePlasticDeformationResidual2 (dMicroYielddPlasticMicroDeformation) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-8 ) );
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroGradientYielddPlasticMicroDeformation" ][ 9 * j + i - 9 ],
-//                                                1e-5, 1e-7 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMacroGradientYielddPlasticMicroDeformation) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-7 ) );
 //            }
         }
 
@@ -9478,29 +7499,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticDeformationGradientdPlasticGradientMicroDeformation) & False\n";
-
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroDeformationdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticGradientMicroDeformationdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGradientMicroDeformationdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!=====================================
@@ -9510,37 +7521,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticPsidPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
                                                 DEBUG[ "dElasticGammadPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGammadPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!================
@@ -9550,32 +7549,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
                                                 DEBUG[ "dPK2StressdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-5, 1e-7 ) ){
-                    std::cout << "row, col: " << j << ", " << i - 18 << "\n";
-                    std::cout << numericGradients[ "currentPK2Stress" ][ j ] - DEBUG[ "dPK2StressdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ] << "\n";
-                    vectorTools::print( numericGradients[ "currentPK2Stress" ] );
-                    vectorTools::print( vectorTools::inflate( DEBUG[ "dPK2StressdPlasticGradientMicroDeformation" ], 9, 27 ) );
-                    results << "test_computePlasticDeformationResidual2 (dPK2StressdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-5, 1e-7 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
                                                 DEBUG[ "dReferenceMicroStressdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-5, 1e-7 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-5, 1e-7 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
                                                 DEBUG[ "dReferenceHigherOrderStressdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-5, 1e-7 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-5, 1e-7 ) );
             }
 
             /*!=================
@@ -9584,24 +7570,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!================
             | Cohesion values |
@@ -9609,24 +7586,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondPlasticGradientMicroDeformation) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*=================
             | Flow Directions |
@@ -9635,28 +7603,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
                                                 DEBUG[ "dMacroFlowDirectiondPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-6, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMacroFlowDirectiondPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroFlowDirectiondPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-6, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroFlowDirectiondPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroGradientFlowDirectiondPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-6, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroGradientFlowDirectiondPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             /*!===========================
@@ -9666,31 +7625,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-7 ) ){
-                    std::cout << "ana: " << DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ] << "\n";
-                    std::cout << "num: " << numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] << "\n";
-                    std::cout << "error: " << DEBUG[ "dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ] - numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] << "\n";
-                    results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-7 ) );
             }
 
             /*!======================================
@@ -9700,28 +7647,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-8 ) );
             }
 
 //            /*!====================
@@ -9730,31 +7668,16 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMacroYielddPlasticGradientMicroDeformation" ][ i - 18 ],
-//                                            1e-5, 1e-7 ) ){
-//                std::cout << numericGradients[ "macroYieldFunction" ][ 0 ] << "\n";
-//                std::cout << DEBUG[ "dMacroYielddPlasticGradientMicroDeformation" ][ i - 18 ] << "\n";
-//                std::cout << "error: " << numericGradients[ "macroYieldFunction" ][ 0 ] - DEBUG[ "dMacroYielddPlasticGradientMicroDeformation" ][ i - 18 ] << "\n";
-//                results << "test_computePlasticDeformationResidual2 (dMacroYielddPlasticGradientMicroDeformation) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-7 ) );
 //
 //            BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ 0 ],
 //                                            DEBUG[ "dMicroYielddPlasticGradientMicroDeformation" ][ i - 18 ],
-//                                            1e-5, 1e-7 ) ){
-//                std::cout << "i, j: " << i << "\n";
-//                std::cout << numericGradients[ "microYieldFunction" ][ 0 ] << "\n";
-//                std::cout << DEBUG[ "dMicroYielddPlasticGradientMicroDeformation" ][ i - 18 ] << "\n";
-//                results << "test_computePlasticDeformationResidual2 (dMicroYielddPlasticGradientMicroDeformation) & False\n";
-//                return 1;
-//            }
+//                                            1e-5, 1e-7 ) );
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroGradientYielddPlasticGradientMicroDeformation" ][ 27 * j + i - 18 ],
-//                                                1e-5, 1e-7 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMacroGradientYielddPlasticGradientMicroDeformation) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-7 ) );
 //            }
         }
 
@@ -9768,31 +7691,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dElasticDeformationGradientdGammas) & False\n";
-//
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dElasticMicroDeformationdGammas) & False\n";
-//
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dElasticGradientMicroDeformationdGammas) & False\n";
-//
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            /*!=====================================
@@ -9802,39 +7713,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dElasticPsidGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    std::cout << "i, j: " << i << ", " << j << "\n";
-//                    vectorTools::print( numericGradients[ "currentElasticGamma" ] );
-//                    results << "test_computePlasticDeformationResidual2 (dElasticGammadGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            /*!================
@@ -9844,28 +7741,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //            for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
 //                                                0.,
-//                                                1e-6, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dPK2StressdGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
 //                                                0.,
-//                                                1e-6, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
 //                                                0.,
-//                                                1e-6, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-9 ) );
 //            }
 //
 //            /*!=================
@@ -9875,77 +7763,44 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //            if ( i == 45 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
 //                                                DEBUG[ "dCurrentMacroStrainISVdMacroGamma" ],
-//                                                1e-9, 1e-9 ) ){
-//                    vectorTools::print( numericGradients[ "currentMacroStrainISV" ] );
-//                    vectorTools::print( DEBUG[ "dCurrentMacroISVdMacroGamma" ] );
-//                    vectorTools::print( numericGradients[ "currentMacroStrainISV" ] - DEBUG[ "dCurrentMacroStrainISVdMacroGamma" ] );
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMacroStrainISVdMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroStrainISVdMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
 //                                                variableVector( 3, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientStrainISVdMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            if ( i == 46 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMacroStrainISVdMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
 //                                                DEBUG[ "dCurrentMicroStrainISVdMicroGamma" ],
-//                                                1e-9, 1e-9 ) ){
-//                    std::cout << "ana: " << DEBUG[ "dCurrentMicroISVdMicroGamma" ][ 0 ] << "\n";
-//                    std::cout << "num: " << numericGradients[ "currentMicroStrainISV" ][ 0 ] << "\n";
-//                    std::cout << "err: " << DEBUG[ "dCurrentMicroStrainISVdMicroGamma" ][ 0 ] - numericGradients[ "currentMicroStrainISV" ][ 0 ] << "\n";
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroStrainISVdMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
 //                                                variableVector( 3, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientStrainISVdMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            if ( i >= 47 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMacroStrainISVdMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroStrainISVdMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                for ( unsigned int j = 0; j < 3; j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ][ j ],
 //                                                    DEBUG[ "dCurrentMicroGradientStrainISVdMicroGradientGamma" ][ 3 * j + i - 47 ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientStrainISVdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -9956,74 +7811,44 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //            if ( i == 45 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
 //                                                DEBUG[ "dCurrentMacroCohesiondMacroGamma" ],
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
 //                                                variableVector( 3, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            if ( i == 46 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
 //                                                DEBUG[ "dCurrentMicroCohesiondMicroGamma" ],
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
 //                                                variableVector( 3, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            if ( i >= 47 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //    
 //                for ( unsigned int j = 0; j < 3; j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ][ j ],
 //                                                    DEBUG[ "dCurrentMicroGradientCohesiondMicroGradientGamma" ][ 3 * j + i - 47 ],
-//                                                    1e-9, 1e-9 ) ){
-//                        vectorTools::print( numericGradients[ "currentMicroGradientCohesion" ] );
-//                        vectorTools::print( DEBUG[ "dCurrentMicroGradientCohesiondMicroGradientGamma" ] );
-//                        vectorTools::print( numericGradients[ "currentMicroGradientCohesion" ] - DEBUG[ "dCurrentMicroGradientCohesiondMicroGradientGamma" ] );
-//                        results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -10034,28 +7859,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //            for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMacroFlowDirectiondGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroFlowDirectiondGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
 //                                                0.,
-//                                                1e-9, 1e-9 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroGradientFlowDirectiondGammas) & False\n";
-//                    return 1;
-//                }
+//                                                1e-9, 1e-9 ) );
 //            }
 //
 //            /*!===========================
@@ -10067,28 +7883,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
 //                                                    DEBUG[ "dPlasticMacroVelocityGradientdMacroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -10097,34 +7904,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
 //                                                    DEBUG[ "dPlasticMacroVelocityGradientdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-8 ) ){
-//                        std::cout << "num: " << numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ] << "\n";
-//                        std::cout << "ana: " << DEBUG[ "dPlasticMacroVelocityGradientdMicroGamma" ][ j ] << "\n";
-//                        std::cout << "err: " << numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ] - DEBUG[ "dPlasticMacroVelocityGradientdMicroGamma" ][ j ] << "\n";
-//                        results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-8 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
 //                                                    DEBUG[ "dPlasticMicroVelocityGradientdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        std::cout << "num: " << numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ] << "\n";
-//                        std::cout << "ana: " << DEBUG[ "dPlasticMicroVelocityGradientdMicroGamma" ][ j ] << "\n";
-//                        std::cout << "err: " << numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ] - DEBUG[ "dPlasticMicroVelocityGradientdMicroGamma" ][ j ] << "\n";
-//                        results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
 //                                                    DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -10133,31 +7925,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
 //                                                    DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGradientGamma" ][ 3 * j + i - 47 ],
-//                                                    1e-9, 1e-9 ) ){
-//                        std::cout << "num1: " << numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] << "\n";
-//                        std::cout << "ana1: " << DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGradientGamma" ][ 3 * j + i - 47 ] << "\n";
-//                        std::cout << "err1: " << numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] - DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGradientGamma" ][ 3 * j + i - 47 ] << "\n";
-//                        results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -10170,28 +7950,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticDeformationGradientdMacroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroVelocityGradientdMacroGamma & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticGradientMicroDeformationdMacroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -10200,30 +7971,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticDeformationGradientdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroVelocityGradientdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticMicroDeformationdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticGradientMicroDeformationdMicroGamma" ][ j ],
-//                                                    1e-9, 1e-9 ) ){
-//                        std::cout << "numeric:  "; vectorTools::print( numericGradients[ "expectedPlasticGradientMicroDeformation" ] );
-//                        std::cout << "analytic: "; vectorTools::print( DEBUG[ "dExpectedPlasticGradientMicroDeformationdMicroGamma" ] );
-//                        results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdMicroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -10232,28 +7992,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroVelocityGradientdMicroGradientGamma & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
 //                                                    0.,
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
 //                                                    DEBUG[ "dExpectedPlasticGradientMicroDeformationdMicroGradientGamma" ][ 3 * j + i - 47 ],
-//                                                    1e-9, 1e-9 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-9, 1e-9 ) );
 //                }
 //            }
 //
@@ -10264,76 +8015,47 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //            if ( i == 45 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ],
 //                                                DEBUG[ "dMacroYielddMacroGamma" ],
-//                                                1e-5, 1e-8 ) ){
-//                    std::cout << "numeric:  "; vectorTools::print( numericGradients[ "macroYieldFunction" ] );
-//                    std::cout << "analytic: "; vectorTools::print( DEBUG[ "dMacroYielddMacroGamma" ] );
-//                    results << "test_computePlasticDeformationResidual2 (dMacroYielddMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ],
 //                                                variableVector( 1, 0 ),
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroYielddMacroMacroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                    0.,
-//                                                    1e-5, 1e-8 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dMacroGradientYielddMacroGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-5, 1e-8 ) );
 //                }
 //            }
 //            else if ( i == 46 ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ],
 //                                                variableVector( 1, 0. ),
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMacroYielddMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ],
 //                                                DEBUG[ "dMicroYielddMicroGamma" ],
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroYielddMicroGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                    0.,
-//                                                    1e-5, 1e-8 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dMacroGradientYielddMicroStrainISV) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-5, 1e-8 ) );
 //                }
 //            }
 //            else if ( i >= 47 ){
 //
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ],
 //                                                variableVector( 1, 0. ),
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMacroYielddMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ],
 //                                                variableVector( 1, 0. ),
-//                                                1e-5, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroYielddMicroGradientGamma) & False\n";
-//                    return 1;
-//                }
+//                                                1e-5, 1e-8 ) );
 //    
 //                for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                    BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                    DEBUG[ "dMicroGradientYielddMicroGradientGamma" ][ 3 * ( i - 47 ) + j ],
-//                                                    1e-5, 1e-8 ) ){
-//                        results << "test_computePlasticDeformationResidual2 (dMacroGradientYielddMicroGradientGamma) & False\n";
-//                        return 1;
-//                    }
+//                                                    1e-5, 1e-8 ) );
 //                }
 //            } 
 //        }
@@ -10350,40 +8072,21 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ], 1e-5, 1e-7 ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                std::cout << "num: " << gradCol[ j ] << "\n";
-                std::cout << "ana: " << jacobian[ j ][ i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - jacobian[ j ][ i ] << "\n";
-                std::cout << "gradCol:\n"; vectorTools::print( gradCol );
-                std::cout << "jacobian:\n"; vectorTools::print( jacobian );
-                results << "test_computePlasticDeformationResidual2 (test 2) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ], 1e-5, 1e-7 ) );
         }
 
         //Test the partial derivative of the stress measures w.r.t. the plastic fundamental deformation measures
         gradCol = vectorTools::appendVectors( { fO_P[ 0 ] - fO_M[ 0 ], fO_P[ 1 ] - fO_M[ 1 ], fO_P[ 2 ] - fO_M[ 2 ] } ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 11 ][ 45 * j + i ], 1e-5 ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                std::cout << "num:   " << gradCol[ j ] << "\n";
-                std::cout << "ana:   " << floatOuts[ 6 ][ 45 * j + i ] << "\n";
-                std::cout << "error: " << gradCol[ j ] - floatOuts[ 11 ][ 45 * j + i ] << "\n";
-                results << "test_computePlasticDeformationResidual2 (test 3) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 11 ][ 45 * j + i ], 1e-5 ) );
         }
 
         //Test the partial derivative of the elastic Right Cauchy Green deformation tensor w.r.t. the plastic deformation gradient
         if ( i < 9 ){
             gradCol = ( fO_P[ 9 ] - fO_M[ 9 ] ) / ( 2 * delta[ i ] );
             for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-                BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 10 ][ 9 * j + i ] ) ){
-                    results << "test_computePlasticDeformationResidual2 (test 4) & False\n";
-                    return 1;
-                }
+                BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 10 ][ 9 * j + i ] ) );
             }
         }
     }
@@ -10490,28 +8193,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dElasticDeformationGradientdDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticDeformationGradientdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroDeformationdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGradientMicroDeformationdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!=========================================
@@ -10521,37 +8215,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
                                                 DEBUG[ "dElasticRightCauchyGreendDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
                                                 DEBUG[ "dElasticPsidDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticPsidDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
                                                 DEBUG[ "dElasticGammadDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGammadDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!================
@@ -10561,28 +8243,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
                                                 DEBUG[ "dPK2StressdDeformationGradient" ][ 9 * j + i ],
-                                                1e-6, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPK2StressdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
                                                 DEBUG[ "dReferenceMicroStressdDeformationGradient" ][ 9 * j + i ],
-                                                1e-6, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
                                                 DEBUG[ "dReferenceHigherOrderStressdDeformationGradient" ][ 9 * j + i ],
-                                                1e-6, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             /*!=================
@@ -10591,24 +8264,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!==============
             | The Cohesions |
@@ -10616,21 +8280,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             solverTools::floatVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMacroCohesiondDeformationGradient) & False\n";
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             solverTools::floatVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMicroCohesiondDeformationGradient) & False\n";
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                             solverTools::floatVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMicroGradientCohesiondDeformationGradient) & False\n";
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!====================
             | The Flow Directions |
@@ -10639,28 +8297,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
                                                 DEBUG[ "dMacroFlowDirectiondDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMacroFlowDirectiondDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroFlowDirectiondDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroFlowDirectiondDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroGradientFlowDirectiondDeformationGradient" ][ 9 * j + i ],
-                                                1e-8, 1e-8 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroGradientFlowDirectiondDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-8, 1e-8 ) );
             }
 
             /*!===========================
@@ -10670,28 +8319,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroVelocityGradientdDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroGradientVelocityGradientdDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroGradientVelocityGradientdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!==============================
@@ -10701,28 +8341,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticDeformationGradientdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticMicroDeformationdDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdDeformationGradient" ][ 9 * j + i ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
 //            /*!====================
@@ -10732,28 +8363,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //            for ( unsigned int j = 0; j < numericGradients[ "macroYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ j ],
 //                                                DEBUG[ "dMacroYielddDeformationGradient" ][ 9 * j + i ],
-//                                                1e-6, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMacroYielddDeformationGradient) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-8 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroYielddDeformationGradient" ][ 9 * j + i ],
-//                                                1e-6, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroYielddDeformationGradient) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-8 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroGradientYielddDeformationGradient" ][ 9 * j + i ],
-//                                                1e-6, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroGradientYielddDeformationGradient) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-8 ) );
 //            }
         }
 
@@ -10766,28 +8388,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticDeformationGradientdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticMicroDeformationdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroDeformationdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGradientMicroDeformationdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!=========================================
@@ -10797,37 +8410,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
                                                 DEBUG[ "dElasticMicroRightCauchyGreendMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
                                                 DEBUG[ "dElasticPsidMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticPsidMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
                                                 DEBUG[ "dElasticGammadMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGammadMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!================
@@ -10837,40 +8438,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
                                                 DEBUG[ "dPK2StressdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-6, 1e-9 ) ){
-                    std::cout << "i, j: " << i << ", " << j << "\n";
-                    std::cout << "num:   " << numericGradients[ "currentPK2Stress" ][ j ] << "\n";
-                    std::cout << "ana:   " << DEBUG[ "dPK2StressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
-                    std::cout << "error: " << numericGradients[ "currentPK2Stress" ][ j ] - DEBUG[ "dPK2StressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
-                    results << "test_computePlasticDeformationResidual2 (dPK2StressdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
                                                 DEBUG[ "dReferenceMicroStressdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-6, 1e-9 ) ){
-                    std::cout << "i, j: " << i << ", " << j << "\n";
-                    std::cout << "num:   " << numericGradients[ "currentReferenceMicroStress" ][ j ] << "\n";
-                    std::cout << "ana:   " << DEBUG[ "dReferenceMicroStressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
-                    std::cout << "error: " << numericGradients[ "currentReferenceMicroStress" ][ j ] - DEBUG[ "dReferenceMicroStressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
-                    results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
                                                 DEBUG[ "dReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-6, 1e-9 ) ){
-                    std::cout << "i, j: " << i << ", " << j << "\n";
-                    std::cout << "num:   " << numericGradients[ "currentReferenceHigherOrderStress" ][ j ] << "\n";
-                    std::cout << "ana:   " << DEBUG[ "dReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
-                    std::cout << "error: " << numericGradients[ "currentReferenceHigherOrderStress" ][ j ] - DEBUG[ "dReferenceHigherOrderStressdMicroDeformation" ][ 9 * j + i - 9 ] << "\n";
-                    results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-6, 1e-9 ) );
             }
 
             /*!=================
@@ -10879,24 +8459,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!==============
             | The Cohesions |
@@ -10904,21 +8475,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             solverTools::floatVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMacroCohesiondMicroDeformation) & False\n";
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             solverTools::floatVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMicroCohesiondMicroDeformation) & False\n";
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                             solverTools::floatVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMicroGradientCohesiondMicroDeformation) & False\n";
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!====================
             | The Flow Directions |
@@ -10927,28 +8492,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
                                                 DEBUG[ "dMacroFlowDirectiondMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMacroFlowDirectiondMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroFlowDirectiondMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroFlowDirectiondMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroGradientFlowDirectiondMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroGradientFlowDirectiondMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!===========================
@@ -10958,28 +8514,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroVelocityGradientdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroGradientVelocityGradientdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!==============================
@@ -10989,28 +8536,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticDeformationGradientdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticMicroDeformationdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdMicroDeformation" ][ 9 * j + i - 9 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
 //            /*!====================
@@ -11020,28 +8558,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //            for ( unsigned int j = 0; j < numericGradients[ "macroYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ j ],
 //                                                DEBUG[ "dMacroYielddMicroDeformation" ][ 9 * j + i - 9 ],
-//                                                1e-6, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMacroYielddMicroDeformation) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-8 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroYielddMicroDeformation" ][ 9 * j + i - 9 ],
-//                                                1e-6, 1e-8 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroYielddMicroDeformation) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-8 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroGradientYielddMicroDeformation" ][ 9 * j + i - 9 ],
-//                                                1e-6, 1e-7 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroGradientYielddMicroDeformation) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-7 ) );
 //            }
         }
 
@@ -11054,28 +8583,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticDeformationGradientdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroDeformationdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dElasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGradientMicroDeformationdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!=========================================
@@ -11085,37 +8605,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendGradientDeformationGradient) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticPsidGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
                                                 DEBUG[ "dElasticGammadGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dElasticGammadGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!================
@@ -11125,28 +8633,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
                                                 DEBUG[ "dPK2StressdGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-5, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPK2StressdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-5, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
                                                 DEBUG[ "dReferenceMicroStressdGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-5, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-5, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
                                                 DEBUG[ "dReferenceHigherOrderStressdGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-5, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-5, 1e-9 ) );
             }
 
             /*!=================
@@ -11155,24 +8654,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondDeformationGradient) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!==============
             | The Cohesions |
@@ -11180,21 +8670,15 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             solverTools::floatVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMacroCohesiondGradientMicroDeformation) & False\n";
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             solverTools::floatVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMicroCohesiondGradientMicroDeformation) & False\n";
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                             solverTools::floatVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMicroGradientCohesiondGradientMicroDeformation) & False\n";
-            }
+                                            1e-9, 1e-9 ) );
 
             /*!====================
             | The Flow Directions |
@@ -11203,28 +8687,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
                                                 DEBUG[ "dMacroFlowDirectiondGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMacroFlowDirectiondGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroFlowDirectiondGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroFlowDirectiondGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
                                                 DEBUG[ "dMicroGradientFlowDirectiondGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-8, 1e-7 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dMicroGradientFlowDirectiondGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-8, 1e-7 ) );
             }
 
             /*!===========================
@@ -11234,28 +8709,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroVelocityGradientdGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroGradientVelocityGradientdGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroGradientVelocityGradientdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             /*!==============================
@@ -11265,28 +8731,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticDeformationGradientdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticMicroDeformationdGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation" ][ 27 * j + i - 18 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
 //            /*!====================
@@ -11296,28 +8753,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //            for ( unsigned int j = 0; j < numericGradients[ "macroYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "macroYieldFunction" ][ j ],
 //                                                DEBUG[ "dMacroYielddGradientMicroDeformation" ][ 27 * j + i - 18 ],
-//                                                1e-6, 1e-7 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMacroYielddGradientMicroDeformation) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-7 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroYielddGradientMicroDeformation" ][ 27 * j + i - 18 ],
-//                                                1e-6, 1e-7 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroYielddGradientMicroDeformation) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-7 ) );
 //            }
 //
 //            for ( unsigned int j = 0; j < numericGradients[ "microGradientYieldFunction" ].size(); j++ ){
 //                BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "microGradientYieldFunction" ][ j ],
 //                                                DEBUG[ "dMicroGradientYielddGradientMicroDeformation" ][ 27 * j + i - 18 ],
-//                                                1e-6, 1e-7 ) ){
-//                    results << "test_computePlasticDeformationResidual2 (dMicroGradientYielddGradientMicroDeformation) & False\n";
-//                    return 1;
-//                }
+//                                                1e-6, 1e-7 ) );
 //            }
         }
 
@@ -11331,33 +8779,21 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 13 ][ 45 * j + i ] ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                std::cout << "num : " << gradCol[ j ] << "\n";
-                std::cout << "ana : " << floatOuts[ 13 ][ 45 * j + i ] << "\n";
-                results << "test_computePlasticDeformationResidual2 (test 5) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 13 ][ 45 * j + i ] ) );
         }
 
         //Test the partial derivative of the stress measures w.r.t. the fundamental deformation measures
         gradCol = vectorTools::appendVectors( { fO_P[ 0 ] - fO_M[ 0 ], fO_P[ 1 ] - fO_M[ 1 ], fO_P[ 2 ] - fO_M[ 2 ] } ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 12 ][ 45 * j + i ], 1e-5 ) ){
-                results << "test_computePlasticDeformationResidual2 (test 6) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 12 ][ 45 * j + i ], 1e-5 ) );
         }
 
         //Test the partial derivative of the Elastic Right Cauchy Green deformation tensor w.r.t. the deformation gradient
         if ( i < 9 ) {
             gradCol = ( fO_P[ 9 ] - fO_M[ 9 ] ) / ( 2 * delta[ i ] );
             for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-                BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 14 ][ 9 * j + i ] ) ){
-                    results << "test_computePlasticDeformationResidual (test 7) & False\n";
-                    return 1;
-                }
+                BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 14 ][ 9 * j + i ] ) );
             }
         }
     }
@@ -11465,31 +8901,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         for ( unsigned int j = 0; j < numericGradients[ "currentElasticDeformationGradient" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticDeformationGradient" ][ j ],
                                             0.,
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dElasticDeformationGradientdGammas) & False\n";
-  
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
   
         for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroDeformation" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroDeformation" ][ j ],
                                             0.,
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dElasticMicroDeformationdGammas) & False\n";
-  
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
   
         for ( unsigned int j = 0; j < numericGradients[ "currentElasticGradientMicroDeformation" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGradientMicroDeformation" ][ j ],
                                             0.,
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dElasticGradientMicroDeformationdGammas) & False\n";
-  
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
 
         /*!=====================================
@@ -11499,39 +8923,25 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
                                             0.,
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dElasticRightCauchyGreendGammas) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
   
         for ( unsigned int j = 0; j < numericGradients[ "currentElasticMicroRightCauchyGreen" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticMicroRightCauchyGreen" ][ j ],
                                             0.,
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dElasticMicroRightCauchyGreendGammas) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
   
         for ( unsigned int j = 0; j < numericGradients[ "currentElasticPsi" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticPsi" ][ j ],
                                             0.,
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dElasticPsidGammas) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
   
         for ( unsigned int j = 0; j < numericGradients[ "currentElasticGamma" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticGamma" ][ j ],
                                             0.,
-                                            1e-9, 1e-9 ) ){
-                std::cout << "i, j: " << i << ", " << j << "\n";
-                vectorTools::print( numericGradients[ "currentElasticGamma" ] );
-                results << "test_computePlasticDeformationResidual2 (dElasticGammadGammas) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
 
         /*!================
@@ -11541,28 +8951,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         for ( unsigned int j = 0; j < numericGradients[ "currentPK2Stress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPK2Stress" ][ j ],
                                             0.,
-                                            1e-6, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dPK2StressdGammas) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-9 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "currentReferenceMicroStress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceMicroStress" ][ j ],
                                             0.,
-                                            1e-6, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dReferenceMicroStressdGammas) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-9 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "currentReferenceHigherOrderStress" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentReferenceHigherOrderStress" ][ j ],
                                             0.,
-                                            1e-6, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dReferenceHigherOrderStressdGammas) & False\n";
-                return 1;
-            }
+                                            1e-6, 1e-9 ) );
         }
 
         /*!=================
@@ -11572,77 +8973,44 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         if ( i == 0 ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             DEBUG[ "dCurrentMacroStrainISVdMacroGamma" ],
-                                            1e-9, 1e-9 ) ){
-                vectorTools::print( numericGradients[ "currentMacroStrainISV" ] );
-                vectorTools::print( DEBUG[ "dCurrentMacroISVdMacroGamma" ] );
-                vectorTools::print( numericGradients[ "currentMacroStrainISV" ] - DEBUG[ "dCurrentMacroStrainISVdMacroGamma" ] );
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroStrainISVdMacroGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroStrainISVdMacroGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientStrainISVdMacroGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
 
         if ( i == 1 ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroStrainISVdMicroGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             DEBUG[ "dCurrentMicroStrainISVdMicroGamma" ],
-                                            1e-9, 1e-9 ) ){
-                std::cout << "ana: " << DEBUG[ "dCurrentMicroISVdMicroGamma" ][ 0 ] << "\n";
-                std::cout << "num: " << numericGradients[ "currentMicroStrainISV" ][ 0 ] << "\n";
-                std::cout << "err: " << DEBUG[ "dCurrentMicroStrainISVdMicroGamma" ][ 0 ] - numericGradients[ "currentMicroStrainISV" ][ 0 ] << "\n";
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroStrainISVdMicroGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientStrainISVdMicroGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
 
         if ( i >= 2 ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroStrainISVdMicroGradientGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroStrainISV" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroStrainISVdMicroGradientGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             for ( unsigned int j = 0; j < 3; j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientStrainISV" ][ j ],
                                                 DEBUG[ "dCurrentMicroGradientStrainISVdMicroGradientGamma" ][ 3 * j + i - 2 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientStrainISVdMicroGradientGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
         }
 
@@ -11653,74 +9021,44 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         if ( i == 0 ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             DEBUG[ "dCurrentMacroCohesiondMacroGamma" ],
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondMacroGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondMacroGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                             variableVector( 3, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondMacroGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
 
         if ( i == 1 ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondMicroGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                                 DEBUG[ "dCurrentMicroCohesiondMicroGamma" ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondMicroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
     
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ],
                                                 variableVector( 3, 0 ),
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondMicroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
         if ( i >= 2 ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMacroCohesiondMicroGradientGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroCohesion" ],
                                             variableVector( 1, 0 ),
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dCurrentMicroCohesiondMicroGradientGamma) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
 
             for ( unsigned int j = 0; j < 3; j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientCohesion" ][ j ],
                                                 DEBUG[ "dCurrentMicroGradientCohesiondMicroGradientGamma" ][ 3 * j + i - 2 ],
-                                                1e-9, 1e-9 ) ){
-                    vectorTools::print( numericGradients[ "currentMicroGradientCohesion" ] );
-                    vectorTools::print( DEBUG[ "dCurrentMicroGradientCohesiondMicroGradientGamma" ] );
-                    vectorTools::print( numericGradients[ "currentMicroGradientCohesion" ] - DEBUG[ "dCurrentMicroGradientCohesiondMicroGradientGamma" ] );
-                    results << "test_computePlasticDeformationResidual2 (dCurrentMicroGradientCohesiondMicroGradientGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
         }
 
@@ -11731,28 +9069,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         for ( unsigned int j = 0; j < numericGradients[ "currentMacroFlowDirection" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMacroFlowDirection" ][ j ],
                                             0.,
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMacroFlowDirectiondGammas) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "currentMicroFlowDirection" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroFlowDirection" ][ j ],
                                             0.,
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMicroFlowDirectiondGammas) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "currentMicroGradientFlowDirection" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentMicroGradientFlowDirection" ][ j ],
                                             0.,
-                                            1e-9, 1e-9 ) ){
-                results << "test_computePlasticDeformationResidual2 (dMicroGradientFlowDirectiondGammas) & False\n";
-                return 1;
-            }
+                                            1e-9, 1e-9 ) );
         }
 
         /*!===========================
@@ -11764,28 +9093,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdMacroGamma" ][ j ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdMacroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdMacroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdMacroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
         }
 
@@ -11794,34 +9114,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMacroVelocityGradientdMicroGamma" ][ j ],
-                                                1e-9, 1e-8 ) ){
-                    std::cout << "num: " << numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ] << "\n";
-                    std::cout << "ana: " << DEBUG[ "dPlasticMacroVelocityGradientdMicroGamma" ][ j ] << "\n";
-                    std::cout << "err: " << numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ] - DEBUG[ "dPlasticMacroVelocityGradientdMicroGamma" ][ j ] << "\n";
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdMicroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-8 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroVelocityGradientdMicroGamma" ][ j ],
-                                                1e-9, 1e-9 ) ){
-                    std::cout << "num: " << numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ] << "\n";
-                    std::cout << "ana: " << DEBUG[ "dPlasticMicroVelocityGradientdMicroGamma" ][ j ] << "\n";
-                    std::cout << "err: " << numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ] - DEBUG[ "dPlasticMicroVelocityGradientdMicroGamma" ][ j ] << "\n";
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdMicroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGamma" ][ j ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdMicroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
         }
 
@@ -11830,31 +9135,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMacroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMacroVelocityGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMacroVelocityGradientdMicroGradientGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroVelocityGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dPlasticMicroVelocityGradientdMicroGradientGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "currentPlasticMicroGradientVelocityGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ],
                                                 DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGradientGamma" ][ 3 * j + i - 2 ],
-                                                1e-9, 1e-9 ) ){
-                    std::cout << "num1: " << numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] << "\n";
-                    std::cout << "ana1: " << DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGradientGamma" ][ 3 * j + i - 2 ] << "\n";
-                    std::cout << "err1: " << numericGradients[ "currentPlasticMicroGradientVelocityGradient" ][ j ] - DEBUG[ "dPlasticMicroGradientVelocityGradientdMicroGradientGamma" ][ 3 * j + i - 2 ] << "\n";
-                    results << "test_computePlasticDeformationResidual2 (dPlasticGradientMicroVelocityGradientdMicroGradientGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
         }
 
@@ -11867,28 +9160,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdMacroGamma" ][ j ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroVelocityGradientdMacroGamma & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdMacroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdMacroGamma" ][ j ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdMacroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
         }
 
@@ -11897,30 +9181,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 DEBUG[ "dExpectedPlasticDeformationGradientdMicroGamma" ][ j ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroVelocityGradientdMicroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticMicroDeformationdMicroGamma" ][ j ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdMicroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
 
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdMicroGamma" ][ j ],
-                                                1e-9, 1e-9 ) ){
-                    std::cout << "numeric:  "; vectorTools::print( numericGradients[ "expectedPlasticGradientMicroDeformation" ] );
-                    std::cout << "analytic: "; vectorTools::print( DEBUG[ "dExpectedPlasticGradientMicroDeformationdMicroGamma" ] );
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdMicroGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
         }
 
@@ -11929,28 +9202,19 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticDeformationGradient" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticDeformationGradient" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroVelocityGradientdMicroGradientGamma & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
  
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticMicroDeformation" ][ j ],
                                                 0.,
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticMicroDeformationdMicroGradientGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
  
             for ( unsigned int j = 0; j < numericGradients[ "expectedPlasticGradientMicroDeformation" ].size(); j++ ){
                 BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "expectedPlasticGradientMicroDeformation" ][ j ],
                                                 DEBUG[ "dExpectedPlasticGradientMicroDeformationdMicroGradientGamma" ][ 3 * j + i - 2 ],
-                                                1e-9, 1e-9 ) ){
-                    results << "test_computePlasticDeformationResidual2 (dExpectedPlasticGradientMicroDeformationdMicroGradientGamma) & False\n";
-                    return 1;
-                }
+                                                1e-9, 1e-9 ) );
             }
         }
     
@@ -11963,13 +9227,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         solverTools::floatVector gradCol = ( residual_P - residual_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 15 ][ 5 * j + i ] ) ){
-                std::cout << "row, col: " << j << ", " << i << "\n";
-                std::cout << "num     : " << gradCol[ j ] << "\n";
-                std::cout << "ana     : " << floatOuts[ 15 ][ 5 * j + i ] << "\n";
-                results << "test_computePlasticDeformationResidual2 (test 8) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 15 ][ 5 * j + i ] ) );
         }
 
         //Check the Jacobians of the cohesions w.r.t. the Gammas
@@ -11981,10 +9239,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
             } );
 
         for ( unsigned int j = 0; j < 5; j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 16 ][ 5 * j + i ] ) ){
-                results << "test_computePlasticDeformationResidual (test 9) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 16 ][ 5 * j + i ] ) );
         }
 
     }
@@ -12179,28 +9434,13 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //        return 1;
 //    }
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) ){
-//        std::cout << "PK2_result:\n"; vectorTools::print( PK2_result );
-//        std::cout << "PK2_answer:\n"; vectorTools::print( PK2_answer );
-//        results << "test_materialLibraryInterface (test 1) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( SIGMA_result, SIGMA_answer, 1e-5, 1e-5 ) ){
-//        results << "test_materialLibraryInterface (test 2) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( SIGMA_result, SIGMA_answer, 1e-5, 1e-5 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( M_result, M_answer, 1e-5 ) ){
-//        results << "test_materialLibraryInterface (test 3) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( M_result, M_answer, 1e-5 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVS_answer ) ){
-//        results << "test_materialLibraryInterface (test 4) & False\n";
-//        vectorTools::print( SDVS - SDVS_answer );
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVS_answer ) );
 //
 //    //Check the Jacobian using the previously tested jacobian
 //    std::vector< std::vector< double > > DPK2Dgrad_u_answer, DPK2Dphi_answer, DPK2Dgrad_phi_answer,
@@ -12266,70 +9506,31 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //#endif
 //                                        );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) ){
-//        results << "test_materialLibraryInterface (test 5) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( SIGMA_result, SIGMA_answer, 1e-5, 1e-5 ) ){
-//        results << "test_materialLibraryInterface (test 6) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( SIGMA_result, SIGMA_answer, 1e-5, 1e-5 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( M_result, M_answer, 1e-5 ) ){
-//        results << "test_materialLibraryInterface (test 7) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( M_result, M_answer, 1e-5 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS_answer, SDVS ) ){
-//        results << "test_materialLibraryInterface (test 8) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS_answer, SDVS ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dgrad_u_result, DPK2Dgrad_u_answer ) ){
-//        results << "test_materialLibraryInterface (test 9) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dgrad_u_result, DPK2Dgrad_u_answer ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dphi_result, DPK2Dphi_answer ) ){
-//        results << "test_materialLibraryInterface (test 10) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dphi_result, DPK2Dphi_answer ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dgrad_phi_result, DPK2Dgrad_phi_answer ) ){
-//        results << "test_materialLibraryInterface (test 11) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dgrad_phi_result, DPK2Dgrad_phi_answer ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADgrad_u_result, DSIGMADgrad_u_answer ) ){
-//        results << "test_materialLibraryInterface (test 12) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADgrad_u_result, DSIGMADgrad_u_answer ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADphi_result, DSIGMADphi_answer ) ){
-//        results << "test_materialLibraryInterface (test 13) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADphi_result, DSIGMADphi_answer ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADgrad_phi_result, DSIGMADgrad_phi_answer ) ){
-//        results << "test_materialLibraryInterface (test 14) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADgrad_phi_result, DSIGMADgrad_phi_answer ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDgrad_u_result, DMDgrad_u_answer ) ){
-//        results << "test_materialLibraryInterface (test 15) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDgrad_u_result, DMDgrad_u_answer ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDphi_result, DMDphi_answer ) ){
-//        results << "test_materialLibraryInterface (test 16) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDphi_result, DMDphi_answer ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDgrad_phi_result, DMDgrad_phi_answer ) ){
-//        results << "test_materialLibraryInterface (test 17) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDgrad_phi_result, DMDgrad_phi_answer ) );
 //
 //#ifdef DEBUG_MODE
 //    DEBUG.clear();
@@ -12360,75 +9561,31 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //        return 1;
 //    }
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) ){
-//        results << "test_materialLibraryInterface (test 18) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( SIGMA_result, SIGMA_answer, 1e-5, 1e-5 ) ){
-//        results << "test_materialLibraryInterface (test 19) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( SIGMA_result, SIGMA_answer, 1e-5, 1e-5 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( M_result, M_answer, 1e-5 ) ){
-//        results << "test_materialLibraryInterface (test 20) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( M_result, M_answer, 1e-5 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVS_answer ) ){
-//        std::cout << "error: "; vectorTools::print( SDVS - SDVS_answer );
-//        results << "test_materialLibraryInterface (test 21) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVS_answer ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dgrad_u_result, DPK2Dgrad_u_answer, 1e-4 ) ){
-//        std::cout << "num:\n"; vectorTools::print( DPK2Dgrad_u_result );
-//        std::cout << "ana:\n"; vectorTools::print( DPK2Dgrad_u_answer );
-//        results << "test_materialLibraryInterface (test 22) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dgrad_u_result, DPK2Dgrad_u_answer, 1e-4 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dphi_result, DPK2Dphi_answer, 1e-4 ) ){
-//        results << "test_materialLibraryInterface (test 23) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dphi_result, DPK2Dphi_answer, 1e-4 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dgrad_phi_result, DPK2Dgrad_phi_answer, 1e-4, 1e-5 ) ){
-//        std::cout << "num:\n"; vectorTools::print( DPK2Dgrad_phi_result );
-//        std::cout << "ana:\n"; vectorTools::print( DPK2Dgrad_phi_answer );
-//        results << "test_materialLibraryInterface (test 24) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DPK2Dgrad_phi_result, DPK2Dgrad_phi_answer, 1e-4, 1e-5 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADgrad_u_result, DSIGMADgrad_u_answer, 1e-4 ) ){
-//        results << "test_materialLibraryInterface (test 25) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADgrad_u_result, DSIGMADgrad_u_answer, 1e-4 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADphi_result, DSIGMADphi_answer, 1e-4 ) ){
-//        results << "test_materialLibraryInterface (test 26) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADphi_result, DSIGMADphi_answer, 1e-4 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADgrad_phi_result, DSIGMADgrad_phi_answer, 1e-4 ) ){
-//        results << "test_materialLibraryInterface (test 27) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DSIGMADgrad_phi_result, DSIGMADgrad_phi_answer, 1e-4 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDgrad_u_result, DMDgrad_u_answer, 1e-4 ) ){
-//        results << "test_materialLibraryInterface (test 28) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDgrad_u_result, DMDgrad_u_answer, 1e-4 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDphi_result, DMDphi_answer, 1e-4 ) ){
-//        results << "test_materialLibraryInterface (test 29) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDphi_result, DMDphi_answer, 1e-4 ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDgrad_phi_result, DMDgrad_phi_answer, 1e-4 ) ){
-//        results << "test_materialLibraryInterface (test 30) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( DMDgrad_phi_result, DMDgrad_phi_answer, 1e-4 ) );
 //
 //    results << "test_materialLibraryInterface & True\n";
 //    return 1;
@@ -12752,46 +9909,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation){
         return 1;
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer0 ) ){
-        std::cout << "SDVS:\n";
-        for ( unsigned int i = 0; i < SDVS.size(); i++ ){
-            std::cout << SDVS[ i ] << ", ";
-        }
-        std::cout << "\n";
-        results << "test_evaluate_model_continuation (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer0 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer0, current_PK20, 1e-5, 1e-5 ) ){
-        std::cout << "current_PK20:\n";
-        for ( unsigned int i = 0; i < current_PK20.size(); i++ ){
-            std::cout << current_PK20[ i ] << ", ";
-        }
-        std::cout << "\n";
-        std::cout << "error: "; vectorTools::print( PK2Answer0 - current_PK20 );
-        results << "test_evaluate_model_continuation (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer0, current_PK20, 1e-5, 1e-5 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SigmaAnswer0, current_SIGMA0, 1e-5, 1e-5 ) ){
-        std::cout << "current_SIGMA0:\n";
-        for ( unsigned int i = 0; i < current_SIGMA0.size(); i++ ){
-            std::cout << current_SIGMA0[ i ] << ", ";
-        }
-        std::cout << "\n";
-        results << "test_evaluate_model_continuation (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SigmaAnswer0, current_SIGMA0, 1e-5, 1e-5 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( MAnswer0, current_M0, 1e-5 ) ){
-        std::cout << "current_M0:\n";
-        for ( unsigned int i = 0; i < current_M0.size(); i++ ){
-            std::cout << current_M0[ i ] << ", ";
-        }
-        std::cout << "\n";
-        results << "test_evaluate_model_continuation (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( MAnswer0, current_M0, 1e-5 ) );
 
 #ifdef DEBUG_MODE
     solverTools::homotopyMap homotopyDEBUG1;
@@ -12876,66 +10000,33 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation){
         }
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer1 ) ){
-        results << "test_evaluate_model_continuation (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer1 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_PK21, PK2Answer1 ) ){
-        std::cout << "error: "; vectorTools::print( current_PK21 - PK2Answer1 );
-        results << "test_evaluate_model_continuation (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_PK21, PK2Answer1 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_SIGMA1, SIGMAAnswer1 ) ){
-        std::cout << "error: "; vectorTools::print( current_SIGMA1 - SIGMAAnswer1 );
-        results << "test_evaluate_model_continuation (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_SIGMA1, SIGMAAnswer1 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, MAnswer1 ) ){
-        std::cout << "error: "; vectorTools::print( current_M1 - MAnswer1 );
-        results << "test_evaluate_model_continuation (test 12) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, MAnswer1 ) );
 
 #ifdef DEBUG_MODE
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPK2Stress" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediatePK2Stress" ] ) ){
-        results << "test_evaluate_model_continuation (intermediatePK2Stress) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediatePK2Stress" ] ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousReferenceMicroStress" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceMicroStress" ] ) ){
-        results << "test_evaluate_model_continuation (intermediateReferenceMicroStress) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceMicroStress" ] ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousReferenceHigherOrderStress" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceHigherOrderStress" ] ) ){
-        results << "test_evaluate_model_continuation (intermediateReferenceHigherOrderStress) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceHigherOrderStress" ] ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticDeformationGradient" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticDeformationGradient" ] ) ){
-        results << "test_evaluate_model_continuation (previousElasticDeformationGradient) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticDeformationGradient" ] ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticMicroDeformation" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticMicroDeformation" ] ) ){
-        results << "test_evaluate_model_continuation (previousPlasticMicroDeformation) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticMicroDeformation" ] ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticGradientMicroDeformation" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticGradientMicroDeformation" ] ) ){
-        results << "test_evaluate_model_continuation (previousPlasticGradientMicroDeformation) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticGradientMicroDeformation" ] ) );
 
 #endif
     
@@ -12964,25 +10055,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation){
 #endif
                                                               );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVS1 ) ){
-        results << "test_evaluate_model_continuation (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVS1 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_PK21, current_PK22 ) ){
-        results << "test_evaluate_model_continuation (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_PK21, current_PK22 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_SIGMA1, current_SIGMA2 ) ){
-        results << "test_evaluate_model_continuation (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_SIGMA1, current_SIGMA2 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, current_M2 ) ){
-        results << "test_evaluate_model_continuation (test 12) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, current_M2 ) );
 
     results << "test_evaluate_model_continuation & True\n";
     return 0;
@@ -13173,26 +10252,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
         return 1;
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer0 ) ){
-        results << "test_evaluate_model_continuation2 (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer0 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer0, current_PK20, 1e-5, 1e-5 ) ){
-        std::cout << "error: "; vectorTools::print( PK2Answer0 - current_PK20 );
-        results << "test_evaluate_model_continuation2 (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer0, current_PK20, 1e-5, 1e-5 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SigmaAnswer0, current_SIGMA0, 1e-5, 1e-5 ) ){
-        results << "test_evaluate_model_continuation2 (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SigmaAnswer0, current_SIGMA0, 1e-5, 1e-5 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( MAnswer0, current_M0, 1e-5 ) ){
-        results << "test_evaluate_model_continuation2 (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( MAnswer0, current_M0, 1e-5 ) );
 
 #ifdef DEBUG_MODE
     solverTools::homotopyMap homotopyDEBUG1;
@@ -13284,66 +10350,33 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
         }
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer1 ) ){
-        results << "test_evaluate_model_continuation2 (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer1 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_PK21, PK2Answer1 ) ){
-        std::cout << "error: "; vectorTools::print( current_PK21 - PK2Answer1 );
-        results << "test_evaluate_model_continuation2 (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_PK21, PK2Answer1 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_SIGMA1, SIGMAAnswer1 ) ){
-        std::cout << "error: "; vectorTools::print( current_SIGMA1 - SIGMAAnswer1 );
-        results << "test_evaluate_model_continuation2 (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_SIGMA1, SIGMAAnswer1 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, MAnswer1 ) ){
-        std::cout << "error: "; vectorTools::print( current_M1 - MAnswer1 );
-        results << "test_evaluate_model_continuation2 (test 12) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, MAnswer1 ) ;)
 
 #ifdef DEBUG_MODE
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPK2Stress" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediatePK2Stress" ] ) ){
-        results << "test_evaluate_model_continuation2 (intermediatePK2Stress) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediatePK2Stress" ] ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousReferenceMicroStress" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceMicroStress" ] ) ){
-        results << "test_evaluate_model_continuation2 (intermediateReferenceMicroStress) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceMicroStress" ] ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousReferenceHigherOrderStress" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceHigherOrderStress" ] ) ){
-        results << "test_evaluate_model_continuation2 (intermediateReferenceHigherOrderStress) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "intermediateReferenceHigherOrderStress" ] ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticDeformationGradient" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticDeformationGradient" ] ) ){
-        results << "test_evaluate_model_continuation2 (previousElasticDeformationGradient) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticDeformationGradient" ] ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticMicroDeformation" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticMicroDeformation" ] ) ){
-        results << "test_evaluate_model_continuation2 (previousPlasticMicroDeformation) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticMicroDeformation" ] ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( homotopyDEBUG1[ "pre_iteration_values" ][ "pre_iteration_values" ][ "previousPlasticGradientMicroDeformation" ],
-                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticGradientMicroDeformation" ] ) ){
-        results << "test_evaluate_model_continuation2 (previousPlasticGradientMicroDeformation) & False\n";
-        return 1;
-    }
+                                    homotopyDEBUG0[ "converged_values" ][ "converged_values" ][ "convergedPlasticGradientMicroDeformation" ] ) );
 
 #endif
     
@@ -13379,25 +10412,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
 #endif
                                                               );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVS1 ) ){
-        results << "test_evaluate_model_continuation2 (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVS1 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_PK21, current_PK22 ) ){
-        results << "test_evaluate_model_continuation2 (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_PK21, current_PK22 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_SIGMA1, current_SIGMA2 ) ){
-        results << "test_evaluate_model_continuation2 (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_SIGMA1, current_SIGMA2 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, current_M2 ) ){
-        results << "test_evaluate_model_continuation2 (test 12) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, current_M2 ) );
 
     results << "test_evaluate_model_continuation2 & True\n";
     return 0;
@@ -13896,40 +10917,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
 //#endif
 //    }
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( SDVSAnswer, SDVS ) ){
-//        results << "test_evaluate_model_history (test 1) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( SDVSAnswer, SDVS ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer, PK2_result ) ){
-//        std::cout << "error:\n";
-//        for ( unsigned int i = 0; i < PK2_result.size(); i++ ){
-//            std::cout << PK2_result[ i ] - PK2Answer[ i ] << ", ";
-//        }
-//        std::cout << "\n";
-//        results << "test_evaluate_model_history (test 2) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer, PK2_result ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( SIGMAAnswer, SIGMA_result ) ){
-//        std::cout << "error:\n";
-//        for ( unsigned int i = 0; i < SIGMA_result.size(); i++ ){
-//            std::cout << SIGMA_result[ i ] - SIGMAAnswer[ i ] << ", ";
-//        }
-//        std::cout << "\n";
-//        results << "test_evaluate_model_history (test 3) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( SIGMAAnswer, SIGMA_result ) );
 //
-//    BOOST_CHECK( vectorTools::fuzzyEquals( MAnswer, M_result ) ){
-//        std::cout << "error:\n";
-//        for ( unsigned int i = 0; i < M_result.size(); i++ ){
-//            std::cout << M_result[ i ] - MAnswer[ i ] << ", ";
-//        }
-//        std::cout << "\n";
-//        results << "test_evaluate_model_history (test 4) & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( vectorTools::fuzzyEquals( MAnswer, M_result ) );
 //    
 //#ifdef DEBUG_MODE
 //    output_file.close();
@@ -14158,11 +11152,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual ){
                                                                           );
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( residual, residualAnswer ) ) {
-        std::cout << "error: "; vectorTools::print( residual - residualAnswer );
-        results << "test_computePlasticMultiplierResidual (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( residual, residualAnswer ) ); 
 
     //Tests of the Jacobians
     solverTools::floatType eps = 1e-6;
@@ -14217,98 +11207,29 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual ){
 
         for ( unsigned int j = 0; j < numericGradients[ "currentPlasticDeformation" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticDeformation" ][ j ],
-                                            DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] ) ){
-                std::cout << "row, col:  " << j << ", " << i << "\n";
-                std::cout << "ana:       " << DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] << "\n";
-                std::cout << "num:       " << numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
-                std::cout << "error:     " << DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ]
-                                             -numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "currentPlasticDeformation" ] );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( vectorTools::inflate( DEBUG[ "dCurrentPlasticDeformationdGammas" ], 45, 5 ) );
-
-                results << "test_computePlasticMultiplierResidual (dCurrentPlasticDeformationdGammas) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "stresses" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "stresses" ][ j ],
-                                            DEBUG[ "dStressdGammas" ][ 5 * j + i ] ) ){
-                std::cout << "row, col:  " << j << ", " << i << "\n";
-                std::cout << "ana:       " << DEBUG[ "dStressdGammas" ][ 5 * j + i ] << "\n";
-                std::cout << "num:       " << numericGradients[ "stresses" ][ j ] << "\n";
-                std::cout << "error:     " << DEBUG[ "dStressdGammas" ][ 5 * j + i ]
-                                             -numericGradients[ "stresses" ][ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "stresses" ] );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( vectorTools::inflate( DEBUG[ "dStressdGammas" ], 45, 5 ) );
-
-                results << "test_computePlasticMultiplierResidual (dStressdGammas) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dStressdGammas" ][ 5 * j + i ] ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
-                                            DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ] ) ){
-                std::cout << "row, col:  " << j << ", " << i << "\n";
-                std::cout << "ana:       " << DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ] << "\n";
-                std::cout << "num:       " << numericGradients[ "currentElasticRightCauchyGreen" ][ j ] << "\n";
-                std::cout << "error:     " << DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ]
-                                             -numericGradients[ "currentElasticRightCauchyGreen" ][ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "currentElasticRightCauchyGreen" ] );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( vectorTools::inflate( DEBUG[ "dElasticRightCauchyGreendGammas" ], 9, 5 ) );
-
-                results << "test_computePlasticMultiplierResidual (dElasticRightCauchyGreendGammas) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ] ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "yieldFunctionValues" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "yieldFunctionValues" ][ j ],
-                                            DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] ) ){
-                std::cout << "row, col:  " << j << ", " << i << "\n";
-                std::cout << "ana:       " << DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] << "\n";
-                std::cout << "num:       " << numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
-                std::cout << "error:     " << DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ]
-                                             -numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "yieldFunctionValues" ] );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( vectorTools::inflate( DEBUG[ "dYieldFunctionValuesdGammas" ], 5, 5 ) );
-
-                results << "test_computePlasticMultiplerResidual (dYieldFunctionValuesdGammas) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] ) );
         }
 #endif
         //Test of the residual and comparison to the Jacobian
         solverTools::floatVector gradCol = ( rP - rM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ] ) ){
-                std::cout << "row, col: " << j << ", " << i << "\n";
-                std::cout << "ana:      " << jacobian[ j ][ i ] << "\n";
-                std::cout << "num:      " << gradCol[ j ] << "\n";
-                std::cout << "error:    " << jacobian[ j ][ i ] - gradCol[ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( gradCol );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( jacobian );
-
-                results << "test_computePlasticMultiplierResidual (test 2) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ] ) );
         }
     }
 
@@ -14505,11 +11426,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( residual, residualAnswer ) ) {
-        std::cout << "error: "; vectorTools::print( residual - residualAnswer );
-        results << "test_computePlasticMultiplierResidual2 (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( residual, residualAnswer ) ); 
 
     //Tests of the Jacobians
     solverTools::floatType eps = 1e-6;
@@ -14564,135 +11481,42 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
 
         for ( unsigned int j = 0; j < numericGradients[ "currentPlasticDeformation" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticDeformation" ][ j ],
-                                            DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] ) ){
-                std::cout << "row, col:  " << j << ", " << i << "\n";
-                std::cout << "ana:       " << DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] << "\n";
-                std::cout << "num:       " << numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
-                std::cout << "error:     " << DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ]
-                                             -numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "currentPlasticDeformation" ] );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( vectorTools::inflate( DEBUG[ "dCurrentPlasticDeformationdGammas" ], 45, 5 ) );
-
-                results << "test_computePlasticMultiplierResidual2 (dCurrentPlasticDeformationdGammas) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dCurrentPlasticDeformationdGammas" ][ 5 * j + i ] ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "stresses" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "stresses" ][ j ],
-                                            DEBUG[ "dStressdGammas" ][ 5 * j + i ] ) ){
-                std::cout << "row, col:  " << j << ", " << i << "\n";
-                std::cout << "ana:       " << DEBUG[ "dStressdGammas" ][ 5 * j + i ] << "\n";
-                std::cout << "num:       " << numericGradients[ "stresses" ][ j ] << "\n";
-                std::cout << "error:     " << DEBUG[ "dStressdGammas" ][ 5 * j + i ]
-                                             -numericGradients[ "stresses" ][ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "stresses" ] );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( vectorTools::inflate( DEBUG[ "dStressdGammas" ], 45, 5 ) );
-
-                results << "test_computePlasticMultiplierResidual2 (dStressdGammas) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dStressdGammas" ][ 5 * j + i ] ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
-                                            DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ] ) ){
-                std::cout << "row, col:  " << j << ", " << i << "\n";
-                std::cout << "ana:       " << DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ] << "\n";
-                std::cout << "num:       " << numericGradients[ "currentElasticRightCauchyGreen" ][ j ] << "\n";
-                std::cout << "error:     " << DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ]
-                                             -numericGradients[ "currentElasticRightCauchyGreen" ][ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "currentElasticRightCauchyGreen" ] );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( vectorTools::inflate( DEBUG[ "dElasticRightCauchyGreendGammas" ], 9, 5 ) );
-
-                results << "test_computePlasticMultiplierResidual2 (dElasticRightCauchyGreendGammas) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dElasticRightCauchyGreendGammas" ][ 5 * j + i ] ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "yieldFunctionValues" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "yieldFunctionValues" ][ j ],
-                                            DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] ) ){
-                std::cout << "row, col:  " << j << ", " << i << "\n";
-                std::cout << "ana:       " << DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] << "\n";
-                std::cout << "num:       " << numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
-                std::cout << "error:     " << DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ]
-                                             -numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "yieldFunctionValues" ] );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( vectorTools::inflate( DEBUG[ "dYieldFunctionValuesdGammas" ], 5, 5 ) );
-
-                results << "test_computePlasticMultiplerResidual2 (dYieldFunctionValuesdGammas) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dYieldFunctionValuesdGammas" ][ 5 * j + i ] ) );
         }
 #endif
         //Test of the residual and comparison to the Jacobian
         solverTools::floatVector gradCol = ( rP - rM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ] ) ){
-                std::cout << "row, col: " << j << ", " << i << "\n";
-                std::cout << "ana:      " << jacobian[ j ][ i ] << "\n";
-                std::cout << "num:      " << gradCol[ j ] << "\n";
-                std::cout << "error:    " << jacobian[ j ][ i ] - gradCol[ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( gradCol );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( jacobian );
-
-                results << "test_computePlasticMultiplierResidual2 (test 2) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], jacobian[ j ][ i ] ) );
         }
 
         //Test of the partial derivatives of the plastic deformation w.r.t. the plastic multipliers
         gradCol = vectorTools::appendVectors( { fOP[ 6 ] - fOM[ 6 ], fOP[ 7 ] - fOM[ 7 ], fOP[ 8 ] - fOM[ 8 ] } ) / ( 2 * delta[ i ] );
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 9 ][ 5 * j + i ] ) ){
-                std::cout << "row, col: " << j << ", " << i << "\n";
-                std::cout << "ana:      " << floatOuts[ 9 ][ 5 * j + i ] << "\n";
-                std::cout << "num:      " << gradCol[ j ] << "\n";
-                std::cout << "error:    " << floatOuts[ 9 ][ 5 * j + i ] - gradCol[ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( gradCol );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( vectorTools::inflate( floatOuts[ 9 ], 45, 5 ) );
-                results << "test_computePlasticMultiplierResidual2 (test 3) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 9 ][ 5 * j + i ] ) );
         }
 
         //Test of the partial derivatives of the Stresses w.r.t. the plastic multipliers
         gradCol = vectorTools::appendVectors( { fOP[ 0 ] - fOM[ 0 ], fOP[ 1 ] - fOM[ 1 ], fOP[ 2 ] - fOM[ 2 ] } ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 10 ][ 5 * j + i ] ) ){
-                std::cout << "row, col: " << j << ", " << i << "\n";
-                std::cout << "ana:      " << floatOuts[ 10 ][ 5 * j + i ] << "\n";
-                std::cout << "num:      " << gradCol[ j ] << "\n";
-                std::cout << "error:    " << floatOuts[ 10 ][ 5 * j + i ] - gradCol[ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( gradCol );
-
-                std::cout << "\nfull\n";
-                vectorTools::print( vectorTools::inflate( floatOuts[ 10 ], 45, 5 ) );
-                results << "test_computePlasticMultiplierResidual2 (test 4) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 10 ][ 5 * j + i ] ) );
         }
     }
 
@@ -14767,42 +11591,17 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
         for ( unsigned int j = 0; j < numericGradients[ "currentPlasticDeformation" ].size(); j++ ){
             
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentPlasticDeformation" ][ j ],
-                                            DEBUG[ "dCurrentPlasticDeformationdDeformation" ][ 45 * j + i ] ) ){
-                std::cout << "row, col: " << j << ", " << i << "\n";
-                std::cout << "ana:      " << DEBUG[ "dCurrentPlasticDeformationdDeformation" ][ 45 * j + i ] << "\n";
-                std::cout << "num:      " << numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
-                std::cout << "error:    " << DEBUG[ "dCurrentPlasticDeformationdDeformation" ][ 45 * j + i ]
-                                           - numericGradients[ "currentPlasticDeformation" ][ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "currentPlasticDeformation" ] );
-                std::cout << "\nfull\n"; vectorTools::print( vectorTools::inflate( DEBUG[ "dCurrentPlasticDeformationdDeformation" ], 45, 45 ) );
-                results << "test_computePlasticMultiplierResidual2 (dCurrentPlasticDeformationdDeformation) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dCurrentPlasticDeformationdDeformation" ][ 45 * j + i ] ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "currentElasticRightCauchyGreen" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "currentElasticRightCauchyGreen" ][ j ],
-                                            DEBUG[ "dElasticRightCauchyGreendDeformation" ][ 45 * j + i ] ) ){
-                results << "test_computePlasticMultiplierResidual2 (dElasticRightCauchyGreendDeformation) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dElasticRightCauchyGreendDeformation" ][ 45 * j + i ] ) );
         }
 
         for ( unsigned int j = 0; j < numericGradients[ "yieldFunctionValues" ].size(); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( numericGradients[ "yieldFunctionValues" ][ j ],
-                                            DEBUG[ "dYieldFunctionValuesdDeformation" ][ 45 * j + i ] ) ){
-                std::cout << "row, col: " << j << ", " << i << "\n";
-                std::cout << "ana:      " << DEBUG[ "dYieldFunctionValuesdDeformation" ][ 45 * j + i ] << "\n";
-                std::cout << "num:      " << numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
-                std::cout << "error:    " << DEBUG[ "dYieldFunctionValuesdDeformation" ][ 45 * j + i ]
-                                           - numericGradients[ "yieldFunctionValues" ][ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( numericGradients[ "yieldFunctionValues" ] );
-                std::cout << "\nfull\n"; vectorTools::print( vectorTools::inflate( DEBUG[ "dYieldFunctionValuesdDeformation" ], 5, 45 ) );
-                results << "test_computePlasticMultiplierResidual2 (dYieldFunctionValuesdDeformation) & False\n";
-                return 1;
-            }
+                                            DEBUG[ "dYieldFunctionValuesdDeformation" ][ 45 * j + i ] ) );
         }
 #endif
 
@@ -14812,10 +11611,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
         gradCol /= 2 * delta[ i ];
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 11 ][ 45 * j + i ] ) ){
-                results << "test_computePlasticMultiplierResidual2 (test 5) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 11 ][ 45 * j + i ] ) );
         }
 
         //Check the gradient of the stresses w.r.t. the deformation measures
@@ -14823,27 +11619,14 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
         gradCol /= 2 * delta[ i ];
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 12 ][ 45 * j + i ] ) ){
-                results << "test_computePlasticMultiplierResidual2 (test 6) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 12 ][ 45 * j + i ] ) );
         }
 
         //Check the gradient of the residual w.r.t. the deformation measures
         gradCol = ( rP - rM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 13 ][ 45 * j + i ] ) ){
-                std::cout << "row, col: " << j << ", " << i << "\n";
-                std::cout << "ana     : " << floatOuts[ 13 ][ 45 * j + i ] << "\n";
-                std::cout << "num     : " << gradCol[ j ] << "\n";
-                std::cout << "error   : " << floatOuts[ 13 ][ 45 * j + i ] - gradCol[ j ] << "\n";
-
-                std::cout << "\nrow\n"; vectorTools::print( gradCol );
-                std::cout << "\nfull\n"; vectorTools::print( vectorTools::inflate( floatOuts[ 13 ], 5, 45 ) );
-                results << "test_computePlasticMultiplierResidual2 (test 7) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 13 ][ 45 * j + i ] ) );
         }
     }
 
@@ -14945,11 +11728,7 @@ BOOST_AUTO_TEST_CASE( testhomotopySolve ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( answer, solutionVector ) ){
-        std::cout << "error: "; vectorTools::print( solutionVector - answer );
-        results << "test_homotopySolve (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( answer, solutionVector ) );
 
     results << "test_homotopySolve & True\n";
     return 0;
@@ -15026,11 +11805,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierLagrangian ){
 
     BOOST_CHECK( !error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( lagrangian, lagrangian_answer ) ){
-        results << "test_computePlasticMultiplierLagrangian (test 1) & False\n";
-        std::cout << lagrangian - lagrangian_answer << "\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( lagrangian, lagrangian_answer ) );
 
     //Check the Jacobians
     solverTools::floatType eps = 1e-6;
@@ -15060,10 +11835,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierLagrangian ){
         BOOST_CHECK( !error );
 
         solverTools::floatType grad = ( lP - lM ) / ( 2 * delta[ i ] );
-        BOOST_CHECK( vectorTools::fuzzyEquals( grad, jacobian[ i ] ) ){
-            results << "test_computePlasticMultiplierLagrangian (test 2) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals( grad, jacobian[ i ] ) );
     }
 
     results << "test_computePlasticMultiplierLagrangian & True\n";
