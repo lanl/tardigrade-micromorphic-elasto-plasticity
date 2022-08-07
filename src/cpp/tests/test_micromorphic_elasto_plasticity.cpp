@@ -11565,7 +11565,7 @@ BOOST_AUTO_TEST_CASE( testComputePlasticMultiplierLagrangian ){
     solverTools::intMatrix intOuts = { { } };
 
     solverTools::floatType lagrangian;
-    solverTools::floatType lagrangian_answer = 117266.766934;
+    solverTools::floatType lagrangian_answer = 117267.160955;
     solverTools::floatVector jacobian;
 
 #ifdef DEBUG_MODE
