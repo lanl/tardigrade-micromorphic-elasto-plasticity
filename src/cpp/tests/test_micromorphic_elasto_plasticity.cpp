@@ -6,6 +6,9 @@
 #include<iostream>
 #include<iomanip>
 
+#define BOOST_TEST_MODULE test_micromorphic_linear_elasticity
+#include <boost/test/included/unit_test.hpp>
+
 typedef micromorphicTools::constantType constantType;
 typedef micromorphicTools::constantVector constantVector;
 typedef micromorphicTools::constantMatrix constantMatrix;
@@ -21,11 +24,10 @@ typedef micromorphicTools::variableMatrix variableMatrix;
 typedef micromorphicTools::errorNode errorNode;
 typedef micromorphicTools::errorOut errorOut;
 
-BOOST_AUTO_TEST_CASE( testcomputeSecondOrderDruckerPragerYieldEquation ){
+BOOST_AUTO_TEST_CASE( testComputeSecondOrderDruckerPragerYieldEquation ){
     /*!
      * Test the computation of the second order stress Drucker-Prager yield equation.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableVector S = { 0.77189588, -0.84417528,  0.95929231,
@@ -177,15 +179,12 @@ BOOST_AUTO_TEST_CASE( testcomputeSecondOrderDruckerPragerYieldEquation ){
         }
     }
 
-    results << "test_computeSecondOrderDruckerPragerYieldEquation & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputeHigherOrderDruckerPragerYieldEquation ){
+BOOST_AUTO_TEST_CASE( testComputeHigherOrderDruckerPragerYieldEquation ){
     /*!
      * Test the computation of the higher order stress Drucker-Prager yield equation.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableVector M = { 0.80732114,  0.79202055,  0.17990022,  0.97454675,  0.703207  ,
@@ -390,15 +389,12 @@ BOOST_AUTO_TEST_CASE( testcomputeHigherOrderDruckerPragerYieldEquation ){
         }
     }
 
-    results << "test_computeHigherOrderDruckerPragerYieldEquation & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
+BOOST_AUTO_TEST_CASE( testComputeElasticPartOfDeformation ){
     /*!
      * Test of the computation of the elastic part of the various deformation measures.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     //Define the full deformation
@@ -758,16 +754,13 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticPartOfDeformation ){
         }
     }
 
-    results << "test_computeElasticPartOfDeformation & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputeElasticDeformationMeasures ){
+BOOST_AUTO_TEST_CASE( testComputeElasticDeformationMeasures ){
     /*!
      * Test the computation of the elastic deformation measures 
      * required for the computation of the plasticity.
      *
-     * :param std::ofstream &results: The output file
      */
 
     variableVector Fe = { -3.94817649, -0.32662858, -0.48781965,
@@ -957,15 +950,12 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticDeformationMeasures ){
         }
     }
 
-    results << "test_computeElasticDeformationMeasures & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
+BOOST_AUTO_TEST_CASE( testComputePlasticVelocityGradients ){
     /*!
      * Test the computation of the plastic velocity gradients.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableType macroGamma = 0.08166694603978908;
@@ -1480,15 +1470,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
         }
     }
 
-    results << "test_computePlasticVelocityGradients & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
+BOOST_AUTO_TEST_CASE( testComputePlasticMacroVelocityGradient ){
     /*!
      * Test the computation of the plastic macro velocity gradient.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableType macroGamma = 0.08166694603978908;
@@ -1671,16 +1658,13 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
         }
     }
 
-    results << "test_computePlasticMacroVelocityGradient & True\n";
-    return 0;
 }
 
 
-BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
+BOOST_AUTO_TEST_CASE( testComputePlasticMicroVelocityGradient ){
     /*!
      * Test the computation of the plastic micro velocity gradient.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableType microGamma = 0.8652174130049269;
@@ -1832,15 +1816,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
         }
     }
 
-    results << "test_computePlasticMicroVelocityGradient & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
+BOOST_AUTO_TEST_CASE( testComputePlasticMicroGradientVelocityGradient ){
     /*!
      * Test the computation of the plastic micro gradient velocity gradient.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableVector microGradientGamma = { 0.17245016, 0.92420274, 0.28114459 };
@@ -2125,15 +2106,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
         }
     }
 
-    results << "test_computePlasticMicroGradientVelocityGradient & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
+BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi ){
     /*!
      * Test the evolution of the plastic micro gradient deformation.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableType Dt = 7.888463751831797;
@@ -2450,15 +2428,12 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
         }
     }
 
-    results << "test_evolvePlasticMicroGradChi & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
+BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation ){
     /*!
      * Evolve the plastic deformation.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableType Dt = 8.009359239014827;
@@ -2738,15 +2713,12 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
         }
     }
 
-    results << "test_evolvePlasticDeformation & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
+BOOST_AUTO_TEST_CASE( testEvolveStrainStateVariables){
     /*!
      * Test the evolution of the strain-like state variables.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     constantType Dt = 0.9173854839516489;
@@ -3108,15 +3080,12 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
         }
     }
 
-    results << "test_evolveStrainStateVariables & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
+BOOST_AUTO_TEST_CASE( testComputeFlowDirections ){
     /*!
      * Test the computation of the flow directions
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableVector PK2Stress = { 0.980355  ,  3.91541513,  1.67081083,
@@ -3701,15 +3670,12 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
         }
     }
 
-    results << "test_computeFlowDirections & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testextractMaterialParameters ){
+BOOST_AUTO_TEST_CASE( testExtractMaterialParameters ){
     /*!
      * Test the extraction of the material parameters.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     std::vector< double > fparams = { 2, 0.53895133, 0.37172145,
@@ -3827,15 +3793,12 @@ BOOST_AUTO_TEST_CASE( testextractMaterialParameters ){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( absoluteTolerance, answerAbsoluteTolerance ) );
 
-    results << "test_extractMaterialParameters & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testextractStateVariables ){
+BOOST_AUTO_TEST_CASE( testExtractStateVariables ){
     /*!
      * Test the extraction of the state variables.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     std::vector< double > SDVS( 55 );
@@ -3894,15 +3857,12 @@ BOOST_AUTO_TEST_CASE( testextractStateVariables ){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousPlasticGradientMicroDeformation, previousPlasticGradientMicroDeformation ) );
 
-    results << "test_extractStateVariables & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcout_redirect ){
+BOOST_AUTO_TEST_CASE( testCout_redirect ){
     /*!
      * Test the utility function which redirects cout to a string buffer.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     std::stringbuf buffer;
@@ -3912,20 +3872,13 @@ BOOST_AUTO_TEST_CASE( testcout_redirect ){
 
     std::cout << answer;
 
-    if ( answer.compare( buffer.str() ) != 0 ){
-        results << "test_cout_redirect (test 1) & False\n";
-        return 1;
-    }
-
-    results << "test_cout_redirect & True\n";
-    return 0;
+    BOOST_CHECK( answer.compare( buffer.str() ) == 0 );
 }
 
-BOOST_AUTO_TEST_CASE( testcerr_redirect ){
+BOOST_AUTO_TEST_CASE( testCerr_redirect ){
     /*!
      * Test the utility function which redirects cerr to a string buffer.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     std::stringbuf buffer;
@@ -3935,20 +3888,13 @@ BOOST_AUTO_TEST_CASE( testcerr_redirect ){
 
     std::cerr << answer;
 
-    if ( answer.compare( buffer.str() ) != 0 ){
-        results << "test_cerr_redirect (test 1) & False\n";
-        return 1;
-    }
-
-    results << "test_cerr_redirect & True\n";
-    return 0;
+    BOOST_CHECK( answer.compare( buffer.str() ) == 0 );
 }
 
-BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
+BOOST_AUTO_TEST_CASE( testAssembleFundamentalDeformationMeasures ){
     /*!
      * Assemble the fundamental deformation measures from the degrees of freedom.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     double grad_u[ 3 ][ 3 ] = { { 1, 2, 3 },
@@ -4170,15 +4116,12 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
         }
     }
 
-    results << "test_assembleFundamentalDeformationMeasures & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
+BOOST_AUTO_TEST_CASE( testEvaluateYieldFunctions ){
     /*!
      * Test the evaluation of the yield functions
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableVector PK2Stress = { 0.65888653,  0.28604558, -0.44426912,
@@ -4617,15 +4560,12 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
         }
     }
 
-    results << "test_evaluateYieldFunctions & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
+BOOST_AUTO_TEST_CASE( testComputeCohesion ){
     /*!
      * Test the computation of the cohesion
      *
-     * :param std::ofstream &results: The output file.
      */
 
     variableType   macroStrainISV = 1.0;
@@ -4796,15 +4736,12 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
         }
     }
 
-    results << "test_computeCohesion & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testevaluate_model){
+BOOST_AUTO_TEST_CASE( testEvaluate_model){
     /*!
      * Test the evaluation of the constitutive model.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     //Initialize the time
@@ -4970,11 +4907,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
 #endif
                                                                   );
 
-    if ( errorCode != 0 ){
-        std::cout << output_message;
-        results << "test_evaluate_model & False\n";
-        return 1;
-    }
+    BOOST_CHECK( errorCode == 0 );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) );
 
@@ -5014,19 +4947,10 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
                                                               );
 #ifdef DEBUG_MODE
     solverTools::debugMap DEBUG = homotopyDEBUG[ "converged_values" ][ "converged_values" ];
-    if ( DEBUG.size() == 0 ){
-        std::cout << "debug failure\n";
-        std::cout << output_message;
-        results << "test_evaluate_model & False\n";
-        return 1;
-    }
+    BOOST_CHECK( DEBUG.size() != 0 );
 #endif
 
-    if ( errorCode != 0 ){
-        std::cout << output_message;
-        results << "test_evaluate_model & False\n";
-        return 1;
-    }
+    BOOST_CHECK( errorCode == 0 );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer ) );
 
@@ -5090,11 +5014,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
 #endif
                                                                   );
 
-        if ( errorCode != 0 ){
-            std::cout << output_message;
-            results << "test_evaluate_model & False\n";
-            return 1;
-        }
+        BOOST_CHECK( errorCode == 0 );
 
         errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
                                                                   current_grad_u_M,  current_phi,  current_grad_phi,
@@ -5110,11 +5030,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
 #endif
                                                                   );
 
-        if ( errorCode != 0 ){
-            std::cout << output_message;
-            results << "test_evaluate_model & False\n";
-            return 1;
-        }
+        BOOST_CHECK( errorCode == 0 );
 
 #ifdef DEBUG_MODE
         solverTools::debugMap numericGradients;
@@ -5123,20 +5039,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
                    it_P != DEBUG_P[ "converged_values" ][ "converged_values" ].end(); it_P++ ){
             
             auto it_M = DEBUG_M[ "converged_values" ][ "converged_values" ].find( it_P->first );
-            if ( it_M == DEBUG_M[ "converged_values" ][ "converged_values" ].end() ){
-                std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
-                results << "test_evaluate_model & False\n";
-                return 1;
-            }
+            BOOST_CHECK( it_M != DEBUG_M[ "converged_values" ][ "converged_values" ].end() );
 
             numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i / 3 ][ i % 3 ] ) );
 
         }
 
-        if ( numericGradients.size() == 0 ){
-            results << "test_evaluate_model & False\n";
-            return 1;
-        }
+        BOOST_CHECK( numericGradients.size() != 0 );
 
         //Check the total Jacobians of the plastic deformation measures
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
@@ -5249,11 +5158,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
 #endif
                                                                   );
 
-        if ( errorCode != 0 ){
-            std::cout << output_message;
-            results << "test_evaluate_model & False\n";
-            return 1;
-        }
+        BOOST_CHECK( errorCode == 0 );
 
         errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
                                                                   current_grad_u,  current_phi_M,  current_grad_phi,
@@ -5269,11 +5174,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
 #endif
                                                                   );
 
-        if ( errorCode != 0 ){
-            std::cout << output_message;
-            results << "test_evaluate_model & False\n";
-            return 1;
-        }
+        BOOST_CHECK( errorCode == 0 );
 
 #ifdef DEBUG_MODE
         solverTools::debugMap numericGradients;
@@ -5282,20 +5183,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
                    it_P != DEBUG_P[ "converged_values" ][ "converged_values" ].end(); it_P++ ){
             
             auto it_M = DEBUG_M[ "converged_values" ][ "converged_values" ].find( it_P->first );
-            if ( it_M == DEBUG_M[ "converged_values" ][ "converged_values" ].end() ){
-                std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
-                results << "test_evaluate_model & False\n";
-                return 1;
-            }
+            BOOST_CHECK( it_M != DEBUG_M[ "converged_values" ][ "converged_values" ].end() );
 
             numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i ] ) );
 
         }
 
-        if ( numericGradients.size() == 0 ){
-            results << "test_evaluate_model & False\n";
-            return 1;
-        }
+        BOOST_CHECK( numericGradients.size() != 0 );
 
         //Check the total Jacobians of the plastic deformation measures
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
@@ -5427,11 +5321,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
 #endif
                                                                   );
 
-        if ( errorCode != 0 ){
-            std::cout << output_message;
-            results << "test_evaluate_model & False\n";
-            return 1;
-        }
+        BOOST_CHECK( errorCode == 0 );
 
         errorCode = micromorphicElastoPlasticity::evaluate_model( time, fparams,
                                                                   current_grad_u,  current_phi,  current_grad_phi_M,
@@ -5447,11 +5337,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
 #endif
                                                                   );
 
-        if ( errorCode != 0 ){
-            std::cout << output_message;
-            results << "test_evaluate_model & False\n";
-            return 1;
-        }
+        BOOST_CHECK( errorCode == 0 );
 
 #ifdef DEBUG_MODE
         solverTools::debugMap numericGradients;
@@ -5460,20 +5346,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
                    it_P != DEBUG_P[ "converged_values" ][ "converged_values" ].end(); it_P++ ){
             
             auto it_M = DEBUG_M[ "converged_values" ][ "converged_values" ].find( it_P->first );
-            if ( it_M == DEBUG_M[ "converged_values" ][ "converged_values" ].end() ){
-                std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
-                results << "test_evaluate_model & False\n";
-                return 1;
-            }
+            BOOST_CHECK( it_M != DEBUG_M[ "converged_values" ][ "converged_values" ].end() );
 
             numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i / 3 ][ i % 3 ] ) );
 
         }
 
-        if ( numericGradients.size() == 0 ){
-            results << "test_evaluate_model & False\n";
-            return 1;
-        }
+        BOOST_CHECK( numericGradients.size() != 0 );
 
         //Check the total Jacobians of the plastic deformation measures
         for ( unsigned int j = 0; j < numericGradients[ "convergedPlasticDeformationGradient" ].size(); j++ ){
@@ -5537,15 +5416,12 @@ BOOST_AUTO_TEST_CASE( testevaluate_model){
 
     }
 
-    results << "test_evaluate_model & True\n";
-    return 1;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
+BOOST_AUTO_TEST_CASE( testComputePlasticDeformationResidual ){
     /*!
      * Test the computation of the plastic deformation residual.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     std::vector< double > fparams = { 2, 1.0e2, 1.5e1,             //Macro hardening parameters
@@ -5825,11 +5701,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
         for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
             
             auto it_M = DEBUG_M.find( it_P->first );
-            if ( it_M == DEBUG_M.end() ){
-                std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
-                results << "test_computePlasticDeformationResidual & False\n";
-                return 1;
-            }
+            BOOST_CHECK( it_M != DEBUG_M.end() );
 
             numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i ] ) );
         }
@@ -6800,15 +6672,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
         }
     }
 
-    results << "test_computePlasticDeformationResidual & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
+BOOST_AUTO_TEST_CASE( testComputePlasticDeformationResidual2 ){
     /*!
      * Second test the computation of the plastic deformation residual.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     std::vector< double > fparams = { 2, 1.0e2, 1.5e1,             //Macro hardening parameters
@@ -7101,11 +6970,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
             
             auto it_M = DEBUG_M.find( it_P->first );
-            if ( it_M == DEBUG_M.end() ){
-                std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
-                results << "test_computePlasticDeformationResidual2 & False\n";
-                return 1;
-            }
+            BOOST_CHECK( it_M != DEBUG_M.end() );
 
             numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i ] ) );
         }
@@ -8174,11 +8039,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
             
             auto it_M = DEBUG_M.find( it_P->first );
-            if ( it_M == DEBUG_M.end() ){
-                std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
-                results << "test_computePlasticDeformationResidual2 & False\n";
-                return 1;
-            }
+            BOOST_CHECK( it_M != DEBUG_M.end() );
 
             numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i ] ) );
         }
@@ -8883,11 +8744,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
         for ( auto it_P = DEBUG_P.begin(); it_P != DEBUG_P.end(); it_P++ ){
             
             auto it_M = DEBUG_M.find( it_P->first );
-            if ( it_M == DEBUG_M.end() ){
-                std::cerr << "ERROR: A KEY EXISTS IN DEBUG_P THAT DOESNT EXIST IN DEBUG_M\n";
-                results << "test_computePlasticDeformationResidual2 & False\n";
-                return 1;
-            }
+            BOOST_CHECK( it_M != DEBUG_M.end() );
 
             numericGradients.emplace( it_P->first, ( it_P->second - it_M->second ) / ( 2 * delta[ i ] ) );
         }
@@ -9244,16 +9101,13 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 
     }
 
-    results << "test_computePlasticDeformationResidual2 & True\n";
-    return 0;
 }
 
-//BOOST_AUTO_TEST_CASE( testmaterialLibraryInterface ){
+//BOOST_AUTO_TEST_CASE( testMaterialLibraryInterface ){
 //    /*!
 //     * Test the interface to the linear elastic model
 //     * via the material library.
 //     *
-//     * :param std::ofstream &results: The output file.
 //     */
 //
 //    //Initialize the model
@@ -9428,11 +9282,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //#endif
 //                                            );
 //
-//    if ( errorCode != 0 ){
-//        std::cout << output_message << "\n";
-//        results << "test_materialLibraryInterface & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( errorCode == 0 );
 //
 //    BOOST_CHECK( vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) );
 //
@@ -9473,11 +9323,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //#endif
 //                              );
 //
-//    if ( errorCode > 0 ){
-//        std::cout << output_message << "\n";
-//        results << "test_materialLibraryInterface & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( errorCode <= 0 );
 //
 //    PK2_result.clear();
 //    SIGMA_result.clear();
@@ -9555,11 +9401,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //#endif
 //                                                            1e-6 );
 //
-//    if ( errorCode > 0 ){
-//        std::cout << "output_message:\n" << output_message << "\n";
-//        results << "test_materialLibraryInterface & False\n";
-//        return 1;
-//    }
+//    BOOST_CHECK( errorCode <= 0 );
 //
 //    BOOST_CHECK( vectorTools::fuzzyEquals( PK2_result, PK2_answer, 1e-5, 1e-5 ) );
 //
@@ -9587,11 +9429,9 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //
 //    BOOST_CHECK( vectorTools::fuzzyEquals( DMDgrad_phi_result, DMDgrad_phi_answer, 1e-4 ) );
 //
-//    results << "test_materialLibraryInterface & True\n";
-//    return 1;
 //}
 //
-//BOOST_AUTO_TEST_CASE( testmaterialLibraryInterface2 ){
+//BOOST_AUTO_TEST_CASE( testMaterialLibraryInterface2 ){
 //    /*!
 //     * Test the interface to the linear elastic model
 //     * via the material library.
@@ -9600,7 +9440,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //     *       on the implementation of the function into a 
 //     *       larger solver code.
 //     *
-//     * :param std::ofstream &results: The output file.
 //     */
 //
 //    //Initialize the model
@@ -9703,12 +9542,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //#endif
 //                                            );
 //
-//    if ( errorCode > 0 ){
-//        std::cout << output_message << "\n";
-//        results << "test_materialLibraryInterface & False\n";
-//        return 1;
-//    }
-//
+//    BOOST_CHECK( errorCode <= 0 );
 //
 //    std::cout << "SDVS:\n"; vectorTools::print( SDVS );
 //    std::cout << "PK2:\n"; vectorTools::print( PK2_result );
@@ -9733,12 +9567,11 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
 //    return 0;
 //}
 
-BOOST_AUTO_TEST_CASE( testevaluate_model_continuation){
+BOOST_AUTO_TEST_CASE( testEvaluate_model_continuation){
     /*!
      * Test the evaluation of the constitutive model when being
      * continued from a previous plastic deformation
      *
-     * :param std::ofstream &results: The output file.
      */
 
     //Initialize the time
@@ -9903,11 +9736,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation){
 #endif
                                                                   );
 
-    if ( errorCode != 0 ){
-        std::cout << output_message;
-        results << "test_evaluate_model_continuation & False\n";
-        return 1;
-    }
+    BOOST_CHECK( errorCode == 0 );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer0 ) );
 
@@ -9994,10 +9823,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation){
                                        - solverTools::floatVector( SDVSAnswer0.begin(), SDVSAnswer0.begin() + 5 );
 
     for ( unsigned int i = 0; i < ISVsDelta.size(); i++ ){
-        if ( ISVsDelta[ i ] < -1e-9 ){
-            results << "test_evaluate_model_continuation (ISVs decreasing) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( ISVsDelta[ i ] >= -1e-9 );
     }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer1 ) );
@@ -10063,16 +9889,13 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, current_M2 ) );
 
-    results << "test_evaluate_model_continuation & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
+BOOST_AUTO_TEST_CASE( testEvaluate_model_continuation2){
     /*!
      * Test the evaluation of the constitutive model when being
      * continued from a previous plastic deformation
      *
-     * :param std::ofstream &results: The output file.
      */
 
     //Initialize the time
@@ -10246,11 +10069,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
 #endif
                                                                   );
 
-    if ( errorCode != 0 ){
-        std::cout << output_message;
-        results << "test_evaluate_model_continuation2 & False\n";
-        return 1;
-    }
+    BOOST_CHECK( errorCode == 0 );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer0 ) );
 
@@ -10344,10 +10163,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
                                        - solverTools::floatVector( SDVSAnswer0.begin(), SDVSAnswer0.begin() + 5 );
 
     for ( unsigned int i = 0; i < ISVsDelta.size(); i++ ){
-        if ( ISVsDelta[ i ] < -1e-9 ){
-            results << "test_evaluate_model_continuation2 (ISVs decreasing) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( ISVsDelta[ i ] >= -1e-9 );
     }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( SDVS, SDVSAnswer1 ) );
@@ -10356,7 +10172,7 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( current_SIGMA1, SIGMAAnswer1 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, MAnswer1 ) ;)
+    BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, MAnswer1 ) );
 
 #ifdef DEBUG_MODE
 
@@ -10420,15 +10236,12 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( current_M1, current_M2 ) );
 
-    results << "test_evaluate_model_continuation2 & True\n";
-    return 0;
 }
 
-//BOOST_AUTO_TEST_CASE( testevaluate_model_history ){
+//BOOST_AUTO_TEST_CASE( testEvaluate_model_history ){
 //    /*!
 //     * Test the material model undergoing a time history.
 //     *
-//     * :param std::ofstream &results: The output file.
 //     */
 //
 //#ifdef DEBUG_MODE
@@ -10597,14 +10410,12 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
 //#endif
 //                                            );
 //   
-//    if ( errorCode > 0 ){
-//        std::cout << output_message << "\n";
-//        results << "test_evaluate_model_history & False\n";
-//#ifdef DEBUG_MODE 
+//    BOOST_CHECK( errorCode <= 0);
+//#ifdef DEBUG_MODE
+//    if( errorCode > 0 ){ 
 //        output_file.close();
-//#endif
-//        return 1;
 //    }
+//#endif
 //
 //#ifdef DEBUG_MODE
 //    output_file << "NEW_INCREMENT\n";
@@ -10897,14 +10708,12 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
 //
 //#endif
 //
-//        if ( errorCode > 0 ){
-//            std::cout << output_message << "\n";
-//            results << "test_evaluate_model_history & False\n";
+//        BOOST_CHECK( errorCode <= 0 );
 //#ifdef DEBUG_MODE
+//        if ( errorCode > 0 ){
 //            output_file.close();
-//#endif
-//            return 1;
 //        }
+//#endif
 //
 //        t += dt;
 //
@@ -10928,15 +10737,12 @@ BOOST_AUTO_TEST_CASE( testevaluate_model_continuation2){
 //#ifdef DEBUG_MODE
 //    output_file.close();
 //#endif
-//    results << "test_evaluate_model_history & True\n";
-//    return 0;
 //}
 
-BOOST_AUTO_TEST_CASE( testcomputeDruckerPragerInternalParameters ){
+BOOST_AUTO_TEST_CASE( testComputeDruckerPragerInternalParameters ){
     /*!
      * Test the computation of the internal parameters for the Drucker-Prager plasticity.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     parameterType frictionAngle = 0.25;
@@ -10951,25 +10757,15 @@ BOOST_AUTO_TEST_CASE( testcomputeDruckerPragerInternalParameters ){
 
     BOOST_CHECK( !error );
 
-    if ( !( vectorTools::fuzzyEquals( Aresult, Aanswer ) ) ){
-        results << "test_computeDruckerPragerInternalParameters (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals( Aresult, Aanswer ) );
 
-    if ( !( vectorTools::fuzzyEquals( Bresult, Banswer ) ) ){
-        results << "test_computeDruckerPragerInternalParameters (test 2) & False\n";
-        return 1;
-    }
-
-    results << "test_computeDruckerPragerInternalParameters & True\n";
-    return 0;
+    BOOST_CHECK( vectorTools::fuzzyEquals( Bresult, Banswer ) );
 }
 
-BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual ){
+BOOST_AUTO_TEST_CASE( testComputePlasticMultiplierResidual ){
     /*!
      * Test the computation of the plastic multiplier residual.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     std::vector< double > fparams = { 2, 1.0e2, 1.5e1,             //Macro hardening parameters
@@ -11197,10 +10993,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual ){
         solverTools::debugMap numericGradients;
         for ( auto itP = DEBUG_P.begin(); itP != DEBUG_P.end(); itP++ ){
             auto itM = DEBUG_M.find( itP->first );
-            if ( itM == DEBUG_M.end() ){
-                results << "test_computePlasticMultiplierResidual (DEBUG) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( itM != DEBUG_M.end() );
 
             numericGradients.emplace( itP->first, ( itP->second - itM->second ) / ( 2 * delta[ i ] ) );
         }
@@ -11233,15 +11026,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual ){
         }
     }
 
-    results << "test_computePlasticMultiplierResidual & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
+BOOST_AUTO_TEST_CASE( testComputePlasticMultiplierResidual2 ){
     /*!
      * Test the computation of the plastic multiplier residual.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     std::vector< double > fparams = { 2, 1.0e2, 1.5e1,             //Macro hardening parameters
@@ -11471,10 +11261,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
         solverTools::debugMap numericGradients;
         for ( auto itP = DEBUG_P.begin(); itP != DEBUG_P.end(); itP++ ){
             auto itM = DEBUG_M.find( itP->first );
-            if ( itM == DEBUG_M.end() ){
-                results << "test_computePlasticMultiplierResidual2 (DEBUG) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( itM != DEBUG_M.end() );
 
             numericGradients.emplace( itP->first, ( itP->second - itM->second ) / ( 2 * delta[ i ] ) );
         }
@@ -11579,10 +11366,7 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
         for ( auto itP = DEBUG_P.begin(); itP != DEBUG_P.end(); itP++ ){
             auto itM = DEBUG_M.find( itP->first );
 
-            if ( itM == DEBUG_M.end() ){
-                results << "test_computePlasticMultiplierResidual2 (DEBUG) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( itM != DEBUG_M.end() );
 
             numericGradients.emplace( itP->first, ( itP->second - itM->second ) / ( 2 * delta[ i ] ) );
         }
@@ -11629,18 +11413,13 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
             BOOST_CHECK( vectorTools::fuzzyEquals( gradCol[ j ], floatOuts[ 13 ][ 45 * j + i ] ) );
         }
     }
-
-
-    results << "test_computePlasticMultiplierResidual2 & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testhomotopySolve ){
+BOOST_AUTO_TEST_CASE( testHomotopySolve ){
     /*!
      * Test of the homotopy solver with a problematic 
      * timestep observed in application.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     solverTools::floatVector x0 = { 0, 0, 0, 0, 0 };
@@ -11730,15 +11509,12 @@ BOOST_AUTO_TEST_CASE( testhomotopySolve ){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answer, solutionVector ) );
 
-    results << "test_homotopySolve & True\n";
-    return 0;
 }
 
-BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierLagrangian ){
+BOOST_AUTO_TEST_CASE( testComputePlasticMultiplierLagrangian ){
     /*!
      * Test the computation of the Lagrangian of the plastic multiplier.
      *
-     * :param std::ofstream &results: The output file.
      */
 
     solverTools::floatVector x0 = { 0.1, 0.01, 0.02, 0.03, 0.04, 1, 1, 1, 1, 1 };
@@ -11838,61 +11614,4 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierLagrangian ){
         BOOST_CHECK( vectorTools::fuzzyEquals( grad, jacobian[ i ] ) );
     }
 
-    results << "test_computePlasticMultiplierLagrangian & True\n";
-    return 0;
-}
-
-int main(){
-    /*!
-    The main loop which runs the tests defined in the 
-    accompanying functions. Each function should output
-    the function name followed by & followed by True or False 
-    if the test passes or fails respectively.
-    */
-
-    //Open the results file
-    std::ofstream results;
-    results.open("results.tex");
-
-    //Run the tests
-    test_computeDruckerPragerInternalParameters( results );
-    test_computeSecondOrderDruckerPragerYieldEquation( results );
-    test_computeHigherOrderDruckerPragerYieldEquation( results );
-    test_computeElasticPartOfDeformation( results );
-    test_computeElasticDeformationMeasures( results );
-    test_computePlasticMacroVelocityGradient( results );
-    test_computePlasticMicroVelocityGradient( results );
-    test_computePlasticMicroGradientVelocityGradient( results );
-    test_computePlasticVelocityGradients( results );
-    test_evolvePlasticMicroGradChi( results );
-    test_evolvePlasticDeformation( results );
-    test_evolveStrainStateVariables( results );
-    test_computeFlowDirections( results );
-    test_computePlasticDeformationResidual( results );
-    test_computePlasticDeformationResidual2( results );
-    test_extractMaterialParameters( results );
-    test_extractStateVariables( results );
-    test_assembleFundamentalDeformationMeasures( results );
-    test_evaluateYieldFunctions( results );
-    test_computeCohesion( results );
-    test_cout_redirect( results );
-    test_cerr_redirect( results );
-
-    test_computePlasticMultiplierResidual( results );
-    test_computePlasticMultiplierResidual2( results );
-    test_evaluate_model( results );
-    test_evaluate_model_continuation( results );
-    test_evaluate_model_continuation2( results );
-
-//    test_materialLibraryInterface( results );
-
-//    test_evaluate_model_history( results );
-
-//    test_computePlasticMultiplierLagrangian( results );
-    test_homotopySolve( results );
-
-    //Close the results file
-    results.close();
-
-    return 0;
 }
