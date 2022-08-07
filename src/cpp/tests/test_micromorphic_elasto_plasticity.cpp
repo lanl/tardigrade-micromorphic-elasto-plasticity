@@ -1134,19 +1134,11 @@ BOOST_AUTO_TEST_CASE( testcomputeElasticDeformationMeasures ){
                                                                                  resultCeP, resultCChieP, resultPsieP,
                                                                                  resultGammaeP );
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeElasticDeformationMeasures & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computeElasticDeformationMeasures( Fe, chie, gradChie - delta,
                                                                                  resultCeM, resultCChieM, resultPsieM,
                                                                                  resultGammaeM );
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeElasticDeformationMeasures & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultCeP - resultCeM ) / ( 2 * delta[i] );
 
@@ -1262,10 +1254,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                     resultLp, resultMicroLp, resultMicroGradientLp );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticVelocityGradients & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( resultLp, answerLp ) ){
         results << "test_computePlasticVelocityGradients (test 1) & False\n";
@@ -1300,10 +1288,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                            dMicroGradientLpdMicroGradientGammaJ );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticVelocityGradients & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( resultLpJ, answerLp ) ){
         results << "test_computePlasticVelocityGradients (test 4) & False\n";
@@ -1359,10 +1343,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                            dPlasticMicroGradientLdMicroGradientFlowDirectionJ2 );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticVelocityGradients & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( resultLpJ2, answerLp ) ){
         results << "test_computePlasticVelocityGradients (test 7) & False\n";
@@ -1392,10 +1372,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                            resultLpP, resultMicroLpP, resultMicroGradientLpP );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticVelocityGradients & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma - scalarDelta, microGamma, microGradientGamma,
                                                                            Ce, microCe, Psie, Gammae, macroFlowDirection, 
@@ -1403,10 +1379,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                            resultLpM, resultMicroLpM, resultMicroGradientLpM );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticVelocityGradients & False\n";
-        return 1;
-    }
 
     variableVector gradCol = ( resultLpP - resultLpM ) / ( 2 * scalarDelta );
 
@@ -1443,10 +1415,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                            resultLpP, resultMicroLpP, resultMicroGradientLpP );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticVelocityGradients & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma - scalarDelta, microGradientGamma,
                                                                            Ce, microCe, Psie, Gammae, macroFlowDirection, 
@@ -1454,10 +1422,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                            resultLpM, resultMicroLpM, resultMicroGradientLpM );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticVelocityGradients & False\n";
-        return 1;
-    }
 
     gradCol = ( resultLpP - resultLpM ) / ( 2 * scalarDelta );
 
@@ -1506,10 +1470,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpP, resultMicroLpP, resultMicroGradientLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma - delta,
                                                                                Ce, microCe, Psie, Gammae, macroFlowDirection, 
@@ -1517,10 +1477,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpM, resultMicroLpM, resultMicroGradientLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
@@ -1562,10 +1518,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpP, resultMicroLpP, resultMicroGradientLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
                                                                                Ce - delta, microCe, Psie, Gammae, macroFlowDirection, 
@@ -1573,10 +1525,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpM, resultMicroLpM, resultMicroGradientLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
@@ -1613,10 +1561,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpP, resultMicroLpP, resultMicroGradientLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
                                                                                Ce, microCe - delta, Psie, Gammae, macroFlowDirection, 
@@ -1624,10 +1568,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpM, resultMicroLpM, resultMicroGradientLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
@@ -1666,10 +1606,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpP, resultMicroLpP, resultMicroGradientLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
                                                                                Ce, microCe, Psie - delta, Gammae, macroFlowDirection, 
@@ -1677,10 +1613,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpM, resultMicroLpM, resultMicroGradientLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
@@ -1719,10 +1651,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpP, resultMicroLpP, resultMicroGradientLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
                                                                                Ce, microCe, Psie, Gammae - delta, macroFlowDirection, 
@@ -1730,10 +1658,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpM, resultMicroLpM, resultMicroGradientLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
@@ -1772,10 +1696,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpP, resultMicroLpP, resultMicroGradientLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
                                                                                Ce, microCe, Psie, Gammae, macroFlowDirection - delta, 
@@ -1783,10 +1703,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpM, resultMicroLpM, resultMicroGradientLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
@@ -1827,10 +1743,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpP, resultMicroLpP, resultMicroGradientLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
                                                                                Ce, microCe, Psie, Gammae, macroFlowDirection,
@@ -1838,10 +1750,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpM, resultMicroLpM, resultMicroGradientLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
@@ -1882,10 +1790,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpP, resultMicroLpP, resultMicroGradientLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticVelocityGradients( macroGamma, microGamma, microGradientGamma,
                                                                                Ce, microCe, Psie, Gammae, macroFlowDirection,
@@ -1893,10 +1797,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticVelocityGradients ){
                                                                                resultLpM, resultMicroLpM, resultMicroGradientLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticVelocityGradients & False\n";
-            return 1;
-        }
 
         gradCol = ( resultLpP - resultLpM ) / ( 2 * delta[ i ] );
 
@@ -1965,10 +1865,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
                                                                                         resultMacroLp );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMacroVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroLp, resultMacroLp ) ){
         results << "test_computePlasticMacroVelocityGradient (test 1) & False\n";
@@ -1985,10 +1881,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
                                                                                dMacroLdMicroGammaJ );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMacroVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroLp, resultMacroLpJ ) ){
         results << "test_computePlasticMacroVelocityGradient (test 2) & False\n";
@@ -2007,10 +1899,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
                                                                                dMacroLdMicroFlowDirection );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMacroVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroLp, resultMacroLpJ2 ) ){
         results << "test_computePlasticMacroVelocityGradient (test 3) & False\n";
@@ -2028,20 +1916,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
                                                                                resultMacroLpP );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMacroVelocityGradient & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma - scalarDelta, microGamma,
                                                                                inverseCe, macroFlowDirection, microFlowDirection,
                                                                                resultMacroLpM );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMacroVelocityGradient & False\n";
-        return 1;
-    }
 
     variableVector gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * scalarDelta );
 
@@ -2063,20 +1943,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
                                                                                resultMacroLpP );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMacroVelocityGradient & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma - scalarDelta,
                                                                                inverseCe, macroFlowDirection, microFlowDirection,
                                                                                resultMacroLpM );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMacroVelocityGradient & False\n";
-        return 1;
-    }
 
     gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * scalarDelta );
 
@@ -2102,10 +1974,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
                                                                                    microFlowDirection, resultMacroLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMacroVelocityGradient & False\n";
-            return 1;
-        }
 
         inverseCeTemp = vectorTools::inverse( Ce - delta, 3, 3 );
     
@@ -2114,10 +1982,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
                                                                                    microFlowDirection, resultMacroLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMacroVelocityGradient & False\n";
-            return 1;
-        }
     
         gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
 
@@ -2139,20 +2003,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
                                                                                    microFlowDirection, resultMacroLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMacroVelocityGradient & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
                                                                                    inverseCe, macroFlowDirection - delta,
                                                                                    microFlowDirection, resultMacroLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMacroVelocityGradient & False\n";
-            return 1;
-        }
     
         gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
 
@@ -2174,20 +2030,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMacroVelocityGradient ){
                                                                                    microFlowDirection + delta, resultMacroLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMacroVelocityGradient & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
                                                                                    inverseCe, macroFlowDirection,
                                                                                    microFlowDirection - delta, resultMacroLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMacroVelocityGradient & False\n";
-            return 1;
-        }
     
         gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
 
@@ -2237,10 +2085,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
                                                                                         microFlowDirection, resultMicroLp );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMicroVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLp ) ){
         results << "test_computePlasticMicroVelocityGradient (test 1) & False\n";
@@ -2256,10 +2100,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
                                                                                dMicroLpdMicroGamma );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMicroVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLpJ ) ){
         results << "test_computePlasticMicroVelocityGradient (test 2) & False\n";
@@ -2277,10 +2117,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
                                                                                dMicroLpdMicroFlowDirection );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMicroVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroLp, resultMicroLpJ ) ){
         results << "test_computePlasticMicroVelocityGradient (test 2) & False\n";
@@ -2301,19 +2137,11 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
                                                                                microFlowDirection, resultMicroLpP );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMicroVelocityGradient & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::computePlasticMicroVelocityGradient( microGamma - scalarDelta, Ce, Psie, invPsie,
                                                                                microFlowDirection, resultMicroLpM );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMicroVelocityGradient & False\n";
-        return 1;
-    }
 
     variableVector gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * scalarDelta );
 
@@ -2336,19 +2164,11 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
                                                                                    microFlowDirection, resultMicroLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroVelocityGradient & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::computePlasticMicroVelocityGradient( microGamma, Ce - delta, Psie, invPsie,
                                                                                    microFlowDirection, resultMicroLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroVelocityGradient & False\n";
-            return 1;
-        }
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
@@ -2372,10 +2192,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
                                                                                    microFlowDirection, resultMicroLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroVelocityGradient & False\n";
-            return 1;
-        }
     
         PsieTemp = Psie - delta;
         invPsieTemp = vectorTools::inverse( PsieTemp, 3, 3 );
@@ -2384,10 +2200,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
                                                                                    microFlowDirection, resultMicroLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroVelocityGradient & False\n";
-            return 1;
-        }
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
@@ -2407,19 +2219,11 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroVelocityGradient ){
                                                                                    microFlowDirection + delta, resultMicroLpP );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroVelocityGradient & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computePlasticMicroVelocityGradient( microGamma, Ce, Psie, invPsie,
                                                                                    microFlowDirection - delta, resultMicroLpM );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroVelocityGradient & False\n";
-            return 1;
-        }
 
         gradCol = ( resultMicroLpP - resultMicroLpM ) / ( 2 * delta[ i ] );
 
@@ -2502,10 +2306,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                                 microLp, resultMicroGradLp );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLp ) ){
         results << "test_computePlasticMicroGradientVelocityGradient (test 1) & False\n";
@@ -2521,10 +2321,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                        resultSkewTerm );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLp1 ) ){
         results << "test_computePlasticMicroGradientVelocityGradient (test 2) & False\n";
@@ -2547,10 +2343,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                        dPlasticMicroGradientLdMicroGradientGamma,
                                                                                        dPlasticMicroGradientLdPlasticMicroL );
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ ) ){
         results << "test_computePlasticMicroGradientVelocityGradient (test 4) & False\n";
@@ -2567,10 +2359,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                        dPlasticMicroGradientLdMicroGradientGamma2,
                                                                                        dPlasticMicroGradientLdPlasticMicroL2 );
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ2 ) ){
         results << "test_computePlasticMicroGradientVelocityGradient (test 5) & False\n";
@@ -2598,10 +2386,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                        dPlasticMicroGradientLdElasticGamma,
                                                                                        dPlasticMicroGradientLdMicroGradientFlowDirection );
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMicroGradLp, resultMicroGradLpJ3 ) ){
         results << "test_computePlasticMicroGradientVelocityGradient (test 5) & False\n";
@@ -2621,20 +2405,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                            microLp, resultMicroGradLpP );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computePlasticMicroGradientVelocityGradient( microGradientGamma - delta, Psie, invPsie,
                                                                                            elasticGamma, microGradientFlowDirection,
                                                                                            microLp, resultMicroGradLpM );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
@@ -2672,20 +2448,12 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                            microLp + delta, resultMicroGradLpP );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computePlasticMicroGradientVelocityGradient( microGradientGamma, Psie, invPsie,
                                                                                            elasticGamma, microGradientFlowDirection,
                                                                                            microLp - delta, resultMicroGradLpM );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
@@ -2726,10 +2494,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                            microLp, resultMicroGradLpP );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-            return 1;
-        }
 
         PsieTemp = Psie - delta;
         invPsieTemp = vectorTools::inverse( PsieTemp, 3, 3 );
@@ -2739,10 +2503,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                            microLp, resultMicroGradLpM );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
@@ -2767,10 +2527,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                            microLp, resultMicroGradLpP );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computePlasticMicroGradientVelocityGradient( microGradientGamma, Psie, invPsie,
                                                                                            elasticGamma - delta,
@@ -2778,10 +2534,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                            microLp, resultMicroGradLpM );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
@@ -2806,10 +2558,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                            microLp, resultMicroGradLpP );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computePlasticMicroGradientVelocityGradient( microGradientGamma, Psie, invPsie,
                                                                                            elasticGamma,
@@ -2817,10 +2565,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMicroGradientVelocityGradient ){
                                                                                            microLp, resultMicroGradLpM );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMicroGradientVelocityGradient & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
@@ -2945,10 +2689,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                               resultCurrentPlasticMicroGradient, alpha );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolvePlasticMicroGradChi & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradient ) ){
         results << "test_evolvePlasticMicroGradChi (test 1)  & False\n";
@@ -2970,10 +2710,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                      resultCurrentPlasticMicroGradient2, LHS2, alpha );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolvePlasticMicroGradChi & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradient2 ) ){
         results << "test_evolvePlasticMicroGradChi (test 2)  & False\n";
@@ -3010,10 +2746,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                      alpha );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolvePlasticMicroGradChi & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradientJ ) ){
         results << "test_evolvePlasticMicroGradChi (test 4)  & False\n";
@@ -3040,10 +2772,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                          resultP, alpha );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolvePlasticMicroGradChi & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation - delta,
                                                                          currentPlasticMacroVelocityGradient,
@@ -3057,10 +2785,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                          resultM, alpha );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolvePlasticMicroGradChi & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
@@ -3091,10 +2815,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                          resultP, alpha );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolvePlasticMicroGradChi & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
                                                                          currentPlasticMacroVelocityGradient - delta,
@@ -3108,10 +2828,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                          resultM, alpha );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolvePlasticMicroGradChi & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
@@ -3142,10 +2858,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                          resultP, alpha );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolvePlasticMicroGradChi & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
                                                                          currentPlasticMacroVelocityGradient,
@@ -3159,10 +2871,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                          resultM, alpha );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolvePlasticMicroGradChi & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
@@ -3193,10 +2901,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                          resultP, alpha );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolvePlasticMicroGradChi & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
                                                                          currentPlasticMacroVelocityGradient,
@@ -3210,10 +2914,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticMicroGradChi ){
                                                                          resultM, alpha );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolvePlasticMicroGradChi & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
@@ -3317,10 +3017,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
                                                                              alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        results << "test_evolvePlasticDeformation & False\n";
-        return 1;
-    }
-
     BOOST_CHECK( vectorTools::fuzzyEquals( resultMacro, answerMacro ) ){
         results << "test_evolvePlasticDeformation (test 1) & False\n";
         return 1;
@@ -3355,9 +3051,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
                                                                         alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        results << "test_evolvePlasticDeformation & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( resultMacroJ, answerMacro ) ){
         results << "test_evolvePlasticDeformation (test 4) & False\n";
@@ -3396,9 +3089,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
                                                                             alphaMacro, alphaMicro, alphaMicroGrad );
 
         BOOST_CHECK( !error );
-            results << "test_evolvePlasticDeformation & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient - delta,
                                                                             currentPlasticMicroVelocityGradient,
@@ -3413,9 +3103,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
                                                                             alphaMacro, alphaMicro, alphaMicroGrad );
 
         BOOST_CHECK( !error );
-            results << "test_evolvePlasticDeformation & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
@@ -3465,9 +3152,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
                                                                             alphaMacro, alphaMicro, alphaMicroGrad );
 
         BOOST_CHECK( !error );
-            results << "test_evolvePlasticDeformation & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
                                                                             currentPlasticMicroVelocityGradient - delta,
@@ -3482,9 +3166,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
                                                                             alphaMacro, alphaMicro, alphaMicroGrad );
 
         BOOST_CHECK( !error );
-            results << "test_evolvePlasticDeformation & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
@@ -3534,9 +3215,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
                                                                             alphaMacro, alphaMicro, alphaMicroGrad );
 
         BOOST_CHECK( !error );
-            results << "test_evolvePlasticDeformation & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
                                                                             currentPlasticMicroVelocityGradient,
@@ -3551,9 +3229,6 @@ BOOST_AUTO_TEST_CASE( testevolvePlasticDeformation ){
                                                                             alphaMacro, alphaMicro, alphaMicroGrad );
 
         BOOST_CHECK( !error );
-            results << "test_evolvePlasticDeformation & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
@@ -3643,10 +3318,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                                alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolveStrainStateVariables & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( resultMacroISV, answerMacroISV ) ){
         results << "test_evolveStrainStateVariables (test 1) & False\n";
@@ -3687,10 +3358,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                       alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolveStrainStateVariables & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( resultMacroISVJ, answerMacroISV ) ){
         results << "test_evolveStrainStateVariables (test 4) & False\n";
@@ -3730,10 +3397,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                       alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolveStrainStateVariables & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma - scalarDelta, currentMicroGamma,
                                                                       currentMicroGradientGamma, currentdGdMacroC,
@@ -3747,10 +3410,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                       alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolveStrainStateVariables & False\n";
-        return 1;
-    }
 
     variableType gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
 
@@ -3790,10 +3449,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                       alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolveStrainStateVariables & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma - scalarDelta,
                                                                       currentMicroGradientGamma, currentdGdMacroC,
@@ -3807,10 +3462,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                       alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolveStrainStateVariables & False\n";
-        return 1;
-    }
 
     gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
 
@@ -3850,10 +3501,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                       alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolveStrainStateVariables & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
                                                                       currentMicroGradientGamma, currentdGdMacroC - scalarDelta,
@@ -3867,10 +3514,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                       alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolveStrainStateVariables & False\n";
-        return 1;
-    }
 
     gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
 
@@ -3910,10 +3553,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                       alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolveStrainStateVariables & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
                                                                       currentMicroGradientGamma, currentdGdMacroC,
@@ -3927,10 +3566,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                       alphaMacro, alphaMicro, alphaMicroGrad );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evolveStrainStateVariables & False\n";
-        return 1;
-    }
 
     gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * scalarDelta );
 
@@ -3972,10 +3607,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                           alphaMacro, alphaMicro, alphaMicroGrad );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolveStrainStateVariables & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
                                                                           currentMicroGradientGamma - delta, currentdGdMacroC,
@@ -3989,10 +3620,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                           alphaMacro, alphaMicro, alphaMicroGrad );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolveStrainStateVariables & False\n";
-            return 1;
-        }
     
         gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * delta[ i ] );
     
@@ -4035,10 +3662,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                           alphaMacro, alphaMicro, alphaMicroGrad );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolveStrainStateVariables & False\n";
-            return 1;
-        }
     
         error = micromorphicElastoPlasticity::evolveStrainStateVariables( Dt, currentMacroGamma, currentMicroGamma,
                                                                           currentMicroGradientGamma, currentdGdMacroC,
@@ -4052,10 +3675,6 @@ BOOST_AUTO_TEST_CASE( testevolveStrainStateVariables){
                                                                           alphaMacro, alphaMicro, alphaMicroGrad );
     
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evolveStrainStateVariables & False\n";
-            return 1;
-        }
     
         gradS = ( resultMacroISVP - resultMacroISVM ) / ( 2 * delta[ ( int )( i / 3 ) ][ i % 3 ] );
     
@@ -4165,10 +3784,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                           resultdGdMicroCohesion, resultdGdMicroGradientCohesion );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computeFlowDirections & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroFlowDirection, resultMacroFlowDirection ) ){
         results << "test_computeFlowDirections (test 1) & False\n";
@@ -4223,10 +3838,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                  dMicroGradientFlowDirectiondElasticRCG );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computeFlowDirections & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerMacroFlowDirection, resultMacroFlowDirectionJ ) ){
         results << "test_computeFlowDirections (test 7) & False\n";
@@ -4282,10 +3893,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                      resultdGdMicroCohesionP, resultdGdMicroGradientCohesionP );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeFlowDirections & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress - delta, referenceMicroStress, referenceHigherOrderStress,
                                                                      macroCohesion, microCohesion, microGradientCohesion,
@@ -4296,10 +3903,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                      resultdGdMicroCohesionM, resultdGdMicroGradientCohesionM );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeFlowDirections & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
 
@@ -4380,10 +3983,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                      resultdGdMicroCohesionP, resultdGdMicroGradientCohesionP );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeFlowDirections & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress - delta, referenceHigherOrderStress,
                                                                      macroCohesion, microCohesion, microGradientCohesion,
@@ -4394,10 +3993,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                      resultdGdMicroCohesionM, resultdGdMicroGradientCohesionM );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeFlowDirections & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
 
@@ -4478,10 +4073,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                      resultdGdMicroCohesionP, resultdGdMicroGradientCohesionP );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeFlowDirections & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress - delta,
                                                                      macroCohesion, microCohesion, microGradientCohesion,
@@ -4492,10 +4083,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                      resultdGdMicroCohesionM, resultdGdMicroGradientCohesionM );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeFlowDirections & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
 
@@ -4573,10 +4160,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                      resultdGdMicroCohesionP, resultdGdMicroGradientCohesionP );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeFlowDirections & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
                                                                      macroCohesion, microCohesion, microGradientCohesion,
@@ -4587,10 +4170,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                      resultdGdMicroCohesionM, resultdGdMicroGradientCohesionM );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeFlowDirections & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
 
@@ -4666,10 +4245,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                  resultdGdMicroCohesionP, resultdGdMicroGradientCohesionP );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computeFlowDirections & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
                                                                  macroCohesion - deltaScalar, microCohesion, microGradientCohesion,
@@ -4680,10 +4255,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                  resultdGdMicroCohesionM, resultdGdMicroGradientCohesionM );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computeFlowDirections & False\n";
-        return 1;
-    }
 
     variableVector gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * deltaScalar );
 
@@ -4749,10 +4320,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                  resultdGdMicroCohesionP, resultdGdMicroGradientCohesionP );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computeFlowDirections & False\n";
-        return 1;
-    }
 
     error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
                                                                  macroCohesion, microCohesion - deltaScalar, microGradientCohesion,
@@ -4763,10 +4330,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                  resultdGdMicroCohesionM, resultdGdMicroGradientCohesionM );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computeFlowDirections & False\n";
-        return 1;
-    }
 
     gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * deltaScalar );
 
@@ -4834,10 +4397,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                      resultdGdMicroCohesionP, resultdGdMicroGradientCohesionP );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeFlowDirections & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computeFlowDirections( PK2Stress, referenceMicroStress, referenceHigherOrderStress,
                                                                      macroCohesion, microCohesion, microGradientCohesion - delta,
@@ -4848,10 +4407,6 @@ BOOST_AUTO_TEST_CASE( testcomputeFlowDirections ){
                                                                      resultdGdMicroCohesionM, resultdGdMicroGradientCohesionM );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computeFlowDirections & False\n";
-            return 1;
-        }
 
         gradCol = ( resultMacroFlowDirectionP - resultMacroFlowDirectionM ) / ( 2 * delta[ i ] );
 
@@ -4969,31 +4524,15 @@ BOOST_AUTO_TEST_CASE( testextractMaterialParameters ){
 
     errorOut error = micromorphicLinearElasticity::formIsotropicA( 1.7, 1.8, answerAmatrix );
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_extractMaterialParameters & False\n";
-        return 1;
-    }
 
     error = micromorphicLinearElasticity::formIsotropicB( 2.8, 0.76, 0.15, 9.8, 5.4, answerBmatrix );
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_extractMaterialParameters & False\n";
-        return 1;
-    }
 
     error = micromorphicLinearElasticity::formIsotropicC( { 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.}, answerCmatrix );
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_extractMaterialParameters & False\n";
-        return 1;
-    }
 
     error = micromorphicLinearElasticity::formIsotropicD( 0.76, 5.4, answerDmatrix );
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_extractMaterialParameters & False\n";
-        return 1;
-    }
 
     constantType answerAlphaMacro = 0.1;
     constantType answerAlphaMicro = 0.2;
@@ -5009,10 +4548,6 @@ BOOST_AUTO_TEST_CASE( testextractMaterialParameters ){
                 relativeTolerance, absoluteTolerance );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_extractMaterialParameters & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( macroHardeningParameters, answerMacroHardeningParameters ) ){
         results << "test_extractMaterialParameters (test 1) & False\n";
@@ -5151,10 +4686,6 @@ BOOST_AUTO_TEST_CASE( testextractStateVariables ){
                          previousPlasticGradientMicroDeformation );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_extractStateVariables & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answerPreviousMacroStrainISV, previousMacroStrainISV ) ){
         results << "test_extractStateVariables (test 1) & False\n";
@@ -5290,9 +4821,6 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
                                                                                            resultF, resultChi, resultGradChi );
 
     BOOST_CHECK( !error );
-        results << "test_assembleFundamentalDeformationMeasures & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( resultF, answerDeformationGradient ) ){
         results << "test_assembleFundamentalDeformationMeasures (test 1) & False\n";
@@ -5318,9 +4846,6 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
                                                                                   dFdGradU, dChidPhi, dGradChidGradPhi );
 
     BOOST_CHECK( !error );
-        results << "test_assembleFundamentalDeformationMeasures & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( resultFJ, answerDeformationGradient ) ){
         results << "test_assembleFundamentalDeformationMeasures (test 4) & False\n";
@@ -5367,17 +4892,11 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
                                                                                       FP, chiP, gradChiP );
 
         BOOST_CHECK( !error );
-            results << "test_assembleFundamentalDeformationMeasures & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( negative_perturb, phi, grad_phi,
                                                                                       FM, chiM, gradChiM );
 
         BOOST_CHECK( !error );
-            results << "test_assembleFundamentalDeformationMeasures & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( FP - FM ) / ( 2 * delta[ ii ][ ij ] );
 
@@ -5425,17 +4944,11 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
                                                                                       FP, chiP, gradChiP );
 
         BOOST_CHECK( !error );
-            results << "test_assembleFundamentalDeformationMeasures & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( grad_u, negative_perturb, grad_phi,
                                                                                       FM, chiM, gradChiM );
 
         BOOST_CHECK( !error );
-            results << "test_assembleFundamentalDeformationMeasures & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( FP - FM ) / ( 2 * delta[ i ] );
 
@@ -5504,17 +5017,11 @@ BOOST_AUTO_TEST_CASE( testassembleFundamentalDeformationMeasures ){
                                                                                       FP, chiP, gradChiP );
 
         BOOST_CHECK( !error );
-            results << "test_assembleFundamentalDeformationMeasures & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::assembleFundamentalDeformationMeasures( grad_u, phi, negative_perturb,
                                                                                       FM, chiM, gradChiM );
 
         BOOST_CHECK( !error );
-            results << "test_assembleFundamentalDeformationMeasures & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( FP - FM ) / ( 2 * delta[ ii ][ ij ] );
 
@@ -5611,10 +5118,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evaluateYieldFunctions & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( result, answer ) ){
         results << "test_evaluateYieldFunctions (test 1) & False\n";
@@ -5657,10 +5160,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_evaluateYieldFunctions & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( resultJ, answer ) ){
         results << "test_evaluateYieldFunctions (test 2) & False\n";
@@ -5690,10 +5189,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress - delta, SigmaStress, M, macroCohesion, microCohesion,
@@ -5708,10 +5203,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
@@ -5755,10 +5246,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress - delta, M, macroCohesion, microCohesion,
@@ -5773,10 +5260,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
@@ -5820,10 +5303,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M - delta, macroCohesion, microCohesion,
@@ -5838,10 +5317,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
@@ -5885,10 +5360,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion - delta, microCohesion,
@@ -5903,10 +5374,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta );
 
@@ -5950,10 +5417,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion, microCohesion - delta,
@@ -5968,10 +5431,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta );
 
@@ -6015,10 +5474,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion, microCohesion,
@@ -6033,10 +5488,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
@@ -6079,10 +5530,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
         error = micromorphicElastoPlasticity::evaluateYieldFunctions( PK2Stress, SigmaStress, M, macroCohesion, microCohesion,
@@ -6097,10 +5544,6 @@ BOOST_AUTO_TEST_CASE( testevaluateYieldFunctions ){
 #endif
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_evaluateYieldFunctions & False\n";
-            return 1;
-        }
 
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
@@ -6154,9 +5597,6 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
                                                                     microGradientC );
 
     BOOST_CHECK( !error );
-        results << "test_computeCohesion & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( macroC, answerMacroC ) ){
         results << "test_computeCohesion (test 1) & False\n";
@@ -6187,9 +5627,6 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
                                                            dMicroCdMicroStrainISV, dMicroGradientCdMicroStrainISV );
 
     BOOST_CHECK( !error );
-        results << "test_computeCohesion & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( macroCJ, answerMacroC ) ){
         results << "test_computeCohesion (test 4) & False\n";
@@ -6223,9 +5660,6 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
                                                                microGradientCP );
 
         BOOST_CHECK( !error );
-            results << "test_computeCohesion & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV - delta, microStrainISV, microGradientStrainISV,
                                                                macroHardeningParameters, microHardeningParameters,
@@ -6233,9 +5667,6 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
                                                                microGradientCM );
 
         BOOST_CHECK( !error );
-            results << "test_computeCohesion & False\n";
-            return 1;
-        }
 
         variableType grad = ( macroCP - macroCM ) / ( 2 * delta );
 
@@ -6277,9 +5708,6 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
                                                                microGradientCP );
 
         BOOST_CHECK( !error );
-            results << "test_computeCohesion & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV, microStrainISV - delta, microGradientStrainISV,
                                                                macroHardeningParameters, microHardeningParameters,
@@ -6287,9 +5715,6 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
                                                                microGradientCM );
 
         BOOST_CHECK( !error );
-            results << "test_computeCohesion & False\n";
-            return 1;
-        }
 
         variableType grad = ( macroCP - macroCM ) / ( 2 * delta );
 
@@ -6332,9 +5757,6 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
                                                                microGradientCP );
 
         BOOST_CHECK( !error );
-            results << "test_computeCohesion & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computeCohesion( macroStrainISV, microStrainISV, microGradientStrainISV - delta,
                                                                macroHardeningParameters, microHardeningParameters,
@@ -6342,9 +5764,6 @@ BOOST_AUTO_TEST_CASE( testcomputeCohesion ){
                                                                microGradientCM );
 
         BOOST_CHECK( !error );
-            results << "test_computeCohesion & False\n";
-            return 1;
-        }
 
         variableType grad = ( macroCP - macroCM ) / ( 2 * delta[ i ] );
 
@@ -7420,10 +6839,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
                                                                               relativeTolerance, absoluteTolerance );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
-        return 1;
-    }
 
     constantType   Dt = 2.5;
     variableType   currentMacroGamma = 0.01;
@@ -7470,10 +6885,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
     variableVector currentMicroGradientStrainISV( 3, 0 );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
-        return 1;
-    }
 
     solverTools::floatMatrix floatArgsDefault =
         {
@@ -7635,10 +7046,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
 #endif
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticDeformationResidual & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( residualAnswer, residual ) ){
         std::cout << "residual error\n";
@@ -7677,10 +7084,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticDeformationResidual & False\n";
-            return 1;
-        }
 
         fO = floatOutsDefault;
         iO = intOutsDefault;
@@ -7693,10 +7096,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticDeformationResidual & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
 
@@ -9220,10 +8619,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
                                                                               relativeTolerance, absoluteTolerance );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticDeformationResidual2 & False\n";
-        return 1;
-    }
 
     constantType   Dt = 2.5;
     variableType   currentMacroGamma = 0.01;
@@ -9289,10 +8684,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
     variableMatrix previousdMicroGradientGdMicroGradientCohesion( 3, variableVector( 3, 0 ) );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticDeformationResidual2 & False\n";
-        return 1;
-    }
 
     solverTools::floatMatrix floatArgsDefault =
         {
@@ -9395,10 +8786,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
                                                                              );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticDeformationResidual2 & False\n";
-        return 1;
-    }
 
 #ifdef DEBUG_MODE
     //Check if the floatOuts are what is expected.
@@ -9494,10 +8881,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticDeformationResidual2 & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x - delta, fA, iA, residual_M, jacobian_M,
                                                                                  fO_M, iO_M
@@ -9507,10 +8890,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticDeformationResidual2 & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
 
@@ -11072,10 +10451,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticDeformationResidual2 & False\n";
-            return 1;
-        }
         
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs_M, intArgs, residual_M, _J,
                                                                                  fO_M, iO_M
@@ -11085,10 +10460,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticDeformationResidual2 & False\n";
-            return 1;
-        }
 
         //Debug each of the sub-jacobians if required. This can be very slow so it isn't done all the time
 
@@ -12056,10 +11427,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticDeformationResidual2 & False\n";
-            return 1;
-        }
         
         error = micromorphicElastoPlasticity::computePlasticDeformationResidual( x, floatArgs_M, intArgs, residual_M, _J,
                                                                                  fO_M, iO_M
@@ -12069,10 +11436,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticDeformationResidual2 ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticDeformationResidual2 & False\n";
-            return 1;
-        }
 
         //Debug each of the sub-jacobians if required. This can be very slow so it isn't done all the time
 
@@ -14593,10 +13956,6 @@ BOOST_AUTO_TEST_CASE( testcomputeDruckerPragerInternalParameters ){
     errorOut error = micromorphicElastoPlasticity::computeDruckerPragerInternalParameters( frictionAngle, beta, Aresult, Bresult );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computeDruckerPragerInternalParameters & False\n";
-        return 1;
-    }
 
     if ( !( vectorTools::fuzzyEquals( Aresult, Aanswer ) ) ){
         results << "test_computeDruckerPragerInternalParameters (test 1) & False\n";
@@ -14663,10 +14022,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual ){
                                                                               relativeTolerance, absoluteTolerance );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMultiplierResidual & False\n";
-        return 1;
-    }
 
     constantType   Dt = 2.5;
     variableType   currentMacroGamma = 0.01;
@@ -14713,10 +14068,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual ){
     variableVector currentMicroGradientStrainISV( 3, 0 );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMultiplierResidual & False\n";
-        return 1;
-    }
 
     solverTools::floatMatrix floatArgsDefault =
         {
@@ -14806,10 +14157,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual ){
 #endif
                                                                           );
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMultiplierResidual & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( residual, residualAnswer ) ) {
         std::cout << "error: "; vectorTools::print( residual - residualAnswer );
@@ -14846,10 +14193,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMultiplierResidual & False\n";
-            return 1;
-        }
 
         error =  micromorphicElastoPlasticity::computePlasticMultiplierResidual( x - delta, floatArgs, intArgs, rM, _J,
                                                                                  fOM, iOM
@@ -14859,10 +14202,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMultiplierResidual & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
         solverTools::debugMap numericGradients;
@@ -15028,10 +14367,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
                                                                               relativeTolerance, absoluteTolerance );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMultiplierResidual2 & False\n";
-        return 1;
-    }
 
     constantType   Dt = 2.5;
     variableType   currentMacroGamma = 0.01;
@@ -15078,10 +14413,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
     variableVector currentMicroGradientStrainISV( 3, 0 );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMultipliernResidual2 & False\n";
-        return 1;
-    }
 
     solverTools::floatMatrix floatArgsDefault =
         {
@@ -15173,10 +14504,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
                                                                           );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMultiplierResidual2 & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( residual, residualAnswer ) ) {
         std::cout << "error: "; vectorTools::print( residual - residualAnswer );
@@ -15213,10 +14540,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMultiplierResidual2 & False\n";
-            return 1;
-        }
 
         error =  micromorphicElastoPlasticity::computePlasticMultiplierResidual( x - delta, floatArgs, intArgs, rM, _J,
                                                                                  fOM, iOM
@@ -15226,10 +14549,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMultiplierResidual2 & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
         solverTools::debugMap numericGradients;
@@ -15421,10 +14740,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMultiplierResidual2 & False\n";
-            return 1;
-        }
 
         error =  micromorphicElastoPlasticity::computePlasticMultiplierResidual( x, fA_M, intArgs, rM, _J,
                                                                                  fOM, iOM
@@ -15434,10 +14749,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierResidual2 ){
                                                                                );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMultiplierResidual2 & False\n";
-            return 1;
-        }
 
 #ifdef DEBUG_MODE
         solverTools::debugMap numericGradients;
@@ -15633,10 +14944,6 @@ BOOST_AUTO_TEST_CASE( testhomotopySolve ){
                                                   1e-4, 5, 1.0, .01 );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_homotopySolve & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( answer, solutionVector ) ){
         std::cout << "error: "; vectorTools::print( solutionVector - answer );
@@ -15718,10 +15025,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierLagrangian ){
                                                                                      );
 
     BOOST_CHECK( !error );
-        error->print();
-        results << "test_computePlasticMultiplierLagrangian & False\n";
-        return 1;
-    }
 
     BOOST_CHECK( vectorTools::fuzzyEquals( lagrangian, lagrangian_answer ) ){
         results << "test_computePlasticMultiplierLagrangian (test 1) & False\n";
@@ -15746,10 +15049,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierLagrangian ){
                                                                                 );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMultiplierLagrangian & False\n";
-            return 1;
-        }
 
         error = micromorphicElastoPlasticity::computePlasticMultiplierLagrangian( x0 - delta, floatArgs, intArgs, lM, JM,
                                                                                   floatOuts, intOuts
@@ -15759,10 +15058,6 @@ BOOST_AUTO_TEST_CASE( testcomputePlasticMultiplierLagrangian ){
                                                                                 );
 
         BOOST_CHECK( !error );
-            error->print();
-            results << "test_computePlasticMultiplierLagrangian & False\n";
-            return 1;
-        }
 
         solverTools::floatType grad = ( lP - lM ) / ( 2 * delta[ i ] );
         BOOST_CHECK( vectorTools::fuzzyEquals( grad, jacobian[ i ] ) ){
