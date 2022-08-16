@@ -10,6 +10,8 @@ if(NOT cmake_build_type_lower STREQUAL "release")
     target_include_directories(${PROJECT_NAME} PUBLIC
                                "${vector_tools_SOURCE_DIR}/${CPP_SRC_PATH}"
                                "${error_tools_SOURCE_DIR}/${CPP_SRC_PATH}"
+                               "${constitutive_tools_SOURCE_DIR}/${CPP_SRC_PATH}"
+                               "${solver_tools_SOURCE_DIR}/${CPP_SRC_PATH}"
                                "${micromorphic_tools_SOURCE_DIR}/${CPP_SRC_PATH}"
                                "${micromorphic_linear_elasticity_SOURCE_DIR}/${CPP_SRC_PATH}")
 endif()

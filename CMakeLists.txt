@@ -9,6 +9,9 @@ set(CMAKE_SRC_PATH "src/cmake")
 set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
 
+# Add flag for whether to build the python bindings
+set(MICROMORPHIC_ELASTO_PLASTICITY_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether to build the python bindings")
+
 # Add the cmake folder to locate project CMake module(s)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_PATH})
 
@@ -52,6 +55,7 @@ include(FetchContent)
 set(upstream_packages "error_tools" "vector_tools" "solver_tools" "micromorphic_tools" "micromorphic_linear_elasticity")
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
+    set(${package_upper}_BUILD_PYTHON_BINDINGS ${MICROMORPHIC_ELASTO_PLASTICITY_BUILD_PYTHON_BINDINGS})
     find_package(${package} ${upstream_required} CONFIG)
     if(${package}_FOUND)
         message(STATUS "Found ${package}: ${${package}_DIR}")
