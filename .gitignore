@@ -1,0 +1,26 @@
+# Project files
+# Managed by GetVersionFromGitTag.cmake
+VERSION
+
+# Temp files
+*.swp
+
+# C++ and temp files
+*.o
+*.so
+*.nfs*
+build*/
+*_results.tex
+*results.tex
+
+# Abaqus output files
+*.com
+*.dat
+*.msg
+*.odb
+*.prt
+*.sim
+*.sta
+
+# PyCharm IDE
+.idea/

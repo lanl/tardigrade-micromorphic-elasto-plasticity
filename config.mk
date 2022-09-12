@@ -1,4 +1,5 @@
-# Micromorphic tools, a collection of tools for micromorphic continuum theory
+# Micromorphic Elasto Plasticity, a implementation of a finite deformation Elasto-Plastic
+# Material model in micromorphic theory.
 #
 # Author: Nathan A. Miller (LANL / CU Boulder)
 # Email:  nathanm@lanl.gov
@@ -51,6 +52,18 @@ MICROMORPHICLINEARELASTICITYSOURCE = $(ROOTDIR)/micromorphic_linear_elasticity/s
 MICROMORPHICLINEARELASTICITYHEADER = $(ROOTDIR)/micromorphic_linear_elasticity/src/cpp/micromorphic_linear_elasticity.h
 INC+=-I$(ROOTDIR)/micromorphic_linear_elasticity/src/cpp
 LIB+=-L$(ROOTDIR)/micromorphic_linear_elasticity/src/cpp
+
+# Add the location of solver_tools to the include and library
+SOLVERSOURCE = $(ROOTDIR)/solver_tools/src/cpp/solver_tools.cpp
+SOLVERHEADER = $(ROOTDIR)/solver_tools/src/cpp/solver_tools.h
+INC+=-I$(ROOTDIR)/solver_tools/src/cpp
+LIB+=-L$(ROOTDIR)/solver_tools/src/cpp
+
+# Add the location of the micromorphic material library
+MICROMORPHICMATERIALLIBSOURCE = $(ROOTDIR)/micromorphic_element/src/cpp/micromorphic_material_library.cpp
+MICROMORPHICMATERIALLIBHEADER = $(ROOTDIR)/micromorphic_element/src/cpp/micromorphic_material_library.h
+INC+=-I$(ROOTDIR)/micromorphic_element/src/cpp
+LIB+=-L$(ROOTDIR)/micromorphic_element/src/cpp
 
 # The python command
 PYTHON=/apps/anaconda3/bin/python
