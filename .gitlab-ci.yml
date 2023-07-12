@@ -23,10 +23,6 @@ before_script:
   - echo "${environment}"
   - module help "${environment}"
   - module load "${environment}"
-  # Determine the CMake3 command
-  - cmake_program='cmake'
-  - if [[ "$(command -v cmake3)" ]]; then cmake_program='cmake3'; fi
-  - echo ${cmake_program}
   # Environment troubleshooting information
   - echo $PATH
   - echo $PYTHONPATH
@@ -51,7 +47,7 @@ microbump:
     GIT_STRATEGY: clone
   script:
     # Build VERSION file from GetVersionFromGit.cmake without a full CMake configuration
-    - ${cmake_program} -D PROJECT_NAME=cpp_stub -D VERSION_UPDATE_FROM_GIT=True -P src/cmake/GetVersionFromGitTag.cmake
+    - cmake3 -D PROJECT_NAME=cpp_stub -D VERSION_UPDATE_FROM_GIT=True -P src/cmake/GetVersionFromGitTag.cmake
     # GetVersionFromGit.cmake bumps micro/patch version. Retrieve next release from VERSION
     - production_version=$(cut -f 1 -d '*' VERSION)
     - developer_version=${production_version}+dev
@@ -68,19 +64,24 @@ microbump:
   only:
     - main
 
-test_build:
+fast-test:
   stage: test
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   variables:
     GIT_STRATEGY: clone
   script:
-    - ./BUILD.sh
-    - ./TEST.sh
+    - workdir=${PWD}
+    - mkdir build
+    - cd build
+    - cmake3 .. -DCMAKE_BUILD_TYPE=Release
+    - cmake3 --build . --verbose
+    - ctest --verbose --output-log results.txt
+    - cd ${workdir}
   artifacts:
     when: always
     paths:
-      - build/results.tex
+      - build/results.txt
   tags:
     - sstelmo-shell-aea
 
@@ -101,8 +102,10 @@ pages:
         for ref in ${documentation_branches}; do
             git checkout $ref
             git reset --hard origin/$ref
-            mkdir -p public/$ref/doxygen
-            ./BUILD.sh
+            mkdir -p public/$ref/doxygen build
+            cd build
+            cmake3 .. -DCMAKE_BUILD_TYPE=Release
+            cmake3 --build . --target Sphinx --verbose
             cp -r build/docs/sphinx/html/* public/$ref
             cp -r build/docs/doxygen/html/* public/$ref/doxygen
         done
