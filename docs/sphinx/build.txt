@@ -129,9 +129,6 @@ Building the documentation
    **API Health Note**: The sphinx API docs are a work-in-progress. The doxygen
    API is much more useful.
 
-The documentation can be built with ``build_docs.sh``. The steps used in that
-shell script are repeated here.
-
 To build just the documentation pick up the steps here:
 
 2) Create the build directory and move there
