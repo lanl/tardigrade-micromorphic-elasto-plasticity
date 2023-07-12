@@ -116,8 +116,8 @@ fast-test:
     - workdir=${PWD}
     - mkdir build
     - cd build
-    - cmake3 .. -DCMAKE_BUILD_TYPE=Release
-    - cmake3 --build . --verbose
+    - cmake .. -DCMAKE_BUILD_TYPE=Release
+    - cmake --build . --verbose
     - ctest --verbose --output-log results.txt
     - cd ${workdir}
   artifacts:
@@ -213,8 +213,8 @@ pages:
             git reset --hard origin/$ref
             mkdir -p public/$ref/doxygen build
             cd build
-            cmake3 .. -DCMAKE_BUILD_TYPE=Release
-            cmake3 --build . --target Sphinx --verbose
+            cmake .. -DCMAKE_BUILD_TYPE=Release
+            cmake --build . --target Sphinx --verbose
             cp -r build/docs/sphinx/html/* public/$ref
             cp -r build/docs/doxygen/html/* public/$ref/doxygen
         done
