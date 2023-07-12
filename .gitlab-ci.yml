@@ -5,41 +5,67 @@ workflow:
     - when: always
 
 stages:
+  - environment
   - version
   - test
   - deploy
 
 before_script:
-  # Set the AEA compute environment deployment directory by host
-  - aea_projects="/projects"
-  - if [[ $(hostname) == sn-rfe?.lanl.gov ]] || [[ $(hostname) == sn???.localdomain ]]; then aea_projects="/usr/projects/ea"; fi
-  - aea_deploy_directory="${aea_projects}/aea_compute"
-  - aea_conda_channel="${aea_deploy_directory}/aea-conda"
-  # Pick the AEA compute environment according to Gitlab CI environment
-  - environment="aea-release"
-  - if [[ ${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} == dev ]] || [[ ${CI_COMMIT_BRANCH} == dev ]]; then environment='aea-beta'; fi
-  # Add the AEA compute environment modules to MODULEPATH and load
-  - module use --append "${aea_deploy_directory}/modulefiles"
-  - echo "${environment}"
-  - module help "${environment}"
-  - module load "${environment}"
-  # Environment troubleshooting information
-  - echo $PATH
-  - echo $PYTHONPATH
-  - echo $MANPATH
-  - echo $LD_LIBRARY_PATH
+  - aea_projects='/projects'
+  - aea_compute_path="${aea_projects}/aea_compute"
+  - aea_conda_channel="${aea_compute_path}/aea-conda"
+  - aea_modulefiles=${aea_compute_path}/modulefiles
+  - module use ${aea_modulefiles}
+  - module use ${PWD}/modulefiles
+  # Prefer the CI environment and fall back to AEA environment(s)
+  - project_environment='micromorphic_elasto_plasticity-env'
+  - environment_choices="${project_environment} aea-beta aea-release"
+  - for env in ${environment_choices}; do if [[ -d "${aea_compute_path}/${env}" ]]; then environment=${env}; break; fi; done
+  - echo ${environment}
+  - module load ${environment}
   - conda info
-  - env | grep -i proxy
-  # FIXME: (1) Without setting this to false, Git webserver API calls to re-git.lanl.gov will throw errors about
-  # self-signed certificates. Work on CI server and Gitlab webserver configurations so that this is no longer
-  # necessary. There is a matching "FIXME: (1)" tag where the process is reversed that must also be removed when this
-  # is fixed.
-  - git config --local http.sslVerify false
+  # Build the Conda environment if it's missing
+  # TODO: kick off 'environment' job for missing environments instead of re-creating the environment build logic here
+  # https://re-git.lanl.gov/kbrindley/waves/-/issues/8
+  - environment_path="${aea_compute_path}/${project_environment}"
+  - conda_options="--yes --channel ${aea_conda_channel} --channel conda-forge --override-channels"
+  - |
+      if [[ ! -d ${environment_path} ]]; then
+          export ALL_PROXY="proxyout.lanl.gov:8080"
+          export HTTP_PROXY="http://$ALL_PROXY"
+          export HTTPS_PROXY=$HTTP_PROXY
+          conda create --prefix ${environment_path} --file environment.txt ${conda_options};
+          chmod -R 755 ${environment_path}
+          unset ALL_PROXY
+          unset HTTP_PROXY
+          unset HTTPS_PROXY
+      fi
+  - if [[ ${project_environment} != ${environment} ]]; then module unload ${environment}; module load ${project_environment}; fi
+  - conda_artifacts_directory='conda-bld'
 
-after_script:
-  # FIXME: (1) Reset the repository Git configuration to preserve ssl verifications. Remove when the server(s)
-  # configurations no longer require us to drop ssl verifications.
-  - git config --local http.sslVerify true
+environment:
+  stage: environment
+  variables:
+    GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "dev"
+      changes:
+        - "modulefiles/*"
+        - "environment.txt"
+  script:
+    - export ALL_PROXY="proxyout.lanl.gov:8080"
+    - export HTTP_PROXY="http://$ALL_PROXY"
+    - export HTTPS_PROXY=$HTTP_PROXY
+    # Re-build the Conda environment on changes to environment files
+    - conda create --prefix ${environment_path} --file environment.txt ${conda_options}
+    # Remove write permissions from group to avoid accidental environment changes
+    - chmod -R 755 ${environment_path}
+    # place the common modulefiles in an accessible location
+    - cp ${PWD}/modulefiles/* ${aea_modulefiles}
+  tags:
+    # FIXME: troubleshoot sstbigbird/RHEL8 python interpretter mismatch
+    # https://re-git.lanl.gov/aea/material-models/micromorphic_tools/-/issues/9
+    - sstelmo-shell-aea
 
 microbump:
   stage: version
