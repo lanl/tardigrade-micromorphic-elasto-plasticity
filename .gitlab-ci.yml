@@ -102,8 +102,10 @@ pages:
         for ref in ${documentation_branches}; do
             git checkout $ref
             git reset --hard origin/$ref
-            mkdir -p public/$ref/doxygen
-            ./BUILD.sh
+            mkdir -p public/$ref/doxygen build
+            cd build
+            cmake3 .. -DCMAKE_BUILD_TYPE=Release
+            cmake3 --build . --target Sphinx --verbose
             cp -r build/docs/sphinx/html/* public/$ref
             cp -r build/docs/doxygen/html/* public/$ref/doxygen
         done
