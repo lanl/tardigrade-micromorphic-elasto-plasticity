@@ -13,7 +13,8 @@ Internal Changes
 ================
 - Replace build scripts with direct use of CMake commands in CI configuration (:issue:`2`, :merge:`8`). By `Kyle
   Brindley`_.
-- Create CI environment (:issue:`3`, :merge:`13`). By `Kyle Brindley`_.
+- Create CI environment (:issue:`3`, :merge:`9`). By `Kyle Brindley`_.
+- Use setuptools_scm for version number (:issue:`4`, :merge:`10`). By `Kyle Brindley`_.
 
 ******************
 1.1.0 (2022-08-16)
