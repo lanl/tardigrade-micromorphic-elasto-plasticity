@@ -121,58 +121,6 @@ Test on sstelmo
       # View details of most recent test execution including failure messages
       $ less Testing/Temporary/LastTest.log
 
-Convenience build wrappers
-==========================
-
-Two build scripts have been created for convenience, ``new_build.sh`` and
-``build_docs.sh``. The first will build everything including the library binary,
-the test binary, and the documentation. This is the same build script used by
-``CD.sh`` for Gitlab CD builds and testing. The ``build_docs.sh`` script
-only builds the documentation. Both build scripts clobber existing build
-directories, reset any bash environment variables, and run the cmake
-configuration from scratch.
-
-2) Build everything and run tests
-
-   .. code:: bash
-
-      $ pwd
-      /path/to/micromorphic_elasto_plasticity/
-
-      # Just perform the build (pick one)
-      $ ./new_build.sh <cmake build type>
-      $ ./new_build.sh  None
-      $ ./new_build.sh  None
-      $ ./new_build.sh  None
-
-      # Perform tests from PWD
-      $ ./build/src/cpp/tests/test_micromorphic_elasto_plasticity
-
-      # Build and perform tests
-      $ ./BUILD.sh
-      $ ./TEST.sh
-
-3) View test results
-
-   .. code:: bash
-
-      # As built directly to PWD
-      $ cat results.tex
-
-      # As built by BUILD.sh and TEST.sh
-      $ cat build/src/cpp/tests/*_results.tex
-      $ cat *results.tex
-
-4) Display docs
-
-   .. code:: bash
-
-      # Sphinx
-      $ firefox build/docs/sphinx/index.html &
-
-      # Doxygen
-      $ firefox build/docs/doxygen/html/index.html &
-
 Building the documentation
 ==========================
 
@@ -180,9 +128,6 @@ Building the documentation
 
    **API Health Note**: The sphinx API docs are a work-in-progress. The doxygen
    API is much more useful.
-
-The documentation can be built with ``build_docs.sh``. The steps used in that
-shell script are repeated here.
 
 To build just the documentation pick up the steps here:
 
@@ -236,8 +181,7 @@ Install
 
 In addition to the CMake build and test configuration, this project has a CMake install configuration. Users will most
 likely never need to perform a project installation from source. The project's CI/CD scripts deploy updates
-automatically to supported `W-13 Python Environments`_. Developers using this repository as a template for projects
-outside W-13 may be interested in the template ``{BUILD,TEST,INSTALL}.sh`` scripts used by the CI/CD jobs.
+automatically to supported `W-13 Python Environments`_.
 
 After building, the project can be installed with the CMake ``--install`` option.
 
@@ -258,14 +202,4 @@ privileges. For non-default installation directories, use the CMake ``--prefix``
 
 A common choice for non-admin installs on Linux systems is ``/home/$USER/.local/``. However, this project is intended to
 be built and deployed to Conda Python environments. The CI/CD build for this project deploys to the `W-13 Python
-Environments`_ with the ``INSTALL.sh`` script. Developers building and deploying from source may use that script for
-active conda environment installations or as a template for custom installations.
-
-.. code:: bash
-
-   $ pwd
-   /path/to/micromorphic_elasto_plasticity/
-   $ grep "install\|conda_env_path" INSTALL.sh
-   conda_env_path=$(conda info | grep "active env location" | cut -f 2 -d :)
-   # Change to build directory and run cmake install
-   ${cmake_exec} --install . --prefix ${conda_env_path}
+Environments`_.

@@ -1,0 +1,17 @@
+boost>=1.59
+breathe>=4.30.0
+cmake>=3.18
+compilers
+constitutive_tools>=0.6
+doxygen>=1.9
+eigen>=3.3.7
+error_tools>=0.6
+micromorphic_tools>=1.2
+micromorphic_linear_elasticity>=1.2
+python
+setuptools_scm>=6.2
+solver_tools>=0.5
+sphinx>=3.0.4
+sphinx_rtd_theme>=0.4.3
+sphinxcontrib-bibtex
+vector_tools>=0.6

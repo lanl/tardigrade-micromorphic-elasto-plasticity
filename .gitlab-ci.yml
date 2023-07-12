@@ -5,90 +5,200 @@ workflow:
     - when: always
 
 stages:
+  - environment
   - version
   - test
+  - build
   - deploy
 
 before_script:
-  # Set the AEA compute environment deployment directory by host
-  - aea_projects="/projects"
-  - if [[ $(hostname) == sn-rfe?.lanl.gov ]] || [[ $(hostname) == sn???.localdomain ]]; then aea_projects="/usr/projects/ea"; fi
-  - aea_deploy_directory="${aea_projects}/python"
-  - aea_conda_channel="${aea_deploy_directory}/aea-conda"
-  # Pick the AEA compute environment according to Gitlab CI environment
-  - environment="aea-release"
-  - if [[ ${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} == dev ]] || [[ ${CI_COMMIT_BRANCH} == dev ]]; then environment='aea-beta'; fi
-  # Add the AEA compute environment modules to MODULEPATH and load
-  - module use --append "${aea_deploy_directory}/modulefiles"
-  - echo "${environment}"
-  - module help "${environment}"
-  - module load "${environment}"
-  # Determine the CMake3 command
-  - cmake_program='cmake'
-  - if [[ "$(command -v cmake3)" ]]; then cmake_program='cmake3'; fi
-  - echo ${cmake_program}
-  # Environment troubleshooting information
-  - echo $PATH
-  - echo $PYTHONPATH
-  - echo $MANPATH
-  - echo $LD_LIBRARY_PATH
+  - aea_projects='/projects'
+  - aea_compute_path="${aea_projects}/aea_compute"
+  - aea_conda_channel="${aea_compute_path}/aea-conda"
+  - aea_modulefiles=${aea_compute_path}/modulefiles
+  - module use ${aea_modulefiles}
+  - module use ${PWD}/modulefiles
+  # Prefer the CI environment and fall back to AEA environment(s)
+  - project_environment='micromorphic_elasto_plasticity-env'
+  - environment_choices="${project_environment} aea-beta aea-release"
+  - for env in ${environment_choices}; do if [[ -d "${aea_compute_path}/${env}" ]]; then environment=${env}; break; fi; done
+  - echo ${environment}
+  - module load ${environment}
   - conda info
-  - env | grep -i proxy
-  # FIXME: (1) Without setting this to false, Git webserver API calls to re-git.lanl.gov will throw errors about
-  # self-signed certificates. Work on CI server and Gitlab webserver configurations so that this is no longer
-  # necessary. There is a matching "FIXME: (1)" tag where the process is reversed that must also be removed when this
-  # is fixed.
-  - git config --local http.sslVerify false
+  # Build the Conda environment if it's missing
+  # TODO: kick off 'environment' job for missing environments instead of re-creating the environment build logic here
+  # https://re-git.lanl.gov/kbrindley/waves/-/issues/8
+  - environment_path="${aea_compute_path}/${project_environment}"
+  - conda_options="--yes --channel ${aea_conda_channel} --channel conda-forge --override-channels"
+  - |
+      if [[ ! -d ${environment_path} ]]; then
+          export ALL_PROXY="proxyout.lanl.gov:8080"
+          export HTTP_PROXY="http://$ALL_PROXY"
+          export HTTPS_PROXY=$HTTP_PROXY
+          conda create --prefix ${environment_path} --file environment.txt ${conda_options};
+          chmod -R 755 ${environment_path}
+          unset ALL_PROXY
+          unset HTTP_PROXY
+          unset HTTPS_PROXY
+      fi
+  - if [[ ${project_environment} != ${environment} ]]; then module unload ${environment}; module load ${project_environment}; fi
+  - conda_artifacts_directory='conda-bld'
 
-after_script:
-  # FIXME: (1) Reset the repository Git configuration to preserve ssl verifications. Remove when the server(s)
-  # configurations no longer require us to drop ssl verifications.
-  - git config --local http.sslVerify true
+environment:
+  stage: environment
+  variables:
+    GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "dev"
+      changes:
+        - "modulefiles/*"
+        - "environment.txt"
+  script:
+    - export ALL_PROXY="proxyout.lanl.gov:8080"
+    - export HTTP_PROXY="http://$ALL_PROXY"
+    - export HTTPS_PROXY=$HTTP_PROXY
+    # Re-build the Conda environment on changes to environment files
+    - conda create --prefix ${environment_path} --file environment.txt ${conda_options}
+    # Remove write permissions from group to avoid accidental environment changes
+    - chmod -R 755 ${environment_path}
+    # place the common modulefiles in an accessible location
+    - cp ${PWD}/modulefiles/* ${aea_modulefiles}
+  tags:
+    # FIXME: troubleshoot sstbigbird/RHEL8 python interpretter mismatch
+    # https://re-git.lanl.gov/aea/material-models/micromorphic_tools/-/issues/9
+    - sstelmo-shell-aea
 
 microbump:
   stage: version
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
   script:
-    # Build VERSION file from GetVersionFromGit.cmake without a full CMake configuration
-    - ${cmake_program} -D PROJECT_NAME=cpp_stub -D VERSION_UPDATE_FROM_GIT=True -P src/cmake/GetVersionFromGitTag.cmake
-    # GetVersionFromGit.cmake bumps micro/patch version. Retrieve next release from VERSION
-    - production_version=$(cut -f 1 -d '*' VERSION)
+    # Conditionally "bump" micro version number. setuptools_scm already bumps number, just need to strip local version.
+    - old_version=$(python -m setuptools_scm)
+    # First capture group is the major.minor.micro numbers
+    # Second capture group is everything following micro
+    - version_regex='\([0-9]\+\.[0-9]\+\.[0-9]\+\)\(.*\)'
+    # Returns clean production tag regardless if tagged already
+    - production_version=$(echo ${old_version} | sed "s/${version_regex}/\1/g")
+    # Catch unexpected production version regex and exit with error if suffix is found
+    - suffix=$(echo ${production_version} | sed "s/${version_regex}/\2/g")
+    - |
+        if [ -n "${suffix}" ]; then
+            echo "Could not resolve the production version from ${old_version}. Left with ${production_version} and ${suffix}."
+            exit 1
+        fi
     - developer_version=${production_version}+dev
     # Tag production commit and previous developer commit. Continue if already tagged.
     - git config user.name "${GITLAB_USER_NAME}"
     - git config user.email "${GITLAB_USER_EMAIL}"
     - git remote add oauth2-origin https://gitlab-ci-token:${GITLAB_ACCESS_TOKEN}@re-git.lanl.gov/${CI_PROJECT_PATH}.git
     - git tag -a ${production_version} -m "production release ${production_version}" || true
-    - last_merge_hash=$(git log --pretty=format:"%H" --merges -n 2 | tail -n 1)  # Assume last merge was dev->main. Pick previous
-    - git tag -a ${developer_version} -m "developer release ${developer_version}" ${last_merge_hash} || true
+    # Assume last merge was dev->main. Pick previous.
+    - last_merge_hash=$(git log --pretty=format:"%H" --merges -n 2 | tail -n 1)
+    - git tag -a ${developer_version} -m "developer pre-release ${developer_version}" ${last_merge_hash} || true
     - git push oauth2-origin --tags
   tags:
+    # FIXME: troubleshoot sstbigbird/RHEL8 python interpretter mismatch
+    # https://re-git.lanl.gov/aea/material-models/micromorphic_tools/-/issues/9
     - sstelmo-shell-aea
-  only:
-    - main
 
-test_build:
+fast-test:
   stage: test
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   variables:
     GIT_STRATEGY: clone
   script:
-    - ./BUILD.sh
-    - ./TEST.sh
+    - workdir=${PWD}
+    - mkdir build
+    - cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=Release
+    - cmake --build . --verbose
+    - ctest --verbose --output-log results.txt
+    - cd ${workdir}
   artifacts:
     when: always
     paths:
-      - build/results.tex
+      - build/results.txt
   tags:
     - sstelmo-shell-aea
+
+conda-build:
+  stage: build
+  variables:
+    GIT_STRATEGY: clone
+  dependencies: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
+  script:
+    # Only build one compiler variant during merge request testing
+    - libstdcxx="13"
+    - variants=""
+    - if [[ $CI_PIPELINE_SOURCE == "merge_request_event" ]]; then variants="--variants {'libstdcxx':['${libstdcxx}']}"; fi
+    # Set the LANL internal proxies
+    - export ALL_PROXY="proxyout.lanl.gov:8080"
+    - export HTTP_PROXY="http://$ALL_PROXY"
+    - export HTTPS_PROXY=$HTTP_PROXY
+    # Override default permissions. Set group to rx with no write permissions.
+    - umask 0022
+    - mkdir ${conda_artifacts_directory}
+    - croot="/scratch/$USER/$(basename $PWD)/${conda_artifacts_directory}"
+    - VERSION=$(python -m setuptools_scm) conda build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot ${croot} --output-folder ${conda_artifacts_directory} ${variants}
+    - conda build purge --croot ${croot}
+  artifacts:
+    expire_in: '2 hrs'
+    paths:
+      - conda-bld/linux-64/micromorphic_elasto_plasticity-*-*.tar.bz2
+  tags:
+    # FIXME: troubleshoot sstbigbird/RHEL8 python interpretter mismatch
+    # https://re-git.lanl.gov/aea/material-models/micromorphic_tools/-/issues/9
+    - sstelmo-shell-aea
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: clone
+  dependencies:
+    - conda-build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
+  script:
+    # Override default permissions. Set group to rx with no write permissions.
+    - umask 0022
+    # Copy Conda package to AEA Conda Channel
+    - cp ${conda_artifacts_directory}/linux-64/micromorphic_elasto_plasticity-*-*.tar.bz2 ${aea_conda_channel}/linux-64
+    # Change group for access by all W-13 staff and prevent accidental modification by institutional account in CI jobs
+    - chgrp w13users ${aea_conda_channel}/linux-64/micromorphic_elasto_plasticity-*-*.tar.bz2 || true
+    - chmod 555 ${aea_conda_channel}/linux-64/micromorphic_elasto_plasticity-*-*.tar.bz2 || true
+    # Update the AEA Conda Channel index
+    - conda index ${aea_conda_channel}
+    - conda search --channel file://${aea_conda_channel}/ --override-channels micromorphic_elasto_plasticity
+  tags:
+    # FIXME: troubleshoot sstbigbird/RHEL8 python interpretter mismatch
+    # https://re-git.lanl.gov/aea/material-models/micromorphic_tools/-/issues/9
+    - sstelmo-shell-aea
+
 
 # It MUST be called pages
 pages:
   stage: deploy
   variables:
     GIT_STRATEGY: clone
+  dependencies: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
   script:
     - rm -rf public && mkdir -p public
     - cp docs/html/index.html public
@@ -101,8 +211,10 @@ pages:
         for ref in ${documentation_branches}; do
             git checkout $ref
             git reset --hard origin/$ref
-            mkdir -p public/$ref/doxygen
-            ./BUILD.sh
+            mkdir -p public/$ref/doxygen build
+            cd build
+            cmake .. -DCMAKE_BUILD_TYPE=Release
+            cmake --build . --target Sphinx --verbose
             cp -r build/docs/sphinx/html/* public/$ref
             cp -r build/docs/doxygen/html/* public/$ref/doxygen
         done
@@ -112,6 +224,3 @@ pages:
       - public
   tags:
     - sstelmo-shell-aea
-  only:
-    - main
-    - dev

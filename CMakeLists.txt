@@ -15,11 +15,39 @@ set(MICROMORPHIC_ELASTO_PLASTICITY_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for
 # Add the cmake folder to locate project CMake module(s)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_PATH})
 
+# Set build type checks
+string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
+set(upstream_required "")
+set(not_conda_test "true")
+if(cmake_build_type_lower STREQUAL "release")
+    set(upstream_required "REQUIRED")
+elseif(cmake_build_type_lower STREQUAL "conda-test")
+    set(upstream_required "REQUIRED")
+    set(not_conda_test "false")
+endif()
+
 # Get version number from Git
-set(VERSION_UPDATE_FROM_GIT True)
-# FIXME: Figure out why include() doesn't pick up CMAKE_MODULE_PATH correctly
-include(${CMAKE_SRC_PATH}/GetVersionFromGitTag.cmake)
-project(${PROJECT_NAME} VERSION ${${PROJECT_NAME}_VERSION})
+if(${not_conda_test} STREQUAL "true")
+    # TODO: On osx-arm64 some c++ projects struggle to find $PREFIX/bin/python during conda-builds and others don't.
+    # Trace the source and remove the hint when CMake configures with the correct python version during conda-build.
+    # FIXME: troubleshoot sstbigbird/RHEL8 python interpretter mismatch
+    # https://re-git.lanl.gov/aea/material-models/micromorphic_tools/-/issues/9
+    if (DEFINED ENV{PREFIX})
+        set(Python_ROOT_DIR "$ENV{PREFIX}/bin")
+    elseif (DEFINED ENV{CONDA_PREFIX})
+        set(Python_ROOT_DIR "$ENV{CONDA_PREFIX}/bin")
+    endif()
+    find_package(Python COMPONENTS Interpreter REQUIRED)
+    execute_process(COMMAND python -m setuptools_scm
+		            OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_STRING_FULL
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(${${PROJECT_NAME}_VERSION_STRING_FULL} STREQUAL "")
+        set(${PROJECT_NAME}_VERSION 0.0.0)
+    else()
+         string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_VERSION_STRING_FULL})
+    endif()
+    project(${PROJECT_NAME} VERSION ${${PROJECT_NAME}_VERSION})
+endif()
 
 # Add installation directory variables
 include(GNUInstallDirs)
@@ -30,7 +58,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Set the c++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -ansi -pedantic -lrt")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lrt")
+endif()
 
 # Enable CTest
 enable_testing()
@@ -43,16 +74,13 @@ if(EIGEN3_FOUND)
     message(STATUS "Found Eigen3: ${EIGEN3_INCLUDE_DIR}")
 endif()
 
-# Set build type checks
-string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
-set(upstream_required "")
-if(cmake_build_type_lower STREQUAL "release")
-    set(upstream_required "REQUIRED")
-endif()
-
 # Find related, but external, projects in installed environment
 include(FetchContent)
-set(upstream_packages "error_tools" "vector_tools" "solver_tools" "micromorphic_tools" "micromorphic_linear_elasticity")
+set(upstream_packages "error_tools" "vector_tools" "constitutive_tools" "solver_tools" "micromorphic_tools" "micromorphic_linear_elasticity")
+if(${not_conda_test} STREQUAL "false")
+    # During conda-build testing, we must find the installed project files as if they were an external project
+    set(upstream_packages ${upstream_packages} ${PROJECT_NAME})
+endif()
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
     set(${package_upper}_BUILD_PYTHON_BINDINGS ${MICROMORPHIC_ELASTO_PLASTICITY_BUILD_PYTHON_BINDINGS})
@@ -75,39 +103,45 @@ endforeach(package)
 #=============================================================================================== ADD PROJECT TARGETS ===
 # MUST COME AFTER DEPENDENCY LOCATING
 # Add project source directories
-include_directories(${CPP_SRC_PATH})
-add_subdirectory(${CPP_SRC_PATH})
+if(${not_conda_test} STREQUAL "true")
+    include_directories(${CPP_SRC_PATH})
+    add_subdirectory(${CPP_SRC_PATH})
+endif()
 
 # Only add tests and documentation for current project builds. Protects downstream project builds.
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    # Find Boost. Required for tests
+    # Find Boost and add tests
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
-    # Add c++ tests and docs
     add_subdirectory(${CPP_TEST_PATH})
-    add_subdirectory(${DOXYGEN_SRC_PATH})
-    add_subdirectory(${SPHINX_SRC_PATH})
+    # Add docs
+    if(${not_conda_test} STREQUAL "true")
+        add_subdirectory(${DOXYGEN_SRC_PATH})
+        add_subdirectory(${SPHINX_SRC_PATH})
+    endif()
 endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
-foreach(package ${PROJECT_NAME} ${UMAT})
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file("${package}ConfigVersion.cmake"
-                                     VERSION ${PROJECT_VERSION}
-                                     COMPATIBILITY SameMajorVersion)
-    configure_package_config_file(
-      "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
-      "${PROJECT_BINARY_DIR}/${package}Config.cmake"
-      INSTALL_DESTINATION
-      ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+if(${not_conda_test} STREQUAL "true")
+    foreach(package ${PROJECT_NAME} ${UMAT})
+        include(CMakePackageConfigHelpers)
+        write_basic_package_version_file("${package}ConfigVersion.cmake"
+                                         VERSION ${PROJECT_VERSION}
+                                         COMPATIBILITY SameMajorVersion)
+        configure_package_config_file(
+          "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
+          "${PROJECT_BINARY_DIR}/${package}Config.cmake"
+          INSTALL_DESTINATION
+          ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
 
-    # CMake won't build the targets for local builds of upstream projects
-    if(cmake_build_type_lower STREQUAL release)
-        install(EXPORT ${package}_Targets
-                FILE ${package}Targets.cmake
+        # CMake won't build the targets for local builds of upstream projects
+        if(cmake_build_type_lower STREQUAL release)
+            install(EXPORT ${package}_Targets
+                    FILE ${package}Targets.cmake
+                    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+        endif()
+
+        install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
+                      "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
                 DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
-    endif()
-
-    install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
-                  "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
-            DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
-endforeach(package)
+    endforeach(package)
+endif()
