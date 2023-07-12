@@ -1,0 +1,81 @@
+package:
+  name: micromorphic_elasto_plasticity
+  # TODO: setup and use pyproject.toml and a Conda build Jinja template
+  version: {{ VERSION }}
+
+about:
+  home: https://github.com/lanl/tardigrade-micromorphic-elasto-plasticity
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: 'An elasto-plastic consitutive model for micromorphic theory'
+  description: |
+    tardigrade-micromorphic-elasto-plasticity (C20048 Tardigrade) A linear elastic consitutive model for micromorphic
+    theory
+  doc_url: https://lanl.github.io/tardigrade-micromorphic-elasto-plasticity
+  dev_url: https://github.com/lanl/tardigrade-micromorphic-elasto-plasticity
+
+source:
+  path: '..'
+
+build:
+  number: 0
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ VERSION }}
+  script:
+    - mkdir build-package
+    - cd build-package
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib
+    - cmake --build . --target micromorphic_elasto_plasticity --verbose
+    - cmake --install . --prefix ${PREFIX}
+  ignore_run_exports:
+    - python_abi
+
+requirements:
+  host:
+    - {{ compiler('cxx') }}
+    - libgcc-ng {{ libstdcxx }}     # [linux]
+    - libstdcxx-ng {{ libstdcxx }}  # [linux]
+    - python
+    - setuptools_scm >=6.2
+    - cmake >=3.18
+    - eigen >=3.3.7
+    - error_tools >=0.6
+    - vector_tools >=0.6
+    - solver_tools>=0.5
+    - constitutive_tools >=0.6
+    - micromorphic_tools >=1.2
+    - micromorphic_linear_elasticity>=1.2
+    - boost >=1.59  # TODO: Separate the package/test configuration to make BOOST an optional build dependency
+    - doxygen  # TODO: Separate the package/documentation configuration to make Doxygen an optional build dependency
+    - sphinx  # TODO: Separate the package/documentation configuration to make Sphinx an optional build dependency
+  run:
+    - eigen >=3.3.7
+    - error_tools >=0.6
+    - vector_tools >=0.6
+    - solver_tools>=0.5
+    - constitutive_tools >=0.6
+    - micromorphic_tools >=1.2
+    - micromorphic_linear_elasticity>=1.2
+    - libgcc-ng     # [linux]
+    - libstdcxx-ng  # [linux]
+    - libcxx        # [osx]
+
+test:
+  requires:
+    - {{ compiler('cxx') }}
+    - {{ pin_compatible('libgcc-ng') }}     # [linux]
+    - {{ pin_compatible('libstdcxx-ng') }}  # [linux]
+    - cmake >=3.18
+    - boost >=1.59
+    - doxygen  # TODO: Separate the package/documentation configuration to make Doxygen an optional build dependency
+    - sphinx  # TODO: Separate the package/documentation configuration to make Sphinx an optional build dependency
+  source_files:
+    - CMakeLists.txt
+    - src/cpp/tests/CMakeLists.txt
+    - src/cpp/tests/test_micromorphic_elasto_plasticity.cpp
+  commands:
+    - mkdir build-tests
+    - cd build-tests
+    - cmake .. -DCMAKE_BUILD_TYPE=conda-test -DCMAKE_INSTALL_LIBDIR=lib
+    - cmake --build . --verbose
+    - ctest --output-on-failure --verbose
