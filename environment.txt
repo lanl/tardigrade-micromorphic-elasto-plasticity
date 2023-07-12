@@ -10,6 +10,7 @@ micromorphic_tools>=1.2
 micromorphic_linear_elasticity>=1.2
 python
 setuptools_scm>=6.2
+solver_tools>=0.5
 sphinx>=3.0.4
 sphinx_rtd_theme>=0.4.3
 sphinxcontrib-bibtex
