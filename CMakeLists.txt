@@ -76,7 +76,11 @@ endif()
 
 # Find related, but external, projects in installed environment
 include(FetchContent)
-set(upstream_packages "error_tools" "vector_tools" "solver_tools" "micromorphic_tools" "micromorphic_linear_elasticity")
+set(upstream_packages "error_tools" "vector_tools" "constitutive_tools" "solver_tools" "micromorphic_tools" "micromorphic_linear_elasticity")
+if(${not_conda_test} STREQUAL "false")
+    # During conda-build testing, we must find the installed project files as if they were an external project
+    set(upstream_packages ${upstream_packages} ${PROJECT_NAME})
+endif()
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
     set(${package_upper}_BUILD_PYTHON_BINDINGS ${MICROMORPHIC_ELASTO_PLASTICITY_BUILD_PYTHON_BINDINGS})

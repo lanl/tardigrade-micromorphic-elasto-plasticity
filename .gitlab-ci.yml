@@ -8,6 +8,7 @@ stages:
   - environment
   - version
   - test
+  - build
   - deploy
 
 before_script:
@@ -115,8 +116,8 @@ fast-test:
     - workdir=${PWD}
     - mkdir build
     - cd build
-    - cmake3 .. -DCMAKE_BUILD_TYPE=Release
-    - cmake3 --build . --verbose
+    - cmake .. -DCMAKE_BUILD_TYPE=Release
+    - cmake --build . --verbose
     - ctest --verbose --output-log results.txt
     - cd ${workdir}
   artifacts:
@@ -125,6 +126,68 @@ fast-test:
       - build/results.txt
   tags:
     - sstelmo-shell-aea
+
+conda-build:
+  stage: build
+  variables:
+    GIT_STRATEGY: clone
+  dependencies: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
+  script:
+    # Only build one compiler variant during merge request testing
+    - libstdcxx="13"
+    - variants=""
+    - if [[ $CI_PIPELINE_SOURCE == "merge_request_event" ]]; then variants="--variants {'libstdcxx':['${libstdcxx}']}"; fi
+    # Set the LANL internal proxies
+    - export ALL_PROXY="proxyout.lanl.gov:8080"
+    - export HTTP_PROXY="http://$ALL_PROXY"
+    - export HTTPS_PROXY=$HTTP_PROXY
+    # Override default permissions. Set group to rx with no write permissions.
+    - umask 0022
+    - mkdir ${conda_artifacts_directory}
+    - croot="/scratch/$USER/$(basename $PWD)/${conda_artifacts_directory}"
+    - VERSION=$(python -m setuptools_scm) conda build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot ${croot} --output-folder ${conda_artifacts_directory} ${variants}
+    - conda build purge --croot ${croot}
+  artifacts:
+    expire_in: '2 hrs'
+    paths:
+      - conda-bld/linux-64/micromorphic_elasto_plasticity-*-*.tar.bz2
+  tags:
+    # FIXME: troubleshoot sstbigbird/RHEL8 python interpretter mismatch
+    # https://re-git.lanl.gov/aea/material-models/micromorphic_tools/-/issues/9
+    - sstelmo-shell-aea
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: clone
+  dependencies:
+    - conda-build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
+  script:
+    # Override default permissions. Set group to rx with no write permissions.
+    - umask 0022
+    # Copy Conda package to AEA Conda Channel
+    - cp ${conda_artifacts_directory}/linux-64/micromorphic_elasto_plasticity-*-*.tar.bz2 ${aea_conda_channel}/linux-64
+    # Change group for access by all W-13 staff and prevent accidental modification by institutional account in CI jobs
+    - chgrp w13users ${aea_conda_channel}/linux-64/micromorphic_elasto_plasticity-*-*.tar.bz2 || true
+    - chmod 555 ${aea_conda_channel}/linux-64/micromorphic_elasto_plasticity-*-*.tar.bz2 || true
+    # Update the AEA Conda Channel index
+    - conda index ${aea_conda_channel}
+    - conda search --channel file://${aea_conda_channel}/ --override-channels micromorphic_elasto_plasticity
+  tags:
+    # FIXME: troubleshoot sstbigbird/RHEL8 python interpretter mismatch
+    # https://re-git.lanl.gov/aea/material-models/micromorphic_tools/-/issues/9
+    - sstelmo-shell-aea
+
 
 # It MUST be called pages
 pages:
@@ -150,8 +213,8 @@ pages:
             git reset --hard origin/$ref
             mkdir -p public/$ref/doxygen build
             cd build
-            cmake3 .. -DCMAKE_BUILD_TYPE=Release
-            cmake3 --build . --target Sphinx --verbose
+            cmake .. -DCMAKE_BUILD_TYPE=Release
+            cmake --build . --target Sphinx --verbose
             cp -r build/docs/sphinx/html/* public/$ref
             cp -r build/docs/doxygen/html/* public/$ref/doxygen
         done
