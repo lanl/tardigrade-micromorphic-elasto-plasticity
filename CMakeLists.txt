@@ -38,7 +38,7 @@ if(${not_conda_test} STREQUAL "true")
         set(Python_ROOT_DIR "$ENV{CONDA_PREFIX}/bin")
     endif()
     find_package(Python COMPONENTS Interpreter REQUIRED)
-    execute_process(COMMAND ${Python_EXECUTABLE} -m setuptools_scm
+    execute_process(COMMAND python -m setuptools_scm
 		            OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_STRING_FULL
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
     if(${${PROJECT_NAME}_VERSION_STRING_FULL} STREQUAL "")
