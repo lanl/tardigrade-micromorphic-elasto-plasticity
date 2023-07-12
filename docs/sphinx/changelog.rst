@@ -15,6 +15,7 @@ Internal Changes
   Brindley`_.
 - Create CI environment (:issue:`3`, :merge:`9`). By `Kyle Brindley`_.
 - Use setuptools_scm for version number (:issue:`4`, :merge:`10`). By `Kyle Brindley`_.
+- Add conda package recipe and deploy CI jobs (:issue:`5`, :merge:`11`). By `Kyle Brindley`_.
 
 ******************
 1.1.0 (2022-08-16)
