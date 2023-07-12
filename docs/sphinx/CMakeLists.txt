@@ -49,3 +49,4 @@ add_custom_command(OUTPUT ${SPHINX_HTML_FILE}
                    COMMENT "Generating ${PROJECT_NAME} Sphinx documentation")
 
 # Add sphinx target
+add_custom_target(Sphinx ALL DEPENDS Doxygen ${SPHINX_HTML_FILE})
