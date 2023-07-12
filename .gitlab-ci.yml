@@ -71,24 +71,39 @@ microbump:
   stage: version
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
   script:
-    # Build VERSION file from GetVersionFromGit.cmake without a full CMake configuration
-    - cmake3 -D PROJECT_NAME=cpp_stub -D VERSION_UPDATE_FROM_GIT=True -P src/cmake/GetVersionFromGitTag.cmake
-    # GetVersionFromGit.cmake bumps micro/patch version. Retrieve next release from VERSION
-    - production_version=$(cut -f 1 -d '*' VERSION)
+    # Conditionally "bump" micro version number. setuptools_scm already bumps number, just need to strip local version.
+    - old_version=$(python -m setuptools_scm)
+    # First capture group is the major.minor.micro numbers
+    # Second capture group is everything following micro
+    - version_regex='\([0-9]\+\.[0-9]\+\.[0-9]\+\)\(.*\)'
+    # Returns clean production tag regardless if tagged already
+    - production_version=$(echo ${old_version} | sed "s/${version_regex}/\1/g")
+    # Catch unexpected production version regex and exit with error if suffix is found
+    - suffix=$(echo ${production_version} | sed "s/${version_regex}/\2/g")
+    - |
+        if [ -n "${suffix}" ]; then
+            echo "Could not resolve the production version from ${old_version}. Left with ${production_version} and ${suffix}."
+            exit 1
+        fi
     - developer_version=${production_version}+dev
     # Tag production commit and previous developer commit. Continue if already tagged.
     - git config user.name "${GITLAB_USER_NAME}"
     - git config user.email "${GITLAB_USER_EMAIL}"
     - git remote add oauth2-origin https://gitlab-ci-token:${GITLAB_ACCESS_TOKEN}@re-git.lanl.gov/${CI_PROJECT_PATH}.git
     - git tag -a ${production_version} -m "production release ${production_version}" || true
-    - last_merge_hash=$(git log --pretty=format:"%H" --merges -n 2 | tail -n 1)  # Assume last merge was dev->main. Pick previous
-    - git tag -a ${developer_version} -m "developer release ${developer_version}" ${last_merge_hash} || true
+    # Assume last merge was dev->main. Pick previous.
+    - last_merge_hash=$(git log --pretty=format:"%H" --merges -n 2 | tail -n 1)
+    - git tag -a ${developer_version} -m "developer pre-release ${developer_version}" ${last_merge_hash} || true
     - git push oauth2-origin --tags
   tags:
+    # FIXME: troubleshoot sstbigbird/RHEL8 python interpretter mismatch
+    # https://re-git.lanl.gov/aea/material-models/micromorphic_tools/-/issues/9
     - sstelmo-shell-aea
-  only:
-    - main
 
 fast-test:
   stage: test
@@ -116,6 +131,11 @@ pages:
   stage: deploy
   variables:
     GIT_STRATEGY: clone
+  dependencies: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
   script:
     - rm -rf public && mkdir -p public
     - cp docs/html/index.html public
@@ -141,6 +161,3 @@ pages:
       - public
   tags:
     - sstelmo-shell-aea
-  only:
-    - main
-    - dev
