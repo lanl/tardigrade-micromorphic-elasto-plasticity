@@ -6,7 +6,16 @@ Changelog
 #########
 
 ******************
-0.1.0 (unreleased)
+1.2.0 (unreleased)
+******************
+
+Internal Changes
+================
+- Replace build scripts with direct use of CMake commands in CI configuration (:issue:`2`, :merge:`8`). By `Kyle
+  Brindley`_.
+
+******************
+1.1.0 (2022-08-16)
 ******************
 
 - Moved the code to the cpp_stub format (:merge:`1`). By `Nathan Miller`_.
