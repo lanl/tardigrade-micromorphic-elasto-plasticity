@@ -68,19 +68,22 @@ microbump:
   only:
     - main
 
-test_build:
+fast-test:
   stage: test
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   variables:
     GIT_STRATEGY: clone
   script:
+    - workdir=${PWD}
     - ./BUILD.sh
-    - ./TEST.sh
+    - cd build
+    - ctest --verbose --output-log results.txt
+    - cd ${workdir}
   artifacts:
     when: always
     paths:
-      - build/results.tex
+      - build/results.txt
   tags:
     - sstelmo-shell-aea
 
