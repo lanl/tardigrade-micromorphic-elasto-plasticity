@@ -13,7 +13,7 @@ before_script:
   # Set the AEA compute environment deployment directory by host
   - aea_projects="/projects"
   - if [[ $(hostname) == sn-rfe?.lanl.gov ]] || [[ $(hostname) == sn???.localdomain ]]; then aea_projects="/usr/projects/ea"; fi
-  - aea_deploy_directory="${aea_projects}/python"
+  - aea_deploy_directory="${aea_projects}/aea_compute"
   - aea_conda_channel="${aea_deploy_directory}/aea-conda"
   # Pick the AEA compute environment according to Gitlab CI environment
   - environment="aea-release"

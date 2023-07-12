@@ -36,10 +36,10 @@ For instance, with the W-13 "aea-release" environment on ``sstelmo``
 
 .. code:: bash
 
-   $ find /projects/python/aea-release -name "libmicromorphic_elasto_plasticity.so"
-   /projects/python/aea-release/lib64/libmicromorphic_elasto_plasticity.so
-   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/python/aea-release/lib64
-   $ abaqus -job <my_input_file> -user /projects/python/aea-release/lib64/micromorphic_elasto_plasticity_umat.o
+   $ find /projects/aea_compute/aea-release -name "libmicromorphic_elasto_plasticity.so"
+   /projects/aea_compute/aea-release/lib64/libmicromorphic_elasto_plasticity.so
+   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/aea_compute/aea-release/lib64
+   $ abaqus -job <my_input_file> -user /projects/aea_compute/aea-release/lib64/micromorphic_elasto_plasticity_umat.o
 
 As a convenience, the following code may be used to determine the correct, active Conda environment at Abaqus execution.
 The following bash code is provided as an example for end users and not supported by this project. End users who wish to
