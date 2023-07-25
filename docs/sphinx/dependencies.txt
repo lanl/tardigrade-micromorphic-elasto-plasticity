@@ -29,7 +29,7 @@ configuration inspection, e.g. the extension packages.
 .. code:: bash
 
    $ pwd
-   path/to/micromorphic_elasto_plasticity/
+   path/to/tardigrade_micromorphic_elasto_plasticity/
    $ pipreqs --use-local --print --no-pin .
 
 A minimal anaconda environment for building the documentation can be created
@@ -52,12 +52,12 @@ C++ Libraries
 
 * `Eigen`_ >= 3.3.7
 * `BOOST`_ >= 1.59.0
-* error\_tools: https://re-git.lanl.gov/aea/material-models/error_tools
-* vector\_tools: https://re-git.lanl.gov/aea/material-models/vector_tools
-* abaqus\_tools: https://re-git.lanl.gov/aea/material-models/abaqus_tools
-* constitutive\_tools: https://re-git.lanl.gov/aea/material-models/constitutive_tools
-* stress\_tools: https://re-git.lanl.gov/aea/material-models/stress_tools
-* solver\_tools: https://re-git.lanl.gov/aea/material-models/solver_tools
+* error\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_error_tools
+* vector\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_vector_tools
+* abaqus\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_abaqus_tools
+* constitutive\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_constitutive_tools
+* stress\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_stress_tools
+* solver\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_solver_tools
 
 All of the ``{error,vector,stress,solver,constitutive}_tools`` libraries are
 pulled from their git repos by branch name and built with their respective cmake

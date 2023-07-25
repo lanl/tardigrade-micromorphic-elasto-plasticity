@@ -4,14 +4,14 @@
 conflict aea-release
 conflict aea-beta
 conflict waves-env
-conflict error_tools-env
-conflict vector_tools-env
-conflict abaqus_tools-env
+conflict tardigrade_error_tools-env
+conflict tardigrade_vector_tools-env
+conflict tardigrade_abaqus_tools-env
 
 # Set AEA standard software version and environment names
 set anaconda_version "2021.11"
 set python_version "3.9"
-set environment "micromorphic_elasto_plasticity-env"
+set environment "tardigrade_micromorphic_elasto_plasticity-env"
 
 # Get current hostname
 set hostname [info hostname]
@@ -64,7 +64,7 @@ if { [module-info mode load] || [module-info mode switch2] } {
 }
 
 # Set help information
-module-whatis "Configure the common micromorphic_elasto_plasticity development bash and Conda environments"
+module-whatis "Configure the common tardigrade_micromorphic_elasto_plasticity development bash and Conda environments"
 proc ModulesHelp {} {
     global hostname
     global environment
@@ -78,7 +78,7 @@ proc ModulesHelp {} {
     global environment_bin
     global environment_man
 
-    puts stderr "\nmicromorphic_elasto_plasticity modulefiles debugging information"
+    puts stderr "\ntardigrade_micromorphic_elasto_plasticity modulefiles debugging information"
     puts stderr "hostname: $hostname"
     puts stderr "environment: $environment"
     puts stderr "software_prefix: $software_prefix"

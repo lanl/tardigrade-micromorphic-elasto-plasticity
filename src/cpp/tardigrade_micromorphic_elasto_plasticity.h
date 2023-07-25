@@ -1,37 +1,37 @@
 /*!
- * micromorphic_elasto_plasticity.h
+ * tardigrade_micromorphic_elasto_plasticity.h
  *
  * An implementation of a elasto-plastic micromorphic constitutive model 
  * following the derivations of Farhad Shahabi in his dissertation.
  */
 
-#ifndef MICROMORPHIC_ELASTO_PLASTICITY_H
-#define MICROMORPHIC_ELASTO_PLASTICITY_H
+#ifndef TARDIGRADE_MICROMORPHIC_ELASTO_PLASTICITY_H
+#define TARDIGRADE_MICROMORPHIC_ELASTO_PLASTICITY_H
 
-#include<error_tools.h>
+#include<tardigrade_error_tools.h>
 #define USE_EIGEN
-#include<vector_tools.h>
-#include<constitutive_tools.h>
-#include<micromorphic_tools.h>
-#include<micromorphic_linear_elasticity.h>
-#include<solver_tools.h>
+#include<tardigrade_vector_tools.h>
+#include<tardigrade_constitutive_tools.h>
+#include<tardigrade_micromorphic_tools.h>
+#include<tardigrade_micromorphic_linear_elasticity.h>
+#include<tardigrade_solver_tools.h>
 //#include<micromorphic_material_library.h>
 
-namespace micromorphicElastoPlasticity{
+namespace tardigradeMicromorphicElastoPlasticity{
 
-    typedef micromorphicTools::variableType variableType;
-    typedef micromorphicTools::variableVector variableVector;
-    typedef micromorphicTools::variableMatrix variableMatrix;
+    typedef tardigradeMicromorphicTools::variableType variableType;
+    typedef tardigradeMicromorphicTools::variableVector variableVector;
+    typedef tardigradeMicromorphicTools::variableMatrix variableMatrix;
 
-    typedef micromorphicTools::parameterType parameterType;
-    typedef micromorphicTools::parameterVector parameterVector;
-    typedef micromorphicTools::parameterMatrix parameterMatrix;
+    typedef tardigradeMicromorphicTools::parameterType parameterType;
+    typedef tardigradeMicromorphicTools::parameterVector parameterVector;
+    typedef tardigradeMicromorphicTools::parameterMatrix parameterMatrix;
 
-    typedef micromorphicTools::constantType constantType;
-    typedef micromorphicTools::constantVector constantVector;
-    typedef micromorphicTools::constantMatrix constantMatrix;
+    typedef tardigradeMicromorphicTools::constantType constantType;
+    typedef tardigradeMicromorphicTools::constantVector constantVector;
+    typedef tardigradeMicromorphicTools::constantMatrix constantMatrix;
 
-    typedef errorTools::Node errorNode;
+    typedef tardigradeErrorTools::Node errorNode;
     typedef errorNode* errorOut;
 
     struct cout_redirect{
@@ -426,7 +426,7 @@ namespace micromorphicElastoPlasticity{
                                      const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
                                      const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues
 #ifdef DEBUG_MODE
-                                     , solverTools::debugMap &DEBUG
+                                     , tardigradeSolverTools::debugMap &DEBUG
 #endif
                                    );
 
@@ -441,7 +441,7 @@ namespace micromorphicElastoPlasticity{
                                      variableMatrix &dMicroGradientFdM, variableMatrix &dMicroGradientFdMicroGradientC,
                                      variableMatrix &dMicroGradientFdElasticRCG
 #ifdef DEBUG_MODE
-                                     , solverTools::debugMap &DEBUG
+                                     , tardigradeSolverTools::debugMap &DEBUG
 #endif
                                     );
 
@@ -494,30 +494,30 @@ namespace micromorphicElastoPlasticity{
                               variableType &dMacroCdMacroStrainISV, variableType &dMicroCdMicroStrainISV,
                               variableMatrix &dMicroGradientCdMicroGradientStrainISV );
 
-    errorOut computePlasticDeformationResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                                const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                                                solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                                solverTools::intMatrix &intOuts
+    errorOut computePlasticDeformationResidual( const tardigradeSolverTools::floatVector &x, const tardigradeSolverTools::floatMatrix &floatArgs,
+                                                const tardigradeSolverTools::intMatrix &intArgs, tardigradeSolverTools::floatVector &residual,
+                                                tardigradeSolverTools::floatMatrix &jacobian, tardigradeSolverTools::floatMatrix &floatOuts,
+                                                tardigradeSolverTools::intMatrix &intOuts
 #ifdef DEBUG_MODE
-                                                , solverTools::debugMap &DEBUG
+                                                , tardigradeSolverTools::debugMap &DEBUG
 #endif
                                               );
 
-    errorOut computePlasticMultiplierResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                                               solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                               solverTools::intMatrix &intOuts
+    errorOut computePlasticMultiplierResidual( const tardigradeSolverTools::floatVector &x, const tardigradeSolverTools::floatMatrix &floatArgs,
+                                               const tardigradeSolverTools::intMatrix &intArgs, tardigradeSolverTools::floatVector &residual,
+                                               tardigradeSolverTools::floatMatrix &jacobian, tardigradeSolverTools::floatMatrix &floatOuts,
+                                               tardigradeSolverTools::intMatrix &intOuts
 #ifdef DEBUG_MODE
-                                               , solverTools::debugMap &DEBUG
+                                               , tardigradeSolverTools::debugMap &DEBUG
 #endif
                                              );
 
-    errorOut computePlasticMultiplierLagrangian( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                                 const solverTools::intMatrix &intArgs, solverTools::floatType &lagrangian,
-                                                 solverTools::floatVector &jacobian, solverTools::floatMatrix &floatOuts,
-                                                 solverTools::intMatrix &intOuts
+    errorOut computePlasticMultiplierLagrangian( const tardigradeSolverTools::floatVector &x, const tardigradeSolverTools::floatMatrix &floatArgs,
+                                                 const tardigradeSolverTools::intMatrix &intArgs, tardigradeSolverTools::floatType &lagrangian,
+                                                 tardigradeSolverTools::floatVector &jacobian, tardigradeSolverTools::floatMatrix &floatOuts,
+                                                 tardigradeSolverTools::intMatrix &intOuts
 #ifdef DEBUG_MODE
-                                                 , solverTools::debugMap &DEBUG
+                                                 , tardigradeSolverTools::debugMap &DEBUG
 #endif
                                                ); 
  
@@ -534,7 +534,7 @@ namespace micromorphicElastoPlasticity{
                         std::vector< std::vector< double > > &ADD_TERMS,
                         std::string &output_message
 #ifdef DEBUG_MODE
-                        , solverTools::homotopyMap &DEBUG
+                        , tardigradeSolverTools::homotopyMap &DEBUG
 #endif
                       );
 
@@ -558,7 +558,7 @@ namespace micromorphicElastoPlasticity{
                         std::vector< std::vector< std::vector< double > > > &ADD_JACOBIANS,
                         std::string &output_message
 #ifdef DEBUG_MODE
-                        , solverTools::homotopyMap &DEBUG
+                        , tardigradeSolverTools::homotopyMap &DEBUG
 #endif
                       );
 

@@ -9,7 +9,7 @@ import os, sys
 import numpy as np
 import inspect
 
-sys.path.insert( 0, os.path.abspath( '../../../micromorphic_linear_elasticity/src/python/' ) )
+sys.path.insert( 0, os.path.abspath( '../../../tardigrade_micromorphic_linear_elasticity/src/python/' ) )
 
 import linear_elastic_parameter_constraint_equations as le_pce
 
