@@ -11,7 +11,7 @@ Changelog
 
 Breaking changes
 ================
-- Change project, package, and namespace to use the 'tardigrade' prefix (:issue:`7`, :merge:`18`). By `Kyle Brindley`_.
+- Change project, package, and namespace to use the 'tardigrade' prefix (:issue:`6`, :merge:`13`). By `Kyle Brindley`_.
 
 ******************
 1.2.1 (2023-07-12)
