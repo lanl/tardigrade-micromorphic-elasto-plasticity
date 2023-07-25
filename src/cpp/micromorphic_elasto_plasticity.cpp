@@ -1,13 +1,13 @@
 /*!
- * micromorphic_elasto_plasticity.cpp
+ * tardigrade_micromorphic_elasto_plasticity.cpp
  *
  * An implementation of a elasto-plastic micromorphic constitutive model 
  * following the derivations of Farhad Shahabi in his dissertation.
  */
 
-#include<micromorphic_elasto_plasticity.h>
+#include<tardigrade_micromorphic_elasto_plasticity.h>
 
-namespace micromorphicElastoPlasticity{
+namespace tardigradeMicromorphicElastoPlasticity{
 
     errorOut computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
                                                      parameterType &A, parameterType &B ){
@@ -80,7 +80,7 @@ namespace micromorphicElastoPlasticity{
         variableType pressure;
         variableVector deviatoricReferenceStress;
         
-        error = micromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
+        error = tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure );
 
         if ( error ){
@@ -91,7 +91,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the l2norm of the deviatoric stress
-        variableType normDevStress = vectorTools::l2norm( deviatoricReferenceStress );
+        variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
 
         //Evaluate the yield equation
         yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
@@ -152,7 +152,7 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dDevStressdStress, dDevStressdRCG;
         variableVector dPressuredStress, dPressuredRCG;
         
-        error = micromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
+        error = tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                              dDevStressdRCG, dPressuredStress, dPressuredRCG );
 
@@ -164,7 +164,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the l2norm of the deviatoric stress
-        variableType normDevStress = vectorTools::l2norm( deviatoricReferenceStress );
+        variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
 
         //Evaluate the yield equation
         yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
@@ -172,12 +172,12 @@ namespace micromorphicElastoPlasticity{
         //Evaluate the jacobians
         variableVector devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
 
-        dFdStress = vectorTools::Tdot( dDevStressdStress, devStressDirection )
+        dFdStress = tardigradeVectorTools::Tdot( dDevStressdStress, devStressDirection )
                   + BAngle * dPressuredStress;
 
         dFdc = - AAngle;
 
-        dFdElasticRCG = vectorTools::Tdot( dDevStressdRCG, devStressDirection )
+        dFdElasticRCG = tardigradeVectorTools::Tdot( dDevStressdRCG, devStressDirection )
                       + BAngle * dPressuredRCG;
 
         return NULL;
@@ -248,7 +248,7 @@ namespace micromorphicElastoPlasticity{
 
         variableMatrix d2DevStressdStressdRCG, d2PressuredStressdRCG;
 
-        error = micromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
+        error = tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                              dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG );
 
@@ -260,7 +260,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the l2norm of the deviatoric stress
-        variableType normDevStress = vectorTools::l2norm( deviatoricReferenceStress );
+        variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
 
         //Evaluate the yield equation
         yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
@@ -268,21 +268,21 @@ namespace micromorphicElastoPlasticity{
         //Evaluate the jacobians
         variableVector devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
 
-        dFdStress = vectorTools::Tdot( dDevStressdStress, devStressDirection )
+        dFdStress = tardigradeVectorTools::Tdot( dDevStressdStress, devStressDirection )
                   + BAngle * dPressuredStress;
 
         dFdc = - AAngle;
 
-        dFdElasticRCG = vectorTools::Tdot( dDevStressdRCG, devStressDirection )
+        dFdElasticRCG = tardigradeVectorTools::Tdot( dDevStressdRCG, devStressDirection )
                       + BAngle * dPressuredRCG;
 
         //Evaluate the second-order jacobians
-        constantMatrix EYE = vectorTools::eye< constantType >( dim * dim );
-        variableMatrix dDevStressDirectiondDevStress = ( EYE - vectorTools::dyadic( devStressDirection, devStressDirection ) ) / ( normDevStress + tol );
+        constantMatrix EYE = tardigradeVectorTools::eye< constantType >( dim * dim );
+        variableMatrix dDevStressDirectiondDevStress = ( EYE - tardigradeVectorTools::dyadic( devStressDirection, devStressDirection ) ) / ( normDevStress + tol );
 
-        d2FdStress2 = vectorTools::Tdot( dDevStressdStress, vectorTools::dot( dDevStressDirectiondDevStress, dDevStressdStress ) );
+        d2FdStress2 = tardigradeVectorTools::Tdot( dDevStressdStress, tardigradeVectorTools::dot( dDevStressDirectiondDevStress, dDevStressdStress ) );
 
-        d2FdStressdElasticRCG = vectorTools::Tdot( vectorTools::dot( dDevStressDirectiondDevStress, dDevStressdStress ), dDevStressdRCG )
+        d2FdStressdElasticRCG = tardigradeVectorTools::Tdot( tardigradeVectorTools::dot( dDevStressDirectiondDevStress, dDevStressdStress ), dDevStressdRCG )
                               + BAngle * d2PressuredStressdRCG;
 
         for ( unsigned int I = 0; I < dim; I++ ){
@@ -342,7 +342,7 @@ namespace micromorphicElastoPlasticity{
         variableVector pressure;
         variableVector deviatoricReferenceStress;
         
-        error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
+        error = tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure );
 
         if ( error ){
@@ -354,7 +354,7 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the l2norm of the deviatoric stress
         variableVector normDevStress;
-        error = micromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress );
+        error = tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress );
 
         if ( error ){
             errorOut result = new errorNode( "computeHigherOrderDruckerPragerYieldEquation",
@@ -419,7 +419,7 @@ namespace micromorphicElastoPlasticity{
         variableMatrix dDevStressdStress, dDevStressdRCG;
         variableMatrix dPressuredStress, dPressuredRCG;
         
-        error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
+        error = tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                              dDevStressdRCG, dPressuredStress, dPressuredRCG );
 
@@ -433,7 +433,7 @@ namespace micromorphicElastoPlasticity{
         //Compute the l2norm of the deviatoric stress
         variableVector normDevStress;
         variableMatrix dNormDevStressdDevStress;
-        error = micromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress );
+        error = tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress );
 
         if ( error ){
             errorOut result = new errorNode( "computeHigherOrderDruckerPragerYieldEquation (jacobian)",
@@ -446,12 +446,12 @@ namespace micromorphicElastoPlasticity{
         yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
         //Construct the Jacobians
-        dFdStress = vectorTools::dot( dNormDevStressdDevStress, dDevStressdStress )
+        dFdStress = tardigradeVectorTools::dot( dNormDevStressdDevStress, dDevStressdStress )
                   + BAngle * dPressuredStress;
 
-        dFdc = -AAngle * vectorTools::eye< constantType >( cohesion.size() );
+        dFdc = -AAngle * tardigradeVectorTools::eye< constantType >( cohesion.size() );
 
-        dFdElasticRCG = vectorTools::dot( dNormDevStressdDevStress, dDevStressdRCG )
+        dFdElasticRCG = tardigradeVectorTools::dot( dNormDevStressdDevStress, dDevStressdRCG )
                       + BAngle * dPressuredRCG;
 
         return NULL;
@@ -517,7 +517,7 @@ namespace micromorphicElastoPlasticity{
 
         variableMatrix d2DevStressdStressdRCG, d2PressuredStressdRCG;
         
-        error = micromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
+        error = tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( referenceHigherOrderStress,
                              elasticRightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                              dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG );
 
@@ -532,7 +532,7 @@ namespace micromorphicElastoPlasticity{
         variableVector normDevStress;
         variableMatrix dNormDevStressdDevStress;
         variableMatrix d2NormDevStressdDevStress2;
-        error = micromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress,
+        error = tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress,
                                                                  dNormDevStressdDevStress,
                                                                  d2NormDevStressdDevStress2 );
 
@@ -547,17 +547,17 @@ namespace micromorphicElastoPlasticity{
         yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
         //Construct the Jacobians
-        dFdStress = vectorTools::dot( dNormDevStressdDevStress, dDevStressdStress )
+        dFdStress = tardigradeVectorTools::dot( dNormDevStressdDevStress, dDevStressdStress )
                   + BAngle * dPressuredStress;
 
-        dFdc = -AAngle * vectorTools::eye< constantType >( cohesion.size() );
+        dFdc = -AAngle * tardigradeVectorTools::eye< constantType >( cohesion.size() );
 
-        dFdElasticRCG = vectorTools::dot( dNormDevStressdDevStress, dDevStressdRCG )
+        dFdElasticRCG = tardigradeVectorTools::dot( dNormDevStressdDevStress, dDevStressdRCG )
                       + BAngle * dPressuredRCG;
 
         //Construct the second-order jacobians
         d2FdStress2 = variableMatrix( dim, variableVector( dim * dim * dim * dim * dim * dim, 0 ) );
-        d2FdStressdElasticRCG = vectorTools::dot( dNormDevStressdDevStress, d2DevStressdStressdRCG )
+        d2FdStressdElasticRCG = tardigradeVectorTools::dot( dNormDevStressdDevStress, d2DevStressdStressdRCG )
                               + BAngle * d2PressuredStressdRCG;
 
         for ( unsigned int K = 0; K < 3; K++ ){
@@ -666,15 +666,15 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the inverses of the plastic deformation gradient and micro-deformation
-        inversePlasticDeformationGradient = vectorTools::inverse( plasticDeformationGradient, dim, dim );
+        inversePlasticDeformationGradient = tardigradeVectorTools::inverse( plasticDeformationGradient, dim, dim );
 
-        inversePlasticMicroDeformation = vectorTools::inverse( plasticMicroDeformation, dim, dim );
+        inversePlasticMicroDeformation = tardigradeVectorTools::inverse( plasticMicroDeformation, dim, dim );
 
         //Assemble the elastic parts of the deformation measures
-        elasticDeformationGradient = vectorTools::matrixMultiply( deformationGradient, inversePlasticDeformationGradient,
+        elasticDeformationGradient = tardigradeVectorTools::matrixMultiply( deformationGradient, inversePlasticDeformationGradient,
                                                                   dim, dim, dim, dim );
 
-        elasticMicroDeformation = vectorTools::matrixMultiply( microDeformation, inversePlasticMicroDeformation,
+        elasticMicroDeformation = tardigradeVectorTools::matrixMultiply( microDeformation, inversePlasticMicroDeformation,
                                                                dim, dim, dim, dim );
 
         elasticGradientMicroDeformation = variableVector( dim * dim * dim, 0 );
@@ -818,7 +818,7 @@ namespace micromorphicElastoPlasticity{
 
         //Assemble the Jacobians
         constantVector eye( dim * dim );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         dElasticFdF = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
         dElasticFdPlasticF = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
@@ -920,7 +920,7 @@ namespace micromorphicElastoPlasticity{
          * :param variableVector &elasticGamma: The elastic part of the higher order deformation measure.
          */
 
-        errorOut error = constitutiveTools::computeRightCauchyGreen( elasticDeformationGradient, elasticRightCauchyGreen );
+        errorOut error = tardigradeConstitutiveTools::computeRightCauchyGreen( elasticDeformationGradient, elasticRightCauchyGreen );
 
         if ( error ){
             errorOut result = new errorNode( "computeElasticDeformationMeasures",
@@ -929,7 +929,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = constitutiveTools::computeRightCauchyGreen( elasticMicroDeformation, elasticMicroRightCauchyGreen );
+        error = tardigradeConstitutiveTools::computeRightCauchyGreen( elasticMicroDeformation, elasticMicroRightCauchyGreen );
 
         if ( error ){
             errorOut result = new errorNode( "computeElasticDeformationMeasures",
@@ -938,7 +938,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = micromorphicTools::computePsi( elasticDeformationGradient, elasticMicroDeformation, elasticPsi );
+        error = tardigradeMicromorphicTools::computePsi( elasticDeformationGradient, elasticMicroDeformation, elasticPsi );
 
         if ( error ){
             errorOut result = new errorNode( "computeElasticDeformationMeasures",
@@ -947,7 +947,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = micromorphicTools::computeGamma( elasticDeformationGradient, elasticGradientMicroDeformation, elasticGamma );
+        error = tardigradeMicromorphicTools::computeGamma( elasticDeformationGradient, elasticGradientMicroDeformation, elasticGamma );
 
         if ( error ){
             errorOut result = new errorNode( "computeElasticDeformationMeasures",
@@ -994,7 +994,7 @@ namespace micromorphicElastoPlasticity{
          *     w.r.t. the elastic part of the gradient of the micro-deformation.
          */
 
-        errorOut error = constitutiveTools::computeRightCauchyGreen( elasticDeformationGradient, elasticRightCauchyGreen,
+        errorOut error = tardigradeConstitutiveTools::computeRightCauchyGreen( elasticDeformationGradient, elasticRightCauchyGreen,
                                                                      dElasticRCGdElasticF );
 
         if ( error ){
@@ -1004,7 +1004,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = constitutiveTools::computeRightCauchyGreen( elasticMicroDeformation, elasticMicroRightCauchyGreen,
+        error = tardigradeConstitutiveTools::computeRightCauchyGreen( elasticMicroDeformation, elasticMicroRightCauchyGreen,
                                                             dElasticMicroRCGdElasticChi );
 
         if ( error ){
@@ -1014,7 +1014,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = micromorphicTools::computePsi( elasticDeformationGradient, elasticMicroDeformation, elasticPsi,
+        error = tardigradeMicromorphicTools::computePsi( elasticDeformationGradient, elasticMicroDeformation, elasticPsi,
                                                dElasticPsidElasticF, dElasticPsidElasticChi );
 
         if ( error ){
@@ -1024,7 +1024,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = micromorphicTools::computeGamma( elasticDeformationGradient, elasticGradientMicroDeformation, elasticGamma,
+        error = tardigradeMicromorphicTools::computeGamma( elasticDeformationGradient, elasticGradientMicroDeformation, elasticGamma,
                                                  dElasticGammadElasticF, dElasticGammadElasticGradChi );
 
         if ( error ){
@@ -1193,7 +1193,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         constantVector eye( dim * dim );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         dPlasticMacroLdElasticRCG = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
         dPlasticMacroLdMacroFlowDirection = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
@@ -1401,7 +1401,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         constantVector eye( dim * dim );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         //Assemble the Jacobians
         dPlasticMicroLdElasticMicroRCG = variableMatrix( dim * dim, variableVector( dim * dim, 0 ) );
@@ -1647,7 +1647,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         constantVector eye( dim * dim );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         dPlasticMicroGradientLdPlasticMicroL = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
         dPlasticMicroGradientLdMicroGradientGamma = variableMatrix( dim * dim * dim, variableVector( dim, 0 ) );
@@ -1733,7 +1733,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         constantVector eye( dim * dim );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         dPlasticMicroGradientLdElasticPsi = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
         dPlasticMicroGradientLdElasticGamma = variableMatrix( dim * dim * dim, variableVector( dim * dim * dim, 0 ) );
@@ -1822,8 +1822,8 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the required inverses of the deformation metrics
-        variableVector inverseElasticRightCauchyGreen = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
-        variableVector inverseElasticPsi = vectorTools::inverse( elasticPsi, dim, dim );
+        variableVector inverseElasticRightCauchyGreen = tardigradeVectorTools::inverse( elasticRightCauchyGreen, dim, dim );
+        variableVector inverseElasticPsi = tardigradeVectorTools::inverse( elasticPsi, dim, dim );
 
         //Compute the macro velocity gradient
         errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
@@ -1917,8 +1917,8 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the required inverses of the deformation metrics
-        variableVector inverseElasticRightCauchyGreen = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
-        variableVector inverseElasticPsi = vectorTools::inverse( elasticPsi, dim, dim );
+        variableVector inverseElasticRightCauchyGreen = tardigradeVectorTools::inverse( elasticRightCauchyGreen, dim, dim );
+        variableVector inverseElasticPsi = tardigradeVectorTools::inverse( elasticPsi, dim, dim );
 
         //Compute the plastic macro velocity gradient
         errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
@@ -1952,7 +1952,7 @@ namespace micromorphicElastoPlasticity{
                                                              dPlasticMicroGradientLdMicroGradientGamma,
                                                              dPlasticMicroGradientLdPlasticMicroL );
 
-        dPlasticMicroGradientLdMicroGamma = vectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
+        dPlasticMicroGradientLdMicroGamma = tardigradeVectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
                                                               dPlasticMicroLdMicroGamma );
 
         if ( error ){
@@ -2037,8 +2037,8 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Compute the required inverses of the deformation metrics
-        variableVector inverseElasticRightCauchyGreen = vectorTools::inverse( elasticRightCauchyGreen, dim, dim );
-        variableVector inverseElasticPsi = vectorTools::inverse( elasticPsi, dim, dim );
+        variableVector inverseElasticRightCauchyGreen = tardigradeVectorTools::inverse( elasticRightCauchyGreen, dim, dim );
+        variableVector inverseElasticPsi = tardigradeVectorTools::inverse( elasticPsi, dim, dim );
 
         //Compute the plastic macro velocity gradient
         errorOut error = computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
@@ -2078,16 +2078,16 @@ namespace micromorphicElastoPlasticity{
                                                              dPlasticMicroGradientLdElasticGamma,
                                                              dPlasticMicroGradientLdMicroGradientFlowDirection );
 
-        dPlasticMicroGradientLdMicroGamma = vectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
+        dPlasticMicroGradientLdMicroGamma = tardigradeVectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
                                                               dPlasticMicroLdMicroGamma );
 
-        dPlasticMicroGradientLdElasticMicroRCG = vectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
+        dPlasticMicroGradientLdElasticMicroRCG = tardigradeVectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
                                                                    dPlasticMicroLdElasticMicroRCG );
 
-        dPlasticMicroGradientLdElasticPsi += vectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
+        dPlasticMicroGradientLdElasticPsi += tardigradeVectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
                                                                dPlasticMicroLdElasticPsi );
 
-        dPlasticMicroGradientLdMicroFlowDirection = vectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
+        dPlasticMicroGradientLdMicroFlowDirection = tardigradeVectorTools::dot( dPlasticMicroGradientLdPlasticMicroL,
                                                                       dPlasticMicroLdMicroFlowDirection );
 
         if ( error ){
@@ -2233,7 +2233,7 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the required identity terms
         constantVector eye( dim * dim );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         //Assemble the A term ( forcing term ) and the fourth order A term
         variableVector DtAtilde( dim * dim * dim, 0 );
@@ -2286,7 +2286,7 @@ namespace micromorphicElastoPlasticity{
 
         //Solve for the current plastic micro gradient
         unsigned int rank;
-        currentPlasticMicroGradient = vectorTools::solveLinearSystem( LHS, RHS, rank );
+        currentPlasticMicroGradient = tardigradeVectorTools::solveLinearSystem( LHS, RHS, rank );
 
         if ( rank != LHS.size() ){
             std::cout << "rank: " << rank << "\n";
@@ -2361,7 +2361,7 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the required identity terms
         constantVector eye( dim * dim );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         //Compute the new currentPlasticMicroGradient
         variableMatrix LHS;
@@ -2429,7 +2429,7 @@ namespace micromorphicElastoPlasticity{
         variableVector vecdCurrentPlasticMicroGradientdCurrentDTAtilde( dim * dim * dim * dim * dim * dim );
         variableVector vecdCurrentPlasticMicroGradientdCurrentFourthA( dim * dim * dim * dim * dim * dim * dim );
 
-        variableVector floatLHS = vectorTools::appendVectors( LHS );
+        variableVector floatLHS = tardigradeVectorTools::appendVectors( LHS );
 
         Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > LHSMat( floatLHS.data(), LHS.size(), LHS.size() );
         Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > nDRDCDA( negdRdCurrentDtAtilde.data(), LHS.size(), dim * dim * dim );
@@ -2443,20 +2443,20 @@ namespace micromorphicElastoPlasticity{
         X1 = qrSolver.solve( nDRDCDA );
         X2 = qrSolver.solve( nDRDCFA );
 
-        variableMatrix dCurrentPlasticMicroGradientdCurrentDTAtilde = vectorTools::inflate( vecdCurrentPlasticMicroGradientdCurrentDTAtilde, dim * dim * dim, dim * dim * dim );
-        variableMatrix dCurrentPlasticMicroGradientdCurrentFourthA = vectorTools::inflate( vecdCurrentPlasticMicroGradientdCurrentFourthA, dim * dim * dim, dim * dim * dim * dim );
+        variableMatrix dCurrentPlasticMicroGradientdCurrentDTAtilde = tardigradeVectorTools::inflate( vecdCurrentPlasticMicroGradientdCurrentDTAtilde, dim * dim * dim, dim * dim * dim );
+        variableMatrix dCurrentPlasticMicroGradientdCurrentFourthA = tardigradeVectorTools::inflate( vecdCurrentPlasticMicroGradientdCurrentFourthA, dim * dim * dim, dim * dim * dim * dim );
 
         //Assemble the final terms of the deformation
-        dCurrentPlasticMicroGradientdPlasticMicroDeformation = vectorTools::dot( dCurrentPlasticMicroGradientdCurrentDTAtilde,
+        dCurrentPlasticMicroGradientdPlasticMicroDeformation = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentDTAtilde,
                                                                                  dCurrentDTAtildedPlasticMicroDeformation );
 
-        dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = vectorTools::dot( dCurrentPlasticMicroGradientdCurrentFourthA,
+        dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentFourthA,
                                                                                       dCurrentFourthAdMacroVelocityGradient );
 
-        dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = vectorTools::dot( dCurrentPlasticMicroGradientdCurrentFourthA,
+        dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentFourthA,
                                                                                       dCurrentFourthAdMicroVelocityGradient );
 
-        dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = vectorTools::dot( dCurrentPlasticMicroGradientdCurrentDTAtilde,
+        dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentDTAtilde,
                                                                                  dCurrentDTAtildedPlasticMicroGradientVelocityGradient );
         return NULL;
     }
@@ -2505,7 +2505,7 @@ namespace micromorphicElastoPlasticity{
          * :param parameterType alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
          */
 
-        errorOut error = constitutiveTools::evolveF( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+        errorOut error = tardigradeConstitutiveTools::evolveF( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
                                                      currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
                                                      alphaMacro, 1 );
 
@@ -2516,7 +2516,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = constitutiveTools::evolveF( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+        error = tardigradeConstitutiveTools::evolveF( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
                                             currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
                                             alphaMicro, 1 );
 
@@ -2603,7 +2603,7 @@ namespace micromorphicElastoPlasticity{
          * :param parameterType alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
          */
 
-        errorOut error = constitutiveTools::evolveF( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+        errorOut error = tardigradeConstitutiveTools::evolveF( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
                                                      currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
                                                      dPlasticFdPlasticMacroL, alphaMacro, 1 );
 
@@ -2614,7 +2614,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = constitutiveTools::evolveF( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+        error = tardigradeConstitutiveTools::evolveF( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
                                             currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
                                             dPlasticMicroDeformationdPlasticMicroL, alphaMicro, 1 );
 
@@ -2642,7 +2642,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        dPlasticMicroGradientdPlasticMicroL += vectorTools::dot( dPlasticMicroGradientdPlasticMicroDeformation,
+        dPlasticMicroGradientdPlasticMicroL += tardigradeVectorTools::dot( dPlasticMicroGradientdPlasticMicroDeformation,
                                                                  dPlasticMicroDeformationdPlasticMicroL );
 
         return NULL;
@@ -2789,8 +2789,8 @@ namespace micromorphicElastoPlasticity{
         //Evolve the micro gradient internal strain-like state variables
         currentMicroGradientStrainISV = previousMicroGradientStrainISV
         + Dt * ( 
-            - alphaMicroGradient * vectorTools::Tdot( previousdMicroGradientGdMicroGradientC, previousMicroGradientGamma )
-            - ( 1 - alphaMicroGradient ) * vectorTools::Tdot( currentdMicroGradientGdMicroGradientC, currentMicroGradientGamma )
+            - alphaMicroGradient * tardigradeVectorTools::Tdot( previousdMicroGradientGdMicroGradientC, previousMicroGradientGamma )
+            - ( 1 - alphaMicroGradient ) * tardigradeVectorTools::Tdot( currentdMicroGradientGdMicroGradientC, currentMicroGradientGamma )
         );
 
         return NULL;
@@ -2898,7 +2898,7 @@ namespace micromorphicElastoPlasticity{
         dCurrentMicroGradISVddMicroGradGdMicroGradC = variableMatrix( dim, variableVector( dim * dim, 0 ) );
 
         constantVector eye( dim * dim );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         for ( unsigned int i = 0; i < dim; i++ ){
             for ( unsigned int j = 0; j < dim; j++ ){
@@ -3193,31 +3193,31 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
-    errorOut computePlasticDeformationResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                                const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                                                solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                                solverTools::intMatrix &intOuts
+    errorOut computePlasticDeformationResidual( const tardigradeSolverTools::floatVector &x, const tardigradeSolverTools::floatMatrix &floatArgs,
+                                                const tardigradeSolverTools::intMatrix &intArgs, tardigradeSolverTools::floatVector &residual,
+                                                tardigradeSolverTools::floatMatrix &jacobian, tardigradeSolverTools::floatMatrix &floatOuts,
+                                                tardigradeSolverTools::intMatrix &intOuts
 #ifdef DEBUG_MODE
-                                                , solverTools::debugMap &DEBUG
+                                                , tardigradeSolverTools::debugMap &DEBUG
 #endif
                                               ){
         /*!
          * Compute the residual on the amount of plastic deformation.
          * 
-         * :param solverTools::floatVector &x: The unknown vector. Organized as
+         * :param tardigradeSolverTools::floatVector &x: The unknown vector. Organized as
          *     [ plasticDeformationGradient, plasticMicroDeformation, plasticGradientMicroDeformation,
          *       plasticMacroStrainISV, plasticMicroStrainISV, plasticMicroGradientStrainISV,
          *       currentMacroGamma, currentMicroGamma, currentMicroGradientGamma ]
-         * :param const solverTools::floatMatrix &floatArgs: The floating point arguments which do not vary
+         * :param const tardigradeSolverTools::floatMatrix &floatArgs: The floating point arguments which do not vary
          *     during the solve.
-         * :param const solverTools::intMatrix &intArgs: The integer arguments which do not vary during 
+         * :param const tardigradeSolverTools::intMatrix &intArgs: The integer arguments which do not vary during 
          *     the solve.
-         * :param solverTools::floatVector &residual: The value of the residual. This will be the 
+         * :param tardigradeSolverTools::floatVector &residual: The value of the residual. This will be the 
          *     the values in the x vector - the estimated amount of plastic deformation
-         * :param solverTools::floatMatrix &jacobian: The jacobian matrix
-         * :param solverTools::floatMatrix &floatOuts: The floating point values that do change during the solve.
-         * :param solverTools::intMatrix &intOuts: The integer values that do change during the solve.
-         * :param std::map< std::string, solverTools::floatVector > &DEBUG: The debug map. Only available if
+         * :param tardigradeSolverTools::floatMatrix &jacobian: The jacobian matrix
+         * :param tardigradeSolverTools::floatMatrix &floatOuts: The floating point values that do change during the solve.
+         * :param tardigradeSolverTools::intMatrix &intOuts: The integer values that do change during the solve.
+         * :param std::map< std::string, tardigradeSolverTools::floatVector > &DEBUG: The debug map. Only available if
          *     DEBUG_MODE is defined.
          *
          * Ordering of floatArgs
@@ -3373,7 +3373,7 @@ namespace micromorphicElastoPlasticity{
         const variableVector  *previousMicroGradientStrainISV                = &floatArgs[ ii++ ];
         const variableType    *previousdMacroGdMacroCohesion                 = &floatArgs[ ii++ ][ 0 ];
         const variableType    *previousdMicroGdMicroCohesion                 = &floatArgs[ ii++ ][ 0 ];
-        const variableMatrix   previousdMicroGradientGdMicroGradientCohesion = vectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
+        const variableMatrix   previousdMicroGradientGdMicroGradientCohesion = tardigradeVectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
         const variableVector  *previousPlasticMacroVelocityGradient          = &floatArgs[ ii++ ];
         const variableVector  *previousPlasticMicroVelocityGradient          = &floatArgs[ ii++ ];
         const variableVector  *previousPlasticMicroGradientVelocityGradient  = &floatArgs[ ii++ ];
@@ -3445,15 +3445,15 @@ namespace micromorphicElastoPlasticity{
 //        std::cout << "\n  gammas:\n";
 //        std::cout << "    " << currentMacroGamma << "\n";
 //        std::cout << "    " << currentMicroGamma << "\n";
-//        std::cout << "    "; vectorTools::print( currentMicroGradientGamma );
+//        std::cout << "    "; tardigradeVectorTools::print( currentMicroGradientGamma );
 //        std::cout << "\n  ISVS:\n";
 //        std::cout << "    " << currentMacroStrainISV << "\n";
 //        std::cout << "    " << currentMicroStrainISV << "\n";
-//        std::cout << "    "; vectorTools::print( currentMicroGradientStrainISV ); 
+//        std::cout << "    "; tardigradeVectorTools::print( currentMicroGradientStrainISV ); 
 //        std::cout << "  elastic fundamental deformation measures\n";
-//        std::cout << "    "; vectorTools::print( currentElasticDeformationGradient );
-//        std::cout << "    "; vectorTools::print( currentElasticMicroDeformation );
-//        std::cout << "    "; vectorTools::print( currentElasticGradientMicroDeformation );
+//        std::cout << "    "; tardigradeVectorTools::print( currentElasticDeformationGradient );
+//        std::cout << "    "; tardigradeVectorTools::print( currentElasticMicroDeformation );
+//        std::cout << "    "; tardigradeVectorTools::print( currentElasticGradientMicroDeformation );
 
 #ifdef DEBUG_MODE
 
@@ -3464,23 +3464,23 @@ namespace micromorphicElastoPlasticity{
 
         //Save the flattened jacobians
         DEBUG.emplace( "dElasticDeformationGradientdDeformationGradient",
-                       vectorTools::appendVectors( dElasticDeformationGradientdDeformationGradient )  );
+                       tardigradeVectorTools::appendVectors( dElasticDeformationGradientdDeformationGradient )  );
         DEBUG.emplace( "dElasticDeformationGradientdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dElasticDeformationGradientdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dElasticDeformationGradientdPlasticDeformationGradient ) );
         DEBUG.emplace( "dElasticMicroDeformationdMicroDeformation",
-                       vectorTools::appendVectors( dElasticMicroDeformationdMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dElasticMicroDeformationdMicroDeformation ) );
         DEBUG.emplace( "dElasticMicroDeformationdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dElasticMicroDeformationdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dElasticMicroDeformationdPlasticMicroDeformation ) );
         DEBUG.emplace( "dElasticGradientMicroDeformationdGradientMicroDeformation",
-                       vectorTools::appendVectors( dElasticGradientMicroDeformationdGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dElasticGradientMicroDeformationdGradientMicroDeformation ) );
         DEBUG.emplace( "dElasticGradientMicroDeformationdPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dElasticGradientMicroDeformationdPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dElasticGradientMicroDeformationdPlasticGradientMicroDeformation ) );
         DEBUG.emplace( "dElasticGradientMicroDeformationdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dElasticGradientMicroDeformationdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dElasticGradientMicroDeformationdPlasticDeformationGradient ) );
         DEBUG.emplace( "dElasticGradientMicroDeformationdMicroDeformation",
-                       vectorTools::appendVectors( dElasticGradientMicroDeformationdMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dElasticGradientMicroDeformationdMicroDeformation ) );
         DEBUG.emplace( "dElasticGradientMicroDeformationdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dElasticGradientMicroDeformationdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dElasticGradientMicroDeformationdPlasticMicroDeformation ) );
 
 #endif
 
@@ -3518,10 +3518,10 @@ namespace micromorphicElastoPlasticity{
         floatOuts[ 9 ] = currentElasticRightCauchyGreen;
 
 //        std::cout << "\n  elastic derived deformation measures\n";
-//        std::cout << "    "; vectorTools::print( currentElasticRightCauchyGreen );
-//        std::cout << "    "; vectorTools::print( currentElasticMicroRightCauchyGreen );
-//        std::cout << "    "; vectorTools::print( currentElasticPsi );
-//        std::cout << "    "; vectorTools::print( currentElasticGamma );
+//        std::cout << "    "; tardigradeVectorTools::print( currentElasticRightCauchyGreen );
+//        std::cout << "    "; tardigradeVectorTools::print( currentElasticMicroRightCauchyGreen );
+//        std::cout << "    "; tardigradeVectorTools::print( currentElasticPsi );
+//        std::cout << "    "; tardigradeVectorTools::print( currentElasticGamma );
 
         /*!==================================================================
         | Assemble the Jacobian of the elastic derived deformation measures |
@@ -3529,33 +3529,33 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the Jacobians w.r.t. the plastic deformation
         variableMatrix dElasticRightCauchyGreendPlasticDeformationGradient
-            = vectorTools::dot( dElasticRightCauchyGreendElasticDeformationGradient,
+            = tardigradeVectorTools::dot( dElasticRightCauchyGreendElasticDeformationGradient,
                                 dElasticDeformationGradientdPlasticDeformationGradient );
 
         variableMatrix dElasticMicroRightCauchyGreendPlasticMicroDeformation
-            = vectorTools::dot( dElasticMicroRightCauchyGreendElasticMicroDeformation,
+            = tardigradeVectorTools::dot( dElasticMicroRightCauchyGreendElasticMicroDeformation,
                                 dElasticMicroDeformationdPlasticMicroDeformation );
 
         variableMatrix dElasticPsidPlasticDeformationGradient
-            = vectorTools::dot( dElasticPsidElasticDeformationGradient,
+            = tardigradeVectorTools::dot( dElasticPsidElasticDeformationGradient,
                                 dElasticDeformationGradientdPlasticDeformationGradient );
 
         variableMatrix dElasticPsidPlasticMicroDeformation
-            = vectorTools::dot( dElasticPsidElasticMicroDeformation,
+            = tardigradeVectorTools::dot( dElasticPsidElasticMicroDeformation,
                                 dElasticMicroDeformationdPlasticMicroDeformation );
 
         variableMatrix dElasticGammadPlasticDeformationGradient
-            = vectorTools::dot( dElasticGammadElasticDeformationGradient,
+            = tardigradeVectorTools::dot( dElasticGammadElasticDeformationGradient,
                                 dElasticDeformationGradientdPlasticDeformationGradient )
-            + vectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
+            + tardigradeVectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticDeformationGradient );
 
         variableMatrix dElasticGammadPlasticMicroDeformation
-            = vectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
+            = tardigradeVectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticMicroDeformation );
 
         variableMatrix dElasticGammadPlasticGradientMicroDeformation
-            = vectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
+            = tardigradeVectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
 
         //Construct the full derivatives
@@ -3563,23 +3563,23 @@ namespace micromorphicElastoPlasticity{
                        dElasticPsidDeformationGradient, dElasticPsidMicroDeformation,
                        dElasticGammadDeformationGradient, dElasticGammadMicroDeformation, dElasticGammadGradientMicroDeformation;
         if ( evaluateFullDerivatives ){
-            dElasticRightCauchyGreendDeformationGradient = vectorTools::dot( dElasticRightCauchyGreendElasticDeformationGradient,
+            dElasticRightCauchyGreendDeformationGradient = tardigradeVectorTools::dot( dElasticRightCauchyGreendElasticDeformationGradient,
                                                                              dElasticDeformationGradientdDeformationGradient );
-            dElasticMicroRightCauchyGreendMicroDeformation = vectorTools::dot( dElasticMicroRightCauchyGreendElasticMicroDeformation,
+            dElasticMicroRightCauchyGreendMicroDeformation = tardigradeVectorTools::dot( dElasticMicroRightCauchyGreendElasticMicroDeformation,
                                                                                dElasticMicroDeformationdMicroDeformation );
-            dElasticPsidDeformationGradient = vectorTools::dot( dElasticPsidElasticDeformationGradient,
+            dElasticPsidDeformationGradient = tardigradeVectorTools::dot( dElasticPsidElasticDeformationGradient,
                                                                 dElasticDeformationGradientdDeformationGradient );
-            dElasticPsidMicroDeformation = vectorTools::dot( dElasticPsidElasticMicroDeformation,
+            dElasticPsidMicroDeformation = tardigradeVectorTools::dot( dElasticPsidElasticMicroDeformation,
                                                              dElasticMicroDeformationdMicroDeformation );
-            dElasticGammadDeformationGradient = vectorTools::dot( dElasticGammadElasticDeformationGradient,
+            dElasticGammadDeformationGradient = tardigradeVectorTools::dot( dElasticGammadElasticDeformationGradient,
                                                                   dElasticDeformationGradientdDeformationGradient );
-            dElasticGammadMicroDeformation = vectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
+            dElasticGammadMicroDeformation = tardigradeVectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
                                                                dElasticGradientMicroDeformationdMicroDeformation );
-            dElasticGammadGradientMicroDeformation = vectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
+            dElasticGammadGradientMicroDeformation = tardigradeVectorTools::dot( dElasticGammadElasticGradientMicroDeformation,
                                                                        dElasticGradientMicroDeformationdGradientMicroDeformation );
 
-            floatOuts[ 10 ] = vectorTools::appendVectors( dElasticRightCauchyGreendPlasticDeformationGradient );
-            floatOuts[ 14 ] = vectorTools::appendVectors( dElasticRightCauchyGreendDeformationGradient );
+            floatOuts[ 10 ] = tardigradeVectorTools::appendVectors( dElasticRightCauchyGreendPlasticDeformationGradient );
+            floatOuts[ 14 ] = tardigradeVectorTools::appendVectors( dElasticRightCauchyGreendDeformationGradient );
         }
 
 #ifdef DEBUG_MODE
@@ -3592,35 +3592,35 @@ namespace micromorphicElastoPlasticity{
 
         //Save the Jacobians
         DEBUG.emplace( "dElasticRightCauchyGreendPlasticDeformationGradient",
-                       vectorTools::appendVectors( dElasticRightCauchyGreendPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dElasticRightCauchyGreendPlasticDeformationGradient ) );
         DEBUG.emplace( "dElasticMicroRightCauchyGreendPlasticMicroDeformation",
-                       vectorTools::appendVectors( dElasticMicroRightCauchyGreendPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dElasticMicroRightCauchyGreendPlasticMicroDeformation ) );
         DEBUG.emplace( "dElasticPsidPlasticDeformationGradient",
-                       vectorTools::appendVectors( dElasticPsidPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dElasticPsidPlasticDeformationGradient ) );
         DEBUG.emplace( "dElasticPsidPlasticMicroDeformation",
-                       vectorTools::appendVectors( dElasticPsidPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dElasticPsidPlasticMicroDeformation ) );
         DEBUG.emplace( "dElasticGammadPlasticDeformationGradient",
-                       vectorTools::appendVectors( dElasticGammadPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dElasticGammadPlasticDeformationGradient ) );
         DEBUG.emplace( "dElasticGammadPlasticMicroDeformation",
-                       vectorTools::appendVectors( dElasticGammadPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dElasticGammadPlasticMicroDeformation ) );
         DEBUG.emplace( "dElasticGammadPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dElasticGammadPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dElasticGammadPlasticGradientMicroDeformation ) );
 
         if ( evaluateFullDerivatives ){
             DEBUG.emplace( "dElasticRightCauchyGreendDeformationGradient",
-                            vectorTools::appendVectors( dElasticRightCauchyGreendDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dElasticRightCauchyGreendDeformationGradient ) );
             DEBUG.emplace( "dElasticMicroRightCauchyGreendMicroDeformation",
-                            vectorTools::appendVectors( dElasticMicroRightCauchyGreendMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dElasticMicroRightCauchyGreendMicroDeformation ) );
             DEBUG.emplace( "dElasticPsidDeformationGradient",
-                            vectorTools::appendVectors( dElasticPsidDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dElasticPsidDeformationGradient ) );
             DEBUG.emplace( "dElasticPsidMicroDeformation",
-                            vectorTools::appendVectors( dElasticPsidMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dElasticPsidMicroDeformation ) );
             DEBUG.emplace( "dElasticGammadDeformationGradient",
-                            vectorTools::appendVectors( dElasticGammadDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dElasticGammadDeformationGradient ) );
             DEBUG.emplace( "dElasticGammadMicroDeformation",
-                            vectorTools::appendVectors( dElasticGammadMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dElasticGammadMicroDeformation ) );
             DEBUG.emplace( "dElasticGammadGradientMicroDeformation",
-                            vectorTools::appendVectors( dElasticGammadGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dElasticGammadGradientMicroDeformation ) );
         }
 
 #endif
@@ -3660,9 +3660,9 @@ namespace micromorphicElastoPlasticity{
         }
 
 //        std::cout << "\n  current stress measures\n";
-//        std::cout << "    "; vectorTools::print( currentPK2Stress );
-//        std::cout << "    "; vectorTools::print( currentReferenceMicroStress );
-//        std::cout << "    "; vectorTools::print( currentReferenceHigherOrderStress );
+//        std::cout << "    "; tardigradeVectorTools::print( currentPK2Stress );
+//        std::cout << "    "; tardigradeVectorTools::print( currentReferenceMicroStress );
+//        std::cout << "    "; tardigradeVectorTools::print( currentReferenceHigherOrderStress );
 
         /*===============================
         | Assemble the stress Jacobians |
@@ -3670,49 +3670,49 @@ namespace micromorphicElastoPlasticity{
 
         //Jacobians w.r.t. the plastic deformation
         variableMatrix dPK2StressdPlasticDeformationGradient
-            = vectorTools::dot( dPK2StressdElasticDeformationGradient,
+            = tardigradeVectorTools::dot( dPK2StressdElasticDeformationGradient,
                                 dElasticDeformationGradientdPlasticDeformationGradient )
-            + vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+            + tardigradeVectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticDeformationGradient );
 
         variableMatrix dPK2StressdPlasticMicroDeformation
-            = vectorTools::dot( dPK2StressdElasticMicroDeformation,
+            = tardigradeVectorTools::dot( dPK2StressdElasticMicroDeformation,
                                 dElasticMicroDeformationdPlasticMicroDeformation )
-            + vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+            + tardigradeVectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticMicroDeformation );
 
         variableMatrix dPK2StressdPlasticGradientMicroDeformation
-            = vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+            = tardigradeVectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
 
         variableMatrix dReferenceMicroStressdPlasticDeformationGradient
-            = vectorTools::dot( dReferenceMicroStressdElasticDeformationGradient,
+            = tardigradeVectorTools::dot( dReferenceMicroStressdElasticDeformationGradient,
                                 dElasticDeformationGradientdPlasticDeformationGradient )
-            + vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+            + tardigradeVectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticDeformationGradient );
 
         variableMatrix dReferenceMicroStressdPlasticMicroDeformation
-            = vectorTools::dot( dReferenceMicroStressdElasticMicroDeformation,
+            = tardigradeVectorTools::dot( dReferenceMicroStressdElasticMicroDeformation,
                                 dElasticMicroDeformationdPlasticMicroDeformation )
-            + vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+            + tardigradeVectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticMicroDeformation );
 
         variableMatrix dReferenceMicroStressdPlasticGradientMicroDeformation
-            = vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+            = tardigradeVectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
 
         variableMatrix dReferenceHigherOrderStressdPlasticDeformationGradient
-            = vectorTools::dot( dReferenceHigherOrderStressdElasticDeformationGradient,
+            = tardigradeVectorTools::dot( dReferenceHigherOrderStressdElasticDeformationGradient,
                                 dElasticDeformationGradientdPlasticDeformationGradient )
-            + vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+            + tardigradeVectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticDeformationGradient );
 
         variableMatrix dReferenceHigherOrderStressdPlasticMicroDeformation
-            = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+            = tardigradeVectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticMicroDeformation );
 
         variableMatrix dReferenceHigherOrderStressdPlasticGradientMicroDeformation
-            = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+            = tardigradeVectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
                                 dElasticGradientMicroDeformationdPlasticGradientMicroDeformation );
 
         //Jacobians w.r.t. the fundamental deformation measures
@@ -3723,41 +3723,41 @@ namespace micromorphicElastoPlasticity{
                        dReferenceHigherOrderStressdGradientMicroDeformation;
 
         if ( evaluateFullDerivatives ){
-            dPK2StressdDeformationGradient = vectorTools::dot( dPK2StressdElasticDeformationGradient,
+            dPK2StressdDeformationGradient = tardigradeVectorTools::dot( dPK2StressdElasticDeformationGradient,
                                                                dElasticDeformationGradientdDeformationGradient );
-            dPK2StressdMicroDeformation = vectorTools::dot( dPK2StressdElasticMicroDeformation,
+            dPK2StressdMicroDeformation = tardigradeVectorTools::dot( dPK2StressdElasticMicroDeformation,
                                                             dElasticMicroDeformationdMicroDeformation )
-                                        + vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+                                        + tardigradeVectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
                                                             dElasticGradientMicroDeformationdMicroDeformation );
-            dPK2StressdGradientMicroDeformation = vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+            dPK2StressdGradientMicroDeformation = tardigradeVectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
                                                                     dElasticGradientMicroDeformationdGradientMicroDeformation );
 
-            dReferenceMicroStressdDeformationGradient = vectorTools::dot( dReferenceMicroStressdElasticDeformationGradient,
+            dReferenceMicroStressdDeformationGradient = tardigradeVectorTools::dot( dReferenceMicroStressdElasticDeformationGradient,
                                                                           dElasticDeformationGradientdDeformationGradient );
-            dReferenceMicroStressdMicroDeformation = vectorTools::dot( dReferenceMicroStressdElasticMicroDeformation,
+            dReferenceMicroStressdMicroDeformation = tardigradeVectorTools::dot( dReferenceMicroStressdElasticMicroDeformation,
                                                                        dElasticMicroDeformationdMicroDeformation )
-                                                   + vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+                                                   + tardigradeVectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
                                                                        dElasticGradientMicroDeformationdMicroDeformation );
             dReferenceMicroStressdGradientMicroDeformation
-                = vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+                = tardigradeVectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
                                     dElasticGradientMicroDeformationdGradientMicroDeformation );
 
             dReferenceHigherOrderStressdDeformationGradient
-                = vectorTools::dot( dReferenceHigherOrderStressdElasticDeformationGradient,
+                = tardigradeVectorTools::dot( dReferenceHigherOrderStressdElasticDeformationGradient,
                                     dElasticDeformationGradientdDeformationGradient );
 
             dReferenceHigherOrderStressdMicroDeformation
-                = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+                = tardigradeVectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
                                     dElasticGradientMicroDeformationdMicroDeformation );
 
             dReferenceHigherOrderStressdGradientMicroDeformation
-                = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+                = tardigradeVectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
                                     dElasticGradientMicroDeformationdGradientMicroDeformation );
 
             //Assemble the jacobians into the output vector
             
-            floatOuts[ 11 ] = solverTools::floatVector( 45 * 45, 0 ); //Jacobians w.r.t. the solution vector x
-            floatOuts[ 12 ] = solverTools::floatVector( 45 * 45, 0 ); //Jacobians w.r.t. the fundamental deformation measures
+            floatOuts[ 11 ] = tardigradeSolverTools::floatVector( 45 * 45, 0 ); //Jacobians w.r.t. the solution vector x
+            floatOuts[ 12 ] = tardigradeSolverTools::floatVector( 45 * 45, 0 ); //Jacobians w.r.t. the fundamental deformation measures
 
             //Save the Jacobians of the PK2 and reference symmetric micro stresses
             for ( unsigned int i = 0; i < 9; i++ ){
@@ -3809,46 +3809,46 @@ namespace micromorphicElastoPlasticity{
 
         //Save the Jacobians w.r.t. the plastic deformations
         DEBUG.emplace( "dPK2StressdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dPK2StressdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dPK2StressdPlasticDeformationGradient ) );
         DEBUG.emplace( "dPK2StressdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dPK2StressdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dPK2StressdPlasticMicroDeformation ) );
         DEBUG.emplace( "dPK2StressdPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dPK2StressdPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dPK2StressdPlasticGradientMicroDeformation ) );
         DEBUG.emplace( "dReferenceMicroStressdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dReferenceMicroStressdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dReferenceMicroStressdPlasticDeformationGradient ) );
         DEBUG.emplace( "dReferenceMicroStressdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dReferenceMicroStressdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dReferenceMicroStressdPlasticMicroDeformation ) );
         DEBUG.emplace( "dReferenceMicroStressdPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dReferenceMicroStressdPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dReferenceMicroStressdPlasticGradientMicroDeformation ) );
         DEBUG.emplace( "dReferenceHigherOrderStressdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dReferenceHigherOrderStressdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dReferenceHigherOrderStressdPlasticDeformationGradient ) );
         DEBUG.emplace( "dReferenceHigherOrderStressdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dReferenceHigherOrderStressdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dReferenceHigherOrderStressdPlasticMicroDeformation ) );
         DEBUG.emplace( "dReferenceHigherOrderStressdPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dReferenceHigherOrderStressdPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dReferenceHigherOrderStressdPlasticGradientMicroDeformation ) );
 
         //Save the Jacobians w.r.t. the fundamental deformation measures
         if ( evaluateFullDerivatives ){
             DEBUG.emplace( "dPK2StressdDeformationGradient",
-                            vectorTools::appendVectors( dPK2StressdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dPK2StressdDeformationGradient ) );
             DEBUG.emplace( "dPK2StressdMicroDeformation",
-                            vectorTools::appendVectors( dPK2StressdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPK2StressdMicroDeformation ) );
             DEBUG.emplace( "dPK2StressdGradientMicroDeformation",
-                            vectorTools::appendVectors( dPK2StressdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPK2StressdGradientMicroDeformation ) );
     
             DEBUG.emplace( "dReferenceMicroStressdDeformationGradient",
-                            vectorTools::appendVectors( dReferenceMicroStressdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dReferenceMicroStressdDeformationGradient ) );
             DEBUG.emplace( "dReferenceMicroStressdMicroDeformation",
-                            vectorTools::appendVectors( dReferenceMicroStressdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dReferenceMicroStressdMicroDeformation ) );
             DEBUG.emplace( "dReferenceMicroStressdGradientMicroDeformation",
-                            vectorTools::appendVectors( dReferenceMicroStressdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dReferenceMicroStressdGradientMicroDeformation ) );
     
             DEBUG.emplace( "dReferenceHigherOrderStressdDeformationGradient",
-                            vectorTools::appendVectors( dReferenceHigherOrderStressdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dReferenceHigherOrderStressdDeformationGradient ) );
             DEBUG.emplace( "dReferenceHigherOrderStressdMicroDeformation",
-                            vectorTools::appendVectors( dReferenceHigherOrderStressdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dReferenceHigherOrderStressdMicroDeformation ) );
             DEBUG.emplace( "dReferenceHigherOrderStressdGradientMicroDeformation",
-                            vectorTools::appendVectors( dReferenceHigherOrderStressdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dReferenceHigherOrderStressdGradientMicroDeformation ) );
         }
 
 #endif
@@ -3866,7 +3866,7 @@ namespace micromorphicElastoPlasticity{
 
         parameterType currentdMacroGdMacroCohesion, currentdMicroGdMicroCohesion,
                       magnitudeCurrentdMicroGradientGdMicroGradientCohesion, tempFloat;
-        parameterMatrix currentdMicroGradientGdMicroGradientCohesion = vectorTools::eye< parameterType >( 3 );
+        parameterMatrix currentdMicroGradientGdMicroGradientCohesion = tardigradeVectorTools::eye< parameterType >( 3 );
 
         error = computeDruckerPragerInternalParameters( (*macroFlowParameters)[ 0 ], (*macroFlowParameters)[ 1 ],
                                                         currentdMacroGdMacroCohesion, tempFloat );
@@ -3961,9 +3961,9 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "dCurrentMicroStrainISVddMicroGdMicroCohesion", temp );
 
         DEBUG.emplace( "dCurrentMicroGradientStrainISVdMicroGradientGamma",
-                        vectorTools::appendVectors( dCurrentMicroGradientStrainISVdMicroGradientGamma ) );
+                        tardigradeVectorTools::appendVectors( dCurrentMicroGradientStrainISVdMicroGradientGamma ) );
         DEBUG.emplace( "dCurrentMicroGradientStrainISVddMicroGradientGdMicroGradientCohesion",
-                        vectorTools::appendVectors( dCurrentMicroGradientStrainISVddMicroGradientGdMicroGradientCohesion ) );
+                        tardigradeVectorTools::appendVectors( dCurrentMicroGradientStrainISVddMicroGradientGdMicroGradientCohesion ) );
 
 #endif
 
@@ -3992,13 +3992,13 @@ namespace micromorphicElastoPlasticity{
         variableType dCurrentMacroCohesiondMacroGamma = dCurrentMacroCohesiondMacroStrainISV * dCurrentMacroStrainISVdMacroGamma;
         variableType dCurrentMicroCohesiondMicroGamma = dCurrentMicroCohesiondMicroStrainISV * dCurrentMicroStrainISVdMicroGamma;
         variableMatrix dCurrentMicroGradientCohesiondMicroGradientGamma
-            = vectorTools::dot( dCurrentMicroGradientCohesiondMicroGradientStrainISV,
+            = tardigradeVectorTools::dot( dCurrentMicroGradientCohesiondMicroGradientStrainISV,
                                 dCurrentMicroGradientStrainISVdMicroGradientGamma );
 
 //        std::cout << "\n  current cohesion values\n";
 //        std::cout << "    " << currentMacroCohesion << "\n";
 //        std::cout << "    " << currentMicroCohesion << "\n";
-//        std::cout << "    "; vectorTools::print( currentMicroGradientCohesion );
+//        std::cout << "    "; tardigradeVectorTools::print( currentMicroGradientCohesion );
 
 #ifdef DEBUG_MODE
 
@@ -4023,7 +4023,7 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "dCurrentMicroCohesiondMicroGamma", temp );
 
         DEBUG.emplace( "dCurrentMicroGradientCohesiondMicroGradientGamma",
-                       vectorTools::appendVectors( dCurrentMicroGradientCohesiondMicroGradientGamma ) );
+                       tardigradeVectorTools::appendVectors( dCurrentMicroGradientCohesiondMicroGradientGamma ) );
 
 #endif
 
@@ -4070,21 +4070,21 @@ namespace micromorphicElastoPlasticity{
         }
 
         //TODO: This error section exists for debugging. May not be required once the code is in production.
-        if ( !vectorTools::fuzzyEquals( _currentdMacroGdMacroCohesion, currentdMacroGdMacroCohesion ) ){
+        if ( !tardigradeVectorTools::fuzzyEquals( _currentdMacroGdMacroCohesion, currentdMacroGdMacroCohesion ) ){
             std::string message     = "The derivative of the macro plastic flow potential w.r.t. the cohesion are not consistent. Report this to Nathan Miller";
             std::string errorValues = "_currentdMacroGdMacroCohesion: " + std::to_string( _currentdMacroGdMacroCohesion ) + "\n"
                                     + " currentdMacroGdMacroCohesion: " + std::to_string( currentdMacroGdMacroCohesion );
             return new errorNode( __func__, message + errorValues );
         }
 
-        if ( !vectorTools::fuzzyEquals( _currentdMicroGdMicroCohesion, currentdMicroGdMicroCohesion ) ){
+        if ( !tardigradeVectorTools::fuzzyEquals( _currentdMicroGdMicroCohesion, currentdMicroGdMicroCohesion ) ){
             std::string message     = "The derivative of the micro plastic flow potential w.r.t. the cohesion are not consistent. Report this to Nathan Miller";
             std::string errorValues = "_currentdMicroGdMicroCohesion: " + std::to_string( _currentdMicroGdMicroCohesion ) + "\n"
                                     + " currentdMicroGdMicroCohesion: " + std::to_string( currentdMicroGdMicroCohesion );
             return new errorNode( __func__, message + errorValues );
         }
 
-        if ( !vectorTools::fuzzyEquals( _currentdMicroGradientGdMicroGradientCohesion, currentdMicroGradientGdMicroGradientCohesion ) ){
+        if ( !tardigradeVectorTools::fuzzyEquals( _currentdMicroGradientGdMicroGradientCohesion, currentdMicroGradientGdMicroGradientCohesion ) ){
             std::string message     = "The derivative of the micro gradient plastic flow potential w.r.t. the cohesion are not consistent. Report this to Nathan Miller";
             std::string errorValues = "    _currentdMicroGradientGdMicroGradientCohesion:\n";
             for ( auto iter = _currentdMicroGradientGdMicroGradientCohesion.begin( ); iter != _currentdMicroGradientGdMicroGradientCohesion.end( ); iter++ ){
@@ -4109,9 +4109,9 @@ namespace micromorphicElastoPlasticity{
         //TODO: End of debugging section
 
 //        std::cout << "\n  current flow directions\n";
-//        std::cout << "    "; vectorTools::print( currentMacroFlowDirection );
-//        std::cout << "    "; vectorTools::print( currentMicroFlowDirection );
-//        std::cout << "    "; vectorTools::print( currentMicroGradientFlowDirection );
+//        std::cout << "    "; tardigradeVectorTools::print( currentMacroFlowDirection );
+//        std::cout << "    "; tardigradeVectorTools::print( currentMicroFlowDirection );
+//        std::cout << "    "; tardigradeVectorTools::print( currentMicroGradientFlowDirection );
 
         /*!============================
         | Assemble the flow Jacobians |
@@ -4119,37 +4119,37 @@ namespace micromorphicElastoPlasticity{
 
         //Assemble the Jacobians w.r.t. the plastic deformation
         variableMatrix dMacroFlowDirectiondPlasticDeformationGradient
-            = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdPlasticDeformationGradient )
-            + vectorTools::dot( dMacroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendPlasticDeformationGradient );
+            = tardigradeVectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdPlasticDeformationGradient )
+            + tardigradeVectorTools::dot( dMacroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendPlasticDeformationGradient );
 
         variableMatrix dMacroFlowDirectiondPlasticMicroDeformation
-            = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdPlasticMicroDeformation );
+            = tardigradeVectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdPlasticMicroDeformation );
 
         variableMatrix dMacroFlowDirectiondPlasticGradientMicroDeformation
-            = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdPlasticGradientMicroDeformation );
+            = tardigradeVectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdPlasticGradientMicroDeformation );
 
         variableMatrix dMicroFlowDirectiondPlasticDeformationGradient
-            = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdPlasticDeformationGradient )
-            + vectorTools::dot( dMicroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendPlasticDeformationGradient );
+            = tardigradeVectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdPlasticDeformationGradient )
+            + tardigradeVectorTools::dot( dMicroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendPlasticDeformationGradient );
 
         variableMatrix dMicroFlowDirectiondPlasticMicroDeformation
-            = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdPlasticMicroDeformation );
+            = tardigradeVectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdPlasticMicroDeformation );
 
         variableMatrix dMicroFlowDirectiondPlasticGradientMicroDeformation
-            = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdPlasticGradientMicroDeformation );
+            = tardigradeVectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdPlasticGradientMicroDeformation );
 
         variableMatrix dMicroGradientFlowDirectiondPlasticDeformationGradient
-            = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+            = tardigradeVectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                 dReferenceHigherOrderStressdPlasticDeformationGradient )
-            + vectorTools::dot( dMicroGradientFlowDirectiondElasticRightCauchyGreen,
+            + tardigradeVectorTools::dot( dMicroGradientFlowDirectiondElasticRightCauchyGreen,
                                 dElasticRightCauchyGreendPlasticDeformationGradient );
 
         variableMatrix dMicroGradientFlowDirectiondPlasticMicroDeformation
-            = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+            = tardigradeVectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                 dReferenceHigherOrderStressdPlasticMicroDeformation );
 
         variableMatrix dMicroGradientFlowDirectiondPlasticGradientMicroDeformation
-            = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+            = tardigradeVectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                 dReferenceHigherOrderStressdPlasticGradientMicroDeformation );
 
         //Assemble the Jacobians w.r.t. the fundamental deformation measures
@@ -4162,37 +4162,37 @@ namespace micromorphicElastoPlasticity{
 
         if ( evaluateFullDerivatives ){
             dMacroFlowDirectiondDeformationGradient
-                = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdDeformationGradient )
-                + vectorTools::dot( dMacroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendDeformationGradient );
+                = tardigradeVectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdDeformationGradient )
+                + tardigradeVectorTools::dot( dMacroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendDeformationGradient );
 
             dMacroFlowDirectiondMicroDeformation
-                = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdMicroDeformation );
+                = tardigradeVectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdMicroDeformation );
 
             dMacroFlowDirectiondGradientMicroDeformation
-                = vectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdGradientMicroDeformation );
+                = tardigradeVectorTools::dot( dMacroFlowDirectiondPK2Stress, dPK2StressdGradientMicroDeformation );
 
             dMicroFlowDirectiondDeformationGradient
-                = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdDeformationGradient )
-                + vectorTools::dot( dMicroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendDeformationGradient );
+                = tardigradeVectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdDeformationGradient )
+                + tardigradeVectorTools::dot( dMicroFlowDirectiondElasticRightCauchyGreen, dElasticRightCauchyGreendDeformationGradient );
 
             dMicroFlowDirectiondMicroDeformation
-                = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdMicroDeformation );
+                = tardigradeVectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdMicroDeformation );
 
             dMicroFlowDirectiondGradientMicroDeformation
-                = vectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdGradientMicroDeformation );
+                = tardigradeVectorTools::dot( dMicroFlowDirectiondReferenceMicroStress, dReferenceMicroStressdGradientMicroDeformation );
 
             dMicroGradientFlowDirectiondDeformationGradient
-                = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                = tardigradeVectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                     dReferenceHigherOrderStressdDeformationGradient )
-                + vectorTools::dot( dMicroGradientFlowDirectiondElasticRightCauchyGreen,
+                + tardigradeVectorTools::dot( dMicroGradientFlowDirectiondElasticRightCauchyGreen,
                                     dElasticRightCauchyGreendDeformationGradient );
 
             dMicroGradientFlowDirectiondMicroDeformation
-                = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                = tardigradeVectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                     dReferenceHigherOrderStressdMicroDeformation );
 
             dMicroGradientFlowDirectiondGradientMicroDeformation
-                = vectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
+                = tardigradeVectorTools::dot( dMicroGradientFlowDirectiondReferenceHigherOrderStress,
                                     dReferenceHigherOrderStressdGradientMicroDeformation );
         }
 
@@ -4205,43 +4205,43 @@ namespace micromorphicElastoPlasticity{
 
         //Save the Jacobians of the flow directions
         DEBUG.emplace( "dMacroFlowDirectiondPlasticDeformationGradient",
-                       vectorTools::appendVectors( dMacroFlowDirectiondPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dMacroFlowDirectiondPlasticDeformationGradient ) );
         DEBUG.emplace( "dMacroFlowDirectiondPlasticMicroDeformation",
-                       vectorTools::appendVectors( dMacroFlowDirectiondPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dMacroFlowDirectiondPlasticMicroDeformation ) );
         DEBUG.emplace( "dMacroFlowDirectiondPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dMacroFlowDirectiondPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dMacroFlowDirectiondPlasticGradientMicroDeformation ) );
         DEBUG.emplace( "dMicroFlowDirectiondPlasticDeformationGradient",
-                       vectorTools::appendVectors( dMicroFlowDirectiondPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dMicroFlowDirectiondPlasticDeformationGradient ) );
         DEBUG.emplace( "dMicroFlowDirectiondPlasticMicroDeformation",
-                       vectorTools::appendVectors( dMicroFlowDirectiondPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dMicroFlowDirectiondPlasticMicroDeformation ) );
         DEBUG.emplace( "dMicroFlowDirectiondPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dMicroFlowDirectiondPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dMicroFlowDirectiondPlasticGradientMicroDeformation ) );
         DEBUG.emplace( "dMicroGradientFlowDirectiondPlasticDeformationGradient",
-                       vectorTools::appendVectors( dMicroGradientFlowDirectiondPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dMicroGradientFlowDirectiondPlasticDeformationGradient ) );
         DEBUG.emplace( "dMicroGradientFlowDirectiondPlasticMicroDeformation",
-                       vectorTools::appendVectors( dMicroGradientFlowDirectiondPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dMicroGradientFlowDirectiondPlasticMicroDeformation ) );
         DEBUG.emplace( "dMicroGradientFlowDirectiondPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dMicroGradientFlowDirectiondPlasticGradientMicroDeformation  ) );
+                       tardigradeVectorTools::appendVectors( dMicroGradientFlowDirectiondPlasticGradientMicroDeformation  ) );
 
         if ( evaluateFullDerivatives ){
             DEBUG.emplace( "dMacroFlowDirectiondDeformationGradient",
-                            vectorTools::appendVectors( dMacroFlowDirectiondDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dMacroFlowDirectiondDeformationGradient ) );
             DEBUG.emplace( "dMacroFlowDirectiondMicroDeformation",
-                            vectorTools::appendVectors( dMacroFlowDirectiondMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dMacroFlowDirectiondMicroDeformation ) );
             DEBUG.emplace( "dMacroFlowDirectiondGradientMicroDeformation",
-                            vectorTools::appendVectors( dMacroFlowDirectiondGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dMacroFlowDirectiondGradientMicroDeformation ) );
             DEBUG.emplace( "dMicroFlowDirectiondDeformationGradient",
-                            vectorTools::appendVectors( dMicroFlowDirectiondDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dMicroFlowDirectiondDeformationGradient ) );
             DEBUG.emplace( "dMicroFlowDirectiondMicroDeformation",
-                            vectorTools::appendVectors( dMicroFlowDirectiondMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dMicroFlowDirectiondMicroDeformation ) );
             DEBUG.emplace( "dMicroFlowDirectiondGradientMicroDeformation",
-                            vectorTools::appendVectors( dMicroFlowDirectiondGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dMicroFlowDirectiondGradientMicroDeformation ) );
             DEBUG.emplace( "dMicroGradientFlowDirectiondDeformationGradient",
-                            vectorTools::appendVectors( dMicroGradientFlowDirectiondDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dMicroGradientFlowDirectiondDeformationGradient ) );
             DEBUG.emplace( "dMicroGradientFlowDirectiondMicroDeformation",
-                            vectorTools::appendVectors( dMicroGradientFlowDirectiondMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dMicroGradientFlowDirectiondMicroDeformation ) );
             DEBUG.emplace( "dMicroGradientFlowDirectiondGradientMicroDeformation",
-                            vectorTools::appendVectors( dMicroGradientFlowDirectiondGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dMicroGradientFlowDirectiondGradientMicroDeformation ) );
         }
 
 #endif
@@ -4304,71 +4304,71 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the Jacobians w.r.t. the plastic deformation
         variableMatrix dPlasticMacroVelocityGradientdPlasticDeformationGradient
-            = vectorTools::dot( dPlasticMacroVelocityGradientdElasticRightCauchyGreen,
+            = tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdElasticRightCauchyGreen,
                                 dElasticRightCauchyGreendPlasticDeformationGradient )
-            + vectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
                                 dMacroFlowDirectiondPlasticDeformationGradient )
-            + vectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticDeformationGradient );
 
         variableMatrix dPlasticMacroVelocityGradientdPlasticMicroDeformation
-            = vectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
+            = tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
                                 dMacroFlowDirectiondPlasticMicroDeformation )
-            + vectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticMicroDeformation );
 
         variableMatrix dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation
-            = vectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
+            = tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
                                 dMacroFlowDirectiondPlasticGradientMicroDeformation )
-            + vectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticGradientMicroDeformation );
 
         variableMatrix dPlasticMicroVelocityGradientdPlasticDeformationGradient
-            = vectorTools::dot( dPlasticMicroVelocityGradientdElasticPsi,
+            = tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdElasticPsi,
                                 dElasticPsidPlasticDeformationGradient )
-            + vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticDeformationGradient );
 
         variableMatrix dPlasticMicroVelocityGradientdPlasticMicroDeformation
-            = vectorTools::dot( dPlasticMicroVelocityGradientdElasticMicroRightCauchyGreen,
+            = tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdElasticMicroRightCauchyGreen,
                                 dElasticMicroRightCauchyGreendPlasticMicroDeformation )
-            + vectorTools::dot( dPlasticMicroVelocityGradientdElasticPsi,
+            + tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdElasticPsi,
                                 dElasticPsidPlasticMicroDeformation )
-            + vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticMicroDeformation );
 
         variableMatrix dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation
-            = vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
+            = tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticGradientMicroDeformation );
 
         variableMatrix dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient
-            = vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticPsi,
+            = tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticPsi,
                                 dElasticPsidPlasticDeformationGradient )
-            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
+            + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
                                 dElasticGammadPlasticDeformationGradient )
-            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticDeformationGradient )
-            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
                                 dMicroGradientFlowDirectiondPlasticDeformationGradient );
 
         variableMatrix dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation
-            = vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticMicroRightCauchyGreen,
+            = tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticMicroRightCauchyGreen,
                                 dElasticMicroRightCauchyGreendPlasticMicroDeformation )
-            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticPsi,
+            + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticPsi,
                                 dElasticPsidPlasticMicroDeformation )
-            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
+            + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
                                 dElasticGammadPlasticMicroDeformation )
-            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticMicroDeformation )
-            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
                                 dMicroGradientFlowDirectiondPlasticMicroDeformation );
 
         variableMatrix dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation
-            = vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
+            = tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
                                 dElasticGammadPlasticGradientMicroDeformation )
-            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
                                 dMicroFlowDirectiondPlasticGradientMicroDeformation )
-            + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
+            + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
                                 dMicroGradientFlowDirectiondPlasticGradientMicroDeformation );
 
         variableMatrix dPlasticMacroVelocityGradientdDeformationGradient, dPlasticMacroVelocityGradientdMicroDeformation,
@@ -4380,71 +4380,71 @@ namespace micromorphicElastoPlasticity{
 
         if ( evaluateFullDerivatives ){
             dPlasticMacroVelocityGradientdDeformationGradient
-                = vectorTools::dot( dPlasticMacroVelocityGradientdElasticRightCauchyGreen,
+                = tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdElasticRightCauchyGreen,
                                     dElasticRightCauchyGreendDeformationGradient )
-                + vectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
                                     dMacroFlowDirectiondDeformationGradient )
-                + vectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
                                     dMicroFlowDirectiondDeformationGradient );
     
             dPlasticMacroVelocityGradientdMicroDeformation
-                = vectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
+                = tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
                                     dMacroFlowDirectiondMicroDeformation )
-                + vectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
                                     dMicroFlowDirectiondMicroDeformation );
     
             dPlasticMacroVelocityGradientdGradientMicroDeformation
-                = vectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
+                = tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMacroFlowDirection,
                                     dMacroFlowDirectiondGradientMicroDeformation )
-                + vectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMacroVelocityGradientdMicroFlowDirection,
                                     dMicroFlowDirectiondGradientMicroDeformation );
     
             dPlasticMicroVelocityGradientdDeformationGradient
-                = vectorTools::dot( dPlasticMicroVelocityGradientdElasticPsi,
+                = tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdElasticPsi,
                                     dElasticPsidDeformationGradient )
-                + vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
                                     dMicroFlowDirectiondDeformationGradient );
     
             dPlasticMicroVelocityGradientdMicroDeformation
-                = vectorTools::dot( dPlasticMicroVelocityGradientdElasticMicroRightCauchyGreen,
+                = tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdElasticMicroRightCauchyGreen,
                                     dElasticMicroRightCauchyGreendMicroDeformation )
-                + vectorTools::dot( dPlasticMicroVelocityGradientdElasticPsi,
+                + tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdElasticPsi,
                                     dElasticPsidMicroDeformation )
-                + vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
                                     dMicroFlowDirectiondMicroDeformation );
     
             dPlasticMicroVelocityGradientdGradientMicroDeformation
-                = vectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
+                = tardigradeVectorTools::dot( dPlasticMicroVelocityGradientdMicroFlowDirection,
                                     dMicroFlowDirectiondGradientMicroDeformation );
     
             dPlasticGradientMicroVelocityGradientdDeformationGradient
-                = vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticPsi,
+                = tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticPsi,
                                     dElasticPsidDeformationGradient )
-                + vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
+                + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
                                     dElasticGammadDeformationGradient )
-                + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
                                     dMicroFlowDirectiondDeformationGradient )
-                + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
                                     dMicroGradientFlowDirectiondDeformationGradient );
     
             dPlasticGradientMicroVelocityGradientdMicroDeformation
-                = vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticMicroRightCauchyGreen,
+                = tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticMicroRightCauchyGreen,
                                     dElasticMicroRightCauchyGreendMicroDeformation )
-                + vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticPsi,
+                + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticPsi,
                                     dElasticPsidMicroDeformation )
-                + vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
+                + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
                                     dElasticGammadMicroDeformation )
-                + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
                                     dMicroFlowDirectiondMicroDeformation )
-                + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
                                     dMicroGradientFlowDirectiondMicroDeformation );
     
             dPlasticGradientMicroVelocityGradientdGradientMicroDeformation
-                = vectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
+                = tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdElasticGamma,
                                     dElasticGammadGradientMicroDeformation )
-                + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroFlowDirection,
                                     dMicroFlowDirectiondGradientMicroDeformation )
-                + vectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
+                + tardigradeVectorTools::dot( dPlasticMicroGradientVelocityGradientdMicroGradientFlowDirection,
                                     dMicroGradientFlowDirectiondGradientMicroDeformation );
         }
 
@@ -4466,47 +4466,47 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "dPlasticMicroGradientVelocityGradientdMicroGamma",
                        dPlasticMicroGradientVelocityGradientdMicroGamma );
         DEBUG.emplace( "dPlasticMicroGradientVelocityGradientdMicroGradientGamma",
-                       vectorTools::appendVectors( dPlasticMicroGradientVelocityGradientdMicroGradientGamma ) );
+                       tardigradeVectorTools::appendVectors( dPlasticMicroGradientVelocityGradientdMicroGradientGamma ) );
 
         //Save the Jacobians of the velocity gradients
         DEBUG.emplace( "dPlasticMacroVelocityGradientdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dPlasticMacroVelocityGradientdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dPlasticMacroVelocityGradientdPlasticDeformationGradient ) );
         DEBUG.emplace( "dPlasticMacroVelocityGradientdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dPlasticMacroVelocityGradientdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dPlasticMacroVelocityGradientdPlasticMicroDeformation ) );
         DEBUG.emplace( "dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation ) );
         DEBUG.emplace( "dPlasticMicroVelocityGradientdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dPlasticMicroVelocityGradientdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dPlasticMicroVelocityGradientdPlasticDeformationGradient ) );
         DEBUG.emplace( "dPlasticMicroVelocityGradientdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dPlasticMicroVelocityGradientdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dPlasticMicroVelocityGradientdPlasticMicroDeformation ) );
         DEBUG.emplace( "dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation ) );
         DEBUG.emplace( "dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient ) );
         DEBUG.emplace( "dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation ) );
         DEBUG.emplace( "dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation ) );
 
         if ( evaluateFullDerivatives ){
             DEBUG.emplace( "dPlasticMacroVelocityGradientdDeformationGradient",
-                            vectorTools::appendVectors( dPlasticMacroVelocityGradientdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dPlasticMacroVelocityGradientdDeformationGradient ) );
             DEBUG.emplace( "dPlasticMacroVelocityGradientdMicroDeformation",
-                            vectorTools::appendVectors( dPlasticMacroVelocityGradientdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticMacroVelocityGradientdMicroDeformation ) );
             DEBUG.emplace( "dPlasticMacroVelocityGradientdGradientMicroDeformation",
-                            vectorTools::appendVectors( dPlasticMacroVelocityGradientdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticMacroVelocityGradientdGradientMicroDeformation ) );
             DEBUG.emplace( "dPlasticMicroVelocityGradientdDeformationGradient",
-                            vectorTools::appendVectors( dPlasticMicroVelocityGradientdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dPlasticMicroVelocityGradientdDeformationGradient ) );
             DEBUG.emplace( "dPlasticMicroVelocityGradientdMicroDeformation",
-                            vectorTools::appendVectors( dPlasticMicroVelocityGradientdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticMicroVelocityGradientdMicroDeformation ) );
             DEBUG.emplace( "dPlasticMicroVelocityGradientdGradientMicroDeformation",
-                            vectorTools::appendVectors( dPlasticMicroVelocityGradientdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticMicroVelocityGradientdGradientMicroDeformation ) );
             DEBUG.emplace( "dPlasticMicroGradientVelocityGradientdDeformationGradient",
-                            vectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdDeformationGradient ) );
             DEBUG.emplace( "dPlasticMicroGradientVelocityGradientdMicroDeformation",
-                            vectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdMicroDeformation ) );
             DEBUG.emplace( "dPlasticMicroGradientVelocityGradientdGradientMicroDeformation",
-                            vectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticGradientMicroVelocityGradientdGradientMicroDeformation ) );
         }
 
 #endif
@@ -4556,80 +4556,80 @@ namespace micromorphicElastoPlasticity{
 
         //Compute the Jacobians w.r.t. the plastic multipliers
         variableVector dExpectedPlasticDeformationGradientdMacroGamma
-            = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdMacroGamma );
 
         variableVector dExpectedPlasticDeformationGradientdMicroGamma
-            = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdMicroGamma );
 
         variableVector dExpectedPlasticMicroDeformationdMicroGamma
-            = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdMicroGamma );
 
         variableVector dExpectedPlasticGradientMicroDeformationdMacroGamma
-            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdMacroGamma );
 
         variableVector dExpectedPlasticGradientMicroDeformationdMicroGamma
-            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdMicroGamma )
-            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+            + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdMicroGamma )
-            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+            + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                 dPlasticMicroGradientVelocityGradientdMicroGamma );
 
         variableMatrix dExpectedPlasticGradientMicroDeformationdMicroGradientGamma
-            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                 dPlasticMicroGradientVelocityGradientdMicroGradientGamma );
 
         //Compute the Jacobians w.r.t. the plastic deformation
         variableMatrix dExpectedPlasticDeformationGradientdPlasticDeformationGradient
-            = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdPlasticDeformationGradient );
 
         variableMatrix dExpectedPlasticDeformationGradientdPlasticMicroDeformation
-            = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdPlasticMicroDeformation );
 
         variableMatrix dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation
-            = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation );
 
         variableMatrix dExpectedPlasticMicroDeformationdPlasticDeformationGradient
-            = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdPlasticDeformationGradient );
 
         variableMatrix dExpectedPlasticMicroDeformationdPlasticMicroDeformation
-            = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdPlasticMicroDeformation );
 
         variableMatrix dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation
-            = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation );
 
         variableMatrix dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient
-            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdPlasticDeformationGradient )
-            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+            + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdPlasticDeformationGradient )
-            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+            + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                 dPlasticGradientMicroVelocityGradientdPlasticDeformationGradient );
 
         variableMatrix dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation
-            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdPlasticMicroDeformation )
-            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+            + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdPlasticMicroDeformation )
-            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+            + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                 dPlasticGradientMicroVelocityGradientdPlasticMicroDeformation );
 
         variableMatrix dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation
-            = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+            = tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
                                 dPlasticMacroVelocityGradientdPlasticGradientMicroDeformation )
-            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+            + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
                                 dPlasticMicroVelocityGradientdPlasticGradientMicroDeformation )
-            + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+            + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                 dPlasticGradientMicroVelocityGradientdPlasticGradientMicroDeformation );
 
         variableMatrix dExpectedPlasticDeformationGradientdDeformationGradient, dExpectedPlasticDeformationGradientdMicroDeformation,
@@ -4642,51 +4642,51 @@ namespace micromorphicElastoPlasticity{
 
         if ( evaluateFullDerivatives ){
             dExpectedPlasticDeformationGradientdDeformationGradient
-                = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                = tardigradeVectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
                                     dPlasticMacroVelocityGradientdDeformationGradient );
     
             dExpectedPlasticDeformationGradientdMicroDeformation
-                = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                = tardigradeVectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
                                     dPlasticMacroVelocityGradientdMicroDeformation );
     
             dExpectedPlasticDeformationGradientdGradientMicroDeformation
-                = vectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
+                = tardigradeVectorTools::dot( dExpectedPlasticDeformationGradientdPlasticMacroVelocityGradient,
                                     dPlasticMacroVelocityGradientdGradientMicroDeformation );
     
             dExpectedPlasticMicroDeformationdDeformationGradient
-                = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+                = tardigradeVectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                     dPlasticMicroVelocityGradientdDeformationGradient );
     
             dExpectedPlasticMicroDeformationdMicroDeformation
-                = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+                = tardigradeVectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                     dPlasticMicroVelocityGradientdMicroDeformation );
     
             dExpectedPlasticMicroDeformationdGradientMicroDeformation
-                = vectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
+                = tardigradeVectorTools::dot( dExpectedPlasticMicroDeformationdPlasticMicroVelocityGradient,
                                     dPlasticMicroVelocityGradientdGradientMicroDeformation );
     
             dExpectedPlasticGradientMicroDeformationdDeformationGradient
-                = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                = tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
                                     dPlasticMacroVelocityGradientdDeformationGradient )
-                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
                                     dPlasticMicroVelocityGradientdDeformationGradient )
-                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                     dPlasticGradientMicroVelocityGradientdDeformationGradient );
     
             dExpectedPlasticGradientMicroDeformationdMicroDeformation
-                = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                = tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
                                     dPlasticMacroVelocityGradientdMicroDeformation )
-                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
                                     dPlasticMicroVelocityGradientdMicroDeformation )
-                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                     dPlasticGradientMicroVelocityGradientdMicroDeformation );
     
             dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation
-                = vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
+                = tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMacroVelocityGradient,
                                     dPlasticMacroVelocityGradientdGradientMicroDeformation )
-                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
+                + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticMicroVelocityGradient,
                                     dPlasticMicroVelocityGradientdGradientMicroDeformation )
-                + vectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
+                + tardigradeVectorTools::dot( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroVelocityGradient,
                                     dPlasticGradientMicroVelocityGradientdGradientMicroDeformation );
         }
 
@@ -4709,47 +4709,47 @@ namespace micromorphicElastoPlasticity{
         DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdMicroGamma",
                         dExpectedPlasticGradientMicroDeformationdMicroGamma );
         DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdMicroGradientGamma",
-                        vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdMicroGradientGamma ) );
+                        tardigradeVectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdMicroGradientGamma ) );
 
         //Save the Jacobians of the velocity gradients
         DEBUG.emplace( "dExpectedPlasticDeformationGradientdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dExpectedPlasticDeformationGradientdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dExpectedPlasticDeformationGradientdPlasticDeformationGradient ) );
         DEBUG.emplace( "dExpectedPlasticDeformationGradientdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dExpectedPlasticDeformationGradientdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dExpectedPlasticDeformationGradientdPlasticMicroDeformation ) );
         DEBUG.emplace( "dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dExpectedPlasticDeformationGradientdPlasticGradientMicroDeformation ) );
         DEBUG.emplace( "dExpectedPlasticMicroDeformationdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dExpectedPlasticMicroDeformationdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dExpectedPlasticMicroDeformationdPlasticDeformationGradient ) );
         DEBUG.emplace( "dExpectedPlasticMicroDeformationdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dExpectedPlasticMicroDeformationdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dExpectedPlasticMicroDeformationdPlasticMicroDeformation ) );
         DEBUG.emplace( "dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dExpectedPlasticMicroDeformationdPlasticGradientMicroDeformation ) );
         DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient",
-                       vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient ) );
+                       tardigradeVectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdPlasticDeformationGradient ) );
         DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation",
-                       vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdPlasticMicroDeformation ) );
         DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation",
-                       vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation ) );
+                       tardigradeVectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdPlasticGradientMicroDeformation ) );
 
         if ( evaluateFullDerivatives ){
             DEBUG.emplace( "dExpectedPlasticDeformationGradientdDeformationGradient",
-                            vectorTools::appendVectors( dExpectedPlasticDeformationGradientdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dExpectedPlasticDeformationGradientdDeformationGradient ) );
             DEBUG.emplace( "dExpectedPlasticDeformationGradientdMicroDeformation",
-                            vectorTools::appendVectors( dExpectedPlasticDeformationGradientdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dExpectedPlasticDeformationGradientdMicroDeformation ) );
             DEBUG.emplace( "dExpectedPlasticDeformationGradientdGradientMicroDeformation",
-                            vectorTools::appendVectors( dExpectedPlasticDeformationGradientdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dExpectedPlasticDeformationGradientdGradientMicroDeformation ) );
             DEBUG.emplace( "dExpectedPlasticMicroDeformationdDeformationGradient",
-                            vectorTools::appendVectors( dExpectedPlasticMicroDeformationdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dExpectedPlasticMicroDeformationdDeformationGradient ) );
             DEBUG.emplace( "dExpectedPlasticMicroDeformationdMicroDeformation",
-                            vectorTools::appendVectors( dExpectedPlasticMicroDeformationdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dExpectedPlasticMicroDeformationdMicroDeformation ) );
             DEBUG.emplace( "dExpectedPlasticMicroDeformationdGradientMicroDeformation",
-                            vectorTools::appendVectors( dExpectedPlasticMicroDeformationdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dExpectedPlasticMicroDeformationdGradientMicroDeformation ) );
             DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdDeformationGradient",
-                            vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdDeformationGradient ) );
             DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdMicroDeformation",
-                            vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdMicroDeformation ) );
             DEBUG.emplace( "dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation",
-                            vectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dExpectedPlasticGradientMicroDeformationdGradientMicroDeformation ) );
         }
 
 #endif
@@ -4789,7 +4789,7 @@ namespace micromorphicElastoPlasticity{
 //        }
 //
 ////        std::cout << "\n  expected yield values\n";
-////        std::cout << "    "; vectorTools::print( yieldFunctionValues );
+////        std::cout << "    "; tardigradeVectorTools::print( yieldFunctionValues );
 //
 //        /*!===============================================
 //        | Construct the Jacobians of the yield equations |
@@ -4797,40 +4797,40 @@ namespace micromorphicElastoPlasticity{
 //
 //        //Construct the Jacobians w.r.t. the plastic deformation measures
 //        variableVector dMacroYielddPlasticDeformationGradient
-//            = vectorTools::Tdot( dPK2StressdPlasticDeformationGradient, dMacroYielddPK2Stress )
-//            + vectorTools::Tdot( dElasticRightCauchyGreendPlasticDeformationGradient, dMacroYielddElasticRightCauchyGreen );
+//            = tardigradeVectorTools::Tdot( dPK2StressdPlasticDeformationGradient, dMacroYielddPK2Stress )
+//            + tardigradeVectorTools::Tdot( dElasticRightCauchyGreendPlasticDeformationGradient, dMacroYielddElasticRightCauchyGreen );
 //
 //        variableVector dMacroYielddPlasticMicroDeformation
-//            = vectorTools::Tdot( dPK2StressdPlasticMicroDeformation, dMacroYielddPK2Stress );
+//            = tardigradeVectorTools::Tdot( dPK2StressdPlasticMicroDeformation, dMacroYielddPK2Stress );
 //
 //        variableVector dMacroYielddPlasticGradientMicroDeformation
-//            = vectorTools::Tdot( dPK2StressdPlasticGradientMicroDeformation, dMacroYielddPK2Stress );
+//            = tardigradeVectorTools::Tdot( dPK2StressdPlasticGradientMicroDeformation, dMacroYielddPK2Stress );
 //
 //        variableVector dMicroYielddPlasticDeformationGradient
-//            = vectorTools::Tdot( dReferenceMicroStressdPlasticDeformationGradient, dMicroYielddReferenceMicroStress )
-//            + vectorTools::Tdot( dElasticRightCauchyGreendPlasticDeformationGradient, dMicroYielddElasticRightCauchyGreen );
+//            = tardigradeVectorTools::Tdot( dReferenceMicroStressdPlasticDeformationGradient, dMicroYielddReferenceMicroStress )
+//            + tardigradeVectorTools::Tdot( dElasticRightCauchyGreendPlasticDeformationGradient, dMicroYielddElasticRightCauchyGreen );
 //
 //        variableVector dMicroYielddPlasticMicroDeformation
-//            = vectorTools::Tdot( dReferenceMicroStressdPlasticMicroDeformation, dMicroYielddReferenceMicroStress );
+//            = tardigradeVectorTools::Tdot( dReferenceMicroStressdPlasticMicroDeformation, dMicroYielddReferenceMicroStress );
 //
 //        variableVector dMicroYielddPlasticGradientMicroDeformation
-//            = vectorTools::Tdot( dReferenceMicroStressdPlasticGradientMicroDeformation, dMicroYielddReferenceMicroStress );
+//            = tardigradeVectorTools::Tdot( dReferenceMicroStressdPlasticGradientMicroDeformation, dMicroYielddReferenceMicroStress );
 //
 //        variableMatrix dMicroGradientYielddPlasticDeformationGradient
-//            = vectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress, dReferenceHigherOrderStressdPlasticDeformationGradient )
-//            + vectorTools::dot( dMicroGradientYielddElasticRightCauchyGreen, dElasticRightCauchyGreendPlasticDeformationGradient );
+//            = tardigradeVectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress, dReferenceHigherOrderStressdPlasticDeformationGradient )
+//            + tardigradeVectorTools::dot( dMicroGradientYielddElasticRightCauchyGreen, dElasticRightCauchyGreendPlasticDeformationGradient );
 //
 //        variableMatrix dMicroGradientYielddPlasticMicroDeformation
-//            = vectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress, dReferenceHigherOrderStressdPlasticMicroDeformation );
+//            = tardigradeVectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress, dReferenceHigherOrderStressdPlasticMicroDeformation );
 //
 //        variableMatrix dMicroGradientYielddPlasticGradientMicroDeformation
-//            = vectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress,
+//            = tardigradeVectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress,
 //                                dReferenceHigherOrderStressdPlasticGradientMicroDeformation );
 //
 //        //Construct the Jacobians w.r.t. the plastic multipliers
 //        variableType dMacroYielddMacroGamma = dMacroYielddMacroCohesion * dCurrentMacroCohesiondMacroGamma;
 //        variableType dMicroYielddMicroGamma = dMicroYielddMicroCohesion * dCurrentMicroCohesiondMicroGamma;
-//        variableMatrix dMicroGradientYielddMicroGradientGamma = vectorTools::dot( dMicroGradientYielddMicroGradientCohesion,
+//        variableMatrix dMicroGradientYielddMicroGradientGamma = tardigradeVectorTools::dot( dMicroGradientYielddMicroGradientCohesion,
 //                                                                                  dCurrentMicroGradientCohesiondMicroGradientGamma );
 //
 //        variableVector dMacroYielddDeformationGradient, dMacroYielddMicroDeformation, dMacroYielddGradientMicroDeformation,
@@ -4840,34 +4840,34 @@ namespace micromorphicElastoPlasticity{
 //
 //        if ( evaluateFullDerivatives ){
 //            dMacroYielddDeformationGradient
-//                = vectorTools::Tdot( dPK2StressdDeformationGradient, dMacroYielddPK2Stress )
-//                + vectorTools::Tdot( dElasticRightCauchyGreendDeformationGradient, dMacroYielddElasticRightCauchyGreen );
+//                = tardigradeVectorTools::Tdot( dPK2StressdDeformationGradient, dMacroYielddPK2Stress )
+//                + tardigradeVectorTools::Tdot( dElasticRightCauchyGreendDeformationGradient, dMacroYielddElasticRightCauchyGreen );
 //    
 //            dMacroYielddMicroDeformation
-//                = vectorTools::Tdot( dPK2StressdMicroDeformation, dMacroYielddPK2Stress );
+//                = tardigradeVectorTools::Tdot( dPK2StressdMicroDeformation, dMacroYielddPK2Stress );
 //    
 //            dMacroYielddGradientMicroDeformation
-//                = vectorTools::Tdot( dPK2StressdGradientMicroDeformation, dMacroYielddPK2Stress );
+//                = tardigradeVectorTools::Tdot( dPK2StressdGradientMicroDeformation, dMacroYielddPK2Stress );
 //    
 //            dMicroYielddDeformationGradient
-//                = vectorTools::Tdot( dReferenceMicroStressdDeformationGradient, dMicroYielddReferenceMicroStress )
-//                + vectorTools::Tdot( dElasticRightCauchyGreendDeformationGradient, dMicroYielddElasticRightCauchyGreen );
+//                = tardigradeVectorTools::Tdot( dReferenceMicroStressdDeformationGradient, dMicroYielddReferenceMicroStress )
+//                + tardigradeVectorTools::Tdot( dElasticRightCauchyGreendDeformationGradient, dMicroYielddElasticRightCauchyGreen );
 //    
 //            dMicroYielddMicroDeformation
-//                = vectorTools::Tdot( dReferenceMicroStressdMicroDeformation, dMicroYielddReferenceMicroStress );
+//                = tardigradeVectorTools::Tdot( dReferenceMicroStressdMicroDeformation, dMicroYielddReferenceMicroStress );
 //    
 //            dMicroYielddGradientMicroDeformation
-//                = vectorTools::Tdot( dReferenceMicroStressdGradientMicroDeformation, dMicroYielddReferenceMicroStress );
+//                = tardigradeVectorTools::Tdot( dReferenceMicroStressdGradientMicroDeformation, dMicroYielddReferenceMicroStress );
 //    
 //            dMicroGradientYielddDeformationGradient
-//                = vectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress, dReferenceHigherOrderStressdDeformationGradient )
-//                + vectorTools::dot( dMicroGradientYielddElasticRightCauchyGreen, dElasticRightCauchyGreendDeformationGradient );
+//                = tardigradeVectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress, dReferenceHigherOrderStressdDeformationGradient )
+//                + tardigradeVectorTools::dot( dMicroGradientYielddElasticRightCauchyGreen, dElasticRightCauchyGreendDeformationGradient );
 //    
 //            dMicroGradientYielddMicroDeformation
-//                = vectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress, dReferenceHigherOrderStressdMicroDeformation );
+//                = tardigradeVectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress, dReferenceHigherOrderStressdMicroDeformation );
 //    
 //            dMicroGradientYielddGradientMicroDeformation
-//                = vectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress,
+//                = tardigradeVectorTools::dot( dMicroGradientYielddReferenceHigherOrderStress,
 //                                    dReferenceHigherOrderStressdGradientMicroDeformation );
 //        }
 //
@@ -4893,11 +4893,11 @@ namespace micromorphicElastoPlasticity{
 //        DEBUG.emplace( "dMicroYielddPlasticGradientMicroDeformation", dMicroYielddPlasticGradientMicroDeformation );
 // 
 //        DEBUG.emplace( "dMicroGradientYielddPlasticDeformationGradient",
-//                        vectorTools::appendVectors( dMicroGradientYielddPlasticDeformationGradient ) );
+//                        tardigradeVectorTools::appendVectors( dMicroGradientYielddPlasticDeformationGradient ) );
 //        DEBUG.emplace( "dMicroGradientYielddPlasticMicroDeformation",
-//                        vectorTools::appendVectors( dMicroGradientYielddPlasticMicroDeformation ) );
+//                        tardigradeVectorTools::appendVectors( dMicroGradientYielddPlasticMicroDeformation ) );
 //        DEBUG.emplace( "dMicroGradientYielddPlasticGradientMicroDeformation",
-//                        vectorTools::appendVectors( dMicroGradientYielddPlasticGradientMicroDeformation ) );
+//                        tardigradeVectorTools::appendVectors( dMicroGradientYielddPlasticGradientMicroDeformation ) );
 // 
 //        //Save the Jacobians w.r.t. the strain-like ISVs
 //        temp = { dMacroYielddMacroGamma };
@@ -4905,7 +4905,7 @@ namespace micromorphicElastoPlasticity{
 //        temp = { dMicroYielddMicroGamma };
 //        DEBUG.emplace( "dMicroYielddMicroGamma", temp );
 //        DEBUG.emplace( "dMicroGradientYielddMicroGradientGamma",
-//                        vectorTools::appendVectors( dMicroGradientYielddMicroGradientGamma ) );
+//                        tardigradeVectorTools::appendVectors( dMicroGradientYielddMicroGradientGamma ) );
 //
 //        if ( evaluateFullDerivatives ){
 //            DEBUG.emplace( "dMacroYielddDeformationGradient", dMacroYielddDeformationGradient );
@@ -4915,11 +4915,11 @@ namespace micromorphicElastoPlasticity{
 //            DEBUG.emplace( "dMicroYielddMicroDeformation", dMicroYielddMicroDeformation );
 //            DEBUG.emplace( "dMicroYielddGradientMicroDeformation", dMicroYielddGradientMicroDeformation );
 //            DEBUG.emplace( "dMicroGradientYielddDeformationGradient",
-//                            vectorTools::appendVectors( dMicroGradientYielddDeformationGradient ) );
+//                            tardigradeVectorTools::appendVectors( dMicroGradientYielddDeformationGradient ) );
 //            DEBUG.emplace( "dMicroGradientYielddMicroDeformation",
-//                            vectorTools::appendVectors( dMicroGradientYielddMicroDeformation ) );
+//                            tardigradeVectorTools::appendVectors( dMicroGradientYielddMicroDeformation ) );
 //            DEBUG.emplace( "dMicroGradientYielddGradientMicroDeformation",
-//                            vectorTools::appendVectors( dMicroGradientYielddGradientMicroDeformation ) );
+//                            tardigradeVectorTools::appendVectors( dMicroGradientYielddGradientMicroDeformation ) );
 //        }
 //
 //#endif
@@ -4929,12 +4929,12 @@ namespace micromorphicElastoPlasticity{
         | Compute the residual equation and the Jacobian |
         ================================================*/
 
-        residual = solverTools::floatVector( x.size(), 0 );
-        jacobian = vectorTools::eye< solverTools::floatType >( x.size() );
+        residual = tardigradeSolverTools::floatVector( x.size(), 0 );
+        jacobian = tardigradeVectorTools::eye< tardigradeSolverTools::floatType >( x.size() );
 
         if ( evaluateFullDerivatives ){
-            floatOuts[ 13 ] = solverTools::floatVector( x.size() * 45, 0 );
-            floatOuts[ 15 ] = solverTools::floatVector( x.size() * 5, 0 );
+            floatOuts[ 13 ] = tardigradeSolverTools::floatVector( x.size() * 45, 0 );
+            floatOuts[ 15 ] = tardigradeSolverTools::floatVector( x.size() * 5, 0 );
         }
 
         //Compute the residuals and the jacobians for the plastic deformations
@@ -5048,7 +5048,7 @@ namespace micromorphicElastoPlasticity{
 //        //Set the residuals and Jacobians for the macro-scale terms
 //        variableType dMacMacroYielddMacroYield;
 //        residual[ 45 ] = currentMacroGamma * yieldFunctionValues[ 0 ]
-//                       + constitutiveTools::mac( yieldFunctionValues[ 0 ], dMacMacroYielddMacroYield );
+//                       + tardigradeConstitutiveTools::mac( yieldFunctionValues[ 0 ], dMacMacroYielddMacroYield );
 //
 //        //The Jacobian terms w.r.t. the plastic deformation
 //        for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
@@ -5082,7 +5082,7 @@ namespace micromorphicElastoPlasticity{
 //        //Set the residuals and Jacobians for the micro-scale terms
 //        variableType dMacMicroYielddMicroYield;
 //        residual[ 46 ] = currentMicroGamma * yieldFunctionValues[ 1 ]
-//                       + constitutiveTools::mac( yieldFunctionValues[ 1 ], dMacMicroYielddMicroYield );
+//                       + tardigradeConstitutiveTools::mac( yieldFunctionValues[ 1 ], dMacMicroYielddMicroYield );
 //
 //        //The Jacobian terms w.r.t. the plastic deformation
 //        for ( unsigned int i = 0; i < currentPlasticDeformationGradient.size(); i++ ){
@@ -5117,7 +5117,7 @@ namespace micromorphicElastoPlasticity{
 //        variableType dMacMicroGradientYielddMicroGradientYield;
 //        for ( unsigned int i = 0; i < 3; i++ ){
 //            residual[ 47 + i ] = currentMicroGradientGamma[ i ] * yieldFunctionValues[ 2 + i ]
-//                               + constitutiveTools::mac( yieldFunctionValues[ 2 + i ], dMacMicroGradientYielddMicroGradientYield );
+//                               + tardigradeConstitutiveTools::mac( yieldFunctionValues[ 2 + i ], dMacMicroGradientYielddMicroGradientYield );
 //
 //            //The Jacobian terms w.r.t. the plastic deformation
 //            for ( unsigned int j = 0; j < currentPlasticDeformationGradient.size(); j++ ){
@@ -5166,14 +5166,14 @@ namespace micromorphicElastoPlasticity{
 //        //Try conditioning the residual and jacobian matrix
 //        constantType norm;
 //        for ( unsigned int i = 0; i < jacobian.size(); i++ ){
-//            norm = vectorTools::l2norm( jacobian[ i ] );
+//            norm = tardigradeVectorTools::l2norm( jacobian[ i ] );
 //
 //            residual[ i ] /= norm;
 //            jacobian[ i ] /= norm;
 //        }
 //
 //        //Check the condition number of the Jacobian
-//        variableVector jflat = vectorTools::appendVectors( jacobian );
+//        variableVector jflat = tardigradeVectorTools::appendVectors( jacobian );
 //        Eigen::Map < const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor> > A(jflat.data(), 55, 55);
 //
 //        Eigen::JacobiSVD<Eigen::MatrixXd> svd(A);
@@ -5184,7 +5184,7 @@ namespace micromorphicElastoPlasticity{
 //        if ( cond > 1000 ){
 //            std::cout << "\nJACOBIAN SINGULAR VALUES:\n" << svd.singularValues() << "\n";
 //    
-//            std::cout << "\nRESIDUAL\n"; vectorTools::print( residual );
+//            std::cout << "\nRESIDUAL\n"; tardigradeVectorTools::print( residual );
 //    
 //            std::cout << "\nJACOBIAN\n" << A.block<55,18>(0,0) << "\n";
 //            std::cout << A.block<55,10>(0,45) << "\n";
@@ -5207,7 +5207,7 @@ namespace micromorphicElastoPlasticity{
                         std::vector< std::vector< double > > &ADD_TERMS,
                         std::string &output_message
 #ifdef DEBUG_MODE
-                        , solverTools::homotopyMap &DEBUG
+                        , tardigradeSolverTools::homotopyMap &DEBUG
 #endif
                         ){
         /*!
@@ -5268,7 +5268,7 @@ namespace micromorphicElastoPlasticity{
          *       M_{311}, M_{312}, M_{313}, M_{321}, M_{322}, M_{323}, M_{331}, M_{332}, M_{333} ]
          * :param std::vector< std::vector< double > > &ADD_TERMS: Additional terms ( unused )
          * :param std::string &output_message: The output message string.
-         * :param solverTools::homotopyMap DEBUG: The debugging object ( only available if DEBUG_MODE is defined )
+         * :param tardigradeSolverTools::homotopyMap DEBUG: The debugging object ( only available if DEBUG_MODE is defined )
          *
          * Returns:
          *     0: No errors. Solution converged.
@@ -5280,13 +5280,13 @@ namespace micromorphicElastoPlasticity{
         unsigned int dim = 3;
 
 #ifdef DEBUG_MODE
-        solverTools::debugMap tempDEBUG;
-        solverTools::iterationMap tempITERATION;
+        tardigradeSolverTools::debugMap tempDEBUG;
+        tardigradeSolverTools::iterationMap tempITERATION;
 #endif
 
         //Construct identity matrix
         constantVector eye( dim * dim, 0 );
-        vectorTools::eye< constantType >( eye );
+        tardigradeVectorTools::eye< constantType >( eye );
 
         //Re-direct the output to a buffer
         std::stringbuf buffer;
@@ -5495,7 +5495,7 @@ namespace micromorphicElastoPlasticity{
         }
 
 #ifdef DEBUG_MODE
-        solverTools::floatVector tmp = { previousMacroCohesion };
+        tardigradeSolverTools::floatVector tmp = { previousMacroCohesion };
         tempDEBUG.emplace( "previousMacroCohesion", tmp );
         tmp = { previousMicroCohesion };
         tempDEBUG.emplace( "previousMicroCohesion", tmp );
@@ -5593,7 +5593,7 @@ namespace micromorphicElastoPlasticity{
             tempDEBUG.emplace( "previousdMicroGdMicroCohesion", tmp );
 
             tempDEBUG.emplace( "previousdMicroGradientGdMicroGradientCohesion",
-                               vectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ) );
+                               tardigradeVectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ) );
 #endif
 
             //Update the strain ISV values
@@ -5724,29 +5724,29 @@ namespace micromorphicElastoPlasticity{
 #endif
 
 //        std::cout << "\n\nDEFORMATION MEASURES\n";
-//        std::cout << "  "; vectorTools::print( currentDeformationGradient );
-//        std::cout << "  "; vectorTools::print( currentMicroDeformation );
-//        std::cout << "  "; vectorTools::print( currentGradientMicroDeformation );
+//        std::cout << "  "; tardigradeVectorTools::print( currentDeformationGradient );
+//        std::cout << "  "; tardigradeVectorTools::print( currentMicroDeformation );
+//        std::cout << "  "; tardigradeVectorTools::print( currentGradientMicroDeformation );
 //
 //        std::cout << "TRIAL ELASTIC DEFORMATION MEASURES\n";
-//        std::cout << "  "; vectorTools::print( currentElasticDeformationGradient );
-//        std::cout << "  "; vectorTools::print( currentElasticMicroDeformation );
-//        std::cout << "  "; vectorTools::print( currentElasticGradientMicroDeformation );
+//        std::cout << "  "; tardigradeVectorTools::print( currentElasticDeformationGradient );
+//        std::cout << "  "; tardigradeVectorTools::print( currentElasticMicroDeformation );
+//        std::cout << "  "; tardigradeVectorTools::print( currentElasticGradientMicroDeformation );
 //
 //        std::cout << "TRIAL PLASTIC DEFORMATION MEASURES\n";
-//        std::cout << "  "; vectorTools::print( currentPlasticDeformationGradient );
-//        std::cout << "  "; vectorTools::print( currentPlasticMicroDeformation );
-//        std::cout << "  "; vectorTools::print( currentPlasticGradientMicroDeformation );
+//        std::cout << "  "; tardigradeVectorTools::print( currentPlasticDeformationGradient );
+//        std::cout << "  "; tardigradeVectorTools::print( currentPlasticMicroDeformation );
+//        std::cout << "  "; tardigradeVectorTools::print( currentPlasticGradientMicroDeformation );
 //
 //        std::cout << "PREVIOUS PLASTIC DEFORMATION MEASURES\n";
-//        std::cout << "  "; vectorTools::print( previousPlasticDeformationGradient );
-//        std::cout << "  "; vectorTools::print( previousPlasticMicroDeformation );
-//        std::cout << "  "; vectorTools::print( previousPlasticGradientMicroDeformation );
+//        std::cout << "  "; tardigradeVectorTools::print( previousPlasticDeformationGradient );
+//        std::cout << "  "; tardigradeVectorTools::print( previousPlasticMicroDeformation );
+//        std::cout << "  "; tardigradeVectorTools::print( previousPlasticGradientMicroDeformation );
 
         //Compute the right Cauchy-Green deformation gradient
         variableVector currentElasticRightCauchyGreen;
 
-        error = constitutiveTools::computeRightCauchyGreen( currentElasticDeformationGradient, currentElasticRightCauchyGreen );
+        error = tardigradeConstitutiveTools::computeRightCauchyGreen( currentElasticDeformationGradient, currentElasticRightCauchyGreen );
 
         if ( error ){
             errorOut result = new errorNode( "evaluate_model",
@@ -5777,9 +5777,9 @@ namespace micromorphicElastoPlasticity{
         }
 
 //        std::cout << "TRIAL STRESSES\n";
-//        std::cout << "  "; vectorTools::print( currentPK2Stress );
-//        std::cout << "  "; vectorTools::print( currentReferenceMicroStress );
-//        std::cout << "  "; vectorTools::print( currentReferenceHigherOrderStress );
+//        std::cout << "  "; tardigradeVectorTools::print( currentPK2Stress );
+//        std::cout << "  "; tardigradeVectorTools::print( currentReferenceMicroStress );
+//        std::cout << "  "; tardigradeVectorTools::print( currentReferenceHigherOrderStress );
 
 #ifdef DEBUG_MODE
         tempDEBUG.emplace( "intermediatePK2Stress", currentPK2Stress );
@@ -5788,9 +5788,9 @@ namespace micromorphicElastoPlasticity{
 #endif
 
 //        std::cout << "current stress measures\n";
-//        std::cout << "currentPK2Stress:\n"; vectorTools::print( currentPK2Stress );
-//        std::cout << "currentReferenceMicroStress:\n"; vectorTools::print( currentReferenceMicroStress );
-//        std::cout << "currentReferenceHigherOrderStress:\n"; vectorTools::print( currentReferenceHigherOrderStress );
+//        std::cout << "currentPK2Stress:\n"; tardigradeVectorTools::print( currentPK2Stress );
+//        std::cout << "currentReferenceMicroStress:\n"; tardigradeVectorTools::print( currentReferenceMicroStress );
+//        std::cout << "currentReferenceHigherOrderStress:\n"; tardigradeVectorTools::print( currentReferenceHigherOrderStress );
 
         //Evaluate the yield functions
 //        std::cout << "evaluating the yield functions\n";
@@ -5824,9 +5824,9 @@ namespace micromorphicElastoPlasticity{
         }
 
 //        std::cout << "TRIAL YIELD VALUES\n";
-//        std::cout << "  "; vectorTools::print( currentYieldFunctionValues );
+//        std::cout << "  "; tardigradeVectorTools::print( currentYieldFunctionValues );
 
-//        std::cout << "initial yield function values:\n"; vectorTools::print( currentYieldFunctionValues );
+//        std::cout << "initial yield function values:\n"; tardigradeVectorTools::print( currentYieldFunctionValues );
 
         /*============================
         | Begin the non-linear solve |
@@ -5834,8 +5834,8 @@ namespace micromorphicElastoPlasticity{
 //        std::cout << "beginning the nonlinear solve\n";
 
         //Check if any of the surfaces are yielding and begin the non-linear solver if they are
-        solverTools::floatVector solutionVector;
-        solverTools::intVector activePlasticity( currentYieldFunctionValues.size(), 0 );
+        tardigradeSolverTools::floatVector solutionVector;
+        tardigradeSolverTools::intVector activePlasticity( currentYieldFunctionValues.size(), 0 );
         bool convergenceFlag = true;
 
         for ( unsigned int i = 0; i < currentYieldFunctionValues.size(); i++ ){
@@ -5847,10 +5847,10 @@ namespace micromorphicElastoPlasticity{
             }
         }
 //        std::cout << "convergenceFlag: " << convergenceFlag << "\n";
-//        std::cout << "activePlasticity: "; vectorTools::print( activePlasticity );
+//        std::cout << "activePlasticity: "; tardigradeVectorTools::print( activePlasticity );
 
         if ( !convergenceFlag ){
-            solverTools::floatMatrix floatArgs =
+            tardigradeSolverTools::floatMatrix floatArgs =
                 {
                     { Dt },
                     currentDeformationGradient,
@@ -5867,7 +5867,7 @@ namespace micromorphicElastoPlasticity{
                     previousMicroGradientStrainISV,
                     { previousdMacroGdMacroCohesion },
                     { previousdMicroGdMicroCohesion },
-                    vectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ),
+                    tardigradeVectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ),
                     previousPlasticMacroVelocityGradient,
                     previousPlasticMicroVelocityGradient,
                     previousPlasticMicroGradientVelocityGradient,
@@ -5889,7 +5889,7 @@ namespace micromorphicElastoPlasticity{
                     { alphaMicroGradient }
                 };
         
-            solverTools::floatMatrix floatOuts =
+            tardigradeSolverTools::floatMatrix floatOuts =
                 {
                     currentPK2Stress,
                     currentReferenceMicroStress,
@@ -5902,12 +5902,12 @@ namespace micromorphicElastoPlasticity{
                     {}  //The gradient of plastic micro deformation
                 };
 
-            solverTools::intMatrix intOuts = { { } };
+            tardigradeSolverTools::intMatrix intOuts = { { } };
 
-            solverTools::stdFncNLFJ func
-                = static_cast< solverTools::NonLinearFunctionWithJacobian >( computePlasticMultiplierResidual );
+            tardigradeSolverTools::stdFncNLFJ func
+                = static_cast< tardigradeSolverTools::NonLinearFunctionWithJacobian >( computePlasticMultiplierResidual );
 
-            solverTools::floatVector x0 =
+            tardigradeSolverTools::floatVector x0 =
                 {
                     currentMacroGamma,
                     currentMicroGamma,
@@ -5916,19 +5916,19 @@ namespace micromorphicElastoPlasticity{
                     currentMicroGradientGamma[ 2 ]
                 };
 
-            solverTools::floatVector solutionVector;
+            tardigradeSolverTools::floatVector solutionVector;
 
             bool convergeFlag, fatalErrorFlag;
            
-            solverTools::intMatrix intArgs = { { 0 } };
+            tardigradeSolverTools::intMatrix intArgs = { { 0 } };
 
-            solverTools::solverType linearSolver;
-            solverTools::floatMatrix J;
-            solverTools::intVector boundVariableIndices = {  0,  1,  2,  3,  4 };
-            solverTools::intVector boundSigns           = {  0,  0,  0,  0,  0 };
-            solverTools::floatVector boundValues        = {  0,  0,  0,  0,  0 };
+            tardigradeSolverTools::solverType linearSolver;
+            tardigradeSolverTools::floatMatrix J;
+            tardigradeSolverTools::intVector boundVariableIndices = {  0,  1,  2,  3,  4 };
+            tardigradeSolverTools::intVector boundSigns           = {  0,  0,  0,  0,  0 };
+            tardigradeSolverTools::floatVector boundValues        = {  0,  0,  0,  0,  0 };
 
-            error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
+            error = tardigradeSolverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
                                                  floatOuts, intOuts, floatArgs, intArgs, linearSolver, J,
                                                  boundVariableIndices, boundSigns, boundValues, true,
 #ifdef DEBUG_MODE
@@ -6020,7 +6020,7 @@ namespace micromorphicElastoPlasticity{
             tempDEBUG.emplace( "convergedPlasticMicroDeformation", currentPlasticMicroDeformation );
             tempDEBUG.emplace( "convergedPlasticGradientMicroDeformation", currentPlasticGradientMicroDeformation );
 
-            solverTools::floatVector temp = { currentMacroStrainISV };
+            tardigradeSolverTools::floatVector temp = { currentMacroStrainISV };
             tempDEBUG.emplace( "convergedMacroStrainISV", temp );
 
             temp = { currentMicroStrainISV };
@@ -6054,16 +6054,16 @@ namespace micromorphicElastoPlasticity{
         
         //Assemble the SDV vector
         std::vector< double > currentStrainISVS = { currentMacroStrainISV, currentMicroStrainISV };
-        currentStrainISVS = vectorTools::appendVectors( { currentStrainISVS, currentMicroGradientStrainISV } );
+        currentStrainISVS = tardigradeVectorTools::appendVectors( { currentStrainISVS, currentMicroGradientStrainISV } );
 
         std::vector< double > currentGammas = { currentMacroGamma, currentMicroGamma };
-        currentGammas = vectorTools::appendVectors( { currentGammas, currentMicroGradientGamma } );
+        currentGammas = tardigradeVectorTools::appendVectors( { currentGammas, currentMicroGradientGamma } );
 
-        SDVS = vectorTools::appendVectors( { currentStrainISVS, currentGammas, currentPlasticDeformationGradient - eye,
+        SDVS = tardigradeVectorTools::appendVectors( { currentStrainISVS, currentGammas, currentPlasticDeformationGradient - eye,
                                              currentPlasticMicroDeformation - eye, currentPlasticGradientMicroDeformation } );
 
         //Output the stresses mapped to the true reference configuration
-        error = micromorphicTools::pullBackCauchyStress( currentPK2Stress, currentPlasticDeformationGradient, current_PK2 );
+        error = tardigradeMicromorphicTools::pullBackCauchyStress( currentPK2Stress, currentPlasticDeformationGradient, current_PK2 );
 
         if ( error ){
             errorOut result = new errorNode( "evaluate_model",
@@ -6074,7 +6074,7 @@ namespace micromorphicElastoPlasticity{
             return 2;
         }
 
-        error = micromorphicTools::pullBackMicroStress( currentReferenceMicroStress, currentPlasticDeformationGradient, current_SIGMA );
+        error = tardigradeMicromorphicTools::pullBackMicroStress( currentReferenceMicroStress, currentPlasticDeformationGradient, current_SIGMA );
 
         if ( error ){
             errorOut result = new errorNode( "evaluate_model",
@@ -6085,7 +6085,7 @@ namespace micromorphicElastoPlasticity{
             return 2;
         }
 
-        error = micromorphicTools::pullBackHigherOrderStress( currentReferenceHigherOrderStress, 
+        error = tardigradeMicromorphicTools::pullBackHigherOrderStress( currentReferenceHigherOrderStress, 
                                                               currentPlasticDeformationGradient, 
                                                               currentPlasticMicroDeformation, current_M );
 
@@ -6098,7 +6098,7 @@ namespace micromorphicElastoPlasticity{
             return 2;
         }
 
-//        std::cout << "SDVS:\n"; vectorTools::print( SDVS );
+//        std::cout << "SDVS:\n"; tardigradeVectorTools::print( SDVS );
         //Model evaluation successful. Return.
         return 0;
     }
@@ -6123,7 +6123,7 @@ namespace micromorphicElastoPlasticity{
                         std::vector< std::vector< std::vector< double > > > &ADD_JACOBIANS,
                         std::string &output_message
 #ifdef DEBUG_MODE
-                        , solverTools::homotopyMap &DEBUG
+                        , tardigradeSolverTools::homotopyMap &DEBUG
 #endif
                         ){
         /*!
@@ -6206,7 +6206,7 @@ namespace micromorphicElastoPlasticity{
          *     by returning the Jacobians of the plastic deformation gradients w.r.t. the deformation measures. The
          *     ordering is: DFpDgrad_u, DFpDphi, DFpDgrad_phi, DchipDgrad_u, DchipDphi, DchipDgrad_phi, Dgrad_chipDgrad_u, Dgrad_chipDchi, Dgrad_chipDgrad_chi
          * :param std::string &output_message: The output message string.
-         * :param solverTools::homotopyMap DEBUG: The debugging map ( only available if DEBUG_MODE is defined )
+         * :param tardigradeSolverTools::homotopyMap DEBUG: The debugging map ( only available if DEBUG_MODE is defined )
          *
          * Returns:
          *     0: No errors. Solution converged.
@@ -6218,13 +6218,13 @@ namespace micromorphicElastoPlasticity{
         unsigned int dim = 3;
 
 #ifdef DEBUG_MODE
-        solverTools::debugMap tempDEBUG;
-        solverTools::iterationMap tempITERATION;
+        tardigradeSolverTools::debugMap tempDEBUG;
+        tardigradeSolverTools::iterationMap tempITERATION;
 #endif
 
         //Construct identity matrix
         constantVector eye( dim * dim, 0 );
-        vectorTools::eye< constantType >( eye );
+        tardigradeVectorTools::eye< constantType >( eye );
 
         //Re-direct the output to a buffer
         std::stringbuf buffer;
@@ -6339,11 +6339,11 @@ namespace micromorphicElastoPlasticity{
         tempDEBUG.emplace( "currentGradientMicroDeformation_", currentGradientMicroDeformation );
 
         tempDEBUG.emplace( "totaldDeformationGradientdGradientMacroDisplacement",
-                           vectorTools::appendVectors( dDeformationGradientdGradientMacroDisplacement ) );
+                           tardigradeVectorTools::appendVectors( dDeformationGradientdGradientMacroDisplacement ) );
         tempDEBUG.emplace( "totaldMicroDeformationdMicroDisplacement",
-                           vectorTools::appendVectors( dMicroDeformationdMicroDisplacement ) );
+                           tardigradeVectorTools::appendVectors( dMicroDeformationdMicroDisplacement ) );
         tempDEBUG.emplace( "totaldGradientMicroDeformationdGradientMicroDisplacement",
-                           vectorTools::appendVectors( dGradientMicroDeformationdGradientMicroDisplacement ) );
+                           tardigradeVectorTools::appendVectors( dGradientMicroDeformationdGradientMicroDisplacement ) );
 #endif
 
         /*================================
@@ -6475,7 +6475,7 @@ namespace micromorphicElastoPlasticity{
         }
 
 #ifdef DEBUG_MODE
-        solverTools::floatVector tmp = { previousMacroCohesion };
+        tardigradeSolverTools::floatVector tmp = { previousMacroCohesion };
         tempDEBUG.emplace( "previousMacroCohesion", tmp );
         tmp = { previousMicroCohesion };
         tempDEBUG.emplace( "previousMicroCohesion", tmp );
@@ -6572,7 +6572,7 @@ namespace micromorphicElastoPlasticity{
             tempDEBUG.emplace( "previousdMicroGdMicroCohesion", tmp );
 
             tempDEBUG.emplace( "previousdMicroGradientGdMicroGradientCohesion",
-                               vectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ) );
+                               tardigradeVectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ) );
 #endif
 
             //Update the strain ISV values
@@ -6721,7 +6721,7 @@ namespace micromorphicElastoPlasticity{
         //Compute the right Cauchy-Green deformation gradient
         variableVector currentElasticRightCauchyGreen;
 
-        error = constitutiveTools::computeRightCauchyGreen( currentElasticDeformationGradient, currentElasticRightCauchyGreen );
+        error = tardigradeConstitutiveTools::computeRightCauchyGreen( currentElasticDeformationGradient, currentElasticRightCauchyGreen );
 
         if ( error ){
             errorOut result = new errorNode( "evaluate_model (jacobian)",
@@ -6807,8 +6807,8 @@ namespace micromorphicElastoPlasticity{
         ============================*/
 
         //Check if any of the surfaces are yielding and begin the non-linear solver if they are
-        solverTools::floatVector solutionVector;
-        solverTools::intVector activePlasticity( currentYieldFunctionValues.size(), 0 );
+        tardigradeSolverTools::floatVector solutionVector;
+        tardigradeSolverTools::intVector activePlasticity( currentYieldFunctionValues.size(), 0 );
         bool convergenceFlag = true;
 
         for ( unsigned int i = 0; i < currentYieldFunctionValues[ i ]; i++ ){
@@ -6821,7 +6821,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         if ( !convergenceFlag ){
-            solverTools::floatMatrix floatArgs =
+            tardigradeSolverTools::floatMatrix floatArgs =
                 {
                     { Dt },
                     currentDeformationGradient,
@@ -6838,7 +6838,7 @@ namespace micromorphicElastoPlasticity{
                     previousMicroGradientStrainISV,
                     { previousdMacroGdMacroCohesion },
                     { previousdMicroGdMicroCohesion },
-                    vectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ),
+                    tardigradeVectorTools::appendVectors( previousdMicroGradientGdMicroGradientCohesion ),
                     previousPlasticMacroVelocityGradient,
                     previousPlasticMicroVelocityGradient,
                     previousPlasticMicroGradientVelocityGradient,
@@ -6860,11 +6860,11 @@ namespace micromorphicElastoPlasticity{
                     { alphaMicroGradient }
                 };
 
-            solverTools::floatVector dPlasticDeformationdSolutionVector, dStressdSolutionVector,
+            tardigradeSolverTools::floatVector dPlasticDeformationdSolutionVector, dStressdSolutionVector,
                                      dPlasticDeformationdDeformation, dStressdDeformation,
                                      dResidualdDeformation;
 
-            solverTools::floatMatrix floatOuts =
+            tardigradeSolverTools::floatMatrix floatOuts =
                 {
                     currentPK2Stress,
                     currentReferenceMicroStress,
@@ -6882,12 +6882,12 @@ namespace micromorphicElastoPlasticity{
                     dResidualdDeformation
                 };
 
-            solverTools::intMatrix intOuts = { { } };
+            tardigradeSolverTools::intMatrix intOuts = { { } };
 
-            solverTools::stdFncNLFJ func
-                = static_cast< solverTools::NonLinearFunctionWithJacobian >( computePlasticMultiplierResidual );
+            tardigradeSolverTools::stdFncNLFJ func
+                = static_cast< tardigradeSolverTools::NonLinearFunctionWithJacobian >( computePlasticMultiplierResidual );
 
-            solverTools::floatVector x0 =
+            tardigradeSolverTools::floatVector x0 =
                 {
                     currentMacroGamma,
                     currentMicroGamma,
@@ -6896,19 +6896,19 @@ namespace micromorphicElastoPlasticity{
                     currentMicroGradientGamma[ 2 ]
                 };
 
-            solverTools::floatVector solutionVector;
+            tardigradeSolverTools::floatVector solutionVector;
 
             bool convergeFlag, fatalErrorFlag;
            
-            solverTools::intMatrix intArgs = { { 1 } };
+            tardigradeSolverTools::intMatrix intArgs = { { 1 } };
 
-            solverTools::solverType linearSolver;
-            solverTools::floatMatrix J;
-            solverTools::intVector boundVariableIndices = {  0,  1,  2,  3,  4 };
-            solverTools::intVector boundSigns           = {  0,  0,  0,  0,  0 };
-            solverTools::floatVector boundValues        = {  0,  0,  0,  0,  0 };
+            tardigradeSolverTools::solverType linearSolver;
+            tardigradeSolverTools::floatMatrix J;
+            tardigradeSolverTools::intVector boundVariableIndices = {  0,  1,  2,  3,  4 };
+            tardigradeSolverTools::intVector boundSigns           = {  0,  0,  0,  0,  0 };
+            tardigradeSolverTools::floatVector boundValues        = {  0,  0,  0,  0,  0 };
 
-            error = solverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
+            error = tardigradeSolverTools::homotopySolver( func, x0, solutionVector, convergeFlag, fatalErrorFlag,
                                                  floatOuts, intOuts, floatArgs, intArgs, linearSolver, J,
                                                  boundVariableIndices, boundSigns, boundValues, true,
 #ifdef DEBUG_MODE
@@ -7011,7 +7011,7 @@ namespace micromorphicElastoPlasticity{
             tempDEBUG.emplace( "convergedPlasticMicroDeformation", currentPlasticMicroDeformation );
             tempDEBUG.emplace( "convergedPlasticGradientMicroDeformation", currentPlasticGradientMicroDeformation );
 
-            solverTools::floatVector temp = { currentMacroStrainISV };
+            tardigradeSolverTools::floatVector temp = { currentMacroStrainISV };
             tempDEBUG.emplace( "convergedMacroStrainISV", temp );
 
             temp = { currentMicroStrainISV };
@@ -7035,43 +7035,43 @@ namespace micromorphicElastoPlasticity{
             //Form the Jacobian of the stresses w.r.t. the fundamental deformation measures
 
             //Compute decomposition of the final Jacobian
-            solverTools::floatVector dResidualdSolutionVector = vectorTools::appendVectors( J );
-            Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            tardigradeSolverTools::floatVector dResidualdSolutionVector = tardigradeVectorTools::appendVectors( J );
+            Eigen::Map< const Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 dRdX( dResidualdSolutionVector.data(), 5, 5 );
 
-            linearSolver = solverTools::solverType( dRdX );
+            linearSolver = tardigradeSolverTools::solverType( dRdX );
 
-            Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            Eigen::Map< const Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 dRdD( dResidualdDeformation.data(), 5, 45 );
 
-            Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            Eigen::Map< const Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 dSdX( dStressdSolutionVector.data(), 45, 5 );
 
-            Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            Eigen::Map< const Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 dSdD( dStressdDeformation.data(), 45, 45 );
 
-            Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            Eigen::Map< const Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 dPDdX( dPlasticDeformationdSolutionVector.data(), 45, 5 );
 
-            Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            Eigen::Map< const Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 dPDdD( dPlasticDeformationdDeformation.data(), 45, 45 );
 
             //Solve for the total derivative of the residual w.r.t. the deformation 
-            solverTools::floatVector DSolutionVectorDDeformation( 5 * 45, 0 );
-            Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            tardigradeSolverTools::floatVector DSolutionVectorDDeformation( 5 * 45, 0 );
+            Eigen::Map< Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 DXDD( DSolutionVectorDDeformation.data(), 5, 45 );
 
             //Perform the linear solve
             DXDD = -linearSolver.solve( dRdD );
 
-            solverTools::floatVector DStressDDeformation( 45 * 45, 0 );
-            Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            tardigradeSolverTools::floatVector DStressDDeformation( 45 * 45, 0 );
+            Eigen::Map< Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 DSDD( DStressDDeformation.data(), 45, 45 );
 
             DSDD = dSdD + dSdX * DXDD;
 
-            solverTools::floatVector DPlasticDeformationDDeformation( 45 * 45, 0 );
-            Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            tardigradeSolverTools::floatVector DPlasticDeformationDDeformation( 45 * 45, 0 );
+            Eigen::Map< Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 DPDDD( DPlasticDeformationDDeformation.data(), 45, 45 );
 
             DPDDD = dPDdD + dPDdX * DXDD;
@@ -7140,31 +7140,31 @@ namespace micromorphicElastoPlasticity{
         }
         else{
 
-            dPK2StressdDeformationGradient = vectorTools::dot( dPK2StressdElasticDeformationGradient,
+            dPK2StressdDeformationGradient = tardigradeVectorTools::dot( dPK2StressdElasticDeformationGradient,
                                                                dElasticDeformationGradientdDeformationGradient );
-            dPK2StressdMicroDeformation = vectorTools::dot( dPK2StressdElasticMicroDeformation,
+            dPK2StressdMicroDeformation = tardigradeVectorTools::dot( dPK2StressdElasticMicroDeformation,
                                                             dElasticMicroDeformationdMicroDeformation )
-                                        + vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+                                        + tardigradeVectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
                                                             dElasticGradientMicroDeformationdMicroDeformation );
-            dPK2StressdGradientMicroDeformation = vectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
+            dPK2StressdGradientMicroDeformation = tardigradeVectorTools::dot( dPK2StressdElasticGradientMicroDeformation,
                                                                     dElasticGradientMicroDeformationdGradientMicroDeformation );
 
-            dReferenceMicroStressdDeformationGradient = vectorTools::dot( dReferenceMicroStressdElasticDeformationGradient,
+            dReferenceMicroStressdDeformationGradient = tardigradeVectorTools::dot( dReferenceMicroStressdElasticDeformationGradient,
                                                                           dElasticDeformationGradientdDeformationGradient );
-            dReferenceMicroStressdMicroDeformation = vectorTools::dot( dReferenceMicroStressdElasticMicroDeformation,
+            dReferenceMicroStressdMicroDeformation = tardigradeVectorTools::dot( dReferenceMicroStressdElasticMicroDeformation,
                                                                        dElasticMicroDeformationdMicroDeformation )
-                                                   + vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+                                                   + tardigradeVectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
                                                                        dElasticGradientMicroDeformationdMicroDeformation );
             dReferenceMicroStressdGradientMicroDeformation
-                = vectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
+                = tardigradeVectorTools::dot( dReferenceMicroStressdElasticGradientMicroDeformation,
                                     dElasticGradientMicroDeformationdGradientMicroDeformation );
 
-            dReferenceHigherOrderStressdDeformationGradient = vectorTools::dot( dReferenceHigherOrderStressdElasticDeformationGradient,
+            dReferenceHigherOrderStressdDeformationGradient = tardigradeVectorTools::dot( dReferenceHigherOrderStressdElasticDeformationGradient,
                                                                                 dElasticDeformationGradientdDeformationGradient );
-            dReferenceHigherOrderStressdMicroDeformation = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+            dReferenceHigherOrderStressdMicroDeformation = tardigradeVectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
                                                                              dElasticGradientMicroDeformationdMicroDeformation );
             dReferenceHigherOrderStressdGradientMicroDeformation
-                = vectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
+                = tardigradeVectorTools::dot( dReferenceHigherOrderStressdElasticGradientMicroDeformation,
                                     dElasticGradientMicroDeformationdGradientMicroDeformation );
 
 
@@ -7173,47 +7173,47 @@ namespace micromorphicElastoPlasticity{
 #ifdef DEBUG_MODE
         //Save the total derivatives of the plastic deformation measures w.r.t. the fundamental deformation measures
         tempDEBUG.emplace( "totaldPlasticDeformationGradientdDeformationGradient",
-                            vectorTools::appendVectors( dPlasticDeformationGradientdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdDeformationGradient ) );
         tempDEBUG.emplace( "totaldPlasticDeformationGradientdMicroDeformation",
-                            vectorTools::appendVectors( dPlasticDeformationGradientdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdMicroDeformation ) );
         tempDEBUG.emplace( "totaldPlasticDeformationGradientdGradientMicroDeformation",
-                            vectorTools::appendVectors( dPlasticDeformationGradientdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdGradientMicroDeformation ) );
 
         tempDEBUG.emplace( "totaldPlasticMicroDeformationdDeformationGradient",
-                            vectorTools::appendVectors( dPlasticMicroDeformationdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dPlasticMicroDeformationdDeformationGradient ) );
         tempDEBUG.emplace( "totaldPlasticMicroDeformationdMicroDeformation",
-                            vectorTools::appendVectors( dPlasticMicroDeformationdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticMicroDeformationdMicroDeformation ) );
         tempDEBUG.emplace( "totaldPlasticMicroDeformationdGradientMicroDeformation",
-                            vectorTools::appendVectors( dPlasticMicroDeformationdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticMicroDeformationdGradientMicroDeformation ) );
 
         tempDEBUG.emplace( "totaldPlasticGradientMicroDeformationdDeformationGradient",
-                            vectorTools::appendVectors( dPlasticGradientMicroDeformationdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dPlasticGradientMicroDeformationdDeformationGradient ) );
         tempDEBUG.emplace( "totaldPlasticGradientMicroDeformationdMicroDeformation",
-                            vectorTools::appendVectors( dPlasticGradientMicroDeformationdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticGradientMicroDeformationdMicroDeformation ) );
         tempDEBUG.emplace( "totaldPlasticGradientMicroDeformationdGradientMicroDeformation",
-                            vectorTools::appendVectors( dPlasticGradientMicroDeformationdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPlasticGradientMicroDeformationdGradientMicroDeformation ) );
 
         //Save the total derivatives of the intermediate stresses w.r.t. the fundamental deformation measures
         tempDEBUG.emplace( "totaldPK2StressdDeformationGradient",
-                            vectorTools::appendVectors( dPK2StressdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dPK2StressdDeformationGradient ) );
         tempDEBUG.emplace( "totaldPK2StressdMicroDeformation",
-                            vectorTools::appendVectors( dPK2StressdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPK2StressdMicroDeformation ) );
         tempDEBUG.emplace( "totaldPK2StressdGradientMicroDeformation",
-                            vectorTools::appendVectors( dPK2StressdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dPK2StressdGradientMicroDeformation ) );
 
         tempDEBUG.emplace( "totaldReferenceMicroStressdDeformationGradient",
-                            vectorTools::appendVectors( dReferenceMicroStressdDeformationGradient ) );
+                            tardigradeVectorTools::appendVectors( dReferenceMicroStressdDeformationGradient ) );
         tempDEBUG.emplace( "totaldReferenceMicroStressdMicroDeformation",
-                            vectorTools::appendVectors( dReferenceMicroStressdMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dReferenceMicroStressdMicroDeformation ) );
         tempDEBUG.emplace( "totaldReferenceMicroStressdGradientMicroDeformation",
-                            vectorTools::appendVectors( dReferenceMicroStressdGradientMicroDeformation ) );
+                            tardigradeVectorTools::appendVectors( dReferenceMicroStressdGradientMicroDeformation ) );
 
         tempDEBUG.emplace( "totaldReferenceHigherOrderStressdDeformationGradient",
-                           vectorTools::appendVectors( dReferenceHigherOrderStressdDeformationGradient ) );
+                           tardigradeVectorTools::appendVectors( dReferenceHigherOrderStressdDeformationGradient ) );
         tempDEBUG.emplace( "totaldReferenceHigherOrderStressdMicroDeformation",
-                           vectorTools::appendVectors( dReferenceHigherOrderStressdMicroDeformation ) );
+                           tardigradeVectorTools::appendVectors( dReferenceHigherOrderStressdMicroDeformation ) );
         tempDEBUG.emplace( "totaldReferenceHigherOrderStressdGradientMicroDeformation",
-                           vectorTools::appendVectors( dReferenceHigherOrderStressdGradientMicroDeformation ) );
+                           tardigradeVectorTools::appendVectors( dReferenceHigherOrderStressdGradientMicroDeformation ) );
 
         tempITERATION.emplace( "converged_values", tempDEBUG );
         DEBUG.emplace( "converged_values", tempITERATION );
@@ -7227,17 +7227,17 @@ namespace micromorphicElastoPlasticity{
         
         //Assemble the SDV vector
         std::vector< double > currentStrainISVS = { currentMacroStrainISV, currentMicroStrainISV };
-        currentStrainISVS = vectorTools::appendVectors( { currentStrainISVS, currentMicroGradientStrainISV } );
+        currentStrainISVS = tardigradeVectorTools::appendVectors( { currentStrainISVS, currentMicroGradientStrainISV } );
 
         std::vector< double > currentGammas = { currentMacroGamma, currentMicroGamma };
-        currentGammas = vectorTools::appendVectors( { currentGammas, currentMicroGradientGamma } );
+        currentGammas = tardigradeVectorTools::appendVectors( { currentGammas, currentMicroGradientGamma } );
 
-        SDVS = vectorTools::appendVectors( { currentStrainISVS, currentGammas, currentPlasticDeformationGradient - eye,
+        SDVS = tardigradeVectorTools::appendVectors( { currentStrainISVS, currentGammas, currentPlasticDeformationGradient - eye,
                                              currentPlasticMicroDeformation - eye, currentPlasticGradientMicroDeformation } );
 
         //Output the stresses mapped to the true reference configuration
         variableMatrix dPK2dIntermediatePK2, dPK2dPlasticDeformationGradient;
-        error = micromorphicTools::pullBackCauchyStress( currentPK2Stress, currentPlasticDeformationGradient, current_PK2,
+        error = tardigradeMicromorphicTools::pullBackCauchyStress( currentPK2Stress, currentPlasticDeformationGradient, current_PK2,
                                                          dPK2dIntermediatePK2, dPK2dPlasticDeformationGradient );
 
         if ( error ){
@@ -7251,19 +7251,19 @@ namespace micromorphicElastoPlasticity{
 
         //Assemble the Jacobians
         variableMatrix dReferencePK2StressdDeformationGradient
-            = vectorTools::dot( dPK2dIntermediatePK2, dPK2StressdDeformationGradient )
-            + vectorTools::dot( dPK2dPlasticDeformationGradient, dPlasticDeformationGradientdDeformationGradient );
+            = tardigradeVectorTools::dot( dPK2dIntermediatePK2, dPK2StressdDeformationGradient )
+            + tardigradeVectorTools::dot( dPK2dPlasticDeformationGradient, dPlasticDeformationGradientdDeformationGradient );
 
         variableMatrix dReferencePK2StressdMicroDeformation
-            = vectorTools::dot( dPK2dIntermediatePK2, dPK2StressdMicroDeformation )
-            + vectorTools::dot( dPK2dPlasticDeformationGradient, dPlasticDeformationGradientdMicroDeformation );
+            = tardigradeVectorTools::dot( dPK2dIntermediatePK2, dPK2StressdMicroDeformation )
+            + tardigradeVectorTools::dot( dPK2dPlasticDeformationGradient, dPlasticDeformationGradientdMicroDeformation );
 
         variableMatrix dReferencePK2StressdGradientMicroDeformation
-            = vectorTools::dot( dPK2dIntermediatePK2, dPK2StressdGradientMicroDeformation )
-            + vectorTools::dot( dPK2dPlasticDeformationGradient, dPlasticDeformationGradientdGradientMicroDeformation );
+            = tardigradeVectorTools::dot( dPK2dIntermediatePK2, dPK2StressdGradientMicroDeformation )
+            + tardigradeVectorTools::dot( dPK2dPlasticDeformationGradient, dPlasticDeformationGradientdGradientMicroDeformation );
 
         variableMatrix dSIGMAdIntermediateSIGMA, dSIGMAdPlasticDeformationGradient;
-        error = micromorphicTools::pullBackMicroStress( currentReferenceMicroStress, currentPlasticDeformationGradient, current_SIGMA,
+        error = tardigradeMicromorphicTools::pullBackMicroStress( currentReferenceMicroStress, currentPlasticDeformationGradient, current_SIGMA,
                                                          dSIGMAdIntermediateSIGMA, dSIGMAdPlasticDeformationGradient );
 
         if ( error ){
@@ -7277,19 +7277,19 @@ namespace micromorphicElastoPlasticity{
 
         //Assemble the Jacobians
         variableMatrix dSIGMAStressdDeformationGradient
-            = vectorTools::dot( dSIGMAdIntermediateSIGMA, dReferenceMicroStressdDeformationGradient )
-            + vectorTools::dot( dSIGMAdPlasticDeformationGradient, dPlasticDeformationGradientdDeformationGradient );
+            = tardigradeVectorTools::dot( dSIGMAdIntermediateSIGMA, dReferenceMicroStressdDeformationGradient )
+            + tardigradeVectorTools::dot( dSIGMAdPlasticDeformationGradient, dPlasticDeformationGradientdDeformationGradient );
 
         variableMatrix dSIGMAStressdMicroDeformation
-            = vectorTools::dot( dSIGMAdIntermediateSIGMA, dReferenceMicroStressdMicroDeformation )
-            + vectorTools::dot( dSIGMAdPlasticDeformationGradient, dPlasticDeformationGradientdMicroDeformation );
+            = tardigradeVectorTools::dot( dSIGMAdIntermediateSIGMA, dReferenceMicroStressdMicroDeformation )
+            + tardigradeVectorTools::dot( dSIGMAdPlasticDeformationGradient, dPlasticDeformationGradientdMicroDeformation );
 
         variableMatrix dSIGMAStressdGradientMicroDeformation
-            = vectorTools::dot( dSIGMAdIntermediateSIGMA, dReferenceMicroStressdGradientMicroDeformation )
-            + vectorTools::dot( dSIGMAdPlasticDeformationGradient, dPlasticDeformationGradientdGradientMicroDeformation );
+            = tardigradeVectorTools::dot( dSIGMAdIntermediateSIGMA, dReferenceMicroStressdGradientMicroDeformation )
+            + tardigradeVectorTools::dot( dSIGMAdPlasticDeformationGradient, dPlasticDeformationGradientdGradientMicroDeformation );
 
         variableMatrix dMdIntermediateM, dMdPlasticDeformationGradient, dMdPlasticMicroDeformation;
-        error = micromorphicTools::pullBackHigherOrderStress( currentReferenceHigherOrderStress, 
+        error = tardigradeMicromorphicTools::pullBackHigherOrderStress( currentReferenceHigherOrderStress, 
                                                               currentPlasticDeformationGradient, 
                                                               currentPlasticMicroDeformation, current_M,
                                                               dMdIntermediateM, dMdPlasticDeformationGradient,
@@ -7306,52 +7306,52 @@ namespace micromorphicElastoPlasticity{
 
         //Assemble the Jacobians
         variableMatrix dMStressdDeformationGradient
-            = vectorTools::dot( dMdIntermediateM, dReferenceHigherOrderStressdDeformationGradient )
-            + vectorTools::dot( dMdPlasticDeformationGradient, dPlasticDeformationGradientdDeformationGradient )
-            + vectorTools::dot( dMdPlasticMicroDeformation, dPlasticMicroDeformationdDeformationGradient );
+            = tardigradeVectorTools::dot( dMdIntermediateM, dReferenceHigherOrderStressdDeformationGradient )
+            + tardigradeVectorTools::dot( dMdPlasticDeformationGradient, dPlasticDeformationGradientdDeformationGradient )
+            + tardigradeVectorTools::dot( dMdPlasticMicroDeformation, dPlasticMicroDeformationdDeformationGradient );
 
         variableMatrix dMStressdMicroDeformation
-            = vectorTools::dot( dMdIntermediateM, dReferenceHigherOrderStressdMicroDeformation )
-            + vectorTools::dot( dMdPlasticDeformationGradient, dPlasticDeformationGradientdMicroDeformation )
-            + vectorTools::dot( dMdPlasticMicroDeformation, dPlasticMicroDeformationdMicroDeformation );
+            = tardigradeVectorTools::dot( dMdIntermediateM, dReferenceHigherOrderStressdMicroDeformation )
+            + tardigradeVectorTools::dot( dMdPlasticDeformationGradient, dPlasticDeformationGradientdMicroDeformation )
+            + tardigradeVectorTools::dot( dMdPlasticMicroDeformation, dPlasticMicroDeformationdMicroDeformation );
 
         variableMatrix dMStressdGradientMicroDeformation
-            = vectorTools::dot( dMdIntermediateM, dReferenceHigherOrderStressdGradientMicroDeformation )
-            + vectorTools::dot( dMdPlasticDeformationGradient, dPlasticDeformationGradientdGradientMicroDeformation )
-            + vectorTools::dot( dMdPlasticMicroDeformation, dPlasticMicroDeformationdGradientMicroDeformation );
+            = tardigradeVectorTools::dot( dMdIntermediateM, dReferenceHigherOrderStressdGradientMicroDeformation )
+            + tardigradeVectorTools::dot( dMdPlasticDeformationGradient, dPlasticDeformationGradientdGradientMicroDeformation )
+            + tardigradeVectorTools::dot( dMdPlasticMicroDeformation, dPlasticMicroDeformationdGradientMicroDeformation );
 
         //Assemble the Jacobians w.r.t. the degrees of freedom
-        DPK2Dgrad_u   = vectorTools::dot( dReferencePK2StressdDeformationGradient,
+        DPK2Dgrad_u   = tardigradeVectorTools::dot( dReferencePK2StressdDeformationGradient,
                                           dDeformationGradientdGradientMacroDisplacement );
-        DPK2Dphi      = vectorTools::dot( dReferencePK2StressdMicroDeformation,
+        DPK2Dphi      = tardigradeVectorTools::dot( dReferencePK2StressdMicroDeformation,
                                           dMicroDeformationdMicroDisplacement );
-        DPK2Dgrad_phi = vectorTools::dot( dReferencePK2StressdGradientMicroDeformation,
+        DPK2Dgrad_phi = tardigradeVectorTools::dot( dReferencePK2StressdGradientMicroDeformation,
                                           dGradientMicroDeformationdGradientMicroDisplacement );
 
-        DSIGMADgrad_u   = vectorTools::dot( dSIGMAStressdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
-        DSIGMADphi      = vectorTools::dot( dSIGMAStressdMicroDeformation, dMicroDeformationdMicroDisplacement );
-        DSIGMADgrad_phi = vectorTools::dot( dSIGMAStressdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
+        DSIGMADgrad_u   = tardigradeVectorTools::dot( dSIGMAStressdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
+        DSIGMADphi      = tardigradeVectorTools::dot( dSIGMAStressdMicroDeformation, dMicroDeformationdMicroDisplacement );
+        DSIGMADgrad_phi = tardigradeVectorTools::dot( dSIGMAStressdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
 
-        DMDgrad_u   = vectorTools::dot( dMStressdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
-        DMDphi      = vectorTools::dot( dMStressdMicroDeformation, dMicroDeformationdMicroDisplacement );
-        DMDgrad_phi = vectorTools::dot( dMStressdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
+        DMDgrad_u   = tardigradeVectorTools::dot( dMStressdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
+        DMDphi      = tardigradeVectorTools::dot( dMStressdMicroDeformation, dMicroDeformationdMicroDisplacement );
+        DMDgrad_phi = tardigradeVectorTools::dot( dMStressdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
 
         //Assemble the additional Jacobian terms
         ADD_JACOBIANS.resize(9);
         // Macro plastic deformation gradient terms
-        ADD_JACOBIANS[0] = vectorTools::dot( dPlasticDeformationGradientdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
-        ADD_JACOBIANS[1] = vectorTools::dot( dPlasticDeformationGradientdMicroDeformation, dMicroDeformationdMicroDisplacement );
-        ADD_JACOBIANS[2] = vectorTools::dot( dPlasticDeformationGradientdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
+        ADD_JACOBIANS[0] = tardigradeVectorTools::dot( dPlasticDeformationGradientdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
+        ADD_JACOBIANS[1] = tardigradeVectorTools::dot( dPlasticDeformationGradientdMicroDeformation, dMicroDeformationdMicroDisplacement );
+        ADD_JACOBIANS[2] = tardigradeVectorTools::dot( dPlasticDeformationGradientdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
 
         // Micro plastic displacement terms
-        ADD_JACOBIANS[3] = vectorTools::dot( dPlasticMicroDeformationdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
-        ADD_JACOBIANS[4] = vectorTools::dot( dPlasticMicroDeformationdMicroDeformation, dMicroDeformationdMicroDisplacement );
-        ADD_JACOBIANS[5] = vectorTools::dot( dPlasticMicroDeformationdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
+        ADD_JACOBIANS[3] = tardigradeVectorTools::dot( dPlasticMicroDeformationdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
+        ADD_JACOBIANS[4] = tardigradeVectorTools::dot( dPlasticMicroDeformationdMicroDeformation, dMicroDeformationdMicroDisplacement );
+        ADD_JACOBIANS[5] = tardigradeVectorTools::dot( dPlasticMicroDeformationdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
 
         // Micro plastic displacement terms
-        ADD_JACOBIANS[6] = vectorTools::dot( dPlasticGradientMicroDeformationdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
-        ADD_JACOBIANS[7] = vectorTools::dot( dPlasticGradientMicroDeformationdMicroDeformation, dMicroDeformationdMicroDisplacement );
-        ADD_JACOBIANS[8] = vectorTools::dot( dPlasticGradientMicroDeformationdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
+        ADD_JACOBIANS[6] = tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdDeformationGradient, dDeformationGradientdGradientMacroDisplacement );
+        ADD_JACOBIANS[7] = tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdMicroDeformation, dMicroDeformationdMicroDisplacement );
+        ADD_JACOBIANS[8] = tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdGradientMicroDeformation, dGradientMicroDeformationdGradientMicroDisplacement );
 
         //Model evaluation successful. Return.
         return 0;
@@ -7539,7 +7539,7 @@ namespace micromorphicElastoPlasticity{
         //Assume 3D
         unsigned int dim = 3;
         constantVector eye( dim * dim );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         if ( SDVS.size() != 55 ){
             std::string outstr = "The SDVS vector must have 55 elements ( has " + std::to_string( SDVS.size() ) + " )";
@@ -7596,7 +7596,7 @@ namespace micromorphicElastoPlasticity{
                                                      { grad_phi[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ] },
                                                      { grad_phi[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] } };
 
-        errorOut error = micromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient );
+        errorOut error = tardigradeMicromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient );
 
         if ( error ){
             errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
@@ -7605,7 +7605,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = micromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation );
+        error = tardigradeMicromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation );
 
         if ( error ){
             errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
@@ -7614,7 +7614,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = micromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation );
+        error = tardigradeMicromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation );
 
         if ( error ){
             errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
@@ -7666,7 +7666,7 @@ namespace micromorphicElastoPlasticity{
                                                      { grad_phi[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ] },
                                                      { grad_phi[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] } };
 
-        errorOut error = micromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient, dFdGradU );
+        errorOut error = tardigradeMicromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient, dFdGradU );
 
         if ( error ){
             errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
@@ -7675,7 +7675,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = micromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation, dChidPhi );
+        error = tardigradeMicromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation, dChidPhi );
 
         if ( error ){
             errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
@@ -7684,7 +7684,7 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-        error = micromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation,
+        error = tardigradeMicromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation,
                                                                      dGradChidGradPhi );
 
         if ( error ){
@@ -7704,7 +7704,7 @@ namespace micromorphicElastoPlasticity{
                                      const parameterVector &macroYieldParameters, const parameterVector &microYieldParameters,
                                      const parameterVector &microGradientYieldParameters, variableVector &yieldFunctionValues
 #ifdef DEBUG_MODE
-                                     , solverTools::debugMap &DEBUG
+                                     , tardigradeSolverTools::debugMap &DEBUG
 #endif
                                     ){
         /*!
@@ -7721,11 +7721,11 @@ namespace micromorphicElastoPlasticity{
          * :param const parameterVector &microYieldParameters: The micro yield parameters.
          * :param const parameterVector &microGradientYieldParameters: The micro gradient yield parameters.
          * :param variableVector &yieldFunctionValues: The current values of the yield functions.
-         * :param std::map< std::string, solverTools::floatVector > &DEBUG: The debug map. Only output when in debug mode.
+         * :param std::map< std::string, tardigradeSolverTools::floatVector > &DEBUG: The debug map. Only output when in debug mode.
          */
 
         if ( macroYieldParameters.size() != 2 ){
-            std::cout << "macroYieldParameters: "; vectorTools::print( macroYieldParameters );
+            std::cout << "macroYieldParameters: "; tardigradeVectorTools::print( macroYieldParameters );
             return new errorNode( "evaluateYieldFunctions",
                                   "The macro yield functions must have a length of 2" );
         }
@@ -7753,7 +7753,7 @@ namespace micromorphicElastoPlasticity{
         }
 
 #ifdef DEBUG_MODE
-        solverTools::floatVector tmp = { yieldFunctionValues[ 0 ] };
+        tardigradeSolverTools::floatVector tmp = { yieldFunctionValues[ 0 ] };
         DEBUG.emplace( "macroYieldFunction", tmp );
 #endif
 
@@ -7810,7 +7810,7 @@ namespace micromorphicElastoPlasticity{
                                      variableMatrix &dMicroGradientFdM, variableMatrix &dMicroGradientFdMicroGradientC,
                                      variableMatrix &dMicroGradientFdElasticRCG
 #ifdef DEBUG_MODE
-                                     , solverTools::debugMap &DEBUG
+                                     , tardigradeSolverTools::debugMap &DEBUG
 #endif
                                    ){
         /*!
@@ -7842,11 +7842,11 @@ namespace micromorphicElastoPlasticity{
          *     the micro gradient cohesion
          * :param variableMatrix &dMicroGradientFdElasticRCG: The Jacobian of the micro gradient yield function w.r.t. the elastic 
          *     right Cauchy-Green deformation tensor.
-         * :param std::map< std::string, solverTools::floatVector > &DEBUG: The debug map. Only output when in debug mode.
+         * :param std::map< std::string, tardigradeSolverTools::floatVector > &DEBUG: The debug map. Only output when in debug mode.
          */
 
         if ( macroYieldParameters.size() != 2 ){
-            std::cout << "macroYieldParameters: "; vectorTools::print( macroYieldParameters );
+            std::cout << "macroYieldParameters: "; tardigradeVectorTools::print( macroYieldParameters );
             return new errorNode( "evaluateYieldFunctions (jacobian)",
                                   "The macro yield functions must have a length of 2" );
         }
@@ -7875,7 +7875,7 @@ namespace micromorphicElastoPlasticity{
         }
 
 #ifdef DEBUG_MODE
-        solverTools::floatVector tmp = { yieldFunctionValues[ 0 ] };
+        tardigradeSolverTools::floatVector tmp = { yieldFunctionValues[ 0 ] };
             DEBUG.emplace( "macroYieldFunction", tmp );
 #endif
 
@@ -7921,17 +7921,17 @@ namespace micromorphicElastoPlasticity{
         yieldFunctionValues[ 4 ] = yftmp[ 2 ];
 
         //Handle the special case when the stresses are very small which is undefined
-        if ( vectorTools::dot( PK2Stress, PK2Stress ) < 1e-9 ){
+        if ( tardigradeVectorTools::dot( PK2Stress, PK2Stress ) < 1e-9 ){
             dMacroFdPK2        = variableVector( PK2Stress.size(), 0 );
             dMacroFdElasticRCG = variableVector( elasticRightCauchyGreen.size(), 0 );
         }
 
-        if ( vectorTools::dot( referenceMicroStress, referenceMicroStress ) < 1e-9 ){
+        if ( tardigradeVectorTools::dot( referenceMicroStress, referenceMicroStress ) < 1e-9 ){
             dMicroFdSigma      = variableVector( referenceMicroStress.size(), 0 );
             dMicroFdElasticRCG = variableVector( elasticRightCauchyGreen.size(), 0 );
         }
 
-        if ( vectorTools::dot( referenceHigherOrderStress, referenceHigherOrderStress ) < 1e-9 ){
+        if ( tardigradeVectorTools::dot( referenceHigherOrderStress, referenceHigherOrderStress ) < 1e-9 ){
             dMicroGradientFdM          = variableMatrix( yftmp.size(), variableVector( referenceHigherOrderStress.size(), 0 ) );
             dMicroGradientFdElasticRCG = variableMatrix( yftmp.size(), variableVector( elasticRightCauchyGreen.size(), 0 ) );
         }
@@ -8038,7 +8038,7 @@ namespace micromorphicElastoPlasticity{
         }
 
         //Assemble the Jacobians
-        constantMatrix eye = vectorTools::eye< constantType >( microGradientStrainISV.size() );
+        constantMatrix eye = tardigradeVectorTools::eye< constantType >( microGradientStrainISV.size() );
 
         dMacroCdMacroStrainISV = macroHardeningParameters[ 1 ];
         dMicroCdMicroStrainISV = microHardeningParameters[ 1 ];
@@ -8047,29 +8047,29 @@ namespace micromorphicElastoPlasticity{
         return NULL;
     }
 
-    errorOut computePlasticMultiplierResidual( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                               const solverTools::intMatrix &intArgs, solverTools::floatVector &residual,
-                                               solverTools::floatMatrix &jacobian, solverTools::floatMatrix &floatOuts,
-                                               solverTools::intMatrix &intOuts
+    errorOut computePlasticMultiplierResidual( const tardigradeSolverTools::floatVector &x, const tardigradeSolverTools::floatMatrix &floatArgs,
+                                               const tardigradeSolverTools::intMatrix &intArgs, tardigradeSolverTools::floatVector &residual,
+                                               tardigradeSolverTools::floatMatrix &jacobian, tardigradeSolverTools::floatMatrix &floatOuts,
+                                               tardigradeSolverTools::intMatrix &intOuts
 #ifdef DEBUG_MODE
-                                               , solverTools::debugMap &DEBUG
+                                               , tardigradeSolverTools::debugMap &DEBUG
 #endif
                                              ){
         /*!
          * Compute the residual on the plastic multiplier residual
          * 
-         * :param solverTools::floatVector &x: The unknown vector. Organized as
+         * :param tardigradeSolverTools::floatVector &x: The unknown vector. Organized as
          *     [ macroGamma, microGamma, microGradientGamma ]
-         * :param const solverTools::floatMatrix &floatArgs: The floating point arguments which do not vary
+         * :param const tardigradeSolverTools::floatMatrix &floatArgs: The floating point arguments which do not vary
          *     during the solve.
-         * :param const solverTools::intMatrix &intArgs: The integer arguments which do not vary during 
+         * :param const tardigradeSolverTools::intMatrix &intArgs: The integer arguments which do not vary during 
          *     the solve.
-         * :param solverTools::floatVector &residual: The value of the residual. This will be the 
+         * :param tardigradeSolverTools::floatVector &residual: The value of the residual. This will be the 
          *     the values in the x vector - the estimated amount of plastic deformation
-         * :param solverTools::floatMatrix &jacobian: The jacobian matrix
-         * :param solverTools::floatMatrix &floatOuts: The floating point values that do change during the solve.
-         * :param solverTools::intMatrix &intOuts: The integer values that do change during the solve.
-         * :param std::map< std::string, solverTools::floatVector > &DEBUG: The debug map. Only available if
+         * :param tardigradeSolverTools::floatMatrix &jacobian: The jacobian matrix
+         * :param tardigradeSolverTools::floatMatrix &floatOuts: The floating point values that do change during the solve.
+         * :param tardigradeSolverTools::intMatrix &intOuts: The integer values that do change during the solve.
+         * :param std::map< std::string, tardigradeSolverTools::floatVector > &DEBUG: The debug map. Only available if
          *     DEBUG_MODE is defined.
          *
          * Ordering of floatArgs
@@ -8223,7 +8223,7 @@ namespace micromorphicElastoPlasticity{
 //        const variableVector  *previousMicroGradientStrainISV                = &floatArgs[ ii++ ];
 //        const variableType    *previousdMacroGdMacroCohesion                 = &floatArgs[ ii++ ][ 0 ];
 //        const variableType    *previousdMicroGdMicroCohesion                 = &floatArgs[ ii++ ][ 0 ];
-//        const variableMatrix   previousdMicroGradientGdMicroGradientCohesion = vectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
+//        const variableMatrix   previousdMicroGradientGdMicroGradientCohesion = tardigradeVectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
 //        const variableVector  *previousPlasticMacroVelocityGradient          = &floatArgs[ ii++ ];
 //        const variableVector  *previousPlasticMicroVelocityGradient          = &floatArgs[ ii++ ];
 //        const variableVector  *previousPlasticMicroGradientVelocityGradient  = &floatArgs[ ii++ ];
@@ -8246,7 +8246,7 @@ namespace micromorphicElastoPlasticity{
 
         //Construct the inputs for the solve for the plastic deformation measure
 
-        solverTools::floatMatrix floatArgsPlasticDeformation =
+        tardigradeSolverTools::floatMatrix floatArgsPlasticDeformation =
             {
                 floatArgs[  0 ], //Dt
                 floatArgs[  1 ], //Current deformation gradient
@@ -8289,15 +8289,15 @@ namespace micromorphicElastoPlasticity{
         | Compute the plastic deformations |
         ==================================*/
 
-//        std::cout << "    x: "; vectorTools::print( x );
+//        std::cout << "    x: "; tardigradeVectorTools::print( x );
 
         //Assemble the values required for the non-linear solve
 
-        solverTools::intMatrix intArgsPlasticDeformation = { { 1 } };
+        tardigradeSolverTools::intMatrix intArgsPlasticDeformation = { { 1 } };
 
-        solverTools::intMatrix intOutsPlasticDeformation = { };
+        tardigradeSolverTools::intMatrix intOutsPlasticDeformation = { };
 
-        solverTools::floatMatrix floatOutsPlasticDeformation =
+        tardigradeSolverTools::floatMatrix floatOutsPlasticDeformation =
             {
                 {}, {}, {},
                 {}, {}, {},
@@ -8308,27 +8308,27 @@ namespace micromorphicElastoPlasticity{
             };
 
         //Wrap the plastic deformation measure function
-        solverTools::stdFncNLFJ func
-                = static_cast< solverTools::NonLinearFunctionWithJacobian >( computePlasticDeformationResidual );
+        tardigradeSolverTools::stdFncNLFJ func
+                = static_cast< tardigradeSolverTools::NonLinearFunctionWithJacobian >( computePlasticDeformationResidual );
 
-        solverTools::floatVector plasticDeformationX0
-            = vectorTools::appendVectors( { *previousPlasticDeformationGradient,
+        tardigradeSolverTools::floatVector plasticDeformationX0
+            = tardigradeVectorTools::appendVectors( { *previousPlasticDeformationGradient,
                                             *previousPlasticMicroDeformation,
                                             *previousPlasticGradientMicroDeformation } );
 
-        solverTools::floatVector currentPlasticDeformation( 45, 0 );
+        tardigradeSolverTools::floatVector currentPlasticDeformation( 45, 0 );
 
         bool convergeFlag, fatalErrorFlag;
 
-        solverTools::solverType plasticDeformationLinearSolver;
-        solverTools::floatMatrix plasticDeformationJacobian;
+        tardigradeSolverTools::solverType plasticDeformationLinearSolver;
+        tardigradeSolverTools::floatMatrix plasticDeformationJacobian;
 
 #ifdef DEBUG_MODE
-        solverTools::iterationMap plasticDeformationDEBUG;
+        tardigradeSolverTools::iterationMap plasticDeformationDEBUG;
 #endif
 
         //Solve for the plastic deformation measures.
-        errorOut error = solverTools::newtonRaphson( func, plasticDeformationX0, currentPlasticDeformation,
+        errorOut error = tardigradeSolverTools::newtonRaphson( func, plasticDeformationX0, currentPlasticDeformation,
                                                      convergeFlag, fatalErrorFlag,
                                                      floatOutsPlasticDeformation, intOutsPlasticDeformation,
                                                      floatArgsPlasticDeformation, intArgsPlasticDeformation,
@@ -8352,18 +8352,18 @@ namespace micromorphicElastoPlasticity{
 
         //Solve for the Jacobian of the plastic deformation w.r.t. the gammas
         
-        solverTools::floatVector plasticDeformationJacobianVector = vectorTools::appendVectors( plasticDeformationJacobian );
-        Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > > 
+        tardigradeSolverTools::floatVector plasticDeformationJacobianVector = tardigradeVectorTools::appendVectors( plasticDeformationJacobian );
+        Eigen::Map< const Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > > 
             dPDResidualdPD( plasticDeformationJacobianVector.data(), 45, 45 );
 
-        Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+        Eigen::Map< const Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
             dPDResidualdGammas( floatOutsPlasticDeformation[ 15 ].data(), 45, 5 );
 
-        solverTools::floatVector dCurrentPlasticDeformationdGammas( 45 * 5, 0 );
-        Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+        tardigradeSolverTools::floatVector dCurrentPlasticDeformationdGammas( 45 * 5, 0 );
+        Eigen::Map< Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
             dPDdG( dCurrentPlasticDeformationdGammas.data(), 45, 5 );
 
-        solverTools::solverType linearSolver( dPDResidualdPD );
+        tardigradeSolverTools::solverType linearSolver( dPDResidualdPD );
 
         if ( linearSolver.rank() < 45 ){
             return new errorNode( "computePlasticMultiplierResidual", "The plastic deformation Jacobian is not full rank" );
@@ -8371,16 +8371,16 @@ namespace micromorphicElastoPlasticity{
 
         dPDdG = -linearSolver.solve( dPDResidualdGammas );
 
-        solverTools::floatVector dCurrentPlasticDeformationdDeformation;
+        tardigradeSolverTools::floatVector dCurrentPlasticDeformationdDeformation;
         if ( evaluateFullDerivatives ){
             
             //Map the derivative of the residual w.r.t. the deformation to an Eigen Matrix
-            Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            Eigen::Map< Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 dPDResidualdF( floatOutsPlasticDeformation[ 13 ].data(), 45, 45 );
 
             //Map the derivative of the plastic deformation w.r.t. the total deformation to an Eigen Matrix
             dCurrentPlasticDeformationdDeformation.resize( 45 * 45 );
-            Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+            Eigen::Map< Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
                 dPDdF( dCurrentPlasticDeformationdDeformation.data(), 45, 45 );
 
             //Solve for the gradient of the plastic deformation w.r.t. the total deformation
@@ -8398,25 +8398,25 @@ namespace micromorphicElastoPlasticity{
 
         //Solve for the Jacobian of the stresses w.r.t. the gammas
 
-        solverTools::floatMatrix dStressdGammas
-            = vectorTools::inflate( vectorTools::matrixMultiply( floatOutsPlasticDeformation[ 11 ],
+        tardigradeSolverTools::floatMatrix dStressdGammas
+            = tardigradeVectorTools::inflate( tardigradeVectorTools::matrixMultiply( floatOutsPlasticDeformation[ 11 ],
                                                                  dCurrentPlasticDeformationdGammas, 45, 45, 45, 5 ), 45, 5 );
 
         if ( evaluateFullDerivatives ){
             floatOuts[  9 ] = dCurrentPlasticDeformationdGammas;
-            floatOuts[ 10 ] = vectorTools::appendVectors( dStressdGammas );
+            floatOuts[ 10 ] = tardigradeVectorTools::appendVectors( dStressdGammas );
             floatOuts[ 11 ] = dCurrentPlasticDeformationdDeformation;
             floatOuts[ 12 ] = floatOutsPlasticDeformation[ 12 ]
-                            + vectorTools::matrixMultiply( floatOutsPlasticDeformation[ 11 ],
+                            + tardigradeVectorTools::matrixMultiply( floatOutsPlasticDeformation[ 11 ],
                                                            dCurrentPlasticDeformationdDeformation,
                                                            45, 45, 45, 45 );
         }
 
 #ifdef DEBUG_MODE
-        DEBUG.emplace( "stresses", vectorTools::appendVectors( { floatOutsPlasticDeformation[ 0 ],
+        DEBUG.emplace( "stresses", tardigradeVectorTools::appendVectors( { floatOutsPlasticDeformation[ 0 ],
                                                                  floatOutsPlasticDeformation[ 1 ],
                                                                  floatOutsPlasticDeformation[ 2 ]  } ) );
-        DEBUG.emplace( "dStressdGammas", vectorTools::appendVectors( dStressdGammas ) );
+        DEBUG.emplace( "dStressdGammas", tardigradeVectorTools::appendVectors( dStressdGammas ) );
 #endif
 
         //Construct the Jacobian of the elastic RCG w.r.t. the gammas
@@ -8434,23 +8434,23 @@ namespace micromorphicElastoPlasticity{
             };
 
         variableMatrix dElasticRightCauchyGreendGammas
-            = vectorTools::dot( vectorTools::inflate( floatOutsPlasticDeformation[ 10 ], 9, 9 ), dPlasticDeformationGradientdGammas );
+            = tardigradeVectorTools::dot( tardigradeVectorTools::inflate( floatOutsPlasticDeformation[ 10 ], 9, 9 ), dPlasticDeformationGradientdGammas );
 
-        solverTools::floatVector dElasticRightCauchyGreendDeformation;
+        tardigradeSolverTools::floatVector dElasticRightCauchyGreendDeformation;
         if ( evaluateFullDerivatives ){
 
-            dElasticRightCauchyGreendDeformation = solverTools::floatVector( 9 * 45, 0 );
+            dElasticRightCauchyGreendDeformation = tardigradeSolverTools::floatVector( 9 * 45, 0 );
             for ( unsigned int i = 0; i < 9; i++ ){
                 for ( unsigned int j = 0; j < 9; j++ ){
                     dElasticRightCauchyGreendDeformation[ 45 * i + j ] = floatOutsPlasticDeformation[ 14 ][ 9 * i + j ];
                 }
             }
            
-            solverTools::floatVector temp( dCurrentPlasticDeformationdDeformation.begin(),
+            tardigradeSolverTools::floatVector temp( dCurrentPlasticDeformationdDeformation.begin(),
                                            dCurrentPlasticDeformationdDeformation.begin() + 9 * 45 ); 
 
             dElasticRightCauchyGreendDeformation +=
-                vectorTools::matrixMultiply( floatOutsPlasticDeformation[ 10 ], temp, 9, 9, 9, 45 );
+                tardigradeVectorTools::matrixMultiply( floatOutsPlasticDeformation[ 10 ], temp, 9, 9, 9, 45 );
 
 #ifdef DEBUG_MODE
             DEBUG.emplace( "dElasticRightCauchyGreendDeformation", dElasticRightCauchyGreendDeformation );
@@ -8459,11 +8459,11 @@ namespace micromorphicElastoPlasticity{
 
 #ifdef DEBUG_MODE
         DEBUG.emplace( "currentElasticRightCauchyGreen", floatOutsPlasticDeformation[ 9 ] );
-        DEBUG.emplace( "dElasticRightCauchyGreendGammas", vectorTools::appendVectors( dElasticRightCauchyGreendGammas ) );
+        DEBUG.emplace( "dElasticRightCauchyGreendGammas", tardigradeVectorTools::appendVectors( dElasticRightCauchyGreendGammas ) );
 #endif
 
 #ifdef DEBUG_MODE
-        solverTools::debugMap yieldFunctionDEBUG;
+        tardigradeSolverTools::debugMap yieldFunctionDEBUG;
 #endif
 
         /*=============================
@@ -8472,7 +8472,7 @@ namespace micromorphicElastoPlasticity{
 
         //TODO: Currently the cohesion values are computed in the plastic deformation gamma solve. They don't need to be.
 
-        variableMatrix dCohesiondGammas = vectorTools::inflate( floatOutsPlasticDeformation[ 16 ], 5, 5 );
+        variableMatrix dCohesiondGammas = tardigradeVectorTools::inflate( floatOutsPlasticDeformation[ 16 ], 5, 5 );
 
         /*===================================
         | Compute the yield function values |
@@ -8511,11 +8511,11 @@ namespace micromorphicElastoPlasticity{
         variableVector zero27( 27, 0 );
         variableMatrix dYieldFunctionValuesdStresses =
             {
-                    vectorTools::appendVectors( { dMacroFdPK2,         zero9,                 zero27 } ),
-                    vectorTools::appendVectors( {       zero9, dMicroFdSigma,                 zero27 } ),
-                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 0 ] } ),
-                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 1 ] } ),
-                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 2 ] } )
+                    tardigradeVectorTools::appendVectors( { dMacroFdPK2,         zero9,                 zero27 } ),
+                    tardigradeVectorTools::appendVectors( {       zero9, dMicroFdSigma,                 zero27 } ),
+                    tardigradeVectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 0 ] } ),
+                    tardigradeVectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 1 ] } ),
+                    tardigradeVectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 2 ] } )
             };
 
         variableMatrix dYieldFunctionValuesdCohesion =
@@ -8537,23 +8537,23 @@ namespace micromorphicElastoPlasticity{
             };
 
         variableMatrix dYieldFunctionValuesdGammas =
-            vectorTools::dot( dYieldFunctionValuesdStresses, dStressdGammas )
-          + vectorTools::dot( dYieldFunctionValuesdCohesion, dCohesiondGammas )
-          + vectorTools::dot( dYieldFunctionValuesdElasticRightCauchyGreen, dElasticRightCauchyGreendGammas );
+            tardigradeVectorTools::dot( dYieldFunctionValuesdStresses, dStressdGammas )
+          + tardigradeVectorTools::dot( dYieldFunctionValuesdCohesion, dCohesiondGammas )
+          + tardigradeVectorTools::dot( dYieldFunctionValuesdElasticRightCauchyGreen, dElasticRightCauchyGreendGammas );
 
         variableVector dYieldFunctionValuesdDeformation;
         if ( evaluateFullDerivatives ){
 
             dYieldFunctionValuesdDeformation
-                = vectorTools::matrixMultiply( vectorTools::appendVectors( dYieldFunctionValuesdStresses ),
+                = tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::appendVectors( dYieldFunctionValuesdStresses ),
                                                                            floatOuts[ 12 ], 5, 45, 45, 45 )
-                + vectorTools::matrixMultiply( vectorTools::appendVectors( dYieldFunctionValuesdElasticRightCauchyGreen ),
+                + tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::appendVectors( dYieldFunctionValuesdElasticRightCauchyGreen ),
                                                                            dElasticRightCauchyGreendDeformation, 5, 9, 9, 45 );
         }
 
 #ifdef DEBUG_MODE
         DEBUG.emplace( "yieldFunctionValues", yieldFunctionValues );
-        DEBUG.emplace( "dYieldFunctionValuesdGammas", vectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
+        DEBUG.emplace( "dYieldFunctionValuesdGammas", tardigradeVectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
 
         if ( evaluateFullDerivatives ){
             DEBUG.emplace( "dYieldFunctionValuesdDeformation", dYieldFunctionValuesdDeformation );
@@ -8561,33 +8561,33 @@ namespace micromorphicElastoPlasticity{
 #endif
 
         //Construct the residual and the Jacobian
-        residual = solverTools::floatVector( 5, 0 );
-        jacobian = solverTools::floatMatrix( 5, solverTools::floatVector( 5, 0 ) );
+        residual = tardigradeSolverTools::floatVector( 5, 0 );
+        jacobian = tardigradeSolverTools::floatMatrix( 5, tardigradeSolverTools::floatVector( 5, 0 ) );
 
         variableType dMacYieldFunctionValuedYieldFunctionValue_positive,
                      dMacYieldFunctionValuedYieldFunctionValue_negative;
-        solverTools::floatVector rowEye;
+        tardigradeSolverTools::floatVector rowEye;
 
         if ( evaluateFullDerivatives ){
             floatOuts[ 13 ].resize( 5 * 45 );
         }
 
         for ( unsigned int i = 0; i < 5; i++ ){
-            residual[ i ] = constitutiveTools::mac( yieldFunctionValues[ i ], dMacYieldFunctionValuedYieldFunctionValue_positive )
-                          - x[ i ] * constitutiveTools::mac( -yieldFunctionValues[ i ] );
+            residual[ i ] = tardigradeConstitutiveTools::mac( yieldFunctionValues[ i ], dMacYieldFunctionValuedYieldFunctionValue_positive )
+                          - x[ i ] * tardigradeConstitutiveTools::mac( -yieldFunctionValues[ i ] );
 
-            if ( vectorTools::fuzzyEquals( dMacYieldFunctionValuedYieldFunctionValue_positive,  0. ) ){
+            if ( tardigradeVectorTools::fuzzyEquals( dMacYieldFunctionValuedYieldFunctionValue_positive,  0. ) ){
                 dMacYieldFunctionValuedYieldFunctionValue_negative = 1;
             }
             else{
                 dMacYieldFunctionValuedYieldFunctionValue_negative = 0;
             }
 
-            rowEye = solverTools::floatVector( 5, 0 );
+            rowEye = tardigradeSolverTools::floatVector( 5, 0 );
             rowEye[ i ] = 1.;
 
             jacobian[ i ] = ( dMacYieldFunctionValuedYieldFunctionValue_positive + x[ i ] * dMacYieldFunctionValuedYieldFunctionValue_negative ) * dYieldFunctionValuesdGammas[ i ]
-                          - constitutiveTools::mac( -yieldFunctionValues[ i ] ) * rowEye;
+                          - tardigradeConstitutiveTools::mac( -yieldFunctionValues[ i ] ) * rowEye;
 
             if ( evaluateFullDerivatives ){
                 for ( unsigned int j = 0; j < 45; j++ ){
@@ -8604,35 +8604,35 @@ namespace micromorphicElastoPlasticity{
         floatOuts[ 3 ] = floatOutsPlasticDeformation[ 3 ];
         floatOuts[ 4 ] = floatOutsPlasticDeformation[ 4 ];
         floatOuts[ 5 ] = floatOutsPlasticDeformation[ 5 ];
-        floatOuts[ 6 ] = solverTools::floatVector( currentPlasticDeformation.begin() +  0, currentPlasticDeformation.begin() + 9 );
-        floatOuts[ 7 ] = solverTools::floatVector( currentPlasticDeformation.begin() +  9, currentPlasticDeformation.begin() + 18 );
-        floatOuts[ 8 ] = solverTools::floatVector( currentPlasticDeformation.begin() + 18, currentPlasticDeformation.begin() + 45 );
+        floatOuts[ 6 ] = tardigradeSolverTools::floatVector( currentPlasticDeformation.begin() +  0, currentPlasticDeformation.begin() + 9 );
+        floatOuts[ 7 ] = tardigradeSolverTools::floatVector( currentPlasticDeformation.begin() +  9, currentPlasticDeformation.begin() + 18 );
+        floatOuts[ 8 ] = tardigradeSolverTools::floatVector( currentPlasticDeformation.begin() + 18, currentPlasticDeformation.begin() + 45 );
 
         return NULL;
     }
 
-    errorOut computePlasticMultiplierLagrangian( const solverTools::floatVector &x, const solverTools::floatMatrix &floatArgs,
-                                                 const solverTools::intMatrix &intArgs, solverTools::floatType &lagrangian,
-                                                 solverTools::floatVector &jacobian, solverTools::floatMatrix &floatOuts,
-                                                 solverTools::intMatrix &intOuts
+    errorOut computePlasticMultiplierLagrangian( const tardigradeSolverTools::floatVector &x, const tardigradeSolverTools::floatMatrix &floatArgs,
+                                                 const tardigradeSolverTools::intMatrix &intArgs, tardigradeSolverTools::floatType &lagrangian,
+                                                 tardigradeSolverTools::floatVector &jacobian, tardigradeSolverTools::floatMatrix &floatOuts,
+                                                 tardigradeSolverTools::intMatrix &intOuts
 #ifdef DEBUG_MODE
-                                                 , solverTools::debugMap &DEBUG
+                                                 , tardigradeSolverTools::debugMap &DEBUG
 #endif
                                              ){
         /*!
          * Compute the lagrangian of the plastic multiplier
          * 
-         * :param solverTools::floatVector &x: The unknown vector. Organized as
+         * :param tardigradeSolverTools::floatVector &x: The unknown vector. Organized as
          *     [ macroGamma, microGamma, microGradientGamma, lambda1, lambda2, lambda3, lambda4, lambda5 ]
-         * :param const solverTools::floatMatrix &floatArgs: The floating point arguments which do not vary
+         * :param const tardigradeSolverTools::floatMatrix &floatArgs: The floating point arguments which do not vary
          *     during the solve.
-         * :param const solverTools::intMatrix &intArgs: The integer arguments which do not vary during 
+         * :param const tardigradeSolverTools::intMatrix &intArgs: The integer arguments which do not vary during 
          *     the solve.
-         * :param solverTools::floatType &lagrangian: The value of the lagrangian. 
-         * :param solverTools::floatVector &jacobian: The jacobian matrix
-         * :param solverTools::floatMatrix &floatOuts: The floating point values that do change during the solve.
-         * :param solverTools::intMatrix &intOuts: The integer values that do change during the solve.
-         * :param std::map< std::string, solverTools::floatVector > &DEBUG: The debug map. Only available if
+         * :param tardigradeSolverTools::floatType &lagrangian: The value of the lagrangian. 
+         * :param tardigradeSolverTools::floatVector &jacobian: The jacobian matrix
+         * :param tardigradeSolverTools::floatMatrix &floatOuts: The floating point values that do change during the solve.
+         * :param tardigradeSolverTools::intMatrix &intOuts: The integer values that do change during the solve.
+         * :param std::map< std::string, tardigradeSolverTools::floatVector > &DEBUG: The debug map. Only available if
          *     DEBUG_MODE is defined.
          *
          * Ordering of floatArgs
@@ -8771,7 +8771,7 @@ namespace micromorphicElastoPlasticity{
 //        const variableVector  *previousMicroGradientStrainISV                = &floatArgs[ ii++ ];
 //        const variableType    *previousdMacroGdMacroCohesion                 = &floatArgs[ ii++ ][ 0 ];
 //        const variableType    *previousdMicroGdMicroCohesion                 = &floatArgs[ ii++ ][ 0 ];
-//        const variableMatrix   previousdMicroGradientGdMicroGradientCohesion = vectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
+//        const variableMatrix   previousdMicroGradientGdMicroGradientCohesion = tardigradeVectorTools::inflate( floatArgs[ ii++ ], 3, 3 );
 //        const variableVector  *previousPlasticMacroVelocityGradient          = &floatArgs[ ii++ ];
 //        const variableVector  *previousPlasticMicroVelocityGradient          = &floatArgs[ ii++ ];
 //        const variableVector  *previousPlasticMicroGradientVelocityGradient  = &floatArgs[ ii++ ];
@@ -8794,7 +8794,7 @@ namespace micromorphicElastoPlasticity{
 
         //Construct the inputs for the solve for the plastic deformation measure
 
-        solverTools::floatMatrix floatArgsPlasticDeformation =
+        tardigradeSolverTools::floatMatrix floatArgsPlasticDeformation =
             {
                 floatArgs[  0 ], //Dt
                 floatArgs[  1 ], //Current deformation gradient
@@ -8839,11 +8839,11 @@ namespace micromorphicElastoPlasticity{
 
         //Assemble the values required for the non-linear solve
 
-        solverTools::intMatrix intArgsPlasticDeformation = { { 1 } };
+        tardigradeSolverTools::intMatrix intArgsPlasticDeformation = { { 1 } };
 
-        solverTools::intMatrix intOutsPlasticDeformation = { };
+        tardigradeSolverTools::intMatrix intOutsPlasticDeformation = { };
 
-        solverTools::floatMatrix floatOutsPlasticDeformation =
+        tardigradeSolverTools::floatMatrix floatOutsPlasticDeformation =
             {
                 {}, {}, {},
                 {}, {}, {},
@@ -8854,27 +8854,27 @@ namespace micromorphicElastoPlasticity{
             };
 
         //Wrap the plastic deformation measure function
-        solverTools::stdFncNLFJ func
-                = static_cast< solverTools::NonLinearFunctionWithJacobian >( computePlasticDeformationResidual );
+        tardigradeSolverTools::stdFncNLFJ func
+                = static_cast< tardigradeSolverTools::NonLinearFunctionWithJacobian >( computePlasticDeformationResidual );
 
-        solverTools::floatVector plasticDeformationX0
-            = vectorTools::appendVectors( { *previousPlasticDeformationGradient,
+        tardigradeSolverTools::floatVector plasticDeformationX0
+            = tardigradeVectorTools::appendVectors( { *previousPlasticDeformationGradient,
                                             *previousPlasticMicroDeformation,
                                             *previousPlasticGradientMicroDeformation } );
 
-        solverTools::floatVector currentPlasticDeformation( 45, 0 );
+        tardigradeSolverTools::floatVector currentPlasticDeformation( 45, 0 );
 
         bool convergeFlag, fatalErrorFlag;
 
-        solverTools::solverType plasticDeformationLinearSolver;
-        solverTools::floatMatrix plasticDeformationJacobian;
+        tardigradeSolverTools::solverType plasticDeformationLinearSolver;
+        tardigradeSolverTools::floatMatrix plasticDeformationJacobian;
 
 #ifdef DEBUG_MODE
-        solverTools::iterationMap plasticDeformationDEBUG;
+        tardigradeSolverTools::iterationMap plasticDeformationDEBUG;
 #endif
 
         //Solve for the plastic deformation measures.
-        errorOut error = solverTools::newtonRaphson( func, plasticDeformationX0, currentPlasticDeformation,
+        errorOut error = tardigradeSolverTools::newtonRaphson( func, plasticDeformationX0, currentPlasticDeformation,
                                                      convergeFlag, fatalErrorFlag,
                                                      floatOutsPlasticDeformation, intOutsPlasticDeformation,
                                                      floatArgsPlasticDeformation, intArgsPlasticDeformation,
@@ -8896,23 +8896,23 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-//        std::cout << "    plasticDeformationX0: "; vectorTools::print( plasticDeformationX0 );
-//        std::cout << "    currentPlasticDeformation: "; vectorTools::print( currentPlasticDeformation );
+//        std::cout << "    plasticDeformationX0: "; tardigradeVectorTools::print( plasticDeformationX0 );
+//        std::cout << "    currentPlasticDeformation: "; tardigradeVectorTools::print( currentPlasticDeformation );
 
         //Solve for the Jacobian of the plastic deformation w.r.t. the gammas
         
-        solverTools::floatVector plasticDeformationJacobianVector = vectorTools::appendVectors( plasticDeformationJacobian );
-        Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > > 
+        tardigradeSolverTools::floatVector plasticDeformationJacobianVector = tardigradeVectorTools::appendVectors( plasticDeformationJacobian );
+        Eigen::Map< const Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > > 
             dPDResidualdPD( plasticDeformationJacobianVector.data(), 45, 45 );
 
-        Eigen::Map< const Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+        Eigen::Map< const Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
             dPDResidualdGammas( floatOutsPlasticDeformation[ 15 ].data(), 45, 5 );
 
-        solverTools::floatVector dCurrentPlasticDeformationdGammas( 45 * 5, 0 );
-        Eigen::Map< Eigen::Matrix< solverTools::floatType, -1, -1, Eigen::RowMajor > >
+        tardigradeSolverTools::floatVector dCurrentPlasticDeformationdGammas( 45 * 5, 0 );
+        Eigen::Map< Eigen::Matrix< tardigradeSolverTools::floatType, -1, -1, Eigen::RowMajor > >
             dPDdG( dCurrentPlasticDeformationdGammas.data(), 45, 5 );
 
-        solverTools::solverType linearSolver( dPDResidualdPD );
+        tardigradeSolverTools::solverType linearSolver( dPDResidualdPD );
 
         if ( linearSolver.rank() < 45 ){
             return new errorNode( "computePlasticMultiplierLagrangian", "The plastic deformation Jacobian is not full rank" );
@@ -8927,15 +8927,15 @@ namespace micromorphicElastoPlasticity{
 
         //Solve for the Jacobian of the stresses w.r.t. the gammas
 
-        solverTools::floatMatrix dStressdGammas
-            = vectorTools::inflate( vectorTools::matrixMultiply( floatOutsPlasticDeformation[ 11 ],
+        tardigradeSolverTools::floatMatrix dStressdGammas
+            = tardigradeVectorTools::inflate( tardigradeVectorTools::matrixMultiply( floatOutsPlasticDeformation[ 11 ],
                                                                  dCurrentPlasticDeformationdGammas, 45, 45, 45, 5 ), 45, 5 );
 
 #ifdef DEBUG_MODE
-        DEBUG.emplace( "stresses", vectorTools::appendVectors( { floatOutsPlasticDeformation[ 0 ],
+        DEBUG.emplace( "stresses", tardigradeVectorTools::appendVectors( { floatOutsPlasticDeformation[ 0 ],
                                                                  floatOutsPlasticDeformation[ 1 ],
                                                                  floatOutsPlasticDeformation[ 2 ]  } ) );
-        DEBUG.emplace( "dStressdGammas", vectorTools::appendVectors( dStressdGammas ) );
+        DEBUG.emplace( "dStressdGammas", tardigradeVectorTools::appendVectors( dStressdGammas ) );
 #endif
 
         //Construct the Jacobian of the elastic RCG w.r.t. the gammas
@@ -8953,15 +8953,15 @@ namespace micromorphicElastoPlasticity{
             };
 
         variableMatrix dElasticRightCauchyGreendGammas
-            = vectorTools::dot( vectorTools::inflate( floatOutsPlasticDeformation[ 10 ], 9, 9 ), dPlasticDeformationGradientdGammas );
+            = tardigradeVectorTools::dot( tardigradeVectorTools::inflate( floatOutsPlasticDeformation[ 10 ], 9, 9 ), dPlasticDeformationGradientdGammas );
 
 #ifdef DEBUG_MODE
         DEBUG.emplace( "currentElasticRightCauchyGreen", floatOutsPlasticDeformation[ 9 ] );
-        DEBUG.emplace( "dElasticRightCauchyGreendGammas", vectorTools::appendVectors( dElasticRightCauchyGreendGammas ) );
+        DEBUG.emplace( "dElasticRightCauchyGreendGammas", tardigradeVectorTools::appendVectors( dElasticRightCauchyGreendGammas ) );
 #endif
 
 #ifdef DEBUG_MODE
-        solverTools::debugMap yieldFunctionDEBUG;
+        tardigradeSolverTools::debugMap yieldFunctionDEBUG;
 #endif
 
         /*=============================
@@ -8970,7 +8970,7 @@ namespace micromorphicElastoPlasticity{
 
         //TODO: Currently the cohesion values are computed in the plastic deformation gamma solve. They don't need to be.
 
-        variableMatrix dCohesiondGammas = vectorTools::inflate( floatOutsPlasticDeformation[ 16 ], 5, 5 );
+        variableMatrix dCohesiondGammas = tardigradeVectorTools::inflate( floatOutsPlasticDeformation[ 16 ], 5, 5 );
 
         /*===================================
         | Compute the yield function values |
@@ -9004,18 +9004,18 @@ namespace micromorphicElastoPlasticity{
             return result;
         }
 
-//        std::cout << "    yieldFunctionValues: "; vectorTools::print( yieldFunctionValues );
+//        std::cout << "    yieldFunctionValues: "; tardigradeVectorTools::print( yieldFunctionValues );
 
         //Construct the Jacobians of the yield functions
         variableVector zero9( 9, 0 );
         variableVector zero27( 27, 0 );
         variableMatrix dYieldFunctionValuesdStresses =
             {
-                    vectorTools::appendVectors( { dMacroFdPK2,         zero9,                 zero27 } ),
-                    vectorTools::appendVectors( {       zero9, dMicroFdSigma,                 zero27 } ),
-                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 0 ] } ),
-                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 1 ] } ),
-                    vectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 2 ] } )
+                    tardigradeVectorTools::appendVectors( { dMacroFdPK2,         zero9,                 zero27 } ),
+                    tardigradeVectorTools::appendVectors( {       zero9, dMicroFdSigma,                 zero27 } ),
+                    tardigradeVectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 0 ] } ),
+                    tardigradeVectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 1 ] } ),
+                    tardigradeVectorTools::appendVectors( {       zero9,         zero9, dMicroGradientFdM[ 2 ] } )
             };
 
         variableMatrix dYieldFunctionValuesdCohesion =
@@ -9037,39 +9037,39 @@ namespace micromorphicElastoPlasticity{
             };
 
         variableMatrix dYieldFunctionValuesdGammas =
-            vectorTools::dot( dYieldFunctionValuesdStresses, dStressdGammas )
-          + vectorTools::dot( dYieldFunctionValuesdCohesion, dCohesiondGammas )
-          + vectorTools::dot( dYieldFunctionValuesdElasticRightCauchyGreen, dElasticRightCauchyGreendGammas );
+            tardigradeVectorTools::dot( dYieldFunctionValuesdStresses, dStressdGammas )
+          + tardigradeVectorTools::dot( dYieldFunctionValuesdCohesion, dCohesiondGammas )
+          + tardigradeVectorTools::dot( dYieldFunctionValuesdElasticRightCauchyGreen, dElasticRightCauchyGreendGammas );
 
 #ifdef DEBUG_MODE
         DEBUG.emplace( "yieldFunctionValues", yieldFunctionValues );
-        DEBUG.emplace( "dYieldFunctionValuesdGammas", vectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
+        DEBUG.emplace( "dYieldFunctionValuesdGammas", tardigradeVectorTools::appendVectors( dYieldFunctionValuesdGammas ) );
 #endif
 
         //Construct the lagrangian and the Jacobian
         lagrangian = 0;
-        jacobian   = solverTools::floatVector( 10, 0 );
+        jacobian   = tardigradeSolverTools::floatVector( 10, 0 );
 
         variableType macF;
         variableType dMacYieldFunctionValuedYieldFunctionValue;
-        solverTools::floatVector rowEye;
-        solverTools::floatVector term1( 5 ), term2( 5 );
+        tardigradeSolverTools::floatVector rowEye;
+        tardigradeSolverTools::floatVector term1( 5 ), term2( 5 );
 
         for ( unsigned int i = 0; i < 5; i++ ){
 
-            macF = constitutiveTools::mac( yieldFunctionValues[ i ], dMacYieldFunctionValuedYieldFunctionValue );
+            macF = tardigradeConstitutiveTools::mac( yieldFunctionValues[ i ], dMacYieldFunctionValuedYieldFunctionValue );
 
             lagrangian += 0.5 * macF * macF + x[ i + 5 ] * x[ i ] * yieldFunctionValues[ i ];
 
-            rowEye = solverTools::floatVector( 5, 0 );
+            rowEye = tardigradeSolverTools::floatVector( 5, 0 );
             rowEye[ i ] = 1.;
 
             term1 = dMacYieldFunctionValuedYieldFunctionValue * dYieldFunctionValuesdGammas[ i ] * macF
                   + x[ i + 5 ] * ( yieldFunctionValues[ i ] * rowEye + x[ i ] * dYieldFunctionValuesdGammas[ i ] );
-            term2 = solverTools::floatVector( 5, 0 );
+            term2 = tardigradeSolverTools::floatVector( 5, 0 );
             term2[ i ] = x[ i ] * yieldFunctionValues[ i ];
 
-            jacobian += vectorTools::appendVectors( { term1, term2 } );
+            jacobian += tardigradeVectorTools::appendVectors( { term1, term2 } );
 
         }
 

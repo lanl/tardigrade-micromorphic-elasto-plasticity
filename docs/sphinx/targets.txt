@@ -47,8 +47,8 @@
 .. _`Doxygen comments for Fortran`: https://www.doxygen.nl/manual/docblocks.html#fortranblocks
 
 .. Project specific links
-.. _`upstream repository`: https://re-git.lanl.gov/aea/stub-repositories/micromorphic_elasto_plasticity 
-.. _`Gitlab project issues`: https://re-git.lanl.gov/aea/stub-repositories/micromorphic_elasto_plasticity/-/issues
+.. _`upstream repository`: https://re-git.lanl.gov/aea/stub-repositories/tardigrade_micromorphic_elasto_plasticity 
+.. _`Gitlab project issues`: https://re-git.lanl.gov/aea/stub-repositories/tardigrade_micromorphic_elasto_plasticity/-/issues
 
 .. Abaqus reference links
 .. _`Abaqus Solid Continuum Elements`: http://simulia.lanl.gov:8080/EstProdDocs2019/English/DSSIMULIA_Established.htm?show=SIMACAEELMRefMap/simaelm-c-solidcont.htm

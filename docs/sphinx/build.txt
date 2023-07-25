@@ -24,7 +24,7 @@ Build on sstelmo
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/
+      /path/to/tardigrade_micromorphic_elasto_plasticity/
 
       $ mkdir build
       $ cd build
@@ -40,7 +40,7 @@ Build on sstelmo
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/build
+      /path/to/tardigrade_micromorphic_elasto_plasticity/build
       $ cmake3 ..
 
 4) Build various portions of the project
@@ -53,7 +53,7 @@ Build on sstelmo
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/build
+      /path/to/tardigrade_micromorphic_elasto_plasticity/build
 
       # Build everything
       $ cmake3 --build .
@@ -71,7 +71,7 @@ Build on sstelmo
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/build
+      /path/to/tardigrade_micromorphic_elasto_plasticity/build
 
       # find c++ libraries and ignore intermediate files with similar extensions
       $ find . \( -name "*.o" -o -name "*.so" -o -name "*.a" \) | grep -vE "\.cpp\."
@@ -85,12 +85,12 @@ Build on sstelmo
       integration test target copies all registered input files and the integration test bash script from source to build
       directory. This means the file copy operation is always performed when the integration test target is requested in the
       cmake build command, e.g. ``cmake --build .`` or ``cmake --build src/abaqus/tests``. This operation is computationally
-      inexpensive with respect to building the ``micromorphic_elasto_plasticity`` source code.
+      inexpensive with respect to building the ``tardigrade_micromorphic_elasto_plasticity`` source code.
 
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/build
+      /path/to/tardigrade_micromorphic_elasto_plasticity/build
 
       $ make clean
 
@@ -102,7 +102,7 @@ Test on sstelmo
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/build
+      /path/to/tardigrade_micromorphic_elasto_plasticity/build
 
       # Build c++ tests
       $ cmake3 --build src/cpp/tests
@@ -112,7 +112,7 @@ Test on sstelmo
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/build
+      /path/to/tardigrade_micromorphic_elasto_plasticity/build
 
       # Run ctest
       $ ctest
@@ -136,7 +136,7 @@ To build just the documentation pick up the steps here:
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/
+      /path/to/tardigrade_micromorphic_elasto_plasticity/
       $ mkdir build/
       $ cd build/
 
@@ -145,7 +145,7 @@ To build just the documentation pick up the steps here:
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/build/
+      /path/to/tardigrade_micromorphic_elasto_plasticity/build/
       $ cmake3 ..
 
 4) Build the docs
@@ -158,14 +158,14 @@ To build just the documentation pick up the steps here:
 
    .. code:: bash
 
-      micromorphic_elasto_plasticity/build/docs/sphinx/index.html
+      tardigrade_micromorphic_elasto_plasticity/build/docs/sphinx/index.html
 
 6) Display docs
 
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/build/
+      /path/to/tardigrade_micromorphic_elasto_plasticity/build/
       $ firefox docs/sphinx/index.html &
 
 7) While the Sphinx API is still a WIP, try the doxygen API
@@ -173,7 +173,7 @@ To build just the documentation pick up the steps here:
    .. code:: bash
 
       $ pwd
-      /path/to/micromorphic_elasto_plasticity/build/
+      /path/to/tardigrade_micromorphic_elasto_plasticity/build/
       $ firefox docs/doxygen/html/index.html &
 
 Install
@@ -188,7 +188,7 @@ After building, the project can be installed with the CMake ``--install`` option
 .. code:: bash
 
    $ pwd
-   /path/to/micromorphic_elasto_plasticity/build/
+   /path/to/tardigrade_micromorphic_elasto_plasticity/build/
    $ cmake3 --install .
 
 Because CMake defaults to the system installation directories, the above command will probably require administrator
@@ -197,7 +197,7 @@ privileges. For non-default installation directories, use the CMake ``--prefix``
 .. code:: bash
 
    $ pwd
-   /path/to/micromorphic_elasto_plasticity/build/
+   /path/to/tardigrade_micromorphic_elasto_plasticity/build/
    $ cmake3 --install . --prefix /path/to/custom/install
 
 A common choice for non-admin installs on Linux systems is ``/home/$USER/.local/``. However, this project is intended to
