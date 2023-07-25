@@ -3728,16 +3728,16 @@ BOOST_AUTO_TEST_CASE( testExtractMaterialParameters ){
     parameterVector answerCmatrix;
     parameterVector answerDmatrix;
 
-    errorOut error = micromorphicLinearElasticity::formIsotropicA( 1.7, 1.8, answerAmatrix );
+    errorOut error = tardigradeMicromorphicLinearElasticity::formIsotropicA( 1.7, 1.8, answerAmatrix );
     BOOST_CHECK( !error );
 
-    error = micromorphicLinearElasticity::formIsotropicB( 2.8, 0.76, 0.15, 9.8, 5.4, answerBmatrix );
+    error = tardigradeMicromorphicLinearElasticity::formIsotropicB( 2.8, 0.76, 0.15, 9.8, 5.4, answerBmatrix );
     BOOST_CHECK( !error );
 
-    error = micromorphicLinearElasticity::formIsotropicC( { 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.}, answerCmatrix );
+    error = tardigradeMicromorphicLinearElasticity::formIsotropicC( { 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.}, answerCmatrix );
     BOOST_CHECK( !error );
 
-    error = micromorphicLinearElasticity::formIsotropicD( 0.76, 5.4, answerDmatrix );
+    error = tardigradeMicromorphicLinearElasticity::formIsotropicD( 0.76, 5.4, answerDmatrix );
     BOOST_CHECK( !error );
 
     constantType answerAlphaMacro = 0.1;

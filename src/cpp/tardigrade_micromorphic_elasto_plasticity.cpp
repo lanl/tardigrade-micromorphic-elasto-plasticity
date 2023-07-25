@@ -3638,7 +3638,7 @@ namespace tardigradeMicromorphicElastoPlasticity{
                        dReferenceHigherOrderStressdElasticDeformationGradient,
                        dReferenceHigherOrderStressdElasticGradientMicroDeformation;
 
-        error = micromorphicLinearElasticity::linearElasticityReference(  currentElasticDeformationGradient,
+        error = tardigradeMicromorphicLinearElasticity::linearElasticityReference(  currentElasticDeformationGradient,
                                                                           currentElasticMicroDeformation,
                                                                           currentElasticGradientMicroDeformation,
                                                                          *Amatrix, *Bmatrix, *Cmatrix, *Dmatrix,
@@ -5516,7 +5516,7 @@ namespace tardigradeMicromorphicElastoPlasticity{
              ( previousMicroGradientGamma[ 2 ] > relativeTolerance * fabs( previousMicroGradientGamma[ 2 ] ) + absoluteTolerance ) ){
 
             //Compute the previous stress
-            error = micromorphicLinearElasticity::linearElasticityReference( previousElasticDeformationGradient,
+            error = tardigradeMicromorphicLinearElasticity::linearElasticityReference( previousElasticDeformationGradient,
                                                                              previousElasticMicroDeformation,
                                                                              previousElasticGradientMicroDeformation,
                                                                              Amatrix, Bmatrix, Cmatrix, Dmatrix,
@@ -5760,7 +5760,7 @@ namespace tardigradeMicromorphicElastoPlasticity{
         //Compute the new stress values
         variableVector currentPK2Stress, currentReferenceMicroStress, currentReferenceHigherOrderStress;
 
-        error = micromorphicLinearElasticity::linearElasticityReference( currentElasticDeformationGradient,
+        error = tardigradeMicromorphicLinearElasticity::linearElasticityReference( currentElasticDeformationGradient,
                                                                          currentElasticMicroDeformation,
                                                                          currentElasticGradientMicroDeformation,
                                                                          Amatrix, Bmatrix, Cmatrix, Dmatrix,
@@ -6495,7 +6495,7 @@ namespace tardigradeMicromorphicElastoPlasticity{
              ( previousMicroGradientGamma[ 2 ] > relativeTolerance * fabs( previousMicroGradientGamma[ 2 ] ) + absoluteTolerance ) ){
 
             //Compute the previous stress
-            error = micromorphicLinearElasticity::linearElasticityReference( previousElasticDeformationGradient,
+            error = tardigradeMicromorphicLinearElasticity::linearElasticityReference( previousElasticDeformationGradient,
                                                                              previousElasticMicroDeformation,
                                                                              previousElasticGradientMicroDeformation,
                                                                              Amatrix, Bmatrix, Cmatrix, Dmatrix,
@@ -6742,7 +6742,7 @@ namespace tardigradeMicromorphicElastoPlasticity{
                        dReferenceHigherOrderStressdElasticDeformationGradient,
                        dReferenceHigherOrderStressdElasticGradientMicroDeformation;
 
-        error = micromorphicLinearElasticity::linearElasticityReference( currentElasticDeformationGradient,
+        error = tardigradeMicromorphicLinearElasticity::linearElasticityReference( currentElasticDeformationGradient,
                                                                          currentElasticMicroDeformation,
                                                                          currentElasticGradientMicroDeformation,
                                                                          Amatrix, Bmatrix, Cmatrix, Dmatrix,
@@ -7436,7 +7436,7 @@ namespace tardigradeMicromorphicElastoPlasticity{
         //Form the stiffness tensors
         errorOut error;
         if ( outputs[ 9 ].size() == 2 ){
-            error = micromorphicLinearElasticity::formIsotropicA( outputs[ 9 ][ 0 ], outputs[ 9 ][ 1 ], Amatrix );
+            error = tardigradeMicromorphicLinearElasticity::formIsotropicA( outputs[ 9 ][ 0 ], outputs[ 9 ][ 1 ], Amatrix );
         }
         else{
             std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 9 ].size() ) + " ) for the A stiffness tensor";
@@ -7451,7 +7451,7 @@ namespace tardigradeMicromorphicElastoPlasticity{
         }
 
         if ( outputs[ 10 ].size() == 5 ){
-            error = micromorphicLinearElasticity::formIsotropicB( outputs[ 10 ][ 0 ], outputs[ 10 ][ 1 ], outputs[ 10 ][ 2 ],
+            error = tardigradeMicromorphicLinearElasticity::formIsotropicB( outputs[ 10 ][ 0 ], outputs[ 10 ][ 1 ], outputs[ 10 ][ 2 ],
                                                                  outputs[ 10 ][ 3 ], outputs[ 10 ][ 4 ], Bmatrix );
         }
         else{
@@ -7467,7 +7467,7 @@ namespace tardigradeMicromorphicElastoPlasticity{
         }
 
         if ( outputs[ 11 ].size() == 11 ){
-            error = micromorphicLinearElasticity::formIsotropicC( outputs[ 11 ], Cmatrix );
+            error = tardigradeMicromorphicLinearElasticity::formIsotropicC( outputs[ 11 ], Cmatrix );
         }
         else{
             std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 11 ].size() ) + " ) for the C stiffness tensor";
@@ -7482,7 +7482,7 @@ namespace tardigradeMicromorphicElastoPlasticity{
         }
 
         if ( outputs[ 12 ].size() == 2 ){
-            error = micromorphicLinearElasticity::formIsotropicD( outputs[ 12 ][ 0 ], outputs[ 12 ][ 1 ], Dmatrix );
+            error = tardigradeMicromorphicLinearElasticity::formIsotropicD( outputs[ 12 ][ 0 ], outputs[ 12 ][ 1 ], Dmatrix );
         }
         else{
             std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 12 ].size() ) + " ) for the D stiffness tensor";
