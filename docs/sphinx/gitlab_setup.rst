@@ -21,7 +21,7 @@ Clone cpp\_stub into a local repository
 
    .. code-block:: bash
 
-      ssh://git@re-git.lanl.gov:10022/aea/stub-repositories/micromorphic_elasto_plasticity.git
+      ssh://git@re-git.lanl.gov:10022/aea/stub-repositories/tardigrade_micromorphic_elasto_plasticity.git
 
 3. Navigate to your preferred repository directory on your local computer. In a
    terminal, you can follow the example ``sstelmo`` session below
@@ -52,7 +52,7 @@ Clone cpp\_stub into a local repository
       /projects/<moniker>/w13repos
 
       # Clone the stub repository
-      $ git clone ssh://git@re-git.lanl.gov:10022/aea/stub-repositories/micromorphic_elasto_plasticity.git
+      $ git clone ssh://git@re-git.lanl.gov:10022/aea/stub-repositories/tardigrade_micromorphic_elasto_plasticity.git
 
 5. Rename the local repository directory for your project.
 
@@ -63,15 +63,15 @@ Clone cpp\_stub into a local repository
       /projects/<moniker>/w13repos
 
       # Observe the stub repo directory name
-      $ ls micromorphic_elasto_plasticity -d
-      micromorphic_elasto_plasticity
+      $ ls tardigrade_micromorphic_elasto_plasticity -d
+      tardigrade_micromorphic_elasto_plasticity
 
       # Rename the stub repo directory after your project
-      $ mv micromorphic_elasto_plasticity my_project
+      $ mv tardigrade_micromorphic_elasto_plasticity my_project
 
       # Observe that the stub repo directory no longer exists
-      $ ls micromorphic_elasto_plasticity -d
-      ls: cannot access 'micromorphic_elasto_plasticity': No such file or directory
+      $ ls tardigrade_micromorphic_elasto_plasticity -d
+      ls: cannot access 'tardigrade_micromorphic_elasto_plasticity': No such file or directory
 
       # Observe that your project directory exists
       $ ls my_project -d
@@ -115,7 +115,7 @@ Create a new upstream repository
    .. note::
 
       Gitlab offers a feature to create template projects that may make this
-      guide much simpler in the future. Contact the ``micromorphic_elasto_plasticity`` developers and `AEA
+      guide much simpler in the future. Contact the ``tardigrade_micromorphic_elasto_plasticity`` developers and `AEA
       Gitlab group`_ owners to discuss progress on simplified repository setup using
       templates.
 
@@ -140,7 +140,7 @@ Create a new upstream repository
    the left hand side bar "Repository" > "Branches" menu and the Git tags from the
    "Repository" > "Tags" menu.
 
-6. Remove any issue branches from the ``micromorphic_elasto_plasticity`` project on the "Repository" >
+6. Remove any issue branches from the ``tardigrade_micromorphic_elasto_plasticity`` project on the "Repository" >
    "Branches" menu. You should keep only the "main" and "dev" branches.
 
 7. If everything looks correct on Gitlab project, you can clean up your local
@@ -150,17 +150,17 @@ Create a new upstream repository
 
       WARNING: the ``-D`` option FORCE deletes branches. Triple check the
       command and use with caution. If you're uncertain about this step, contact the
-      micromorphic_elasto_plasticity developers for help.
+      tardigrade_micromorphic_elasto_plasticity developers for help.
 
    .. code-block:: bash
 
-      # Remove the micromorphic_elasto_plasticity remote
+      # Remove the tardigrade_micromorphic_elasto_plasticity remote
       $ git remote remove old-origin
 
       # Ensure that you're on the main branch
       $ git checkout main
 
-      # Remove ALL micromorphic_elasto_plasticity branches except main and dev
+      # Remove ALL tardigrade_micromorphic_elasto_plasticity branches except main and dev
       $ git branch | grep -v "main\|dev" | xargs git branch -D
 
 ***********************************
@@ -209,7 +209,7 @@ only a small number of settings must be updated.
 Enable project CI/CD
 ********************
 
-The ``micromorphic_elasto_plasticity`` project comes pre-configured to perform continuous integration
+The ``tardigrade_micromorphic_elasto_plasticity`` project comes pre-configured to perform continuous integration
 (CI) and continuous deployment (CD) on W-13's compute server ``sstelmo`` with
 testing performed in and deployment to the `W-13 Python Environments`_.
 
@@ -258,7 +258,7 @@ deploy`` attribute and shell commands indicating the CD job definition, e.g.
 
 The ``pages`` job is a special deploy stage job that builds and deploys
 documentation to your project's Gitlab Pages, e.g.
-https://aea.re-pages.lanl.gov/stub-repositories/micromorphic_elasto_plasticity. This job should be
+https://aea.re-pages.lanl.gov/stub-repositories/tardigrade_micromorphic_elasto_plasticity. This job should be
 retained for building and deploying documentation for your project users.
 
 The ``git`` operations automate micro version bumps during main branch
@@ -361,7 +361,7 @@ Update project name
       * feature/project-name-updates
         main
 
-2. Search for all instances of ``micromorphic_elasto_plasticity``. The list of occurrences will look
+2. Search for all instances of ``tardigrade_micromorphic_elasto_plasticity``. The list of occurrences will look
    quite long, but we can search and replace with ``sed`` to avoid manual file
    edits. The session below is an example, the exact output may change but the
    commands should work regardless of project re-organization or evolving features.
@@ -373,23 +373,23 @@ Update project name
       /projects/<moniker>/w13repos/my_project
 
       # Recursive, case-insensitive search and count occurrences
-      $ grep -ri micromorphic_elasto_plasticity . --exclude-dir={build,.git} | wc -l
+      $ grep -ri tardigrade_micromorphic_elasto_plasticity . --exclude-dir={build,.git} | wc -l
       57
 
       # Recursive, case-insensitive search and display
-      $ grep -ri micromorphic_elasto_plasticity . --exclude-dir={build,.git}
+      $ grep -ri tardigrade_micromorphic_elasto_plasticity . --exclude-dir={build,.git}
       ...
 
       # Clean list of files with project name
-      $ grep -ri micromorphic_elasto_plasticity . --exclude-dir={build,.git} -l
+      $ grep -ri tardigrade_micromorphic_elasto_plasticity . --exclude-dir={build,.git} -l
       ./CMakeLists.txt
       ./docs/api.rst
       ./docs/devops.rst
       ./README.md
       ./set_vars.sh
-      ./src/cpp/micromorphic_elasto_plasticity.cpp
-      ./src/cpp/micromorphic_elasto_plasticity.h
-      ./src/cpp/tests/test_micromorphic_elasto_plasticity.cpp
+      ./src/cpp/tardigrade_micromorphic_elasto_plasticity.cpp
+      ./src/cpp/tardigrade_micromorphic_elasto_plasticity.h
+      ./src/cpp/tests/test_tardigrade_micromorphic_elasto_plasticity.cpp
 
 3. Search and replace from command line
 
@@ -399,34 +399,34 @@ Update project name
       /projects/<moniker>/w13repos/my_project
 
       # Replace lower case occurrences in place
-      $ sed -i 's/micromorphic_elasto_plasticity/my_project/g' $(grep -ri micromorphic_elasto_plasticity . --exclude-dir={build,.git} -l)
-      $ grep -ri micromorphic_elasto_plasticity . --exclude-dir={build,.git} -l
-      ./src/cpp/micromorphic_elasto_plasticity.h
+      $ sed -i 's/tardigrade_micromorphic_elasto_plasticity/my_project/g' $(grep -ri tardigrade_micromorphic_elasto_plasticity . --exclude-dir={build,.git} -l)
+      $ grep -ri tardigrade_micromorphic_elasto_plasticity . --exclude-dir={build,.git} -l
+      ./src/cpp/tardigrade_micromorphic_elasto_plasticity.h
 
       # Replace upper case occurrences in place
-      $ sed -i 's/MICROMORPHIC_ELASTO_PLASTICITY/MY_PROJECT/g' $(grep -ri micromorphic_elasto_plasticity . --exclude-dir={build,.git} -l)
+      $ sed -i 's/TARDIGRADE_MICROMORPHIC_ELASTO_PLASTICITY/MY_PROJECT/g' $(grep -ri tardigrade_micromorphic_elasto_plasticity . --exclude-dir={build,.git} -l)
 
-4. Verify no more occurrences of project name ``micromorphic_elasto_plasticity``
+4. Verify no more occurrences of project name ``tardigrade_micromorphic_elasto_plasticity``
 
    .. code-block:: bash
 
       $ pwd
       /projects/<moniker>/w13repos/my_project
-      $ grep -ri micromorphic_elasto_plasticity . --exclude-dir={build,.git} | wc -l
+      $ grep -ri tardigrade_micromorphic_elasto_plasticity . --exclude-dir={build,.git} | wc -l
       0
-      $ grep -ri micromorphic_elasto_plasticity . --exclude-dir={build,.git}
+      $ grep -ri tardigrade_micromorphic_elasto_plasticity . --exclude-dir={build,.git}
       # no stdout to terminal because no occurrences found
-      $ grep -ri micromorphic_elasto_plasticity . --exclude-dir={build,.git} -l
+      $ grep -ri tardigrade_micromorphic_elasto_plasticity . --exclude-dir={build,.git} -l
       # no stdout to terminal because no files found
 
-5. Search and replace camelCase project name occurrences, e.g. ``micromorphicElastoPlasticity``.
+5. Search and replace camelCase project name occurrences, e.g. ``tardigradeMicromorphicElastoPlasticity``.
 
    .. code-block:: bash
 
-      $ grep -r micromorphicElastoPlasticity . --exclude-dir={build,.git}
+      $ grep -r tardigradeMicromorphicElastoPlasticity . --exclude-dir={build,.git}
       ...
-      $ sed -i 's/micromorphicElastoPlasticity/myProject/g' $(grep -r micromorphicElastoPlasticity . --exclude-dir={build,.git} -l)
-      $ grep -r micromorphicElastoPlasticity . --exclude-dir={build,.git} -l
+      $ sed -i 's/tardigradeMicromorphicElastoPlasticity/myProject/g' $(grep -r tardigradeMicromorphicElastoPlasticity . --exclude-dir={build,.git} -l)
+      $ grep -r tardigradeMicromorphicElastoPlasticity . --exclude-dir={build,.git} -l
       # no stdout to terminal because no files found
 
 6. Find files containing the project in their file name
@@ -435,10 +435,10 @@ Update project name
 
       $ pwd
       /projects/<moniker>/w13repos/my_project
-      $ find . -type d \( -name .git -o -name build \) -prune -false -o -name "*micromorphic_elasto_plasticity*"
-      ./src/cpp/micromorphic_elasto_plasticity.cpp
-      ./src/cpp/micromorphic_elasto_plasticity.h
-      ./src/cpp/tests/test_micromorphic_elasto_plasticity.cpp
+      $ find . -type d \( -name .git -o -name build \) -prune -false -o -name "*tardigrade_micromorphic_elasto_plasticity*"
+      ./src/cpp/tardigrade_micromorphic_elasto_plasticity.cpp
+      ./src/cpp/tardigrade_micromorphic_elasto_plasticity.h
+      ./src/cpp/tests/test_tardigrade_micromorphic_elasto_plasticity.cpp
 
 7. Rename files after current project
 
@@ -451,7 +451,7 @@ Update project name
 
    .. code-block:: bash
 
-      $ rename micromorphic_elasto_plasticity myproject $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*micromorphic_elasto_plasticity*")
+      $ rename tardigrade_micromorphic_elasto_plasticity myproject $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*tardigrade_micromorphic_elasto_plasticity*")
 
 8. Commit and push your changes to your "remote" or "fork" repository
 
@@ -460,7 +460,7 @@ Update project name
       $ pwd
       /projects/<moniker>/w13repos/my_project
       # Add tracked files and message
-      $ git commit -a -m "FEAT: replace micromorphic_elasto_plasticity with my_project throughout repository"
+      $ git commit -a -m "FEAT: replace tardigrade_micromorphic_elasto_plasticity with my_project throughout repository"
       $ git push origin feature/project-name-updates
 
 You can also perform some cleanup in your documentation directory to remove this

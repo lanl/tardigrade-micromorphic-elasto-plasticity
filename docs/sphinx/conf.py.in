@@ -16,8 +16,8 @@ import os
 # -- Project information -----------------------------------------------------
 # Meta data from CMake configure()
 project = '@PROJECT_NAME@'
-VERSION_STRING_FULL = '@micromorphic_elasto_plasticity_VERSION_STRING_FULL@'
-VERSION = '@micromorphic_elasto_plasticity_VERSION@'
+VERSION_STRING_FULL = '@tardigrade_micromorphic_elasto_plasticity_VERSION_STRING_FULL@'
+VERSION = '@tardigrade_micromorphic_elasto_plasticity_VERSION@'
 
 # Hardcoded project information
 copyright = '2020, Nathan A. Miller and Kyle A. Brindley'
@@ -45,10 +45,10 @@ breathe_default_project = project
 
 # Links to PRs, Jira issues.
 extlinks = {
-     "merge": ("https://re-git.lanl.gov/aea/stub-repositories/micromorphic_elasto_plasticity/-/merge_requests/%s", "MERGE-%s"),
-     "issue": ("https://re-git.lanl.gov/aea/stub-repositories/micromorphic_elasto_plasticity/-/issues/%s", "ISSUE-%s"),
+     "merge": ("https://re-git.lanl.gov/aea/stub-repositories/tardigrade_micromorphic_elasto_plasticity/-/merge_requests/%s", "MERGE-%s"),
+     "issue": ("https://re-git.lanl.gov/aea/stub-repositories/tardigrade_micromorphic_elasto_plasticity/-/issues/%s", "ISSUE-%s"),
      # Maintain the old Atlassian links until the servers don't exist. Required for changelog entries.
-     "pull": ("https://xcp-stash.lanl.gov/projects/MM/repos/micromorphic_elasto_plasticity/pull-requests/%s/overview", "PR%s"),
+     "pull": ("https://xcp-stash.lanl.gov/projects/MM/repos/tardigrade_micromorphic_elasto_plasticity/pull-requests/%s/overview", "PR%s"),
      "jira": ("https://xcp-jira.lanl.gov/browse/VIP-%s", "VIP-%s"),
 }
 
